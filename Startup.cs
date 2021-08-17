@@ -33,6 +33,7 @@ namespace babe_algorithms
             {
                 string connectionString = Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres") ?? throw new NullReferenceException("Connection string was not found.");
                 options.UseNpgsql(connectionString);
+                
             });
         }
 

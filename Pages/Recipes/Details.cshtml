@@ -4,6 +4,7 @@
 @{
     ViewData["Title"] = "Details";
     Layout = "_Layout";
+    var ingredients = string.Join(",", Model.Recipe.Ingredients.Select(ir => ir.Ingredient.Name));
 }
 
 <h1>Details</h1>
@@ -17,6 +18,31 @@
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Recipe.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Recipe.CaloriesPerServing)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Recipe.CaloriesPerServing)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Recipe.ServingsProduced)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Recipe.ServingsProduced)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Recipe.Ingredients)
+        </dt>
+        <dd class="col-sm-10">
+            @ingredients
+            @* @Html.DisplayFor(model => model.Recipe.Ingredients.Select(ir => ir.Ingredient.Name)) *@
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Recipe.Directions)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Recipe.Directions)
         </dd>
     </dl>
 </div>

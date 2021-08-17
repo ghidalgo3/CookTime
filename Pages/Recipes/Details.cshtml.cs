@@ -28,7 +28,10 @@ namespace babe_algorithms.Pages.Recipes
                 return NotFound();
             }
 
-            Recipe = await _context.Recipes.FirstOrDefaultAsync(m => m.Id == id);
+            Recipe = await _context.Recipes
+                .Include(recipe => recipe.Ingredients)
+                    .ThenInclude(ir => ir.Ingredient)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Recipe == null)
             {

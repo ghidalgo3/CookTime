@@ -20,10 +20,10 @@ if ($DropDb) {
 }
 
 Write-Host "Setting environment variables" -ForegroundColor 'Yellow'
-[System.Environment]::SetEnvironmentVariable("ConnectionStrings__Postgres", "Server=localhost;Database=$DatabaseName")
+[System.Environment]::SetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres", "Server=localhost;Database=$DatabaseName")
 
 Write-Host "Creating migrations" -ForegroundColor 'Yellow'
 dotnet ef migrations add InitialMigration
 
 Write-Host "Resetting environment variables" -ForegroundColor 'Yellow'
-[System.Environment]::SetEnvironmentVariable("ConnectionStrings__Postgres", "")
+[System.Environment]::SetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres", "")
