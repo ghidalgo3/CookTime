@@ -18,7 +18,7 @@ namespace babe_algorithms.Services
         {
         }
 
-        new protected internal virtual void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasPostgresEnum<Unit>();
         }

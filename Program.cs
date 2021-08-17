@@ -44,11 +44,9 @@ namespace babe_algorithms
                 if (context.Database.GetPendingMigrations().Any())
                 {
                     context.Database.Migrate();
-                    using (var conn = (NpgsqlConnection)context.Database.GetDbConnection())
-                    {
-                        conn.Open();
-                        conn.ReloadTypes();
-                    }
+                    using var conn = (NpgsqlConnection)context.Database.GetDbConnection();
+                    conn.Open();
+                    conn.ReloadTypes();
                     InitializeDatabase(context);
                 }
             }
