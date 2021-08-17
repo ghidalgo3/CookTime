@@ -21,7 +21,7 @@
             },
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
-                "ConnectionStrings__Postgres": "Server=localhost;Database=KookTime"
+                "POSTGRESQLCONNSTR__Postgres": "Server=localhost;Database=KookTime"
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
