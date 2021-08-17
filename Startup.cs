@@ -26,7 +26,9 @@ namespace babe_algorithms
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddRazorPages();
+            services
+                .AddRazorPages()
+                .AddRazorRuntimeCompilation();
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseNpgsql(Configuration.GetConnectionString("Postgres"));
