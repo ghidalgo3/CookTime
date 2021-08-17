@@ -1,7 +1,7 @@
 param(
     [switch]$DropDb,
     [string]$User = $env:USER,
-    [string]$DatabaseName = "babes"
+    [string]$DatabaseName = "KookTime"
 )
 
 if ($DropDb) {
