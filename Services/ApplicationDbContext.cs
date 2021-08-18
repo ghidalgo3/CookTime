@@ -25,5 +25,7 @@ namespace babe_algorithms.Services
 
         public DbSet<Recipe>? Recipes { get; set; }
         public DbSet<Ingredient>? Ingredients { get; set; }
+
+        public DbSet<Category>? Categories { get; set; }
     }
 }

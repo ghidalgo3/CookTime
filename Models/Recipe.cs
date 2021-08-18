@@ -10,8 +10,8 @@ namespace babe_algorithms
     {
         [Required]
         public string? Name { get; set; }
-        public IList<IngredientRequirement> Ingredients { get; set; }
-        public string Directions { get; set; }
+        public IList<IngredientRequirement>? Ingredients { get; set; }
+        public List<RecipeStep>? Steps { get; set; }
         public double ServingsProduced { get; set; }
         public TimeSpan Cooktime { get; set; }
         public double CaloriesPerServing { get; set; }
@@ -25,5 +25,11 @@ namespace babe_algorithms
         public Ingredient Ingredient { get; set; }
         public Unit Unit { get; set; }
         public double Quantity { get; set; }
+    }
+
+    [Owned]
+    public class RecipeStep
+    {
+        public string Text { get; set; }
     }
 }

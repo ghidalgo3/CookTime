@@ -77,12 +77,26 @@ namespace babe_algorithms
                 driedBlueberries,
                 sliveredAlmonds,
             });
+
+            var breakfastCategory =
+                new Category()
+                {
+                    Name = "Breakfast"
+                };
+            context.Categories.AddRange(
+                breakfastCategory
+            );
+
             var overnightOatsRecipe = new Recipe()
             {
-                Name = "Lemon poppy overnight oats",
+                Name = "Lemon Poppy Overnight Oats",
                 Cooktime = TimeSpan.FromMinutes(5),
                 ServingsProduced = 4,
                 CaloriesPerServing = 290,
+                Categories = new SortedSet<Category>()
+                {
+                    breakfastCategory,
+                },
                 Ingredients = new List<IngredientRequirement>()
                 {
                     new IngredientRequirement()
@@ -129,10 +143,21 @@ namespace babe_algorithms
                     },
                 }
             };
-            overnightOatsRecipe.Directions = @"
-#. In a container with a lid, combine poppy seeds, oats, milk, lemon juice, agave, blueberries, and a pinch of salt.
-#. Cover and refrigerate the oats overnight or for at least 8h.
-#. When you're ready to serve, top with almonds and any other toppings you desire. ";
+            overnightOatsRecipe.Steps = new List<RecipeStep>()
+            {
+                new RecipeStep()
+                {
+                    Text = @"In a container with a lid, combine poppy seeds, oats, milk, lemon juice, agave, blueberries, and a pinch of salt."
+                },
+                new RecipeStep()
+                {
+                    Text = @"Cover and refrigerate the oats overnight or for at least 8h."
+                },
+                new RecipeStep()
+                {
+                    Text = @"When you're ready to serve, top with almonds and any other toppings you desire."
+                }
+            };
             context.Recipes.Add(overnightOatsRecipe);
             context.SaveChanges();
         }

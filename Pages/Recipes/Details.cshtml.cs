@@ -31,6 +31,7 @@ namespace babe_algorithms.Pages.Recipes
             Recipe = await _context.Recipes
                 .Include(recipe => recipe.Ingredients)
                     .ThenInclude(ir => ir.Ingredient)
+                .Include(recipe => recipe.Categories)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (Recipe == null)
