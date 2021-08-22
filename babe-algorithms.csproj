@@ -39,8 +39,8 @@
     Outputs="wwwroot/js/*.g.js"
     AfterTargets="Compile">
     <Message Text="Building client-side assets" Importance="High" />
-    <Exec Command="npm run-script build" />
-    <!-- <Exec Command="yarn build" Condition=" '$(Configuration)' == 'Release' " /> -->
+    <Exec Command="npm run-script build" Condition=" '$(Configuration)' == 'Debug' " />
+    <Exec Command="npm run-script publish" Condition=" '$(Configuration)' == 'Release' " />
   </Target>
 
 </Project>

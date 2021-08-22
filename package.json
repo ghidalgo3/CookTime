@@ -4,7 +4,8 @@
   "description": "Materializing all hard decisions into code.",
   "private": "true",
   "scripts": {
-    "build": "webpack"
+    "build": "webpack --mode development",
+    "publish": "webpack --mode production"
   },
   "repository": {
     "type": "git",
