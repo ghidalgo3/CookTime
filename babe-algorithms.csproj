@@ -23,4 +23,24 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.7" />
   </ItemGroup>
 
+  <Target
+    Name="RestoreJavascript"
+    Condition=" !Exists('node_modules') "
+    AfterTargets="Restore"
+    Inputs="packages.json"
+    Outputs="node_modules/*">
+    <Message Text="Restore Node.js modules" Importance="High" />
+    <Exec Command="npm install" />
+  </Target>
+
+  <Target
+    Name="BuildJavascript"
+    Inputs="Scripts/**/*"
+    Outputs="wwwroot/js/*.g.js"
+    AfterTargets="Compile">
+    <Message Text="Building client-side assets" Importance="High" />
+    <Exec Command="npm run-script build" />
+    <!-- <Exec Command="yarn build" Condition=" '$(Configuration)' == 'Release' " /> -->
+  </Target>
+
 </Project>

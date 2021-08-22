@@ -1,0 +1,33 @@
+{
+  "name": "babe-algorithms",
+  "version": "1.0.0",
+  "description": "Materializing all hard decisions into code.",
+  "private": "true",
+  "scripts": {
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ghidalgo3/babe-algorithms.git"
+  },
+  "keywords": [],
+  "author": "Gustavo Hidalgo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ghidalgo3/babe-algorithms/issues"
+  },
+  "homepage": "https://github.com/ghidalgo3/babe-algorithms#readme",
+  "devDependencies": {
+    "@types/react": "^17.0.19",
+    "@types/react-dom": "^17.0.9",
+    "copy-webpack-plugin": "^9.0.1",
+    "ts-loader": "^9.2.5",
+    "typescript": "^4.3.5",
+    "webpack": "^5.51.1",
+    "webpack-cli": "^4.8.0"
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  }
+}
