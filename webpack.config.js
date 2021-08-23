@@ -6,12 +6,12 @@ module.exports = {
         contentBase: './wwwroot/js',
     },
     entry: {
-        recipeEdit: './scripts/recipeEdit.tsx',
+        recipeEdit: './Scripts/recipeEdit.tsx',
     },
     output: {
         publicPath: '/',
         path: path.resolve(__dirname, 'wwwroot/js'),
-        filename: '[name].g.js'
+        filename: '[name].js'
     },
     resolve: {
         extensions: [".js", ".ts", ".tsx"]
