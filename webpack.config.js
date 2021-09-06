@@ -3,7 +3,8 @@ const path = require('path');
 module.exports = {
     devtool: 'inline-source-map',
     devServer: {
-        contentBase: './wwwroot/js',
+        static: './wwwroot/js',
+        hot: true,
     },
     entry: {
         recipeEdit: './Scripts/recipeEdit.tsx',
