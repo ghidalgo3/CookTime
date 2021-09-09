@@ -1,12 +1,41 @@
-﻿@page
+@page
+@model babe_algorithms.Pages.Recipes.IndexModel
 @{
-    ViewData["Title"] = "KookTime";
+    ViewData["Title"] = "Index";
     Layout = "_Layout";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome, Babe</h1>
-    <p>
-        See all <a href="./Recipes">recipes</a>.
-    </p>
-</div>
+<dl class="row">
+        <dt class="col-sm-10">
+            <h1>Recipes</h1>
+        </dt>
+        <dd class="col-sm-2">
+            <a asp-page="Create">Create New</a>
+            <i class="fas fa-plus-square"></i>
+        </dd>
+</dl>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Recipe[0].Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Recipe) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
