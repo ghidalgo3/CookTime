@@ -10,7 +10,7 @@
             <h1>Recipes</h1>
         </dt>
         <dd class="col-sm-2">
-            <a asp-page="Create">Create New</a>
+            <a asp-page="./Recipes/Create">Create New</a>
             <i class="fas fa-plus-square"></i>
         </dd>
 </dl>
@@ -31,9 +31,9 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-page="./Recipes/Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Recipes/Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Recipes/Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }
