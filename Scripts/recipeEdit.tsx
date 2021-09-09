@@ -3,10 +3,13 @@ import * as ReactDOM from 'react-dom';
 
 console.log("Hello world!");
 
-let reactComponent = () =>
+let reactComponent = (recipeId : string) =>
 {
-    return <p>Hello world1</p>
+    let content = `Hello ${recipeId}`;
+    return <p>{content}</p>
 }
 
-const domContainer = document.querySelector('#react');
-ReactDOM.render(reactComponent(), domContainer);
+const recipeContainer = document.querySelector('#recipeEdit');
+var recipeId = recipeContainer?.getAttribute("data-recipe-id");
+fetch(`/api/recipe/${recipeId}`).then(response => console.log(response))
+ReactDOM.render(reactComponent(recipeId as string), recipeContainer);

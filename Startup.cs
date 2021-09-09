@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.SpaServices.Extensions;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,20 +44,26 @@ namespace babe_algorithms
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.Map(
+                    "/js", ctx =>
+                    {
+                        ctx.UseSpa(spa =>
+                        {
+                            spa.UseProxyToSpaDevelopmentServer("http://localhost:8080/js");
+                        });
+                    });
+                app.UseStaticFiles();
             }
             else
             {
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+                app.UseHttpsRedirection();
+                app.UseStaticFiles();
             }
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

@@ -4,6 +4,7 @@
 @{
     ViewData["Title"] = "Edit";
     Layout = "_Layout";
+    var recipeId = Model.Recipe.Id;
 }
 
 <h1>Edit</h1>
@@ -31,6 +32,9 @@
     <a asp-page="./Index">Back to List</a>
 </div>
 
-<div id="react"></div>
+<div
+    id="recipeEdit"
+    data-recipe-id="@recipeId">
+</div>
 
-<script type="text/javascript" src="~/js/recipeEdit.g.js" asp-append-version="true"></script>
+<script type="text/javascript" src="~/js/recipeEdit.js" asp-append-version="true"></script>

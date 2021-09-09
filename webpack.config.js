@@ -3,15 +3,16 @@ const path = require('path');
 module.exports = {
     devtool: 'inline-source-map',
     devServer: {
-        contentBase: './wwwroot/js',
+        static: './wwwroot/js',
+        hot: true,
     },
     entry: {
-        recipeEdit: './scripts/recipeEdit.tsx',
+        recipeEdit: './Scripts/recipeEdit.tsx',
     },
     output: {
         publicPath: '/',
         path: path.resolve(__dirname, 'wwwroot/js'),
-        filename: '[name].g.js'
+        filename: '[name].js'
     },
     resolve: {
         extensions: [".js", ".ts", ".tsx"]

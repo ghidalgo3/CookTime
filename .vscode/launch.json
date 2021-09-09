@@ -1,11 +1,34 @@
 {
     "version": "0.2.0",
+    "compounds": [
+        {
+            "name": "Hot Reload",
+            "configurations": [
+                "dotnet server",
+                "Webpack dev server",
+                "Launch Edge"
+            ]
+        }
+    ],
     "configurations": [
+        {
+            "name": "Launch Edge",
+            "request": "launch",
+            "type": "pwa-msedge",
+            "url": "http://localhost:5000",
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "command": "npm start",
+            "name": "Webpack dev server",
+            "request": "launch",
+            "type": "node-terminal",
+        },
         {
             // Use IntelliSense to find out which attributes exist for C# debugging
             // Use hover for the description of the existing attributes
             // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
-            "name": ".NET Core Launch (web)",
+            "name": "dotnet server",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -17,7 +40,7 @@
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
             "serverReadyAction": {
                 "action": "openExternally",
-                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+                "pattern": "\\bNow listening on:\\s+(http://\\S+)"
             },
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
@@ -26,11 +49,6 @@
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/Views"
             }
-        },
-        {
-            "name": ".NET Core Attach",
-            "type": "coreclr",
-            "request": "attach"
         }
     ]
 }
