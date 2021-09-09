@@ -19,11 +19,11 @@ namespace babe_algorithms.Pages.Recipes
             _context = context;
         }
 
-        public IList<Recipe> Recipe { get;set; }
+        public IList<Recipe> Recipes { get;set; }
 
         public async Task OnGetAsync()
         {
-            Recipe = await _context.Recipes.ToListAsync();
+            Recipes = await _context.Recipes.ToListAsync();
         }
     }
 }
