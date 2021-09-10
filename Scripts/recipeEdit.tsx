@@ -1,36 +1,83 @@
 import * as React from 'react';
+import { Form } from 'react-bootstrap';
 import * as ReactDOM from 'react-dom';
-import { ISpinButtonStyles, IStackTokens, Label, PrimaryButton, SpinButton, Stack, TextField } from '@fluentui/react';
-import { initializeIcons } from '@fluentui/react/lib/Icons';
 
-initializeIcons(/* optional base url */);
-console.log("Hello world!");
-const stackTokens: IStackTokens = { childrenGap: 20 };
-// By default the field grows to fit available width. Constrain the width instead.
-const styles: Partial<ISpinButtonStyles> = { spinButtonWrapper: { width: 75 } };
+type RecipeEditProps = {
+    recipeId : string
+}
 
-let reactComponent = (recipeId : string) =>
+type IngredientRequirement = {
+    ingredient : string,
+    unit : string,
+    quantity : number
+}
+
+type RecipeStep = {
+    text : string
+}
+
+type RecipeEditState = {
+    id : string,
+    name : string,
+    duration : number | undefined,
+    caloriesPerServing : number,
+    servings : number,
+    ingredients : IngredientRequirement[],
+    steps : RecipeStep[],
+    categories : string[]
+}
+
+
+class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 {
-    let content = `Hello ${recipeId}`;
-    return (
-        <Stack tokens={stackTokens}>
-            <TextField
-                label="Recipe name"
-                placeholder="Name" />
-            <SpinButton
-                label="Duration (minutes)"
-                defaultValue="5"
-                min={5}
-                max={120}
-                step={5}
-                incrementButtonAriaLabel="Increase value by 5"
-                decrementButtonAriaLabel="Decrease value by 5"
-                styles={styles}/>
-        </Stack>
-    )
+    constructor(props : RecipeEditProps)
+    {
+        super(props);
+        this.state = {
+            id : '',
+            name: '',
+            duration: 5,
+            caloriesPerServing: 100,
+            servings: 2,
+            ingredients: [],
+            steps: [],
+            categories: []
+        }
+    }
+    componentDidMount() {
+        fetch(`/api/recipe/${recipeId}`)
+            .then(response => response.json())
+            .then(
+                result => {
+                    console.log(result)
+                    this.setState(result as RecipeEditState)
+                }
+            )
+    }
+
+    render() {
+        let ingredientComponents = this.state.ingredients.map(ingredient => {
+            return (<li key={ingredient.ingredient}>{ingredient.ingredient} {ingredient.quantity} {ingredient.unit}</li>)
+        })
+        let ingredientList = (
+            <ul>{ingredientComponents}</ul>
+        )
+        return (
+            <Form>
+                <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Label>Name</Form.Label>
+                    <Form.Control type="" placeholder="Enter email" />
+                    <Form.Text className="text-muted">
+                        We'll never share your email with anyone else.
+                    </Form.Text>
+                </Form.Group>
+            </Form>
+        )
+    }
 }
 
 const recipeContainer = document.querySelector('#recipeEdit');
-var recipeId = recipeContainer?.getAttribute("data-recipe-id");
-fetch(`/api/recipe/${recipeId}`).then(response => console.log(response))
-ReactDOM.render(reactComponent(recipeId as string), recipeContainer);
+var recipeId = recipeContainer?.getAttribute("data-recipe-id") as string;
+ReactDOM.render(
+    <RecipeEdit recipeId={recipeId} />,
+    recipeContainer);
