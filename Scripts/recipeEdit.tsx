@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Form } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import * as ReactDOM from 'react-dom';
 
 type RecipeEditProps = {
@@ -64,13 +64,18 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         )
         return (
             <Form>
-                <Form.Group className="mb-3" controlId="formBasicEmail">
+                <Form.Group
+                    className="mb-3"
+                    controlId="formBasicEmail">
                     <Form.Label>Name</Form.Label>
-                    <Form.Control type="" placeholder="Enter email" />
-                    <Form.Text className="text-muted">
-                        We'll never share your email with anyone else.
-                    </Form.Text>
+                    <Form.Control
+                        type="textarea"
+                        placeholder="Recipe name"
+                        value={this.state.name} />
                 </Form.Group>
+                <Button variant="primary" type="submit">
+                    Save
+                </Button>
             </Form>
         )
     }
