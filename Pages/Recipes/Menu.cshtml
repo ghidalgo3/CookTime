@@ -1,0 +1,31 @@
+@page
+@model babe_algorithms.Pages.Recipes.MenuModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "_Layout";
+}
+
+<dl class="row" style="display: flex; align-items: center; justify-content: center;">
+        <dt class="col-sm-10">
+            <h1>Menu</h1>
+        </dt>
+        <dt class="col-sm-2" style="text-align: right; margin: auto; width: 50%;">
+            <a asp-page="./Recipes/Create"><i class="fas fa-plus-circle fa-2x"></i></a>
+        </dt>
+</dl>
+
+<hr></hr>
+@foreach (var item in Model.Recipes) {
+    <div class="row">
+        <div class="col-sm-10" style="display: flex; align-items: center;">
+            <a asp-page="./Recipes/Details" asp-route-id="@item.Id">
+                <i class="fas fa-carrot"></i> @Html.DisplayFor(modelItem => item.Name)
+            </a>
+        </div>
+        <div class="col-sm-2" style="text-align: right;">
+            <button class="btn btn-primary">Add to cart</button>
+        </div>
+    </div>
+    <hr></hr>
+}
+
