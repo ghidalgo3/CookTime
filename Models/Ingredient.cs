@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Newtonsoft.Json.Converters;
 
 namespace babe_algorithms.Models
 {
@@ -13,7 +14,7 @@ namespace babe_algorithms.Models
         public Guid Id { get; set; }
     }
 
-    // [JsonConverter(typeof())]
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum Unit
     {
         // Volumetric Units

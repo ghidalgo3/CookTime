@@ -1,5 +1,7 @@
 using babe_algorithms.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace babe_algorithms
 {
@@ -7,6 +9,7 @@ namespace babe_algorithms
     public class IngredientRequirement
     {
         public Ingredient Ingredient { get; set; }
+        [JsonConverter(typeof(StringEnumConverter))]
         public Unit Unit { get; set; }
         public double Quantity { get; set; }
     }
