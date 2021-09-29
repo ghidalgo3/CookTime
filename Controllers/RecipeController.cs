@@ -9,60 +9,6 @@ using babe_algorithms.Services;
 
 namespace babe_algorithms
 {
-    public class RecipeViewModel
-    {
-        public RecipeViewModel()
-        {
-        }
-
-        public RecipeViewModel(Recipe recipe)
-        {
-            this.ID = recipe.Id;
-            this.Name = recipe.Name;
-            this.Duration = recipe.Cooktime.TotalMinutes;
-            this.CaloriesPerServing = recipe.CaloriesPerServing;
-            this.Servings = recipe.ServingsProduced;
-            this.Ingredients = recipe.Ingredients.Select(ingredient => 
-            {
-                return new IngredientRequirementViewModel()
-                {
-                    Ingredient = ingredient.Ingredient.Name,
-                    Unit = ingredient.Unit.ToString(),
-                    Quantity = ingredient.Quantity,
-                };
-            }).ToArray();
-            this.Steps = recipe.Steps.Select(s =>
-            {
-                return new RecipeStepViewModel()
-                {
-                    Text = s.Text,
-                };
-            }).ToArray();
-            this.Categories = recipe.Categories.Select(c => c.Name).ToArray();
-        }
-
-        public Guid ID { get; set; }
-        public string Name { get; set; }
-        public double Duration { get; set; }
-        public double CaloriesPerServing { get; set; }
-        public double Servings { get; set; } 
-        public IngredientRequirementViewModel[] Ingredients { get; set; }
-        public RecipeStepViewModel[] Steps { get; set; }
-        public string[] Categories { get; set; }
-    }
-
-    public class IngredientRequirementViewModel
-    {
-        public string Ingredient { get; set; }
-        public string Unit { get; set; }
-        public double Quantity { get; set; }
-    }
-
-    public class RecipeStepViewModel
-    {
-        public string Text { get; set; }
-    }
-
     [Route("api/[controller]")]
     [ApiController]
     public class RecipeController : ControllerBase
@@ -83,7 +29,7 @@ namespace babe_algorithms
 
         // GET: api/Recipe/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<RecipeViewModel>> GetRecipe(Guid id)
+        public async Task<ActionResult<Recipe>> GetRecipe(Guid id)
         {
             var recipe = await _context.GetRecipeAsync(id);
 
@@ -92,7 +38,7 @@ namespace babe_algorithms
                 return NotFound();
             }
 
-            return new RecipeViewModel(recipe);
+            return Ok(recipe);
         }
 
         // PUT: api/Recipe/5
@@ -100,14 +46,24 @@ namespace babe_algorithms
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRecipe(
             Guid id,
-            Recipe recipe)
+            [FromBody] Recipe recipe)
         {
             if (id != recipe.Id)
             {
                 return BadRequest();
             }
+            // var existingRecipe = await _context.GetRecipeAsync(id);
+            // if (existingRecipe == null)
+            // {
+            //     _context.Recipes.Add(recipe);
+            //     await _context.SaveChangesAsync();
 
-            _context.Entry(recipe).State = EntityState.Modified;
+            //     return CreatedAtAction("GetRecipe", new { id = recipe.Id }, recipe);
+            // }
+            // _context.Entry(existingRecipe).State = EntityState.Detached;
+            _context.Update(recipe);
+            // _context.Entry(recipe).State = EntityState.Modified;
+            // _context.Entry(existingRecipe).CurrentValues.SetValues(recipe);
 
             try
             {
@@ -126,17 +82,6 @@ namespace babe_algorithms
             }
 
             return NoContent();
-        }
-
-        // POST: api/Recipe
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Recipe>> PostRecipe(Recipe recipe)
-        {
-            _context.Recipes.Add(recipe);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetRecipe", new { id = recipe.Id }, recipe);
         }
 
         // DELETE: api/Recipe/5

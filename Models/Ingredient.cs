@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace babe_algorithms.Models
 {
@@ -12,6 +13,7 @@ namespace babe_algorithms.Models
         public Guid Id { get; set; }
     }
 
+    // [JsonConverter(typeof())]
     public enum Unit
     {
         // Volumetric Units
@@ -32,6 +34,7 @@ namespace babe_algorithms.Models
         [Required]
         public string Name { get; set; }
         public Guid Id { get; set; }
+        [Newtonsoft.Json.JsonIgnore]
         public ICollection<Recipe> Recipes { get; set; }
     }
 }

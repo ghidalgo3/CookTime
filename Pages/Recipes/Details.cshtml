@@ -2,78 +2,10 @@
 @model babe_algorithms.Pages.Recipes.DetailsModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Model.Recipe.Name;
     Layout = "_Layout";
-    var categories = string.Join(", ", Model.Recipe.Categories.Select(c => c.Name));
+    var recipeId = Model.Recipe.Id;
+
 }
-
-<h1>Details</h1>
-
-<div>
-    <h4>Recipe</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.Recipe.Name)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.Recipe.Name)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.Recipe.Categories)
-        </dt>
-        <dd class="col-sm-9">
-            @categories
-        </dd>
-        <dt class="col-sm-3">
-            Calories per Serving
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.Recipe.CaloriesPerServing)
-        </dd>
-        <dt class="col-sm-3">
-            Servings Produced
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.Recipe.ServingsProduced)
-        </dd>
-        <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.Recipe.Ingredients)
-        </dt>
-        <dd class="col-sm-9">
-            @* @ingredients *@
-            <ul>
-                @foreach (var i in Model.Recipe.Ingredients)
-                {
-                    var name = i.Ingredient.Name;
-                    var qty = i.Quantity;
-                    var unit = i.Unit;
-                    <li>@qty @unit @name</li>
-                }
-            </ul>
-        </dd>
-        <dt class="col-sm-3">
-            Directions
-        </dt>
-        <dd class="col-sm-9">
-            @* @ingredients *@
-            <ul>
-                @foreach (var i in Model.Recipe.Steps)
-                {
-                    var text = i.Text;
-                    <li>@text</li>
-                }
-            </ul>
-        </dd>
-        @* <dt class="col-sm-3">
-            @Html.DisplayNameFor(model => model.Recipe.Directions)
-        </dt>
-        <dd class="col-sm-9">
-            @Html.DisplayFor(model => model.Recipe.Directions)
-        </dd> *@
-    </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.Recipe.Id">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
-</div>
+<div id="recipeEdit" data-recipe-id="@recipeId"></div>
+<script type="text/javascript" src="~/js/recipeEdit.js" asp-append-version="true"></script>
