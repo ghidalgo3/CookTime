@@ -67,6 +67,24 @@ namespace babe_algorithms
             else
             {
                 _context.Entry(existingRecipe).CurrentValues.SetValues(recipe);
+                var currentIngredients = existingRecipe.Ingredients;
+                existingRecipe.Ingredients = new List<IngredientRequirement>();
+                foreach (var ingredientRequirement in recipe.Ingredients)
+                {
+                    var matching = currentIngredients.FirstOrDefault(ir => ir.Id == ingredientRequirement.Id);
+                    if (matching == null)
+                    {
+                        // new ingredient requirement
+                        existingRecipe.Ingredients.Add(ingredientRequirement);
+                    }
+                    else
+                    {
+                        // update
+                        matching.Quantity = ingredientRequirement.Quantity;
+                        matching.Unit = ingredientRequirement.Unit;
+                        existingRecipe.Ingredients.Add(matching);
+                    }
+                }
                 // update
                 _context.Recipes.Update(existingRecipe);
             }
