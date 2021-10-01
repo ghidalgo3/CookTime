@@ -52,6 +52,24 @@ namespace babe_algorithms
             {
                 return BadRequest();
             }
+
+            if (!this.ModelState.IsValid)
+            {
+                return BadRequest(this.ModelState);
+            }
+            // TODO
+            // Sending the whole EF object back and forth puts you in a bad state
+            var existingRecipe = await _context.GetRecipeAsync(recipe.Id);
+            if (existingRecipe == null)
+            {
+                // create
+            }
+            else
+            {
+                _context.Entry(existingRecipe).CurrentValues.SetValues(recipe);
+                // update
+                _context.Recipes.Update(existingRecipe);
+            }
             // var existingRecipe = await _context.GetRecipeAsync(id);
             // if (existingRecipe == null)
             // {
@@ -61,10 +79,9 @@ namespace babe_algorithms
             //     return CreatedAtAction("GetRecipe", new { id = recipe.Id }, recipe);
             // }
             // _context.Entry(existingRecipe).State = EntityState.Detached;
-            _context.Update(recipe);
-            // _context.Entry(recipe).State = EntityState.Modified;
-            // _context.Entry(existingRecipe).CurrentValues.SetValues(recipe);
+            // _context.Update(recipe);
 
+            // _context.Entry(recipe).State = EntityState.Modified;
             try
             {
                 await _context.SaveChangesAsync();

@@ -25,10 +25,23 @@ namespace babe_algorithms.Services
             modelBuilder.HasPostgresEnum<Unit>();
         }
 
-        public DbSet<Recipe>? Recipes { get; set; }
-        public DbSet<Ingredient>? Ingredients { get; set; }
+        public DbSet<Recipe> Recipes { get; set; }
+        public DbSet<Ingredient> Ingredients { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
-        public DbSet<Category>? Categories { get; set; }
+        public async Task<Category> GetCategory(Guid id)
+        {
+            return await this.Categories
+                .FirstAsync(category => category.Id == id);
+        }
+
+        public async Task<bool> RecipeHasCategory(Guid categoryId, Guid recipeId)
+        {
+            var recipe = await this.Recipes
+                .Include(recipe => recipe.Categories)
+                .SingleAsync(recipe => recipe.Id == recipeId);
+            return recipe.Categories.Any(c => c.Id == categoryId);
+        }
 
         public async Task<Recipe> GetRecipeAsync(Guid id)
         {

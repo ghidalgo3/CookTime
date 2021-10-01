@@ -1,7 +1,8 @@
 type IngredientRequirement = {
     ingredient : {name : string, id: string},
     unit : string,
-    quantity : number
+    quantity : number,
+    id: string
 }
 
 type RecipeStep = {
@@ -16,5 +17,5 @@ type Recipe = {
     servingsProduced : number,
     ingredients : IngredientRequirement[],
     steps : RecipeStep[],
-    categories : {name: string, id: string}[]
+    categories : {name: string, id: string, isNew: boolean}[]
 }
