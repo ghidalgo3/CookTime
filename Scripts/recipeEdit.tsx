@@ -44,8 +44,27 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         return (
             <Form>
                 { this.state.recipe.ingredients.map(i => this.ingredientEditRow(i)) }
+                <Button onClick={_ => this.appendNewIngredientRequirementRow()}>New Ingredient</Button>
             </Form>
         )
+    }
+    appendNewIngredientRequirementRow(): void {
+        var ir : IngredientRequirement = {
+            ingredient: {name: 'Ingredient name', id: this.state.recipe.ingredients.length.toString() },
+            unit: 'Unit',
+            quantity: 0,
+            id: this.state.recipe.ingredients.length.toString()
+        }
+        var newIrs = Array.from(this.state.recipe.ingredients)
+        newIrs.push(ir)
+        this.state.recipe.ingredients.push(ir);
+        this.setState({
+            ...this.state,
+            recipe: {
+                ...this.state.recipe,
+                ingredients: newIrs
+            }
+        })
     }
 
     ingredientEditRow(ir : IngredientRequirement) {
@@ -55,22 +74,25 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 <Col xs={2}>
                     <Form.Control
                         type="number"
-                        onChange={(e) => this.updateIngredientQuantity(ir, parseInt(e.target.value)) }
+                        onChange={(e) => this.updateIngredientRequirement(ir, ir => { ir.quantity = parseInt(e.target.value); return ir; } ) }
                         value={ir.quantity}></Form.Control>
                 </Col>
                 <Col xs={2}>
                     {ir.unit}
                 </Col>
                 <Col>
-                    {ir.ingredient.name}
+                    <Form.Control
+                        type="text"
+                        onChange={(e) => this.updateIngredientRequirement(ir, x => { x.ingredient.name = e.target.value; return x;})}
+                        value={ir.ingredient.name}></Form.Control>
                 </Col>
             </Row>
         )
     }
 
-    updateIngredientQuantity(ir: IngredientRequirement, n : number): void {
+    updateIngredientRequirement(ir: IngredientRequirement, update : (ir : IngredientRequirement) => IngredientRequirement) {
         const idx = this.state.recipe.ingredients.findIndex(i => i.ingredient.id == ir.ingredient.id);
-        const newIr = { ...this.state.recipe.ingredients[idx], quantity: n}
+        const newIr = update(this.state.recipe.ingredients[idx])
         let newIrs = Array.from(this.state.recipe.ingredients)
         newIrs[idx] = newIr
         this.setState({
