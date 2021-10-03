@@ -1,5 +1,6 @@
 import React from "react";
 import Autosuggest from "react-autosuggest";
+import { v4 as uuidv4 } from 'uuid';
 
 export type IngredientInputProps = {
     query: (value : string) => string,
@@ -48,19 +49,48 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
         </div>
     );
 
+    // called every time a key is pressed or when the user presses enter
     onChange = (event : any, { newValue, method }) => {
         switch (method) {
             case 'enter':
-                this.setState({
-                    selection: null,
-                    // selection: [...this.state.skillList, this.state.value],
-                    value: ''
-                });
+                var possibleSuggestions = this.state.suggestions.filter(suggestion => suggestion.name.toUpperCase().includes(newValue));
+                if (possibleSuggestions.length == 1) {
+                    // one ingredient matches
+                    this.setState({
+                        selection: possibleSuggestions[0],
+                        value: newValue,
+                    });
+                } else {
+                    this.setState({
+                        selection: null,
+                        // selection: [...this.state.skillList, this.state.value],
+                        value: newValue
+                    });
+                }
                 break;
             default:
-                this.setState({
-                    value: newValue
-                });
+                // this.setState({
+                //     value: newValue,
+                // })
+                var possibleSuggestions = this.state.suggestions.filter(suggestion => suggestion.name.toUpperCase().includes(newValue));
+                if (possibleSuggestions.length == 1) {
+                    // one ingredient matches
+                    this.setState({
+                        selection: possibleSuggestions[0],
+                        value: newValue,
+                    });
+                    // this.props.onSelect(possibleSuggestions[0])
+                } else {
+                    // whatever the user has typed may be a subset of an existing ingredient
+                    // lol don't do that
+                    // never before seen ingredient
+                    var newIngredient = {name: newValue, id: uuidv4()};
+                    this.setState({
+                        selection: newIngredient,
+                        value: newValue
+                    });
+                    // this.props.onSelect(newIngredient)
+                }
                 break;
         }
     };
