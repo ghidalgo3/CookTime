@@ -124,6 +124,10 @@ namespace babe_algorithms
                     {
                         ingredientRequirement.Ingredient.Id = Guid.Empty;
                     }
+                    else
+                    {
+                        ingredientRequirement.Ingredient = existingIngredient;
+                    }
                     // new ingredient requirement
                     existingRecipe.Ingredients.Add(ingredientRequirement);
                 }
