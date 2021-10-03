@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Col, Form, FormText, Row } from 'react-bootstrap';
+import { Button, Col, Form, FormControl, FormText, Row } from 'react-bootstrap';
 import { v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
 
@@ -61,7 +61,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
     appendNewIngredientRequirementRow(): void {
         var ir : IngredientRequirement = {
             ingredient: {name: '', id: uuidv4()},
-            unit: 'Unit',
+            unit: 'Cup',
             quantity: 0,
             id: uuidv4()
         }
@@ -127,6 +127,48 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         })
     }
 
+    stepEdit(): React.ReactNode {
+        return (
+            <Form>
+                { this.state.recipe.steps.map((i, idx) => this.stepEditRow(i, idx)) }
+                <Button onClick={_ => this.appendNewStep()}>New Step</Button>
+            </Form>
+        )
+    }
+
+    stepEditRow(i: RecipeStep, idx: number): any {
+        return (
+            <FormControl
+                key={idx}
+                type="text"
+                placeholder="Recipe step"
+                value={i.text}
+                onChange={e => {
+                    let newSteps = Array.from(this.state.recipe.steps);
+                    newSteps[idx].text = e.target.value;
+                    this.setState({
+                        ...this.state,
+                        recipe: {
+                            ...this.state.recipe,
+                            steps: newSteps
+                        }
+                    })}
+                }>
+            </FormControl>
+        )
+    }
+
+    appendNewStep(): void {
+        var newSteps = Array.from(this.state.recipe.steps)
+        newSteps.push({text: ''})
+        this.setState({
+            recipe: {
+                ...this.state.recipe,
+                steps : newSteps
+            }
+        })
+    }
+
     render() {
         let ingredientComponents = this.state.recipe.ingredients.map(ingredient => {
             return (<li key={ingredient.ingredient.name}>{ingredient.ingredient.name} {ingredient.quantity} {ingredient.unit}</li>)
@@ -188,7 +230,9 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     </dt>
                     <dd className="col-sm-9">
                         <ul>
-                            {stepComponetns}
+                            {this.state.edit ? 
+                                this.stepEdit() :
+                                stepComponetns}
                         </ul>
                     </dd>
                 </dl>

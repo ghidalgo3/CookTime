@@ -65,34 +65,16 @@ namespace babe_algorithms
             var existingRecipe = await _context.GetRecipeAsync(recipe.Id);
             if (existingRecipe == null)
             {
-                // create
+                // create, shouldn't happen because Create Recipe has a dedicated
+                // page
             }
             else
             {
                 _context.Entry(existingRecipe).CurrentValues.SetValues(recipe);
                 var currentIngredients = existingRecipe.Ingredients;
                 existingRecipe.Ingredients = new List<IngredientRequirement>();
-                foreach (var ingredientRequirement in recipe.Ingredients)
-                {
-                    var matching = currentIngredients.FirstOrDefault(ir => ir.Id == ingredientRequirement.Id);
-                    if (matching == null)
-                    {
-                        var existingIngredient = await _context.Ingredients.FindAsync(ingredientRequirement.Ingredient.Id);
-                        if (existingIngredient == null)
-                        {
-                            ingredientRequirement.Ingredient.Id = Guid.Empty;
-                        }
-                        // new ingredient requirement
-                        existingRecipe.Ingredients.Add(ingredientRequirement);
-                    }
-                    else
-                    {
-                        // update
-                        matching.Quantity = ingredientRequirement.Quantity;
-                        matching.Unit = ingredientRequirement.Unit;
-                        existingRecipe.Ingredients.Add(matching);
-                    }
-                }
+                await CopyIngredients(recipe, existingRecipe, currentIngredients);
+                existingRecipe.Steps = recipe.Steps.Where(s => !string.IsNullOrWhiteSpace(s.Text)).ToList();
                 // update
                 _context.Recipes.Update(existingRecipe);
             }
@@ -125,6 +107,34 @@ namespace babe_algorithms
             }
 
             return NoContent();
+        }
+
+        private async Task CopyIngredients(Recipe recipe, Recipe existingRecipe, List<IngredientRequirement> currentIngredients)
+        {
+            foreach (var ingredientRequirement in recipe.Ingredients)
+            {
+                var matching = currentIngredients
+                    .FirstOrDefault(ir =>
+                        ir.Id == ingredientRequirement.Id);
+                if (matching == null)
+                {
+                    var existingIngredient = await _context.Ingredients
+                        .FindAsync(ingredientRequirement.Ingredient.Id);
+                    if (existingIngredient == null)
+                    {
+                        ingredientRequirement.Ingredient.Id = Guid.Empty;
+                    }
+                    // new ingredient requirement
+                    existingRecipe.Ingredients.Add(ingredientRequirement);
+                }
+                else
+                {
+                    // update
+                    matching.Quantity = ingredientRequirement.Quantity;
+                    matching.Unit = ingredientRequirement.Unit;
+                    existingRecipe.Ingredients.Add(matching);
+                }
+            }
         }
 
         // DELETE: api/Recipe/5
