@@ -129,12 +129,35 @@ namespace babe_algorithms
                 }
                 else
                 {
-                    // update
+                    // update of existing ingredient requirement
                     matching.Quantity = ingredientRequirement.Quantity;
                     matching.Unit = ingredientRequirement.Unit;
+                    var ingredient = await _context.Ingredients.FindAsync(ingredientRequirement.Ingredient.Id);
+                    if (ingredient == null)
+                    {
+                        // entirely new ingredient, client chose ID
+                        ingredientRequirement.Id = Guid.NewGuid();
+                        matching.Ingredient = ingredientRequirement.Ingredient;
+                    }
+                    else if (!currentIngredients.Any(i => i.Ingredient.Id == ingredient.Id))
+                    {
+                        // reassignment of existing ingredient
+                        matching.Ingredient = ingredient;
+                    }
+                    // Are you actually changing the ingredient being referenced?
                     existingRecipe.Ingredients.Add(matching);
                 }
             }
+        }
+
+        [HttpGet("ingredients")]
+        public ActionResult<IEnumerable<Ingredient>> GetIngredients(
+            [FromQuery(Name = "name")]
+            string query)
+        {
+            // god shield me from this
+            var ingredients = _context.Ingredients.Where(i => i.Name.ToUpper().Contains(query.ToUpper())).ToList();
+            return this.Ok(ingredients);
         }
 
         // DELETE: api/Recipe/5

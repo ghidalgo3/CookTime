@@ -1,7 +1,12 @@
 type IngredientRequirement = {
-    ingredient : {name : string, id: string},
+    ingredient : Ingredient,
     unit : string,
     quantity : number,
+    id: string
+}
+
+type Ingredient = {
+    name: string,
     id: string
 }
 

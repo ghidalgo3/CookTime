@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Button, Col, Form, FormControl, FormText, Row } from 'react-bootstrap';
 import { v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
+import { IngredientInput } from './IngredientInput';
 
 type RecipeEditProps = {
     recipeId : string
@@ -103,11 +104,15 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     </Form.Select>
                 </Col>
                 <Col key={`${id}name`} >
-                    <Form.Control
+                    <IngredientInput
+                        query={text => `/api/recipe/ingredients?name=${text}`}
+                        ingredient={ir.ingredient}
+                        onSelect={i => this.updateIngredientRequirement(ir, ir => { ir.ingredient = i; return ir; })}/>
+                    {/* <Form.Control
                         type="text"
                         onChange={(e) => this.updateIngredientRequirement(ir, x => { x.ingredient.name = e.target.value; return x;})}
                         value={ir.ingredient.name}
-                        placeholder="Ingredient name"></Form.Control>
+                        placeholder="Ingredient name"></Form.Control> */}
                 </Col>
             </Row>
         )
