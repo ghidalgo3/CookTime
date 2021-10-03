@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using babe_algorithms.Models;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using babe_algorithms.Services;
+using babe_algorithms.Models;
 
 namespace babe_algorithms
 {
@@ -25,6 +26,12 @@ namespace babe_algorithms
         public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
         {
             return await _context.Recipes.ToListAsync();
+        }
+
+        [HttpGet("units")]
+        public ActionResult<IEnumerable<string>> GetUnits()
+        {
+            return this.Ok(Enum.GetValues<Unit>().Select(v => v.ToString()));
         }
 
         // GET: api/Recipe/5
@@ -53,10 +60,6 @@ namespace babe_algorithms
                 return BadRequest();
             }
 
-            if (!this.ModelState.IsValid)
-            {
-                return BadRequest(this.ModelState);
-            }
             // TODO
             // Sending the whole EF object back and forth puts you in a bad state
             var existingRecipe = await _context.GetRecipeAsync(recipe.Id);
@@ -74,6 +77,11 @@ namespace babe_algorithms
                     var matching = currentIngredients.FirstOrDefault(ir => ir.Id == ingredientRequirement.Id);
                     if (matching == null)
                     {
+                        var existingIngredient = await _context.Ingredients.FindAsync(ingredientRequirement.Ingredient.Id);
+                        if (existingIngredient == null)
+                        {
+                            ingredientRequirement.Ingredient.Id = Guid.Empty;
+                        }
                         // new ingredient requirement
                         existingRecipe.Ingredients.Add(ingredientRequirement);
                     }

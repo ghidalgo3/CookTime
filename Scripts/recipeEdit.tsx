@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Button, Col, Form, FormText, Row } from 'react-bootstrap';
+import { v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
 
 type RecipeEditProps = {
@@ -8,7 +9,8 @@ type RecipeEditProps = {
 
 type RecipeEditState = {
     recipe : Recipe,
-    edit : boolean
+    edit : boolean,
+    units: string[]
 }
 class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 {
@@ -16,6 +18,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         super(props);
         this.state = {
             edit: false,
+            units: [],
             recipe: {
                 id : '',
                 name: '',
@@ -34,8 +37,14 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             .then(response => response.json())
             .then(
                 result => {
-                    console.log(result)
                     this.setState({recipe: result as Recipe})
+                }
+            )
+        fetch(`/api/recipe/units`)
+            .then(response => response.json())
+            .then(
+                result => {
+                    this.setState({units: result as string[]});
                 }
             )
     }
@@ -43,21 +52,21 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
     ingredientEditGrid() {
         return (
             <Form>
-                { this.state.recipe.ingredients.map(i => this.ingredientEditRow(i)) }
+                { this.state.recipe.ingredients.map((i, idx) => this.ingredientEditRow(i, idx)) }
                 <Button onClick={_ => this.appendNewIngredientRequirementRow()}>New Ingredient</Button>
             </Form>
         )
     }
+
     appendNewIngredientRequirementRow(): void {
         var ir : IngredientRequirement = {
-            ingredient: {name: 'Ingredient name', id: this.state.recipe.ingredients.length.toString() },
+            ingredient: {name: '', id: uuidv4()},
             unit: 'Unit',
             quantity: 0,
-            id: this.state.recipe.ingredients.length.toString()
+            id: uuidv4()
         }
         var newIrs = Array.from(this.state.recipe.ingredients)
         newIrs.push(ir)
-        this.state.recipe.ingredients.push(ir);
         this.setState({
             ...this.state,
             recipe: {
@@ -67,24 +76,38 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         })
     }
 
-    ingredientEditRow(ir : IngredientRequirement) {
+    ingredientEditRow(ir : IngredientRequirement, idx : number) {
         // this.updateIngredientQuantity(ir, 10)
+        var id = ir.ingredient.id
+        if (ir.ingredient.id === '' || ir.ingredient.id === '00000000-0000-0000-0000-000000000000') {
+            id = idx.toString()
+        }
+        var unitOptions = this.state.units.map(unit => {
+            return <option key={unit} value={unit}>{unit}</option>
+        })
         return (
-            <Row key={ir.ingredient.id}>
-                <Col xs={2}>
+            <Row key={id}>
+                <Col key={`${id}quantity`} xs={2}>
                     <Form.Control
                         type="number"
                         onChange={(e) => this.updateIngredientRequirement(ir, ir => { ir.quantity = parseInt(e.target.value); return ir; } ) }
                         value={ir.quantity}></Form.Control>
                 </Col>
-                <Col xs={2}>
-                    {ir.unit}
+                <Col key={`${id}unit`} xs={2}>
+                    <Form.Select
+                        onChange={(e) => this.updateIngredientRequirement(ir, ir => {ir.unit = e.currentTarget.value; return ir; })}
+                        value={ir.unit}>
+                        {
+                            unitOptions
+                        }
+                    </Form.Select>
                 </Col>
-                <Col>
+                <Col key={`${id}name`} >
                     <Form.Control
                         type="text"
                         onChange={(e) => this.updateIngredientRequirement(ir, x => { x.ingredient.name = e.target.value; return x;})}
-                        value={ir.ingredient.name}></Form.Control>
+                        value={ir.ingredient.name}
+                        placeholder="Ingredient name"></Form.Control>
                 </Col>
             </Row>
         )
