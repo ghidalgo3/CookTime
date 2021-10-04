@@ -163,23 +163,35 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 
     stepEditRow(i: RecipeStep, idx: number): any {
         return (
-            <FormControl
-                key={idx}
-                type="text"
-                placeholder="Recipe step"
-                value={i.text}
-                onChange={e => {
-                    let newSteps = Array.from(this.state.recipe.steps);
-                    newSteps[idx].text = e.target.value;
-                    this.setState({
-                        ...this.state,
+            <Row>
+                <Col>
+                    <FormControl
+                        key={idx}
+                        type="text"
+                        placeholder="Recipe step"
+                        value={i.text}
+                        onChange={e => {
+                            let newSteps = Array.from(this.state.recipe.steps);
+                            newSteps[idx].text = e.target.value;
+                            this.setState({
+                                ...this.state,
+                                recipe: {
+                                    ...this.state.recipe,
+                                    steps: newSteps
+                                }
+                            })}
+                        }>
+                    </FormControl>
+                </Col>
+                <Col>
+                    <i onClick={(_) => this.setState({
                         recipe: {
                             ...this.state.recipe,
-                            steps: newSteps
+                            steps: this.state.recipe.steps.filter((s,i) => i !== idx),
                         }
-                    })}
-                }>
-            </FormControl>
+                    })} className="fas fa-trash-alt"></i>
+                </Col>
+            </Row>
         )
     }
 
@@ -264,10 +276,23 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     </dd>
                 </dl>
                 {this.state.edit ?
-                    <Button onClick={_ => this.onSave()}>Save</Button> : 
+                    <Row>
+                        <Col>
+                            <Button onClick={_ => this.onSave()}>Save</Button>
+                        </Col>
+                        <Col>
+                            <Button onClick={_ => this.onDelete()}>Delete</Button>
+                        </Col>
+                    </Row>
+                     : 
                     <Button onClick={(event) => this.setState({edit: !this.state.edit})}>Edit</Button>}
             </div>
         );
+    }
+    onDelete(): void {
+        fetch(`/api/Recipe/${this.props.recipeId}`, {
+            method: 'DELETE',
+        }).then(response => window.location.href = "/")
     }
 
     onSave() {
