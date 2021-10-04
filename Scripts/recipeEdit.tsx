@@ -103,7 +103,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         }
                     </Form.Select>
                 </Col>
-                <Col key={`${id}name`} >
+                <Col key={`${id}name`} xs={4} >
                     <IngredientInput
                         isNew={ir.ingredient.isNew}
                         query={text => `/api/recipe/ingredients?name=${text}`}
@@ -114,6 +114,9 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         onChange={(e) => this.updateIngredientRequirement(ir, x => { x.ingredient.name = e.target.value; return x;})}
                         value={ir.ingredient.name}
                         placeholder="Ingredient name"></Form.Control> */}
+                </Col>
+                <Col key={`${id}delete`} xs={1}>
+                    <i onClick={() => console.log("Delete me")} className="fas fa-trash-alt"></i>
                 </Col>
             </Row>
         )

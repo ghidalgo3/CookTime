@@ -132,7 +132,7 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
                 this.props.onSelect(possibleSuggestions[0], false)
             } else if (possibleSuggestions.length == 0) {
 
-                    var newIngredient = {name: this.state.value, id: uuidv4()};
+                    var newIngredient = {name: this.state.value, id: uuidv4(), isNew: true};
                     this.setState({
                         selection: newIngredient,
                         newIngredient: true
