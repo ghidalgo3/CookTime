@@ -61,7 +61,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 
     appendNewIngredientRequirementRow(): void {
         var ir : IngredientRequirement = {
-            ingredient: {name: '', id: uuidv4()},
+            ingredient: {name: '', id: uuidv4(), isNew: false},
             unit: 'Cup',
             quantity: 0,
             id: uuidv4()
@@ -105,9 +105,10 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 </Col>
                 <Col key={`${id}name`} >
                     <IngredientInput
+                        isNew={ir.ingredient.isNew}
                         query={text => `/api/recipe/ingredients?name=${text}`}
                         ingredient={ir.ingredient}
-                        onSelect={i => this.updateIngredientRequirement(ir, ir => { ir.ingredient = i; return ir; })}/>
+                        onSelect={(i, isNew) => this.updateIngredientRequirement(ir, ir => { ir.ingredient = i; ir.ingredient.isNew = isNew; return ir; })}/>
                     {/* <Form.Control
                         type="text"
                         onChange={(e) => this.updateIngredientRequirement(ir, x => { x.ingredient.name = e.target.value; return x;})}
