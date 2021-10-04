@@ -87,7 +87,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             return <option key={unit} value={unit}>{unit}</option>
         })
         return (
-            <Row key={id}>
+            <Row key={id} className="margin-bottom-8">
                 <Col key={`${id}quantity`} xs={2}>
                     <Form.Control
                         type="number"
@@ -176,7 +176,9 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 
     render() {
         let ingredientComponents = this.state.recipe.ingredients.map(ingredient => {
-            return (<li key={ingredient.ingredient.name}>{ingredient.ingredient.name} {ingredient.quantity} {ingredient.unit}</li>)
+            var unitName = (ingredient.unit == "Count" ? "" : ingredient.unit).toLowerCase()
+            var ingredientName = (ingredient.ingredient.name).toLowerCase()
+            return (<li key={ingredient.ingredient.name}>{ingredient.quantity} {unitName} {ingredientName}</li>)
         });
 
         let stepComponetns = this.state.recipe.steps.map(step => {
@@ -224,7 +226,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         Ingredients
                     </dt>
                     <dd className="col-sm-9">
-                        <ul>
+                        <ul className="padding-0">
                         {this.state.edit ?
                             this.ingredientEditGrid() : 
                             ingredientComponents}
@@ -234,7 +236,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         Directions
                     </dt>
                     <dd className="col-sm-9">
-                        <ul>
+                        <ul className="padding-0">
                             {this.state.edit ? 
                                 this.stepEdit() :
                                 stepComponetns}
