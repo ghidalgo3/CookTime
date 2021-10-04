@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -51,6 +52,32 @@ namespace babe_algorithms.Services
                     .ThenInclude(ir => ir.Ingredient)
                 .Include(recipe => recipe.Categories)
                 .SingleAsync(recipe => recipe.Id == id);
+        }
+
+        public async Task<Cart> GetActiveCartAsync()
+        {
+            var activeCart = await this.Carts
+                .Where(c => c.Active)
+                .Include(c => c.RecipeRequirement)
+                    .ThenInclude(rr => rr.Recipe)
+                        .ThenInclude(recipe => recipe.Ingredients)
+                            .ThenInclude(i => i.Ingredient)
+                .FirstOrDefaultAsync();
+            if (activeCart == null)
+            {
+                var cart = new Cart()
+                {
+                    CreateAt = DateTime.Now,
+                    Active = true,
+                    RecipeRequirement = new List<RecipeRequirement>(),
+                };
+                this.Carts.Add(cart);
+                return cart;
+            }
+            else
+            {
+                return activeCart;
+            }
         }
     }
 }

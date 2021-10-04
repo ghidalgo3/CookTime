@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using babe_algorithms;
 using babe_algorithms.Services;
+using babe_algorithms.Models;
 
 namespace babe_algorithms.Pages.Recipes
 {
@@ -24,6 +25,24 @@ namespace babe_algorithms.Pages.Recipes
         public async Task OnGetAsync()
         {
             Recipes = await _context.Recipes.ToListAsync();
+        }
+
+        public async Task<ActionResult> OnPostAddToCart(Guid recipeId)
+        {
+            var recipe = await _context.GetRecipeAsync(recipeId);
+            if (recipe == null)
+            {
+                return this.Page();
+            }
+
+            var cart = await _context.GetActiveCartAsync();
+            cart.RecipeRequirement.Add(new RecipeRequirement()
+            {
+                Recipe = recipe,
+                Quantity = 1.0
+            });
+            await _context.SaveChangesAsync();
+            return this.RedirectToPage("/Cart");
         }
     }
 }

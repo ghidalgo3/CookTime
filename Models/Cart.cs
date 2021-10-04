@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using babe_algorithms.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace babe_algorithms
+namespace babe_algorithms.Models
 {
     public class Cart
     {
