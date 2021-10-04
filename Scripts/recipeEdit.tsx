@@ -108,7 +108,14 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         isNew={ir.ingredient.isNew}
                         query={text => `/api/recipe/ingredients?name=${text}`}
                         ingredient={ir.ingredient}
-                        onSelect={(i, isNew) => this.updateIngredientRequirement(ir, ir => { ir.ingredient = i; ir.ingredient.isNew = isNew; return ir; })}/>
+                        onSelect={(i, isNew) => this.updateIngredientRequirement(ir, ir => {
+                            ir.ingredient = i
+                            ir.ingredient.isNew = isNew
+                            if (isNew) {
+                                ir.id = uuidv4()
+                            }
+                            return ir
+                        })}/>
                     {/* <Form.Control
                         type="text"
                         onChange={(e) => this.updateIngredientRequirement(ir, x => { x.ingredient.name = e.target.value; return x;})}
@@ -116,10 +123,19 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         placeholder="Ingredient name"></Form.Control> */}
                 </Col>
                 <Col key={`${id}delete`} xs={1}>
-                    <i onClick={() => console.log("Delete me")} className="fas fa-trash-alt"></i>
+                    <i onClick={(_) => this.deleteIngredientRequirement(ir)} className="fas fa-trash-alt"></i>
                 </Col>
             </Row>
         )
+    }
+
+    deleteIngredientRequirement(ir: IngredientRequirement) {
+        this.setState({
+            recipe: {
+                ...this.state.recipe,
+                ingredients: this.state.recipe.ingredients.filter(i => i.id !== ir.id),
+            }
+        })
     }
 
     updateIngredientRequirement(ir: IngredientRequirement, update : (ir : IngredientRequirement) => IngredientRequirement) {

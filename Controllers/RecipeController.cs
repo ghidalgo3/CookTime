@@ -122,7 +122,9 @@ namespace babe_algorithms
                         .FindAsync(ingredientRequirement.Ingredient.Id);
                     if (existingIngredient == null)
                     {
+                        // new ingredient
                         ingredientRequirement.Ingredient.Id = Guid.Empty;
+                        _context.Ingredients.Add(ingredientRequirement.Ingredient);
                     }
                     else
                     {
