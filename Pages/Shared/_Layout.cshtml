@@ -10,9 +10,9 @@
 
 </head>
 <body>
+    @await Component.InvokeAsync("NavBar")
     <div class="container">
         <main role="main" class="pb-3">
-            @await Component.InvokeAsync("NavBar")
             @RenderBody()
         </main>
     </div>
