@@ -1,3 +1,16 @@
+type Cart = {
+    id: string,
+    recipeRequirement: RecipeRequirement[],
+    CreateAt: string,
+    active : boolean
+}
+
+type RecipeRequirement = {
+    recipe : Recipe,
+    quantity : number,
+    id: string
+}
+
 type IngredientRequirement = {
     ingredient : Ingredient,
     unit : string,
