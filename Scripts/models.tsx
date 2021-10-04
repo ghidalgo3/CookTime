@@ -7,7 +7,8 @@ type IngredientRequirement = {
 
 type Ingredient = {
     name: string,
-    id: string
+    id: string,
+    isNew: boolean
 }
 
 type RecipeStep = {
