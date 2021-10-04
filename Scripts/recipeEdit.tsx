@@ -54,7 +54,9 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         return (
             <Form>
                 { this.state.recipe.ingredients.map((i, idx) => this.ingredientEditRow(i, idx)) }
-                <Button onClick={_ => this.appendNewIngredientRequirementRow()}>New Ingredient</Button>
+                <Col xs={11}>
+                    <Button className="width-100" onClick={_ => this.appendNewIngredientRequirementRow()}>New Ingredient</Button>
+                </Col>
             </Form>
         )
     }
@@ -94,7 +96,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         onChange={(e) => this.updateIngredientRequirement(ir, ir => { ir.quantity = parseInt(e.target.value); return ir; } ) }
                         value={ir.quantity}></Form.Control>
                 </Col>
-                <Col key={`${id}unit`} xs={2}>
+                <Col key={`${id}unit`} xs={3}>
                     <Form.Select
                         onChange={(e) => this.updateIngredientRequirement(ir, ir => {ir.unit = e.currentTarget.value; return ir; })}
                         value={ir.unit}>
@@ -103,7 +105,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         }
                     </Form.Select>
                 </Col>
-                <Col key={`${id}name`} xs={4} >
+                <Col key={`${id}name`}>
                     <IngredientInput
                         isNew={ir.ingredient.isNew}
                         query={text => `/api/recipe/ingredients?name=${text}`}
@@ -122,7 +124,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         value={ir.ingredient.name}
                         placeholder="Ingredient name"></Form.Control> */}
                 </Col>
-                <Col key={`${id}delete`} xs={1}>
+                <Col key={`${id}delete`} xs={1} className="d-flex align-items-center">
                     <i onClick={(_) => this.deleteIngredientRequirement(ir)} className="fas fa-trash-alt"></i>
                 </Col>
             </Row>
@@ -166,6 +168,9 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             <Row>
                 <Col>
                     <FormControl
+                        as="textarea" 
+                        rows={4}
+                        className="margin-bottom-8"
                         key={idx}
                         type="text"
                         placeholder="Recipe step"
@@ -183,7 +188,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         }>
                     </FormControl>
                 </Col>
-                <Col>
+                <Col xs={1}>
                     <i onClick={(_) => this.setState({
                         recipe: {
                             ...this.state.recipe,

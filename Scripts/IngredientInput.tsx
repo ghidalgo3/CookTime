@@ -164,6 +164,7 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
             value,
             onChange: this.onChange,
             onKeyDown: this.onKeyDown,
+            class: 'form-control',
         };
 
         // Finally, render it!
