@@ -1,6 +1,15 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
+/* WEBSITE COLORS: CLOSE TO NATURE
+Green: #687864
+Deep water blue: #31708E and border: #2b627c / Much darker for highlight selected: #193a49 and border #122833
+Murky blue: #5085A5
+Light blue: #8FC1E3
+Grey: #F7F9FB
+Red: #E27D60 and border: #d8785d / Much darker for highlight: #c26950 and border #a35844
+*/
+
 a.navbar-brand {
   white-space: normal;
   text-align: center;
@@ -9,19 +18,43 @@ a.navbar-brand {
 
 /* Provide sufficient contrast against white background */
 a {
-  color: #0366d6;
+  color: #193a49;
+}
+
+.btn-outline-primary {
+  color: #31708E;
+  border-color: #31708E;
+  background-color: #F7F9FB;
 }
 
 .btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+  color: #F7F9FB;
+  background-color: #31708E;
+  border-color: #2b627c;
+}
+
+.btn-danger {
+  color: #F7F9FB;
+  background-color: #E27D60;
+  border-color: #d8785d
+}
+
+.btn-danger:hover, .btn-danger:active {
+  color: #F7F9FB;
+  background-color: #c26950;
+  border-color: #a35844
+}
+
+.btn-primary:hover, .btn-primary.btn-primary:active, .btn-outline-primary:hover, .btn-outline-primary:active {
+  color: #F7F9FB;
+  background-color: #193a49;
+  border-color: #122833;
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+  color: #F7F9FB;
+  background-color: #193a49;
+  border-color: #122833;
 }
 
 /* Sticky footer styles
@@ -61,6 +94,7 @@ html {
 body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
+  background-color: #F7F9FB;
 }
 
 .footer {
@@ -77,6 +111,10 @@ body {
 
 .margin-bottom-8 {
   margin-bottom: 8px;
+}
+
+.margin-bottom-20 {
+  margin-bottom: 20px;
 }
 
 .width-100 {

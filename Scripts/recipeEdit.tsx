@@ -55,7 +55,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             <Form>
                 { this.state.recipe.ingredients.map((i, idx) => this.ingredientEditRow(i, idx)) }
                 <Col xs={11}>
-                    <Button className="width-100" onClick={_ => this.appendNewIngredientRequirementRow()}>New Ingredient</Button>
+                    <Button variant="outline-primary" className="width-100" onClick={_ => this.appendNewIngredientRequirementRow()}>New Ingredient</Button>
                 </Col>
             </Form>
         )
@@ -158,7 +158,9 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         return (
             <Form>
                 { this.state.recipe.steps.map((i, idx) => this.stepEditRow(i, idx)) }
-                <Button onClick={_ => this.appendNewStep()}>New Step</Button>
+                <Col xs={11}>
+                    <Button variant="outline-primary" className="width-100" onClick={_ => this.appendNewStep()}>New Step</Button>
+                </Col>
             </Form>
         )
     }
@@ -224,7 +226,28 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 
         return (
             <div>
-                {/* <i onClick={} className="fas fa-edit"></i> */}
+                <Row>
+                    <Col className="justify-content-md-left" xs={8}>
+                        <h1 className="margin-bottom-20">Recipe</h1>
+                    </Col>
+                    {this.state.edit ?
+                        <Col>
+                            <Row>
+                                <Col>
+                                    <Button className="width-100" onClick={_ => this.onSave()}>Save</Button>
+                                </Col>
+                                <Col>
+                                    <Button variant="danger" className="width-100" onClick={_ => this.onDelete()}>Delete</Button>
+                                </Col>
+                            </Row>
+                        </Col>
+                        :
+                        <Col>
+                            <Button className="float-end" onClick={(event) => this.setState({edit: !this.state.edit})}>Edit</Button>
+                        </Col>
+                    }
+                </Row>
+                
                 <dl className="row">
                     <dt className="col-sm-3">
                         Name
@@ -280,17 +303,6 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         </ul>
                     </dd>
                 </dl>
-                {this.state.edit ?
-                    <Row>
-                        <Col>
-                            <Button onClick={_ => this.onSave()}>Save</Button>
-                        </Col>
-                        <Col>
-                            <Button onClick={_ => this.onDelete()}>Delete</Button>
-                        </Col>
-                    </Row>
-                     : 
-                    <Button onClick={(event) => this.setState({edit: !this.state.edit})}>Edit</Button>}
             </div>
         );
     }
