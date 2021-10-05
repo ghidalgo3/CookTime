@@ -1,6 +1,5 @@
-import Button from '@restart/ui/esm/Button';
 import * as React from 'react';
-import { Col, Form, Row } from 'react-bootstrap';
+import { Button, Col, Form, Row } from 'react-bootstrap';
 import * as ReactDOM from 'react-dom';
 
 type CartState = {
@@ -38,7 +37,7 @@ class ShoppingCart extends React.Component<{}, CartState> {
                     {aggregateIngredients}
                     {recipes}
                     <Row>
-                        <Button onClick={_ => this.onClear()}>Clear Cart</Button>
+                        <Button variant="danger" className="width-100" onClick={_ => this.onClear()}>Clear Cart</Button>
                     </Row>
                 </Col>
             </Form>

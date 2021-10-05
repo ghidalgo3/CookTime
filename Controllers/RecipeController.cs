@@ -177,6 +177,8 @@ namespace babe_algorithms
             }
 
             _context.Recipes.Remove(recipe);
+            var cart = await _context.GetActiveCartAsync();
+            cart.RecipeRequirement = cart.RecipeRequirement.Where(rr => rr.Recipe.Id != id).ToList();
             await _context.SaveChangesAsync();
 
             return NoContent();

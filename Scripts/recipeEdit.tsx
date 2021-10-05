@@ -309,7 +309,13 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
     onDelete(): void {
         fetch(`/api/Recipe/${this.props.recipeId}`, {
             method: 'DELETE',
-        }).then(response => window.location.href = "/")
+        }).then(response => {
+            if (response.ok) {
+                window.location.href = "/"
+            } else {
+                console.log(response.json())
+            }
+        })
     }
 
     onSave() {
