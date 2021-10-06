@@ -10,6 +10,7 @@ module.exports = {
         recipeEdit: './Scripts/recipeEdit.tsx',
         cart: './Scripts/Cart.tsx',
         ingredients: './Scripts/Ingredients.tsx',
+        css: './wwwroot/css/site.css',
     },
     output: {
         publicPath: '/',
@@ -25,6 +26,10 @@ module.exports = {
               test: /\.tsx?$/,
               use: 'ts-loader',
               exclude: /node_modules/,
+            },
+            {
+                test: /\.css$/i,
+                use: ["style-loader", "css-loader"],
             },
           ],
     },

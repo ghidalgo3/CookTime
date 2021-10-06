@@ -2,10 +2,11 @@ import React from "react";
 import Autosuggest from "react-autosuggest";
 import { Badge } from "react-bootstrap";
 import { v4 as uuidv4 } from 'uuid';
+const theme = require('../wwwroot/css/site.css');
 
 export type IngredientInputProps = {
     query: (value : string) => string,
-    ingredient : Ingredient,
+    ingredient : Ingredient | null,
     isNew: boolean,
     onSelect: (ingredient : Ingredient, isNew: boolean) => void,
 }
@@ -178,6 +179,7 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
                     renderSuggestion={this.renderSuggestion}
                     inputProps={inputProps}
                     onSuggestionSelected={this.onSuggestionSelected}
+                    theme={theme}
                 />
                 {this.state.newIngredient ? <Badge bg="secondary">New</Badge> : null}
             </div>
