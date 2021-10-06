@@ -47,7 +47,7 @@ namespace babe_algorithms
                     using var conn = (NpgsqlConnection)context.Database.GetDbConnection();
                     conn.Open();
                     conn.ReloadTypes();
-                    InitializeDatabase(context);
+                    // InitializeDatabase(context);
                 }
             }
             catch (Exception ex)
