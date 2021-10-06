@@ -36,11 +36,16 @@ namespace babe_algorithms.Pages.Recipes
             }
 
             var cart = await _context.GetActiveCartAsync();
-            cart.RecipeRequirement.Add(new RecipeRequirement()
-            {
-                Recipe = recipe,
-                Quantity = 1.0
-            });
+            var existingRecipe = cart.RecipeRequirement.FirstOrDefault(rr => rr.Recipe.Id == recipeId);
+            if (existingRecipe == null) {
+                cart.RecipeRequirement.Add(new RecipeRequirement()
+                {
+                    Recipe = recipe,
+                    Quantity = 1.0
+                });
+            } else {
+                existingRecipe.Quantity += 1.0;
+            }
             await _context.SaveChangesAsync();
             return this.RedirectToPage("/Cart");
         }

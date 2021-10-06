@@ -30,7 +30,7 @@ class ShoppingCart extends React.Component<{}, CartState> {
 
     render() {
         let aggregateIngredients = this.getAggregateIngredients();
-        let recipes = this.state.cart?.recipeRequirement.map(r => <Row key={r.recipe.id}>{r.recipe.name}</Row>)
+        let recipes = this.state.cart?.recipeRequirement.map(r => <Row key={r.recipe.id}>{r.recipe.name} x {r.quantity}</Row>)
         return (
             <Form>
                 <Col>
@@ -54,10 +54,28 @@ class ShoppingCart extends React.Component<{}, CartState> {
     }
 
     getAggregateIngredients() {
-        var allIngredientRequirements = this.state.cart?.recipeRequirement.flatMap(recipeRequirement => {
-            return recipeRequirement.recipe.ingredients;
+        var allRecipeRequirements = this.state.cart?.recipeRequirement;
+        var allIngredientRequirements : IngredientRequirement[] = allRecipeRequirements.flatMap(recipeRequirement => {
+            return recipeRequirement.recipe.ingredients.map(ir => {
+                ir.quantity = ir.quantity * recipeRequirement.quantity;
+                return ir;
+            })
         })
-        return allIngredientRequirements?.map(ir => {
+        var reducedIngredientRequirements : IngredientRequirement[] = []
+        allIngredientRequirements.forEach(ir => {
+            // is there an element in reducedIrs with the same unit and ingredient id?
+            var indexOfMatch = reducedIngredientRequirements.findIndex((currentIr, index) => {
+                return currentIr.ingredient.id == ir.ingredient.id && currentIr.unit == ir.unit;
+            })
+            if (indexOfMatch === -1) {
+                //no!
+                reducedIngredientRequirements.push(ir);
+            } else {
+                //yes!
+                reducedIngredientRequirements[indexOfMatch].quantity += ir.quantity;
+            }
+        });
+        return reducedIngredientRequirements?.map(ir => {
             return <Row key={ir.id}>{ir.quantity} {ir.unit} {ir.ingredient.name}</Row>
         })
     }
