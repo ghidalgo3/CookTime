@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import * as ReactDOM from 'react-dom';
+import { IngredientDisplay } from './IngredientInput';
 
 type CartState = {
     cart : Cart
@@ -30,12 +31,30 @@ class ShoppingCart extends React.Component<{}, CartState> {
 
     render() {
         let aggregateIngredients = this.getAggregateIngredients();
-        let recipes = this.state.cart?.recipeRequirement.map(r => <Row key={r.recipe.id}>{r.recipe.name} x {r.quantity}</Row>)
+        let recipes = this.state.cart?.recipeRequirement.map(r => {
+            return<li key={r.recipe.id}>
+                <a href={`/Recipes/Details?id=${r.recipe.id}`}>{r.recipe.name}</a> x {r.quantity}
+                </li>
+        });
         return (
             <Form>
                 <Col>
-                    {aggregateIngredients}
-                    {recipes}
+                    <Row>
+                        <h1>Ingredients</h1>
+                    </Row>
+                    <Row>
+                        <ul>
+                            {aggregateIngredients}
+                        </ul>
+                    </Row>
+                    <Row>
+                        <h1>Recipes</h1>
+                    </Row>
+                    <Row>
+                        <ul>
+                            {recipes}
+                        </ul>
+                    </Row>
                     <Row>
                         <Button variant="danger" className="width-100" onClick={_ => this.onClear()}>Clear Cart</Button>
                     </Row>
@@ -75,8 +94,12 @@ class ShoppingCart extends React.Component<{}, CartState> {
                 reducedIngredientRequirements[indexOfMatch].quantity += ir.quantity;
             }
         });
+        reducedIngredientRequirements.sort((ir1, ir2) => ir1.ingredient.name.localeCompare(ir2.ingredient.name));
         return reducedIngredientRequirements?.map(ir => {
-            return <Row key={ir.id}>{ir.quantity} {ir.unit} {ir.ingredient.name}</Row>
+            return (
+            <li key={ir.id}>
+                <IngredientDisplay ingredientRequirement={ir}/>
+            </li>)
         })
     }
 }

@@ -184,3 +184,16 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
         );
     }
 }
+
+export class IngredientDisplay extends React.Component<{ingredientRequirement: IngredientRequirement}, {}> {
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        let ingredient = this.props.ingredientRequirement.ingredient
+        var unitName = (this.props.ingredientRequirement.unit == "Count" ? "" : this.props.ingredientRequirement.unit).toLowerCase()
+        var ingredientName = (ingredient.name).toLowerCase()
+        return (<div>{this.props.ingredientRequirement.quantity} {unitName} {ingredientName}</div>)
+    }
+}

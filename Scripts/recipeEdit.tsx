@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button, Col, Form, FormControl, FormText, Row } from 'react-bootstrap';
 import { v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
-import { IngredientInput } from './IngredientInput';
+import { IngredientDisplay, IngredientInput } from './IngredientInput';
 
 type RecipeEditProps = {
     recipeId : string
@@ -215,9 +215,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 
     render() {
         let ingredientComponents = this.state.recipe.ingredients.map(ingredient => {
-            var unitName = (ingredient.unit == "Count" ? "" : ingredient.unit).toLowerCase()
-            var ingredientName = (ingredient.ingredient.name).toLowerCase()
-            return (<li key={ingredient.ingredient.name}>{ingredient.quantity} {unitName} {ingredientName}</li>)
+            return <IngredientDisplay ingredientRequirement={ingredient} />
         });
 
         let stepComponetns = this.state.recipe.steps.map(step => {
