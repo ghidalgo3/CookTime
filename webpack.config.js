@@ -9,6 +9,7 @@ module.exports = {
     entry: {
         recipeEdit: './Scripts/recipeEdit.tsx',
         cart: './Scripts/Cart.tsx',
+        ingredients: './Scripts/Ingredients.tsx',
     },
     output: {
         publicPath: '/',
