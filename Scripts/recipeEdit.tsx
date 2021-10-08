@@ -225,7 +225,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         return (
             <div>
                 <Row>
-                    <Col className="justify-content-md-left" xs={8}>
+                    <Col className="justify-content-md-left" xs={6}>
                         <h1 className="margin-bottom-20">Recipe</h1>
                     </Col>
                     {this.state.edit ?

@@ -40,7 +40,8 @@ class ShoppingCart extends React.Component<{}, CartState> {
             <Form>
                 <Col>
                     <Row>
-                        <h1>Ingredients</h1>
+                        <hr></hr>
+                        <h4>Ingredients</h4>
                     </Row>
                     <Row>
                         <ul>
@@ -48,7 +49,8 @@ class ShoppingCart extends React.Component<{}, CartState> {
                         </ul>
                     </Row>
                     <Row>
-                        <h1>Recipes</h1>
+                        <hr></hr>
+                        <h4>Recipes</h4>
                     </Row>
                     <Row>
                         <ul>

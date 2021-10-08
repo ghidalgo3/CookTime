@@ -18,7 +18,17 @@ a.navbar-brand {
 
 /* Provide sufficient contrast against white background */
 a {
+  color: #31708E;
+  text-decoration: none;
+}
+
+a:hover, a:active {
   color: #193a49;
+  text-decoration: underline;
+}
+
+hr {
+  margin: 8px 0;
 }
 
 .btn-outline-primary {
