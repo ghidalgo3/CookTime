@@ -9,6 +9,7 @@ export type IngredientInputProps = {
     ingredient : Ingredient | null,
     isNew: boolean,
     onSelect: (ingredient : Ingredient, isNew: boolean) => void,
+    className: string | null,
 }
 
 type IngredientInputState = {
@@ -51,9 +52,7 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
 
     // // Use your imagination to render suggestions.
     renderSuggestion = (suggestion : Ingredient) => (
-        <div>
-            {suggestion.name}
-        </div>
+        <span>{suggestion.name}</span>
     );
 
     // called every time a key is pressed or when the user presses enter
@@ -164,6 +163,10 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
 
     render() {
         const { value, suggestions } = this.state;
+        
+        let badgeComponent = this.state.newIngredient ?
+            <Badge className="new-curr-badge" bg="secondary">New</Badge> :
+            null;
 
         // Autosuggest will pass through all these props to the input.
         const inputProps = {
@@ -172,7 +175,7 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
             onChange: this.onChange,
             onKeyDown: this.onKeyDown,
             onBlur: this.onblue,
-            className: 'form-control',
+            className: `form-control ${this.props.className} ${this.state.newIngredient ? "padding-left-58" : "padding-left-12"}`,
         };
 
         // Finally, render it!
@@ -186,9 +189,9 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
                     renderSuggestion={this.renderSuggestion}
                     inputProps={inputProps}
                     onSuggestionSelected={this.onSuggestionSelected}
-                    theme={theme}
+                    // theme={theme}
                 />
-                {this.state.newIngredient ? <Badge bg="secondary">New</Badge> : null}
+                {badgeComponent}
             </div>
         );
     }

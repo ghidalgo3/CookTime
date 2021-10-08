@@ -110,6 +110,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         isNew={ir.ingredient.isNew}
                         query={text => `/api/recipe/ingredients?name=${text}`}
                         ingredient={ir.ingredient}
+                        className=""
                         onSelect={(i, isNew) => this.updateIngredientRequirement(ir, ir => {
                             ir.ingredient = i
                             ir.ingredient.isNew = isNew

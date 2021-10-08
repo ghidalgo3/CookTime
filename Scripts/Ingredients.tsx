@@ -17,6 +17,7 @@ export class Ingredients extends React.Component<{}, {}>
         query={text => `/api/recipe/ingredients?name=${text}`}
         ingredient={null}
         onSelect={(i, isNew) => console.log(i)}
+        className=""
         />
     }
 }
