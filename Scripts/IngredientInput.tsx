@@ -124,23 +124,7 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
         switch (event.code) {
           case "Enter": { //ENTER key
             event.preventDefault();
-            var possibleSuggestions = this.state.suggestions.filter(suggestion => suggestion.name.toUpperCase().includes(this.state.value.toUpperCase()));
-            if (possibleSuggestions.length == 1) {
-                // one ingredient matches
-                this.setState({
-                    selection: possibleSuggestions[0],
-                });
-                this.props.onSelect(possibleSuggestions[0], false)
-            } else if (possibleSuggestions.length == 0) {
-                    var newIngredient = {name: this.state.value, id: uuidv4(), isNew: true};
-                    this.setState({
-                        selection: newIngredient,
-                        newIngredient: true
-                    });
-                    this.props.onSelect(newIngredient, true)
-            } else {
-                // still too many to choose from
-            }
+            this.onblue();
             // let {value} = this.state
             // let valueIsEmpty = value.trim() === ""
             // let valueExists = -1 !== skillList.findIndex((val) => {
@@ -156,6 +140,28 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
         }
       };
 
+    onblue = () => {
+        var possibleSuggestions = this.state.suggestions.filter(suggestion => suggestion.name.toUpperCase().includes(this.state.value.toUpperCase()));
+        if (possibleSuggestions.length == 1) {
+            // one ingredient matches
+            this.setState({
+                selection: possibleSuggestions[0],
+            });
+            this.props.onSelect(possibleSuggestions[0], false);
+        } else if (possibleSuggestions.length == 0) {
+            this.onNewIngredient();
+        }
+    }
+
+    onNewIngredient = () => {
+        var newIngredient = { name: this.state.value, id: uuidv4(), isNew: true };
+        this.setState({
+            selection: newIngredient,
+            newIngredient: true
+        });
+        this.props.onSelect(newIngredient, true);
+    }
+
     render() {
         const { value, suggestions } = this.state;
 
@@ -165,7 +171,8 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
             value,
             onChange: this.onChange,
             onKeyDown: this.onKeyDown,
-            class: 'form-control',
+            onBlur: this.onblue,
+            className: 'form-control',
         };
 
         // Finally, render it!

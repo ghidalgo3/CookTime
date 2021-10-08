@@ -93,7 +93,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 <Col key={`${id}quantity`} xs={2}>
                     <Form.Control
                         type="number"
-                        onChange={(e) => this.updateIngredientRequirement(ir, ir => { ir.quantity = parseInt(e.target.value); return ir; } ) }
+                        onChange={(e) => this.updateIngredientRequirement(ir, ir => { ir.quantity = parseFloat(e.target.value); return ir; } ) }
                         value={ir.quantity}></Form.Control>
                 </Col>
                 <Col key={`${id}unit`} xs={3}>
