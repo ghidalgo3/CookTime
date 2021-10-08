@@ -215,11 +215,11 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 
     render() {
         let ingredientComponents = this.state.recipe.ingredients.map(ingredient => {
-            return <IngredientDisplay ingredientRequirement={ingredient} />
+            return <li><IngredientDisplay ingredientRequirement={ingredient} /></li>
         });
 
         let stepComponetns = this.state.recipe.steps.map(step => {
-            return (<li key={step.text}>{step.text}</li>)
+            return (<li className="margin-bottom-8" key={step.text}>{step.text}</li>)
         });
 
         return (
