@@ -124,7 +124,7 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
         switch (event.code) {
           case "Enter": { //ENTER key
             event.preventDefault();
-            this.onblue();
+            this.selectIngredient();
             // let {value} = this.state
             // let valueIsEmpty = value.trim() === ""
             // let valueExists = -1 !== skillList.findIndex((val) => {
@@ -140,8 +140,8 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
         }
       };
 
-    onblue = () => {
-        var possibleSuggestions = this.state.suggestions.filter(suggestion => suggestion.name.toUpperCase().includes(this.state.value.toUpperCase()));
+    selectIngredient = () => {
+        var possibleSuggestions = this.state.suggestions.filter(suggestion => suggestion.name.toUpperCase() === this.state.value.toUpperCase());
         if (possibleSuggestions.length == 1) {
             // one ingredient matches
             this.setState({
@@ -150,6 +150,8 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
             this.props.onSelect(possibleSuggestions[0], false);
         } else if (possibleSuggestions.length == 0) {
             this.onNewIngredient();
+        } else {
+
         }
     }
 
@@ -171,7 +173,7 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
             value,
             onChange: this.onChange,
             onKeyDown: this.onKeyDown,
-            onBlur: this.onblue,
+            onBlur: this.selectIngredient,
             className: 'form-control',
         };
 
