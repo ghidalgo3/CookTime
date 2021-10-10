@@ -123,6 +123,10 @@ body {
   padding-left: 58px;
 }
 
+.padding-left-0 {
+  padding-left: 0px;
+}
+
 .margin-bottom-8 {
   margin-bottom: 8px;
 }
@@ -149,6 +153,47 @@ body {
 .new-curr-input {
   padding-left: 59px;
 }
+
+.ingredient-and-step-list {
+  padding-left: 0px;
+}
+
+/* Per mesurements, 575px happens to be our breakpoint where we can't have 2 column in the same row for Directions label and Steps text */
+@media all and (max-width: 575px) {
+  .ingredient-and-step-list {
+    padding-left: 28px;
+    margin-top: 8px;
+  }
+}
+
+/* EXAMPLE FOR EXCEPTION ON PHONE LANDSCAPE
+@media all and (max-width: 600px) and (orientation:landscape) 
+{
+} 
+*/
+
+/* EXAMPLE WITH ALL DIFFERENT SCREEN SIZE BREAKPOINTS
+@media all and (min-width:960px) and (max-width: 1024px) {
+}
+
+@media all and (min-width:801px) and (max-width: 959px) {
+}
+
+@media all and (min-width:769px) and (max-width: 800px) {
+}
+
+@media all and (min-width:569px) and (max-width: 768px) {
+}
+
+@media all and (min-width:481px) and (max-width: 568px) {
+}
+
+@media all and (min-width:321px) and (max-width: 480px) {
+}
+
+@media all and (min-width:0px) and (max-width: 320px) {
+}
+*/
 
 /* REACT AUTOSUGGEST SHIT */
 .react-autosuggest__container {

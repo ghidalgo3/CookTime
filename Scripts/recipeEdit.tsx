@@ -285,7 +285,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         Ingredients
                     </dt>
                     <dd className="col-sm-9">
-                        <ul className="padding-0">
+                        <ul className="ingredient-and-step-list">
                         {this.state.edit ?
                             this.ingredientEditGrid() : 
                             ingredientComponents}
@@ -295,11 +295,11 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         Directions
                     </dt>
                     <dd className="col-sm-9">
-                        <ul className="padding-0">
+                        <ol type="1" className="ingredient-and-step-list">
                             {this.state.edit ? 
                                 this.stepEdit() :
                                 stepComponetns}
-                        </ul>
+                        </ol>
                     </dd>
                 </dl>
             </div>
