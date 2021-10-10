@@ -1,14 +1,22 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 for details on configuring this project to bundle and minify static web assets. */
 
-/* WEBSITE COLORS: CLOSE TO NATURE
-Green: #687864
-Deep water blue: #31708E and border: #2b627c / Much darker for highlight selected: #193a49 and border #122833
-Murky blue: #5085A5
-Light blue: #8FC1E3
-Grey: #F7F9FB
-Red: #E27D60 and border: #d8785d / Much darker for highlight: #c26950 and border #a35844
-*/
+/* WEBSITE COLORS: CLOSE TO NATURE */
+:root {
+  --light-grey: #F7F9FB;
+  --green-earth: #687864;
+  --deep-water: #31708E;
+  --deep-water-border: #2b627c;
+  --deep-water-highlight: #193a49;
+  --deep-water-highlight-border: #122833;
+  --troubled-water: #5085A5;
+  --troubled-water-border: #3e7ea5;
+  --shallow-water: #8FC1E3;
+  --red-dirt: #E27D60;
+  --red-dirt-border: #d8785d;
+  --red-dirt-highlight: #c26950;
+  --red-dirt-highlight-border: #a35844;
+}
 
 a.navbar-brand {
   white-space: normal;
@@ -18,12 +26,12 @@ a.navbar-brand {
 
 /* Provide sufficient contrast against white background */
 a {
-  color: #31708E;
+  color: var(--deep-water);
   text-decoration: none;
 }
 
 a:hover, a:active {
-  color: #193a49;
+  color: var(--deep-water-highlight);
   text-decoration: underline;
 }
 
@@ -32,39 +40,48 @@ hr {
 }
 
 .btn-outline-primary {
-  color: #31708E;
-  border-color: #31708E;
-  background-color: #F7F9FB;
+  color: var(--deep-water);
+  border-color: var(--deep-water);
+  background-color: var(--light-grey);
 }
 
 .btn-primary {
-  color: #F7F9FB;
-  background-color: #31708E;
-  border-color: #2b627c;
+  color: var(--light-grey);
+  background-color: var(--deep-water);
+  border-color: var(--deep-water-border);
 }
 
 .btn-danger {
-  color: #F7F9FB;
-  background-color: #E27D60;
-  border-color: #d8785d
+  color: var(--light-grey);
+  background-color: var(--red-dirt);
+  border-color: var(--red-dirt-border);
 }
 
 .btn-danger:hover, .btn-danger:active {
-  color: #F7F9FB;
-  background-color: #c26950;
-  border-color: #a35844
+  color: var(--light-grey);
+  background-color: var(--red-dirt-highlight);
+  border-color: var(--red-dirt-highlight-border);
 }
 
 .btn-primary:hover, .btn-primary.btn-primary:active, .btn-outline-primary:hover, .btn-outline-primary:active {
-  color: #F7F9FB;
-  background-color: #193a49;
-  border-color: #122833;
+  color: var(--light-grey);
+  background-color: var(--deep-water-highlight);
+  border-color: var(--deep-water-highlight-border);
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #F7F9FB;
-  background-color: #193a49;
-  border-color: #122833;
+  color: var(--light-grey);
+  background-color: var(--deep-water-highlight);
+  border-color: var(--deep-water-highlight-border);
+}
+
+.troubled-water-color {
+  background-color: var(--troubled-water);
+  border-color: var(--troubled-water-border);
+}
+
+.green-earth-color {
+  color: var(--green-earth)
 }
 
 /* Sticky footer styles
@@ -104,7 +121,7 @@ html {
 body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
-  background-color: #F7F9FB;
+  background-color: var(--light-grey);
 }
 
 .footer {
@@ -137,10 +154,6 @@ body {
 
 .width-100 {
   width: 100%;
-}
-
-.green-color {
-  color: #687864;
 }
 
 .new-curr-badge {
