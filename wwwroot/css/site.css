@@ -136,6 +136,11 @@ body {
   line-height: 60px; /* Vertically center the text there */
 }
 
+.cart-header {
+  font-weight: 700;
+  margin-top: 15px;
+}
+
 .count {
   background-color: rgba(255, 255, 255, 0);
   text-align: center;
@@ -188,6 +193,11 @@ body {
   width: 100%;
 }
 
+.recipe-counter-column {
+  min-width: 120px;
+  max-width: 130px;
+}
+
 .new-curr-badge {
   position: relative;
   left: 8px;
@@ -206,6 +216,15 @@ body {
 
 .ingredient-item {
   margin-bottom: 6px;
+}
+
+.cart-ingredient-item {
+  margin-bottom: 6px;
+  padding: 0;
+}
+
+.serving-counter {
+  display: inline-block;
 }
 
 /* Per mesurements, 575px happens to be our breakpoint where we can't have 2 column in the same row for Directions label and Steps text */

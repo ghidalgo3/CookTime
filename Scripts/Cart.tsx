@@ -32,30 +32,35 @@ class ShoppingCart extends React.Component<{}, CartState> {
     render() {
         let aggregateIngredients = this.getAggregateIngredients();
         let recipes = this.state.cart?.recipeRequirement.map(r => {
-            return<li key={r.recipe.id}>
-                <a href={`/Recipes/Details?id=${r.recipe.id}`}>{r.recipe.name}</a> x {r.quantity}
-                </li>
+            return (
+                <Row className="align-items-center">
+                    <Col className="recipe-counter-column">
+                        <div className="serving-counter">
+                            {/* BABE TO DO: MAKE THE COUNTER WORK AND MULTIPLY THE RENDERED INGREDIENT QTYS */}
+                            <i className="fas fa-plus-circle deep-water-color"></i>
+                            <input className="form-control count" value={r.quantity}></input>
+                            <i className="fas fa-minus-circle deep-water-color"></i>
+                        </div> 
+                    </Col>
+                    <Col>
+                        <div key={r.recipe.id}>
+                            <a href={`/Recipes/Details?id=${r.recipe.id}`}>{r.recipe.name}</a> x {r.quantity}
+                        </div>
+                    </Col>
+                </Row>
+            )
         });
         return (
             <Form>
                 <Col>
                     <Row>
-                        <hr></hr>
-                        <h4>Ingredients</h4>
+                        {recipes}
+                    </Row>
+                    <Row className="cart-header">
+                        INGREDIENTS
                     </Row>
                     <Row>
-                        <ul>
-                            {aggregateIngredients}
-                        </ul>
-                    </Row>
-                    <Row>
-                        <hr></hr>
-                        <h4>Recipes</h4>
-                    </Row>
-                    <Row>
-                        <ul>
-                            {recipes}
-                        </ul>
+                        {aggregateIngredients}
                     </Row>
                     <Row>
                         <Button variant="danger" className="width-100" onClick={_ => this.onClear()}>Clear Cart</Button>
@@ -99,9 +104,9 @@ class ShoppingCart extends React.Component<{}, CartState> {
         reducedIngredientRequirements.sort((ir1, ir2) => ir1.ingredient.name.localeCompare(ir2.ingredient.name));
         return reducedIngredientRequirements?.map(ir => {
             return (
-            <li key={ir.id}>
+            <div className="cart-ingredient-item" key={ir.id}>
                 <IngredientDisplay ingredientRequirement={ir}/>
-            </li>)
+            </div>)
         })
     }
 }
