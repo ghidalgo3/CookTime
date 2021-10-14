@@ -216,11 +216,16 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 
     render() {
         let ingredientComponents = this.state.recipe.ingredients.map(ingredient => {
-            return <li><IngredientDisplay ingredientRequirement={ingredient} /></li>
+            return <Row className="ingredient-item"><IngredientDisplay ingredientRequirement={ingredient} /></Row>
         });
 
         let stepComponetns = this.state.recipe.steps.map(step => {
-            return (<li className="margin-bottom-8" key={step.text}>{step.text}</li>)
+            return (
+                <Row>
+                    <Col className="step-number">1</Col> {/* BABE TO DO: GIVE ME A STEP NUMBER FOR EACH ITERATION */}
+                    <Col className="margin-bottom-20" key={step.text}>{step.text}</Col>
+                </Row>
+            )
         });
 
         return (
@@ -249,7 +254,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 
                 <dl className="row">
                     <dt className="col-sm-3">
-                        Name
+                        NAME
                     </dt>
                     <dd className="col-sm-9">
                         {this.state.edit ?
@@ -259,8 +264,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 value={this.state.recipe.name}></Form.Control> :
                             <div>{this.state.recipe.name}</div> }
                     </dd>
-                    <dt className="col-sm-3">
-                        Calories per Serving
+                    <dt className="col-sm-3 detail-header">
+                        CALORIES
                     </dt>
                     <dd className="col-sm-9">
                         {this.state.edit ?
@@ -270,8 +275,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 value={this.state.recipe.caloriesPerServing}></Form.Control> :
                             <div>{this.state.recipe.caloriesPerServing}</div> }
                     </dd>
-                    <dt className="col-sm-3">
-                        Servings Produced
+                    <dt className="col-sm-3 detail-header">
+                        SERVINGS
                     </dt>
                     <dd className="col-sm-9">
                         {this.state.edit ?
@@ -279,27 +284,33 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 type="number"
                                 onChange={(e) => this.setState({recipe: {...this.state.recipe, servingsProduced: parseInt(e.target.value)}})}
                                 value={this.state.recipe.servingsProduced}></Form.Control> :
-                            <div>{this.state.recipe.servingsProduced}</div> }
+                            <div className="serving-counter">
+                                {/* BABE TO DO: MAKE THE COUNTER WORK AND MULTIPLY THE RENDERED INGREDIENT QTYS */}
+                                <i className="fas fa-plus-circle deep-water-color"></i>
+                                <input className="form-control count" value={this.state.recipe.servingsProduced}></input>
+                                <i className="fas fa-minus-circle deep-water-color"></i>
+                            </div> 
+                        }
                     </dd>
-                    <dt className="col-sm-3">
-                        Ingredients
+                    <dt className="col-sm-3 detail-header">
+                        INGREDIENTS
                     </dt>
                     <dd className="col-sm-9">
-                        <ul className="ingredient-and-step-list">
+                        <div className="ingredient-list">
                         {this.state.edit ?
                             this.ingredientEditGrid() : 
                             ingredientComponents}
-                        </ul>
+                        </div>
                     </dd>
-                    <dt className="col-sm-3">
-                        Directions
+                    <dt className="col-sm-3 detail-header">
+                        DIRECTIONS
                     </dt>
                     <dd className="col-sm-9">
-                        <ol type="1" className="ingredient-and-step-list">
+                        <div className="step-list">
                             {this.state.edit ? 
                                 this.stepEdit() :
                                 stepComponetns}
-                        </ol>
+                        </div>
                     </dd>
                 </dl>
             </div>

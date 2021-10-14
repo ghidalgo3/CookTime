@@ -208,6 +208,6 @@ export class IngredientDisplay extends React.Component<{ingredientRequirement: I
         let ingredient = this.props.ingredientRequirement.ingredient
         var unitName = (this.props.ingredientRequirement.unit == "Count" ? "" : this.props.ingredientRequirement.unit).toLowerCase()
         var ingredientName = (ingredient.name).toLowerCase()
-        return (<div>{this.props.ingredientRequirement.quantity} {unitName} {ingredientName}</div>)
+        return (<div className="display-inline">{this.props.ingredientRequirement.quantity} {unitName} {ingredientName}</div>)
     }
 }

@@ -80,8 +80,12 @@ hr {
   border-color: var(--troubled-water-border);
 }
 
+.deep-water-color {
+  color: var(--deep-water);
+}
+
 .green-earth-color {
-  color: var(--green-earth)
+  color: var(--green-earth);
 }
 
 /* Sticky footer styles
@@ -132,6 +136,30 @@ body {
   line-height: 60px; /* Vertically center the text there */
 }
 
+.count {
+  background-color: rgba(255, 255, 255, 0);
+  text-align: center;
+  margin-left: 10px;
+  margin-right: 10px;
+  min-width: 40px;
+  max-width: 50px;
+  display: inline;
+}
+
+.step-number {
+  border-right: var(--troubled-water);
+  color: var(--deep-water);
+  font-weight:600;
+  border-top: none;
+  border-style: solid;
+  border-right-width: 3px;
+  margin-bottom: 12px;
+  border-top-width: 0px;
+  border-bottom-width: 0px;
+  border-left-width: 0px;
+  max-width: 40px;
+}
+
 .padding-left-12 {
   padding-left: 12px;
 }
@@ -146,6 +174,10 @@ body {
 
 .margin-bottom-8 {
   margin-bottom: 8px;
+}
+
+.margin-bottom-20 {
+  margin-bottom: 20px;
 }
 
 .margin-bottom-20 {
@@ -167,14 +199,32 @@ body {
   padding-left: 59px;
 }
 
-.ingredient-and-step-list {
+.ingredient-list {
   padding-left: 0px;
+  margin-bottom: 8px;
+}
+
+.ingredient-item {
+  margin-bottom: 6px;
 }
 
 /* Per mesurements, 575px happens to be our breakpoint where we can't have 2 column in the same row for Directions label and Steps text */
 @media all and (max-width: 575px) {
-  .ingredient-and-step-list {
-    padding-left: 28px;
+  .step-list {
+    padding-left: 4px;
+    margin-top: 8px;
+  }
+
+  .ingredient-list {
+    padding-left: 4px;
+    margin-top: 8px;
+  }
+
+  .serving-counter {
+    margin-top: 8px;
+  }
+
+  .detail-header {
     margin-top: 8px;
   }
 }
