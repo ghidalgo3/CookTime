@@ -222,7 +222,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         let stepComponetns = this.state.recipe.steps.map((step, index) => {
             return (
                 <Row>
-                    <Col className="step-number">{index}</Col>
+                    <Col className="step-number">{index + 1}</Col>
                     <Col className="margin-bottom-20" key={step.text}>{step.text}</Col>
                 </Row>
             )
