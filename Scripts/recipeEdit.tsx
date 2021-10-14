@@ -219,10 +219,10 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             return <Row className="ingredient-item"><IngredientDisplay ingredientRequirement={ingredient} /></Row>
         });
 
-        let stepComponetns = this.state.recipe.steps.map(step => {
+        let stepComponetns = this.state.recipe.steps.map((step, index) => {
             return (
                 <Row>
-                    <Col className="step-number">1</Col> {/* BABE TO DO: GIVE ME A STEP NUMBER FOR EACH ITERATION */}
+                    <Col className="step-number">{index + 1}</Col>
                     <Col className="margin-bottom-20" key={step.text}>{step.text}</Col>
                 </Row>
             )
