@@ -1,14 +1,14 @@
 @model babe_algorithms.ViewComponents.NavBarViewComponent
-<header>
+<header></header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
         <div class="container">
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">KookTime</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="navbar-collapse collapse d-sm-inline-flex">
-                <ul class="navbar-nav flex-grow-1" style="justify-content:flex-end;">
+            <div class="collapse navbar-collapse d-sm-inline-flex" id="navbarSupportedContent">
+                <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
@@ -16,7 +16,6 @@
                         <a class="nav-link text-dark" href="/Ingredients">Ingredients</a>
                     </li>
                     <span class="nav-item">
-                        @* BABE TO DO: FIX NAV BAR WONT EXPAND AND ALLOW CLICK ON CART *@
                         <a class="nav-link text-dark" href="/Cart"><i class="fas fa-shopping-cart"></i></a> 
                     </span>
                 </ul>
