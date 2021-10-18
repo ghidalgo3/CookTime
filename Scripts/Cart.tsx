@@ -29,12 +29,33 @@ class ShoppingCart extends React.Component<{}, CartState> {
             )
     }
 
+    onDeleteRecipe = (idx : number) => {
+        var newCart = {
+            ...this.state.cart,
+            recipeRequirement: this.state.cart.recipeRequirement.filter((r, i) => i !== idx),
+        }
+        this.setState({ cart: newCart })
+        fetch(`api/Cart/${this.state.cart.id}`, {
+            method: "PUT",
+            body: JSON.stringify(newCart),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+    }
+
     render() {
         let aggregateIngredients = this.getAggregateIngredients();
-        let recipes = this.state.cart?.recipeRequirement.map(r => {
-            return<li key={r.recipe.id}>
+        let recipes = this.state.cart?.recipeRequirement.map((r, idx) => {
+            return (
+            <li key={r.recipe.id}>
+                <div>
                 <a href={`/Recipes/Details?id=${r.recipe.id}`}>{r.recipe.name}</a> x {r.quantity}
-                </li>
+                <i onClick={(_) => this.onDeleteRecipe(idx)} className="fas fa-trash-alt"></i>
+                </div>
+
+            </li>
+            )
         });
         return (
             <Form>
