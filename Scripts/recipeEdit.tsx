@@ -11,7 +11,8 @@ type RecipeEditProps = {
 type RecipeEditState = {
     recipe : Recipe,
     edit : boolean,
-    units: string[]
+    units: string[],
+    newServings: number
 }
 class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 {
@@ -29,7 +30,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 ingredients: [],
                 steps: [],
                 categories: []
-            }
+            },
+            newServings: 1,
         }
     }
 
@@ -38,7 +40,11 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             .then(response => response.json())
             .then(
                 result => {
-                    this.setState({recipe: result as Recipe})
+                    let r = result as Recipe
+                    this.setState({
+                        recipe: result as Recipe,
+                        newServings: r.servingsProduced
+                    })
                 }
             )
         fetch(`/api/recipe/units`)
@@ -216,7 +222,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 
     render() {
         let ingredientComponents = this.state.recipe.ingredients.map(ingredient => {
-            return <Row className="ingredient-item"><IngredientDisplay ingredientRequirement={ingredient} /></Row>
+            let newQuantity = ingredient.quantity * this.state.newServings / this.state.recipe.servingsProduced;
+            return <Row className="ingredient-item"><IngredientDisplay ingredientRequirement={{...ingredient, quantity: newQuantity}} /></Row>
         });
 
         let stepComponetns = this.state.recipe.steps.map((step, index) => {
@@ -286,9 +293,13 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 value={this.state.recipe.servingsProduced}></Form.Control> :
                             <div className="serving-counter">
                                 {/* BABE TO DO: MAKE THE COUNTER WORK AND MULTIPLY THE RENDERED INGREDIENT QTYS */}
-                                <i className="fas fa-plus-circle deep-water-color"></i>
-                                <input className="form-control count" value={this.state.recipe.servingsProduced}></input>
-                                <i className="fas fa-minus-circle deep-water-color"></i>
+                                <i
+                                    onClick={(_) => this.setState({newServings: this.state.newServings + 1})}
+                                    className="fas fa-plus-circle deep-water-color"></i>
+                                <input className="form-control count" value={this.state.newServings}></input>
+                                <i
+                                    onClick={(_) => this.setState({newServings: this.state.newServings - 1})}
+                                    className="fas fa-minus-circle deep-water-color"></i>
                             </div> 
                         }
                     </dd>
