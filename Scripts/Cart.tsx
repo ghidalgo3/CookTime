@@ -24,7 +24,9 @@ class ShoppingCart extends React.Component<{}, CartState> {
             .then(response => response.json())
             .then(
                 result => {
-                    this.setState({cart: result as Cart})
+                    this.setState({
+                        cart: result as Cart,
+                    })
                 }
             )
     }
@@ -45,16 +47,21 @@ class ShoppingCart extends React.Component<{}, CartState> {
     }
 
     render() {
-        let aggregateIngredients = this.getAggregateIngredients();
-        let recipes = this.state.cart?.recipeRequirement.map(r => {
+        let recipes = this.state.cart?.recipeRequirement.map((r, rIndex) => {
             return (
-                <Row className="align-items-center">
+                <Row key={rIndex} className="align-items-center">
                     <Col className="recipe-counter-column">
                         <div className="serving-counter">
-                            {/* BABE TO DO: MAKE THE COUNTER WORK AND MULTIPLY THE RENDERED INGREDIENT QTYS */}
-                            <i className="fas fa-plus-circle deep-water-color"></i>
-                            <input className="form-control count" value={r.quantity}></input>
-                            <i className="fas fa-minus-circle deep-water-color"></i>
+                            <i
+                                onClick={(_) => this.addToRecipeRequirement(rIndex, 1)}
+                                className="fas fa-plus-circle deep-water-color"></i>
+                            <input
+                                className="form-control count"
+                                type="number"
+                                value={r.quantity}></input>
+                            <i
+                                onClick={(_) => this.addToRecipeRequirement(rIndex, -1)}
+                                className="fas fa-minus-circle deep-water-color"></i>
                         </div> 
                     </Col>
                     <Col>
@@ -65,6 +72,7 @@ class ShoppingCart extends React.Component<{}, CartState> {
                 </Row>
             )
         });
+        let aggregateIngredients = this.getAggregateIngredients();
         return (
             <Form>
                 <Col>
@@ -85,6 +93,12 @@ class ShoppingCart extends React.Component<{}, CartState> {
         )
     }
 
+    addToRecipeRequirement(rIndex : number, arg1: number): void {
+        var newRRequirements = Array.from(this.state.cart.recipeRequirement);
+        newRRequirements[rIndex].quantity += arg1;
+        this.setState({cart : {...this.state.cart, recipeRequirement: newRRequirements}});
+    }
+
     onClear() {
         fetch("/api/Cart/clear", {
             method: "POST"
@@ -96,13 +110,17 @@ class ShoppingCart extends React.Component<{}, CartState> {
 
     getAggregateIngredients() {
         var allRecipeRequirements = this.state.cart?.recipeRequirement;
-        var allIngredientRequirements : IngredientRequirement[] = allRecipeRequirements.flatMap(recipeRequirement => {
-            return recipeRequirement.recipe.ingredients.map(ir => {
-                ir.quantity = ir.quantity * recipeRequirement.quantity;
-                return ir;
+        // for each recipe, take their original ingredient requirement and multiply by the recipe requirement
+        // for example, if recipeRequirement.quantity = 2 and ir.quantity = 2, then the new ir.quantity needs to be 4 = 2 * 2
+        var allIngredientRequirements : IngredientRequirement[] = allRecipeRequirements.flatMap((recipeRequirement, rrIndex) => {
+            return recipeRequirement.recipe.ingredients.map((ir, irIndex) => {
+                // ir.quantity = ir.quantity * recipeRequirement.quantity;
+                // ir.quantity = this.state.cart.recipeRequirement[rrIndex].recipe.ingredients[irIndex].quantity * recipeRequirement.quantity;
+                return { ...ir, quantity: ir.quantity * recipeRequirement.quantity};
             })
         })
         var reducedIngredientRequirements : IngredientRequirement[] = []
+        // now we need to add them all up
         allIngredientRequirements.forEach(ir => {
             // is there an element in reducedIrs with the same unit and ingredient id?
             var indexOfMatch = reducedIngredientRequirements.findIndex((currentIr, index) => {
