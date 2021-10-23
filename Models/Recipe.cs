@@ -16,5 +16,6 @@ namespace babe_algorithms
         public double CaloriesPerServing { get; set; }
         public Guid Id { get; set; }
         public ISet<Category> Categories { get; set; }
+        public List<Image> Images { get; set; }
     }
 }
