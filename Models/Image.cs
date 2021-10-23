@@ -1,3 +1,5 @@
+using System;
+
 namespace babe_algorithms.Models
 {
     public class Image
