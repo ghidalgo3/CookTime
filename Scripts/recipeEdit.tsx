@@ -241,22 +241,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     <Col className="justify-content-md-left" xs={6}>
                         <h1 className="margin-bottom-20">Recipe</h1>
                     </Col>
-                    {this.state.edit ?
-                        <Col>
-                            <Row>
-                                <Col>
-                                    <Button className="width-100" onClick={_ => this.onSave()}>Save</Button>
-                                </Col>
-                                <Col>
-                                    <Button variant="danger" className="width-100" onClick={_ => this.onDelete()}>Delete</Button>
-                                </Col>
-                            </Row>
-                        </Col>
-                        :
-                        <Col>
-                            <Button className="float-end" onClick={(event) => this.setState({edit: !this.state.edit})}>Edit</Button>
-                        </Col>
-                    }
+                    {this.editButtons()}
                 </Row>
                 
                 <dl className="row">
@@ -327,6 +312,24 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             </div>
         );
     }
+    private editButtons(): string | number | boolean | {} | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactNodeArray | React.ReactPortal | null | undefined {
+        return this.state.edit ?
+            <Col>
+                <Row>
+                    <Col>
+                        <Button className="width-100" onClick={_ => this.onSave()}>Save</Button>
+                    </Col>
+                    <Col>
+                        <Button variant="danger" className="width-100" onClick={_ => this.onDelete()}>Delete</Button>
+                    </Col>
+                </Row>
+            </Col>
+            :
+            <Col>
+                <Button className="float-end" onClick={(event) => this.setState({ edit: !this.state.edit })}>Edit</Button>
+            </Col>;
+    }
+
     onDelete(): void {
         fetch(`/api/Recipe/${this.props.recipeId}`, {
             method: 'DELETE',
