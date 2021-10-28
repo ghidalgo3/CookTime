@@ -29,7 +29,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 servingsProduced: 2,
                 ingredients: [],
                 steps: [],
-                categories: []
+                categories: [],
+                staticImage: ''
             },
             newServings: 1,
         }
@@ -243,6 +244,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     </Col>
                     {this.editButtons()}
                 </Row>
+                <img src={`/${this.state.recipe.staticImage}`} />
                 
                 <dl className="row">
                     <dt className="col-sm-3">
@@ -288,6 +290,18 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                             </div> 
                         }
                     </dd>
+                    {this.state.edit ? 
+                        <div>
+                            <dt className="col-sm-3 detail-header">
+                                STATIC IMAGE
+                            </dt>
+                            <dd>
+                                <Form.Control
+                                    type="text"
+                                    onChange={(e) => this.setState({recipe: {...this.state.recipe, staticImage: e.target.value}})}
+                                    value={this.state.recipe.staticImage}></Form.Control> :
+                            </dd>
+                        </div> : null}
                     <dt className="col-sm-3 detail-header">
                         INGREDIENTS
                     </dt>

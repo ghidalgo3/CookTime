@@ -36,5 +36,6 @@ type Recipe = {
     servingsProduced : number,
     ingredients : IngredientRequirement[],
     steps : RecipeStep[],
-    categories : {name: string, id: string, isNew: boolean}[]
+    categories : {name: string, id: string, isNew: boolean}[],
+    staticImage : string
 }

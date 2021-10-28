@@ -9,6 +9,7 @@ namespace babe_algorithms
     {
         [Required]
         public string? Name { get; set; }
+        public string StaticImage { get; set; }
         public List<IngredientRequirement> Ingredients { get; set; }
         public List<RecipeStep> Steps { get; set; }
         public double ServingsProduced { get; set; }
