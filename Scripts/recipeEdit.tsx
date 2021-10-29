@@ -244,84 +244,102 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     </Col>
                     {this.editButtons()}
                 </Row>
-                <img src={`/${this.state.recipe.staticImage}`} />
-                
+
+                {(this.state.recipe.staticImage === null) ?
+                    <img className="recipe-image" src={`/placeholder.jpg`} />
+                    :
+                    <img className="recipe-image" src={`/${this.state.recipe.staticImage}`} />
+                }
+
                 <dl className="row">
-                    <dt className="col-sm-3">
-                        NAME
-                    </dt>
-                    <dd className="col-sm-9">
-                        {this.state.edit ?
-                            <Form.Control
-                                type="text"
-                                onChange={(e) => this.setState({recipe: {...this.state.recipe, name: e.target.value}})}
-                                value={this.state.recipe.name}></Form.Control> :
-                            <div>{this.state.recipe.name}</div> }
-                    </dd>
-                    <dt className="col-sm-3 detail-header">
-                        CALORIES
-                    </dt>
-                    <dd className="col-sm-9">
-                        {this.state.edit ?
-                            <Form.Control
-                                type="number"
-                                onChange={(e) => this.setState({recipe: {...this.state.recipe, caloriesPerServing: parseInt(e.target.value)}})}
-                                value={this.state.recipe.caloriesPerServing}></Form.Control> :
-                            <div>{this.state.recipe.caloriesPerServing}</div> }
-                    </dd>
-                    <dt className="col-sm-3 detail-header">
-                        SERVINGS
-                    </dt>
-                    <dd className="col-sm-9">
-                        {this.state.edit ?
-                            <Form.Control
-                                type="number"
-                                onChange={(e) => this.setState({recipe: {...this.state.recipe, servingsProduced: parseInt(e.target.value)}})}
-                                value={this.state.recipe.servingsProduced}></Form.Control> :
-                            <div className="serving-counter">
-                                {/* BABE TO DO: MAKE THE COUNTER WORK AND MULTIPLY THE RENDERED INGREDIENT QTYS */}
-                                <i
-                                    onClick={(_) => this.setState({newServings: this.state.newServings + 1})}
-                                    className="fas fa-plus-circle deep-water-color"></i>
-                                <input className="form-control count" value={this.state.newServings}></input>
-                                <i
-                                    onClick={(_) => this.setState({newServings: this.state.newServings - 1})}
-                                    className="fas fa-minus-circle deep-water-color"></i>
-                            </div> 
-                        }
-                    </dd>
+                    <Row className="padding-right-0">
+                        <dt className="col-sm-3">
+                            NAME
+                        </dt>
+                        <dd className="col-sm-9">
+                            {this.state.edit ?
+                                <Form.Control
+                                    type="text"
+                                    onChange={(e) => this.setState({recipe: {...this.state.recipe, name: e.target.value}})}
+                                    value={this.state.recipe.name}></Form.Control> :
+                                <div>{this.state.recipe.name}</div> }
+                        </dd>
+                    </Row>
+                    <Row className="padding-right-0">
+                        <dt className="col-sm-3 detail-header">
+                            CALORIES
+                        </dt>
+                        <dd className="col-sm-9">
+                            {this.state.edit ?
+                                <Form.Control
+                                    type="number"
+                                    onChange={(e) => this.setState({recipe: {...this.state.recipe, caloriesPerServing: parseInt(e.target.value)}})}
+                                    value={this.state.recipe.caloriesPerServing}></Form.Control> :
+                                <div>{this.state.recipe.caloriesPerServing}</div> }
+                        </dd>
+                    </Row>
+                    <Row className="padding-right-0">
+                        <dt className="col-sm-3 detail-header">
+                            SERVINGS
+                        </dt>
+                        <dd className="col-sm-9">
+                            {this.state.edit ?
+                                <Form.Control
+                                    type="number"
+                                    onChange={(e) => this.setState({recipe: {...this.state.recipe, servingsProduced: parseInt(e.target.value)}})}
+                                    value={this.state.recipe.servingsProduced}></Form.Control> :
+                                <div className="serving-counter">
+                                    {/* BABE TO DO: MAKE THE COUNTER WORK AND MULTIPLY THE RENDERED INGREDIENT QTYS */}
+                                    <i
+                                        onClick={(_) => this.setState({newServings: this.state.newServings + 1})}
+                                        className="fas fa-plus-circle deep-water-color"></i>
+                                    <input className="form-control count" value={this.state.newServings}></input>
+                                    <i
+                                        onClick={(_) => this.setState({newServings: this.state.newServings - 1})}
+                                        className="fas fa-minus-circle deep-water-color"></i>
+                                </div> 
+                            }
+                        </dd>
+                    </Row>
                     {this.state.edit ? 
-                        <div>
+                        <Row className="padding-right-0">
                             <dt className="col-sm-3 detail-header">
                                 STATIC IMAGE
                             </dt>
-                            <dd>
+                            <dd className="col-sm-9">
                                 <Form.Control
                                     type="text"
                                     onChange={(e) => this.setState({recipe: {...this.state.recipe, staticImage: e.target.value}})}
-                                    value={this.state.recipe.staticImage}></Form.Control> :
+                                    value={this.state.recipe.staticImage}></Form.Control>
                             </dd>
-                        </div> : null}
-                    <dt className="col-sm-3 detail-header">
-                        INGREDIENTS
-                    </dt>
-                    <dd className="col-sm-9">
-                        <div className="ingredient-list">
-                        {this.state.edit ?
-                            this.ingredientEditGrid() : 
-                            ingredientComponents}
-                        </div>
-                    </dd>
-                    <dt className="col-sm-3 detail-header">
-                        DIRECTIONS
-                    </dt>
-                    <dd className="col-sm-9">
-                        <div className="step-list">
-                            {this.state.edit ? 
-                                this.stepEdit() :
-                                stepComponetns}
-                        </div>
-                    </dd>
+                        </Row> 
+                        : 
+                        null
+                    }
+                    <Row className="padding-right-0">
+                        <dt className="col-sm-3 detail-header">
+                            INGREDIENTS
+                        </dt>
+                        <dd className="col-sm-9">
+                            <div className="ingredient-list">
+                            {this.state.edit ?
+                                this.ingredientEditGrid() : 
+                                ingredientComponents}
+                            </div>
+                        </dd>
+                    </Row>
+                    <Row className="padding-right-0">
+                        <dt className="col-sm-3 detail-header">
+                            DIRECTIONS
+                        </dt>
+                        <dd className="col-sm-9">
+                            <div className="step-list">
+                                {this.state.edit ? 
+                                    this.stepEdit() :
+                                    stepComponetns}
+                            </div>
+                        </dd>
+                    </Row>
                 </dl>
             </div>
         );
