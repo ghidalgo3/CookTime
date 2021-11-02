@@ -172,6 +172,10 @@ body {
   max-width: 40px;
 }
 
+.actual-display-inline {
+  display: inline-block;
+}
+
 .padding-left-12 {
   padding-left: 12px;
 }

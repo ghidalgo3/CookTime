@@ -137,9 +137,11 @@ class ShoppingCart extends React.Component<{}, CartState> {
         reducedIngredientRequirements.sort((ir1, ir2) => ir1.ingredient.name.localeCompare(ir2.ingredient.name));
         return reducedIngredientRequirements?.map(ir => {
             return (
-            <div className="cart-ingredient-item" key={ir.id}>
-                <IngredientDisplay ingredientRequirement={ir}/>
-            </div>)
+                // BABTE TO DO: GAVE HIM THE BUTTON, MAKE IT WORK AS A PROPERTY OF THE CART FOR CHECKING IT OFF
+            <div>
+                <i className="far fa-circle"></i> <i className="far fa-check-circle"></i> <IngredientDisplay ingredientRequirement={ir}/>
+            </div>
+            )
         })
     }
 }
