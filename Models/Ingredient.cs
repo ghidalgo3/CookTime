@@ -22,12 +22,14 @@ namespace babe_algorithms.Models
         Teaspoon = 101,
         Milliliter = 102,
         Cup = 103,
+        FluidOunce = 104,
 
         // Count
         Count = 1000,
 
         // Mass
         Ounce = 2000,
+        Pound = 2001,
     }
 
     public class Category
