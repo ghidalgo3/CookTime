@@ -222,7 +222,31 @@ export class IngredientDisplay extends React.Component<{ingredientRequirement: I
                 unitName = this.props.ingredientRequirement.unit.toLowerCase()
                 break;
         }
+        var quantity = <>{this.props.ingredientRequirement.quantity.toString()}</>
+        var integral = Math.floor(this.props.ingredientRequirement.quantity)
+        switch ((this.props.ingredientRequirement.quantity % 1).toFixed(4)) {
+            case "0.0625":
+                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>1</sup>&frasl;<sub>16</sub></>
+                break;
+            case "0.1250":
+                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>1</sup>&frasl;<sub>8</sub></>
+                break;
+            case "0.2500":
+                quantity = <>{integral != 0 ? `${integral} ` : ""}&frac14;</>
+                break;
+            case "0.3333":
+                quantity = <>{integral != 0 ? `${integral} ` : ""}&frac13;</>
+                break;
+            case "0.5000":
+                quantity = <>{integral != 0 ? `${integral} ` : ""}&frac12;</>
+                break;
+            case "0.7500":
+                quantity = <>{integral != 0 ? `${integral} ` : ""}&frac34;</>
+                break;
+            default:
+                break;
+        }
         var ingredientName = (ingredient.name).toLowerCase()
-        return (<div className="display-inline actual-display-inline">{this.props.ingredientRequirement.quantity} {unitName} {ingredientName}</div>)
+        return (<div className="display-inline actual-display-inline">{quantity} {unitName} {ingredientName}</div>)
     }
 }
