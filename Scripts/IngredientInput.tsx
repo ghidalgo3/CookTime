@@ -204,9 +204,24 @@ export class IngredientDisplay extends React.Component<{ingredientRequirement: I
         super(props);
     }
 
+
     render() {
         let ingredient = this.props.ingredientRequirement.ingredient
-        var unitName = (this.props.ingredientRequirement.unit == "Count" ? "" : this.props.ingredientRequirement.unit).toLowerCase()
+        // var unitName = (this.props.ingredientRequirement.unit == "Count" ? "" : this.props.ingredientRequirement.unit).toLowerCase()
+        var unitName = ""
+        switch (this.props.ingredientRequirement.unit) {
+            case "Count":
+                unitName = ""
+                break;
+
+            case "FluidOunce":
+                unitName = "fluid ounce"
+                break;
+        
+            default:
+                unitName = this.props.ingredientRequirement.unit.toLowerCase()
+                break;
+        }
         var ingredientName = (ingredient.name).toLowerCase()
         return (<div className="display-inline actual-display-inline">{this.props.ingredientRequirement.quantity} {unitName} {ingredientName}</div>)
     }

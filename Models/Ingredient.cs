@@ -23,6 +23,10 @@ namespace babe_algorithms.Models
         Milliliter = 102,
         Cup = 103,
         FluidOunce = 104,
+        Pint = 105,
+        Quart = 106,
+        Gallon = 107,
+        Liter = 108,
 
         // Count
         Count = 1000,
@@ -30,6 +34,9 @@ namespace babe_algorithms.Models
         // Mass
         Ounce = 2000,
         Pound = 2001,
+        Milligram = 2002,
+        Gram = 2003,
+        Kilogram = 2004
     }
 
     public class Category
