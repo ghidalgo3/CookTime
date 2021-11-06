@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using babe_algorithms.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace babe_algorithms.Models
@@ -10,6 +8,7 @@ namespace babe_algorithms.Models
     {
         public Guid Id { get; set; }
         public List<RecipeRequirement> RecipeRequirement { get; set; }
+        public List<CartIngredient> IngredientState { get; set; }
         public DateTime CreateAt { get; set; }
         public bool Active { get; set; }
     }
@@ -20,5 +19,17 @@ namespace babe_algorithms.Models
         public Guid Id { get; set; }
         public Recipe Recipe { get; set; }
         public double Quantity { get; set; }
+    }
+
+    /// <summary>
+    /// Overrides to cart ingredients
+    /// </summary>
+    [Owned]
+    public class CartIngredient
+    {
+        public Guid Id { get; set; }
+        public Ingredient Ingredient { get; set; }
+        public bool Checked { get; set; }
+
     }
 }

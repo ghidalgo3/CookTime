@@ -3,6 +3,7 @@ type Cart = {
     recipeRequirement: RecipeRequirement[],
     CreateAt: string,
     active : boolean
+    ingredientState : CartIngredient[]
 }
 
 type RecipeRequirement = {
@@ -22,6 +23,12 @@ type Ingredient = {
     name: string,
     id: string,
     isNew: boolean
+}
+
+type CartIngredient = {
+    id: string,
+    ingredient: Ingredient,
+    checked: boolean
 }
 
 type RecipeStep = {
