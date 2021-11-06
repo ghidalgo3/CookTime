@@ -24,17 +24,28 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.7" />
   </ItemGroup>
 
-  <Target Name="RestoreJavascript" Condition=" !Exists('node_modules') " AfterTargets="Restore" Inputs="packages.json" Outputs="node_modules/*">
+  <Target
+    Name="RestoreJavascript"
+    Condition=" !Exists('node_modules') "
+    AfterTargets="Restore"
+    Inputs="packages.json"
+    Outputs="node_modules/*">
     <Message Text="Restore Node.js modules" Importance="High" />
     <Exec Command="npm install" />
   </Target>
+
   <ItemGroup>
     <TypeScriptInputs Include="Scripts/*.tsx" />
   </ItemGroup>
-  <Target Name="BuildJavascript" Inputs="@(TypeScriptInputs)" Outputs="@(TypeScriptInputs->'wwwroot/js/%(Filename).js')" AfterTargets="Compile">
+
+  <Target
+    Name="BuildJavascript"
+    Inputs="@(TypeScriptInputs)"
+    Condition=" '$(Configuration)' == 'Release' "
+    Outputs="@(TypeScriptInputs->'wwwroot/js/%(Filename).js')"
+    AfterTargets="Compile">
     <Message Text="Building client-side assets" Importance="High" />
-    <Exec Command="npm run-script build" Condition=" '$(Configuration)' == 'Debug' " />
-    <Exec Command="npm run-script publish" Condition=" '$(Configuration)' == 'Release' " />
+    <Exec Command="npm run-script publish" />
   </Target>
 
 </Project>

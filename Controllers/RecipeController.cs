@@ -78,18 +78,7 @@ namespace babe_algorithms
                 // update
                 _context.Recipes.Update(existingRecipe);
             }
-            // var existingRecipe = await _context.GetRecipeAsync(id);
-            // if (existingRecipe == null)
-            // {
-            //     _context.Recipes.Add(recipe);
-            //     await _context.SaveChangesAsync();
 
-            //     return CreatedAtAction("GetRecipe", new { id = recipe.Id }, recipe);
-            // }
-            // _context.Entry(existingRecipe).State = EntityState.Detached;
-            // _context.Update(recipe);
-
-            // _context.Entry(recipe).State = EntityState.Modified;
             try
             {
                 await _context.SaveChangesAsync();
@@ -109,7 +98,10 @@ namespace babe_algorithms
             return NoContent();
         }
 
-        private async Task CopyIngredients(Recipe recipe, Recipe existingRecipe, List<IngredientRequirement> currentIngredients)
+        private async Task CopyIngredients(
+            Recipe recipe,
+            Recipe existingRecipe,
+            List<IngredientRequirement> currentIngredients)
         {
             foreach (var ingredientRequirement in recipe.Ingredients)
             {

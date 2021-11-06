@@ -14,11 +14,15 @@ namespace babe_algorithms.Models
     }
 
     [Owned]
-    public class RecipeRequirement
+    public class RecipeRequirement : IEquatable<RecipeRequirement>
     {
         public Guid Id { get; set; }
         public Recipe Recipe { get; set; }
         public double Quantity { get; set; }
+
+        public bool Equals(RecipeRequirement other) => this.Id == other.Id;
+
+        public override int GetHashCode() => this.Id.GetHashCode();
     }
 
     /// <summary>

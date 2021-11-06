@@ -45,14 +45,16 @@ namespace babe_algorithms
         // PUT: api/Cart/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCart(Guid id, Cart cart)
+        public async Task<IActionResult> PutCart(Guid id, Cart cartPayload)
         {
-            if (id != cart.Id)
+            if (id != cartPayload.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(cart).State = EntityState.Modified;
+            var cart = await this._context.GetActiveCartAsync();
+            _context.Entry(cart).CurrentValues.SetValues(cartPayload);
+            cart.RecipeRequirement = cart.RecipeRequirement.Where(rr => cartPayload.RecipeRequirement.Contains(rr)).ToList();
 
             try
             {
