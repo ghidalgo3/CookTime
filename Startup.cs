@@ -32,9 +32,11 @@ namespace babe_algorithms
                 .AddRazorRuntimeCompilation();
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                string connectionString = Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres") ?? throw new NullReferenceException("Connection string was not found.");
+                string connectionString =
+                    Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres")
+                    ?? throw new NullReferenceException("Connection string was not found.");
                 options.UseNpgsql(connectionString);
-                
+                options.EnableSensitiveDataLogging(true);
             });
         }
 

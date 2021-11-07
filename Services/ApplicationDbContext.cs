@@ -55,6 +55,11 @@ namespace babe_algorithms.Services
                 .SingleAsync(recipe => recipe.Id == id);
         }
 
+        public Ingredient GetIngredient(Guid id)
+        {
+            return this.Ingredients.Single(i => i.Id == id);
+        }
+
         public async Task<Cart> GetActiveCartAsync()
         {
             var activeCart = await this.Carts

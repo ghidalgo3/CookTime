@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import * as ReactDOM from 'react-dom';
 import { IngredientDisplay } from './IngredientInput';
+import { v4 as uuidv4 } from 'uuid';
 
 type CartState = {
     cart : Cart
@@ -38,13 +39,17 @@ class ShoppingCart extends React.Component<{}, CartState> {
             recipeRequirement: this.state.cart.recipeRequirement.filter((r, i) => i !== idx),
         }
         this.setState({ cart: newCart })
+        this.PutCart(newCart);
+    }
+
+    PutCart = (newCart: Cart) => {
         fetch(`api/Cart/${this.state.cart.id}`, {
             method: "PUT",
             body: JSON.stringify(newCart),
             headers: {
                 'Content-Type': 'application/json'
             }
-        })
+        });
     }
 
     render() {
@@ -137,15 +142,48 @@ class ShoppingCart extends React.Component<{}, CartState> {
             }
         });
         reducedIngredientRequirements.sort((ir1, ir2) => ir1.ingredient.name.localeCompare(ir2.ingredient.name));
+        // render an empty check mark unless the ingredient is present in ingredient state with checked == true
         return reducedIngredientRequirements?.map(ir => {
             return (
             <div>
-                <i className="far fa-circle"></i>
-                <i className="far fa-check-circle"></i>
+                {!this.state.cart.ingredientState.some(is => is.ingredient.id === ir.ingredient.id) ?
+                      <i onClick={(_) => this.CheckIngredient(ir)}className="far fa-circle"></i> : 
+                      <i onClick={(_) => this.UncheckIngredient(ir)} className="far fa-check-circle"></i>
+                    }
                 <IngredientDisplay ingredientRequirement={ir}/>
             </div>
             )
         })
+    }
+
+    UncheckIngredient(ir: IngredientRequirement): void {
+        if (this.state.cart.ingredientState.some(is => is.ingredient.id === ir.ingredient.id)) {
+            var newIngredientState = this.state.cart.ingredientState.filter(is => is.ingredient.id !== ir.ingredient.id)
+            let newCart = {
+                    ...this.state.cart,
+                    ingredientState: newIngredientState
+                }
+            this.setState({ cart: newCart });
+            this.PutCart(newCart);
+        }
+    }
+
+    CheckIngredient(ir: IngredientRequirement): void {
+        if (!this.state.cart.ingredientState.some(is => is.ingredient.id === ir.ingredient.id)) {
+            var newIngredientState = Array.from(this.state.cart.ingredientState)
+            // BABE TO DO: do not allow inserting duplicate ingredient states
+            newIngredientState.push({
+                id: uuidv4(),
+                ingredient: ir.ingredient,
+                checked: true
+            })
+            let newCart = {
+                    ...this.state.cart,
+                    ingredientState: newIngredientState
+                }
+            this.setState({ cart: newCart });
+            this.PutCart(newCart);
+        }
     }
 }
 const recipeContainer = document.querySelector('#cart');

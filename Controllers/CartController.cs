@@ -55,6 +55,15 @@ namespace babe_algorithms
             var cart = await this._context.GetActiveCartAsync();
             _context.Entry(cart).CurrentValues.SetValues(cartPayload);
             cart.RecipeRequirement = cart.RecipeRequirement.Where(rr => cartPayload.RecipeRequirement.Contains(rr)).ToList();
+            // keep the ones that haven't changed
+            cart.IngredientState = cart.IngredientState.Where(@is => cartPayload.IngredientState.Contains(@is)).ToList();
+            // add new ones
+            var newIngredientStates = cartPayload.IngredientState.Where(@is => !cart.IngredientState.Contains(@is));
+            foreach (var @is in newIngredientStates)
+            {
+                @is.Ingredient = _context.GetIngredient(@is.Ingredient.Id);
+            }
+            cart.IngredientState.AddRange(newIngredientStates);
 
             try
             {
