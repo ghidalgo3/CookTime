@@ -17,7 +17,7 @@ class ShoppingCart extends React.Component<{}, CartState> {
                 recipeRequirement: [],
                 active: true,
                 ingredientState: []
-            }
+            },
         }
     }
 
@@ -140,10 +140,21 @@ class ShoppingCart extends React.Component<{}, CartState> {
                 reducedIngredientRequirements[indexOfMatch].quantity += ir.quantity;
             }
         });
-        reducedIngredientRequirements.sort((ir1, ir2) => ir1.ingredient.name.localeCompare(ir2.ingredient.name));
+        var uncheckedFn = ir => !this.state.cart.ingredientState.some(is => is.ingredient.id === ir.ingredient.id)
+        reducedIngredientRequirements.sort((ir1, ir2) => {
+            let x = uncheckedFn(ir1)
+            let y = uncheckedFn(ir2)
+            if (x === y)  {
+                return 0
+            } else if (x) {
+                return -1
+            } else {
+                return 1
+            }
+        })
         // render an empty check mark unless the ingredient is present in ingredient state with checked == true
         return reducedIngredientRequirements?.map(ir => {
-            var unchecked = !this.state.cart.ingredientState.some(is => is.ingredient.id === ir.ingredient.id)
+            var unchecked = uncheckedFn(ir);
             return (
             <div className="cart-ingredients-list">
                 {
