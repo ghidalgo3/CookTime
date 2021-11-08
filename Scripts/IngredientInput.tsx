@@ -253,6 +253,7 @@ export class IngredientDisplay extends React.Component<IngredientDisplayProps, {
                 quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>5</sup>&frasl;<sub>6</sub></>
                 break;
             default:
+                quantity = <>{this.props.ingredientRequirement.quantity.toFixed(4)}</>
                 break;
         }
         var ingredientName = (ingredient.name).toLowerCase()
