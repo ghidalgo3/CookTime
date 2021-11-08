@@ -63,7 +63,6 @@ class ShoppingCart extends React.Component<{}, CartState> {
                                 className="fas fa-plus-circle deep-water-color"></i>
                             <input
                                 className="form-control count"
-                                type="number"
                                 value={r.quantity}></input>
                             <i
                                 onClick={(_) => this.addToRecipeRequirement(rIndex, -1)}
