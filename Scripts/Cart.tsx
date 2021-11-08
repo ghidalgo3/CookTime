@@ -71,7 +71,7 @@ class ShoppingCart extends React.Component<{}, CartState> {
                     </Col>
                     <Col>
                         <div key={r.recipe.id}>
-                            <a href={`/Recipes/Details?id=${r.recipe.id}`}>{r.recipe.name}</a> x {r.quantity}
+                            <a href={`/Recipes/Details?id=${r.recipe.id}`}>{r.recipe.name}</a> makes {r.recipe.servingsProduced} servings
                             <i className="fas fa-trash" onClick={(_) => this.onDeleteRecipe(rIndex)}></i>
                         </div>
                     </Col>
@@ -102,7 +102,9 @@ class ShoppingCart extends React.Component<{}, CartState> {
     addToRecipeRequirement(rIndex : number, arg1: number): void {
         var newRRequirements = Array.from(this.state.cart.recipeRequirement);
         newRRequirements[rIndex].quantity += arg1;
-        this.setState({cart : {...this.state.cart, recipeRequirement: newRRequirements}});
+        let newCart = {...this.state.cart, recipeRequirement: newRRequirements}
+        this.setState({cart : newCart});
+        this.PutCart(newCart);
     }
 
     onClear() {
