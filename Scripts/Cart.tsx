@@ -110,6 +110,7 @@ class ShoppingCart extends React.Component<{}, CartState> {
     addToRecipeRequirement(rIndex : number, arg1: number): void {
         var newRRequirements = Array.from(this.state.cart.recipeRequirement);
         newRRequirements[rIndex].quantity += (arg1 / newRRequirements[rIndex].recipe.servingsProduced);
+        newRRequirements[rIndex].quantity = Math.round(newRRequirements[rIndex].quantity);
         let newCart = {...this.state.cart, recipeRequirement: newRRequirements}
         this.setState({cart : newCart});
         this.PutCart(newCart);
