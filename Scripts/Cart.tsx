@@ -146,10 +146,10 @@ class ShoppingCart extends React.Component<{}, CartState> {
         // render an empty check mark unless the ingredient is present in ingredient state with checked == true
         return reducedIngredientRequirements?.map(ir => {
             return (
-            <div>
+            <div className="cart-ingredients-list">
                 {!this.state.cart.ingredientState.some(is => is.ingredient.id === ir.ingredient.id) ?
-                      <i onClick={(_) => this.CheckIngredient(ir)}className="far fa-circle"></i> : 
-                      <i onClick={(_) => this.UncheckIngredient(ir)} className="far fa-check-circle"></i>
+                      <i onClick={(_) => this.CheckIngredient(ir)}className="far fa-circle padding-right-10"></i> : 
+                      <i onClick={(_) => this.UncheckIngredient(ir)} className="far fa-check-circle padding-right-10"></i>
                     }
                 <IngredientDisplay ingredientRequirement={ir}/>
             </div>
