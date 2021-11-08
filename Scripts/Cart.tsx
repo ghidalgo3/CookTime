@@ -63,7 +63,7 @@ class ShoppingCart extends React.Component<{}, CartState> {
                                 className="fas fa-plus-circle deep-water-color"></i>
                             <input
                                 className="form-control count"
-                                value={r.quantity}></input>
+                                value={r.quantity * r.recipe.servingsProduced}></input>
                             <i
                                 onClick={(_) => this.addToRecipeRequirement(rIndex, -1)}
                                 className="fas fa-minus-circle deep-water-color"></i>
@@ -71,7 +71,7 @@ class ShoppingCart extends React.Component<{}, CartState> {
                     </Col>
                     <Col>
                         <div key={r.recipe.id}>
-                            <a href={`/Recipes/Details?id=${r.recipe.id}`}>{r.recipe.name}</a> makes {r.recipe.servingsProduced} servings
+                            <a href={`/Recipes/Details?id=${r.recipe.id}`}>{r.recipe.name}</a> 
                             <i className="fas fa-trash" onClick={(_) => this.onDeleteRecipe(rIndex)}></i>
                         </div>
                     </Col>
@@ -101,7 +101,7 @@ class ShoppingCart extends React.Component<{}, CartState> {
 
     addToRecipeRequirement(rIndex : number, arg1: number): void {
         var newRRequirements = Array.from(this.state.cart.recipeRequirement);
-        newRRequirements[rIndex].quantity += arg1;
+        newRRequirements[rIndex].quantity += (arg1 / newRRequirements[rIndex].recipe.servingsProduced);
         let newCart = {...this.state.cart, recipeRequirement: newRRequirements}
         this.setState({cart : newCart});
         this.PutCart(newCart);
@@ -122,8 +122,6 @@ class ShoppingCart extends React.Component<{}, CartState> {
         // for example, if recipeRequirement.quantity = 2 and ir.quantity = 2, then the new ir.quantity needs to be 4 = 2 * 2
         var allIngredientRequirements : IngredientRequirement[] = allRecipeRequirements.flatMap((recipeRequirement, rrIndex) => {
             return recipeRequirement.recipe.ingredients.map((ir, irIndex) => {
-                // ir.quantity = ir.quantity * recipeRequirement.quantity;
-                // ir.quantity = this.state.cart.recipeRequirement[rrIndex].recipe.ingredients[irIndex].quantity * recipeRequirement.quantity;
                 return { ...ir, quantity: ir.quantity * recipeRequirement.quantity};
             })
         })
@@ -145,13 +143,15 @@ class ShoppingCart extends React.Component<{}, CartState> {
         reducedIngredientRequirements.sort((ir1, ir2) => ir1.ingredient.name.localeCompare(ir2.ingredient.name));
         // render an empty check mark unless the ingredient is present in ingredient state with checked == true
         return reducedIngredientRequirements?.map(ir => {
+            var unchecked = !this.state.cart.ingredientState.some(is => is.ingredient.id === ir.ingredient.id)
             return (
             <div>
-                {!this.state.cart.ingredientState.some(is => is.ingredient.id === ir.ingredient.id) ?
+                {
+                    unchecked ?
                       <i onClick={(_) => this.CheckIngredient(ir)}className="far fa-circle"></i> : 
                       <i onClick={(_) => this.UncheckIngredient(ir)} className="far fa-check-circle"></i>
                     }
-                <IngredientDisplay ingredientRequirement={ir}/>
+                <IngredientDisplay ingredientRequirement={ir} strikethrough={!unchecked}/>
             </div>
             )
         })

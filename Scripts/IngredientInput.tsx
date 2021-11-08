@@ -198,8 +198,11 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
         );
     }
 }
-
-export class IngredientDisplay extends React.Component<{ingredientRequirement: IngredientRequirement}, {}> {
+type IngredientDisplayProps = {
+    ingredientRequirement: IngredientRequirement
+    strikethrough?: boolean
+}
+export class IngredientDisplay extends React.Component<IngredientDisplayProps, {}> {
     constructor(props) {
         super(props);
     }
@@ -247,6 +250,13 @@ export class IngredientDisplay extends React.Component<{ingredientRequirement: I
                 break;
         }
         var ingredientName = (ingredient.name).toLowerCase()
-        return (<div className="display-inline actual-display-inline">{quantity} {unitName} {ingredientName}</div>)
+        var text = <>{quantity} {unitName} {ingredientName}</>
+        if (this.props.strikethrough) {
+            text = <s>{text}</s>
+        }
+        return (
+        <div className="display-inline actual-display-inline">
+            {text}
+        </div>)
     }
 }

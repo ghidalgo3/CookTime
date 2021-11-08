@@ -108,6 +108,7 @@ namespace babe_algorithms
                 return NotFound();
             }
             cart.RecipeRequirement.Clear();
+            cart.IngredientState.Clear();
             await _context.SaveChangesAsync();
             return NoContent();
         }
