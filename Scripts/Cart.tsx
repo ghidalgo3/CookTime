@@ -65,7 +65,7 @@ class ShoppingCart extends React.Component<{}, CartState> {
                                 className="fas fa-plus-circle green-earth-color"></i>
                             <input
                                 className="form-control count"
-                                value={r.quantity * r.recipe.servingsProduced}></input>
+                                value={Math.round(r.quantity * r.recipe.servingsProduced)}></input>
                             <i
                                 onClick={(_) => this.addToRecipeRequirement(rIndex, -1)}
                                 className="fas fa-minus-circle red-dirt-color"></i>
@@ -110,7 +110,6 @@ class ShoppingCart extends React.Component<{}, CartState> {
     addToRecipeRequirement(rIndex : number, arg1: number): void {
         var newRRequirements = Array.from(this.state.cart.recipeRequirement);
         newRRequirements[rIndex].quantity += (arg1 / newRRequirements[rIndex].recipe.servingsProduced);
-        newRRequirements[rIndex].quantity = Math.round(newRRequirements[rIndex].quantity);
         let newCart = {...this.state.cart, recipeRequirement: newRRequirements}
         this.setState({cart : newCart});
         this.PutCart(newCart);
