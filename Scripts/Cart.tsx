@@ -145,11 +145,11 @@ class ShoppingCart extends React.Component<{}, CartState> {
         return reducedIngredientRequirements?.map(ir => {
             var unchecked = !this.state.cart.ingredientState.some(is => is.ingredient.id === ir.ingredient.id)
             return (
-            <div>
+            <div className="cart-ingredients-list">
                 {
                     unchecked ?
-                      <i onClick={(_) => this.CheckIngredient(ir)}className="far fa-circle"></i> : 
-                      <i onClick={(_) => this.UncheckIngredient(ir)} className="far fa-check-circle"></i>
+                      <i onClick={(_) => this.CheckIngredient(ir)}className="far fa-circle padding-right-10"></i> : 
+                      <i onClick={(_) => this.UncheckIngredient(ir)} className="far fa-check-circle padding-right-10"></i>
                     }
                 <IngredientDisplay ingredientRequirement={ir} strikethrough={!unchecked}/>
             </div>

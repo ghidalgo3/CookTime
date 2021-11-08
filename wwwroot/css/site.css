@@ -192,6 +192,10 @@ body {
   padding-right: 0px;
 }
 
+.padding-right-10 {
+  padding-right: 10px;
+}
+
 .margin-bottom-8 {
   margin-bottom: 8px;
 }
@@ -206,6 +210,10 @@ body {
 
 .width-100 {
   width: 100%;
+}
+
+.cart-ingredients-list {
+  padding: 0px;
 }
 
 .recipe-counter-column {
