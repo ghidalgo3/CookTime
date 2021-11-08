@@ -55,24 +55,24 @@ class ShoppingCart extends React.Component<{}, CartState> {
     render() {
         let recipes = this.state.cart?.recipeRequirement.map((r, rIndex) => {
             return (
-                <Row key={rIndex} className="align-items-center">
+                <Row key={rIndex} className="align-items-center padding-left-0 margin-top-10">
                     <Col className="recipe-counter-column">
                         <div className="serving-counter">
                             <i
                                 onClick={(_) => this.addToRecipeRequirement(rIndex, 1)}
-                                className="fas fa-plus-circle deep-water-color"></i>
+                                className="fas fa-plus-circle green-earth-color"></i>
                             <input
                                 className="form-control count"
                                 value={r.quantity * r.recipe.servingsProduced}></input>
                             <i
                                 onClick={(_) => this.addToRecipeRequirement(rIndex, -1)}
-                                className="fas fa-minus-circle deep-water-color"></i>
+                                className="fas fa-minus-circle red-dirt-color"></i>
                         </div> 
                     </Col>
                     <Col>
                         <div key={r.recipe.id}>
                             <a href={`/Recipes/Details?id=${r.recipe.id}`}>{r.recipe.name}</a> 
-                            <i className="fas fa-trash" onClick={(_) => this.onDeleteRecipe(rIndex)}></i>
+                            <i className="fas fa-trash deep-water-color padding-left-12" onClick={(_) => this.onDeleteRecipe(rIndex)}></i>
                         </div>
                     </Col>
                 </Row>
@@ -82,6 +82,9 @@ class ShoppingCart extends React.Component<{}, CartState> {
         return (
             <Form>
                 <Col>
+                    <Row className="cart-header">
+                        SERVINGS
+                    </Row>
                     <Row>
                         {recipes}
                     </Row>

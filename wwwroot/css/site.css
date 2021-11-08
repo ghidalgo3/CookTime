@@ -88,6 +88,10 @@ hr {
   color: var(--green-earth);
 }
 
+.red-dirt-color {
+  color: var(--red-dirt);
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
@@ -206,6 +210,10 @@ body {
 
 .margin-bottom-20 {
   margin-bottom: 20px;
+}
+
+.margin-top-10 {
+  margin-top: 10px;
 }
 
 .width-100 {

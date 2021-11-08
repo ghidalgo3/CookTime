@@ -10,7 +10,7 @@
             <h1>Recipes</h1>
         </div>
         <div class="col-2 text-end"> 
-            <a asp-page="./Recipes/Create"><i class="fas fa-plus-circle fa-2x"></i></a>
+            <a asp-page="./Recipes/Create"><i class="fas fa-plus-circle green-earth-color fa-2x"></i></a>
         </div>
 </div>
 
@@ -20,7 +20,7 @@
         <div class="row">
             <div class="col-8" style="display: flex; align-items: center;">
                 <a asp-page="./Recipes/Details" asp-route-id="@item.Id">
-                    <i class="fas fa-seedling green-earth-color"></i> @Html.DisplayFor(modelItem => item.Name)
+                    <i class="fas fa-seedling green-earth-color padding-right-10"></i> @Html.DisplayFor(modelItem => item.Name)
                 </a>
             </div>
             <div class="col-4" style="text-align: right;">

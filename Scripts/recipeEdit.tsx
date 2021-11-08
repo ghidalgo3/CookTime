@@ -292,11 +292,11 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                     {/* BABE TO DO: MAKE THE COUNTER WORK AND MULTIPLY THE RENDERED INGREDIENT QTYS */}
                                     <i
                                         onClick={(_) => this.setState({newServings: this.state.newServings + 1})}
-                                        className="fas fa-plus-circle deep-water-color"></i>
+                                        className="fas fa-plus-circle green-earth-color"></i>
                                     <input className="form-control count" value={this.state.newServings}></input>
                                     <i
                                         onClick={(_) => this.setState({newServings: this.state.newServings - 1})}
-                                        className="fas fa-minus-circle deep-water-color"></i>
+                                        className="fas fa-minus-circle red-dirt-color"></i>
                                 </div> 
                             }
                         </dd>
