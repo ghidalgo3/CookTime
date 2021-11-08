@@ -238,13 +238,19 @@ export class IngredientDisplay extends React.Component<IngredientDisplayProps, {
                 quantity = <>{integral != 0 ? `${integral} ` : ""}&frac14;</>
                 break;
             case "0.3333":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}&frac13;</>
+                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>1</sup>&frasl;<sub>3</sub></>
                 break;
             case "0.5000":
                 quantity = <>{integral != 0 ? `${integral} ` : ""}&frac12;</>
                 break;
+            case "0.6666":
+                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>2</sup>&frasl;<sub>3</sub></>
+                break;
             case "0.7500":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}&frac34;</>
+                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>3</sup>&frasl;<sub>4</sub></>
+                break;
+            case "0.8333":
+                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>5</sup>&frasl;<sub>6</sub></>
                 break;
             default:
                 break;
