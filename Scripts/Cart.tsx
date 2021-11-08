@@ -83,23 +83,26 @@ class ShoppingCart extends React.Component<{}, CartState> {
         let aggregateIngredients = this.getAggregateIngredients();
         return (
             <Form>
-                <Col>
-                    <Row className="cart-header">
-                        SERVINGS
-                    </Row>
-                    <Row>
-                        {recipes}
-                    </Row>
-                    <Row className="cart-header">
-                        INGREDIENTS
-                    </Row>
-                    <Row>
-                        {aggregateIngredients}
-                    </Row>
-                    <Row>
-                        <Button variant="danger" className="width-100" onClick={_ => this.onClear()}>Clear Cart</Button>
-                    </Row>
-                </Col>
+                <Row>
+                    <Col className="justify-content-md-left" xs={6}>
+                        <h1 className="margin-bottom-20">Cart</h1>
+                    </Col>
+                    <Col>
+                        <Button variant="danger" className="float-end" onClick={_ => this.onClear()}>Clear Cart</Button>
+                    </Col>
+                </Row>
+                <Row className="cart-header">
+                    SERVINGS
+                </Row>
+                <Row>
+                    {recipes}
+                </Row>
+                <Row className="cart-header">
+                    INGREDIENTS
+                </Row>
+                <Row>
+                    {aggregateIngredients}
+                </Row>
             </Form>
         )
     }
