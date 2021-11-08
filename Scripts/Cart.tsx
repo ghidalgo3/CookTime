@@ -89,18 +89,18 @@ class ShoppingCart extends React.Component<{}, CartState> {
                         <Button variant="danger" className="float-end" onClick={_ => this.onClear()}>Clear Cart</Button>
                     </Col>
                 </Row>
-                <Row className="cart-header">
+                <div className="cart-header">
                     SERVINGS
-                </Row>
-                <Row>
+                </div>
+                <div>
                     {recipes}
-                </Row>
-                <Row className="cart-header">
+                </div>
+                <div className="cart-header margin-top-15">
                     INGREDIENTS
-                </Row>
-                <Row>
+                </div>
+                <div>
                     {aggregateIngredients}
-                </Row>
+                </div>
             </Form>
         )
     }

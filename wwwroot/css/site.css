@@ -149,7 +149,6 @@ body {
 
 .cart-header {
   font-weight: 700;
-  margin-top: 15px;
 }
 
 .count {
@@ -214,6 +213,10 @@ body {
 
 .margin-top-10 {
   margin-top: 10px;
+}
+
+.margin-top-15 {
+  margin-top: 15px;
 }
 
 .width-100 {
