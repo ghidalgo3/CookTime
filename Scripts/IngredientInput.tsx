@@ -228,6 +228,9 @@ export class IngredientDisplay extends React.Component<IngredientDisplayProps, {
         var quantity = <>{this.props.ingredientRequirement.quantity.toString()}</>
         var integral = Math.floor(this.props.ingredientRequirement.quantity)
         switch ((this.props.ingredientRequirement.quantity % 1).toFixed(4)) {
+            case "0.0000":
+                quantity = quantity
+                break;
             case "0.0625":
                 quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>1</sup>&frasl;<sub>16</sub></>
                 break;
