@@ -65,7 +65,7 @@ class ShoppingCart extends React.Component<{}, CartState> {
                                 className="fas fa-plus-circle green-earth-color"></i>
                             <input
                                 className="form-control count"
-                                value={r.quantity * r.recipe.servingsProduced}></input>
+                                value={Math.round(r.quantity * r.recipe.servingsProduced)}></input>
                             <i
                                 onClick={(_) => this.addToRecipeRequirement(rIndex, -1)}
                                 className="fas fa-minus-circle red-dirt-color"></i>
