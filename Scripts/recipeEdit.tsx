@@ -286,6 +286,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                             {this.state.edit ?
                                 <Form.Control
                                     type="number"
+                                    min="1"
                                     onChange={(e) => this.setState({recipe: {...this.state.recipe, servingsProduced: parseInt(e.target.value)}})}
                                     value={this.state.recipe.servingsProduced}></Form.Control> :
                                 <div className="serving-counter">
