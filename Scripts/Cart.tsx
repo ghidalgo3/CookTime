@@ -26,8 +26,10 @@ class ShoppingCart extends React.Component<{}, CartState> {
             .then(response => response.json())
             .then(
                 result => {
+                    let cart = result as Cart
+                    cart.ingredientState = cart.ingredientState.filter(is => is.ingredient !== null)
                     this.setState({
-                        cart: result as Cart,
+                        cart
                     })
                 }
             )
