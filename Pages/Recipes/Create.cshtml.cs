@@ -38,7 +38,7 @@ namespace babe_algorithms.Pages.Recipes
             _context.Recipes.Add(Recipe);
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("/Recipes/Details", new { id = this.Recipe.Id });
         }
     }
 }
