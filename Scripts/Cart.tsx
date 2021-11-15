@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import * as ReactDOM from 'react-dom';
 import { IngredientDisplay } from './IngredientInput';
-import { v4 as uuidv4 } from 'uuid';
+import { parse, v4 as uuidv4 } from 'uuid';
 
 type CartState = {
     cart : Cart
@@ -63,9 +63,21 @@ class ShoppingCart extends React.Component<{}, CartState> {
                             <i
                                 onClick={(_) => this.addToRecipeRequirement(rIndex, 1)}
                                 className="fas fa-plus-circle green-earth-color"></i>
-                            <input
+                            
+                            <Form.Control
+                                // onChange={(e) => this.setRecipeRequirement(rIndex, parseFloat(e.target.value))}
+                                onChange={(e) => {
+                                    if (e.target.value === '') {
+                                        this.setRecipeRequirement(rIndex, 0)
+                                    }
+
+                                    let newValue = parseFloat(e.target.value)
+                                    if (newValue !== NaN && newValue > 0) {
+                                        this.setRecipeRequirement(rIndex, newValue)
+                                    }
+                                }}
                                 className="form-control count"
-                                value={Math.round(r.quantity * r.recipe.servingsProduced)}></input>
+                                value={Math.round(r.quantity * r.recipe.servingsProduced)} />
                             <i
                                 onClick={(_) => this.addToRecipeRequirement(rIndex, -1)}
                                 className="fas fa-minus-circle red-dirt-color"></i>
@@ -110,6 +122,14 @@ class ShoppingCart extends React.Component<{}, CartState> {
     addToRecipeRequirement(rIndex : number, arg1: number): void {
         var newRRequirements = Array.from(this.state.cart.recipeRequirement);
         newRRequirements[rIndex].quantity += (arg1 / newRRequirements[rIndex].recipe.servingsProduced);
+        let newCart = {...this.state.cart, recipeRequirement: newRRequirements}
+        this.setState({cart : newCart});
+        this.PutCart(newCart);
+    }
+
+    setRecipeRequirement(rIndex : number, newQuantity : number) : void {
+        var newRRequirements = Array.from(this.state.cart.recipeRequirement);
+        newRRequirements[rIndex].quantity = (newQuantity / newRRequirements[rIndex].recipe.servingsProduced);
         let newCart = {...this.state.cart, recipeRequirement: newRRequirements}
         this.setState({cart : newCart});
         this.PutCart(newCart);
