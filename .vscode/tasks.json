@@ -29,6 +29,7 @@
             "label": "watch",
             "command": "dotnet",
             "type": "process",
+            "isBackground": true,
             "args": [
                 "watch",
                 "run",

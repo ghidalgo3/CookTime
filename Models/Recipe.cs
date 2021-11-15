@@ -8,7 +8,7 @@ namespace babe_algorithms
     public class Recipe
     {
         [Required]
-        public string? Name { get; set; }
+        public string Name { get; set; }
         public string StaticImage { get; set; }
         public List<IngredientRequirement> Ingredients { get; set; }
         public List<RecipeStep> Steps { get; set; }

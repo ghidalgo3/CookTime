@@ -4,13 +4,20 @@
         {
             "name": "Hot Reload",
             "configurations": [
-                "dotnet server",
+                ".NET Hot Reload",
                 "Webpack dev server",
                 "Launch Edge"
             ]
         }
     ],
     "configurations": [
+        {
+            "name": ".NET Hot Reload",
+            "type": "coreclr",
+            "request": "attach",
+            "preLaunchTask": "watch",
+            "processName": "babe-algorithms"
+        },
         {
             "name": "Launch Edge",
             "request": "launch",

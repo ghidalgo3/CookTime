@@ -30,11 +30,16 @@ namespace babe_algorithms
             services
                 .AddRazorPages()
                 .AddRazorRuntimeCompilation();
+
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                string connectionString =
-                    Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres")
-                    ?? throw new NullReferenceException("Connection string was not found.");
+                var connectionString = this.Configuration.GetConnectionString("Postgres");
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    connectionString =
+                        Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres")
+                        ?? throw new NullReferenceException("Connection string was not found.");
+                }
                 options.UseNpgsql(connectionString);
                 options.EnableSensitiveDataLogging(true);
             });
@@ -54,7 +59,6 @@ namespace babe_algorithms
                             spa.UseProxyToSpaDevelopmentServer("http://localhost:8080/js");
                         });
                     });
-                app.UseStaticFiles();
             }
             else
             {
@@ -62,8 +66,9 @@ namespace babe_algorithms
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
                 app.UseHttpsRedirection();
-                app.UseStaticFiles();
             }
+
+            app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
