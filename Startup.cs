@@ -27,10 +27,7 @@ namespace babe_algorithms
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews().AddNewtonsoftJson();
-            services
-                .AddRazorPages()
-                .AddRazorRuntimeCompilation();
-
+            services.AddRazorPages();
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 var connectionString = this.Configuration.GetConnectionString("Postgres");

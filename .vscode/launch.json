@@ -15,7 +15,6 @@
             "name": ".NET Hot Reload",
             "type": "coreclr",
             "request": "attach",
-            "preLaunchTask": "watch",
             "processName": "babe-algorithms"
         },
         {
@@ -40,7 +39,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/bin/Debug/net5.0/babe-algorithms.dll",
+            "program": "${workspaceFolder}/bin/Debug/net6.0/babe-algorithms.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,

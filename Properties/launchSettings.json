@@ -18,6 +18,7 @@
     "babe_algorithms": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
+      "hotReloadProfile": "aspnetcore",
       "launchBrowser": true,
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {

@@ -39,6 +39,10 @@
     <TypeScriptInputs Include="Scripts/*.tsx" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Watch Include="**/*.cshtml" />
+  </ItemGroup>
+
   <Target
     Name="BuildJavascript"
     Inputs="@(TypeScriptInputs)"
