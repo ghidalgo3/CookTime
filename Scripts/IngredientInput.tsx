@@ -77,12 +77,9 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
                     // whatever the user has typed may be a subset of an existing ingredient
                     // lol don't do that
                     // never before seen ingredient
-                    // var newIngredient = {name: newValue, id: uuidv4()};
                     this.setState({
-                        // selection: newIngredient,
                         value: newValue
                     });
-                    // this.props.onSelect(newIngredient)
                 }
                 break;
         }
@@ -140,6 +137,10 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
       };
 
     selectIngredient = () => {
+        if (this.state.value === null || this.state.value === '') {
+            return;
+        }
+
         var possibleSuggestions = this.state.suggestions.filter(suggestion => suggestion.name.toUpperCase() === this.state.value.toUpperCase());
         if (possibleSuggestions.length == 1) {
             // one ingredient matches
