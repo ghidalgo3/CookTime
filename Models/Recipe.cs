@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using babe_algorithms.Models;
-
 namespace babe_algorithms;
-public class Recipe
+
+public class Recipe : IImageContainer
 {
     [Required]
     public string Name { get; set; }
