@@ -97,6 +97,7 @@ hr {
 html {
   font-size: 14px;
 }
+
 @media (min-width: 768px) {
   html {
     font-size: 16px;
@@ -239,6 +240,7 @@ body {
 .recipe-counter-column {
   min-width: 120px;
   max-width: 130px;
+  height: 34px;
 }
 
 .new-curr-badge {
@@ -270,8 +272,12 @@ body {
   display: inline-block;
 }
 
-/* Per mesurements, 575px happens to be our breakpoint where we can't have 2 column in the same row for Directions label and Steps text */
-@media all and (max-width: 575px) {
+.serving-counter-in-cart {
+  display: inline-block;
+}
+
+/* Per mesurements, 576px happens to be our breakpoint where we can't have 2 column in the same row for Directions label and Steps text */
+@media all and (max-width: 576px) {
   .step-list {
     padding-left: 4px;
     margin-top: 8px;
