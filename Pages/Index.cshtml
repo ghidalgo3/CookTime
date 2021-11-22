@@ -21,7 +21,7 @@
             <div class="col-8" style="display: flex; align-items: center;">
                 @{
                     // TODO, figure out how to NOT load Image Data when you want to list image IDs
-                    var image = (item.Images?.FirstOrDefault() == null) ? "/placeholder.jpg" : $"/image/{item.Images?.FirstOrDefault().Id}?width=40";
+                    var image = (item.Images?.FirstOrDefault() == null) ? "/placeholder.jpg" : $"/image/{item.Images?.FirstOrDefault().Id}?width=100";
                     <img class="list-image" src="@image"/>
                 }
                 <a asp-page="./Recipes/Details" asp-route-id="@item.Id">
