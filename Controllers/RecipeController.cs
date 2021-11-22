@@ -8,177 +8,176 @@ using Microsoft.EntityFrameworkCore;
 using babe_algorithms.Services;
 using babe_algorithms.Models;
 
-namespace babe_algorithms
+namespace babe_algorithms;
+
+[Route("api/[controller]")]
+[ApiController]
+public class RecipeController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class RecipeController : ControllerBase
+    private readonly ApplicationDbContext _context;
+
+    public RecipeController(ApplicationDbContext context)
     {
-        private readonly ApplicationDbContext _context;
+        _context = context;
+    }
 
-        public RecipeController(ApplicationDbContext context)
+    // GET: api/Recipe
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
+    {
+        return await _context.Recipes.ToListAsync();
+    }
+
+    [HttpGet("units")]
+    public ActionResult<IEnumerable<string>> GetUnits()
+    {
+        return this.Ok(Enum.GetValues<Unit>().Select(v => v.ToString()));
+    }
+
+    // GET: api/Recipe/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Recipe>> GetRecipe(Guid id)
+    {
+        var recipe = await _context.GetRecipeAsync(id);
+
+        if (recipe == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: api/Recipe
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Recipe>>> GetRecipes()
+        return Ok(recipe);
+    }
+
+    // PUT: api/Recipe/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutRecipe(
+        Guid id,
+        [FromBody] Recipe recipe)
+    {
+        if (id != recipe.Id)
         {
-            return await _context.Recipes.ToListAsync();
+            return BadRequest();
         }
 
-        [HttpGet("units")]
-        public ActionResult<IEnumerable<string>> GetUnits()
+        // TODO
+        // Sending the whole EF object back and forth puts you in a bad state
+        var existingRecipe = await _context.GetRecipeAsync(recipe.Id);
+        if (existingRecipe == null)
         {
-            return this.Ok(Enum.GetValues<Unit>().Select(v => v.ToString()));
+            // create, shouldn't happen because Create Recipe has a dedicated
+            // page
+        }
+        else
+        {
+            _context.Entry(existingRecipe).CurrentValues.SetValues(recipe);
+            var currentIngredients = existingRecipe.Ingredients;
+            existingRecipe.Ingredients = new List<IngredientRequirement>();
+            await CopyIngredients(recipe, existingRecipe, currentIngredients);
+            existingRecipe.Steps = recipe.Steps.Where(s => !string.IsNullOrWhiteSpace(s.Text)).ToList();
+            // update
+            _context.Recipes.Update(existingRecipe);
         }
 
-        // GET: api/Recipe/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Recipe>> GetRecipe(Guid id)
+        try
         {
-            var recipe = await _context.GetRecipeAsync(id);
-
-            if (recipe == null)
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!RecipeExists(id))
             {
                 return NotFound();
-            }
-
-            return Ok(recipe);
-        }
-
-        // PUT: api/Recipe/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutRecipe(
-            Guid id,
-            [FromBody] Recipe recipe)
-        {
-            if (id != recipe.Id)
-            {
-                return BadRequest();
-            }
-
-            // TODO
-            // Sending the whole EF object back and forth puts you in a bad state
-            var existingRecipe = await _context.GetRecipeAsync(recipe.Id);
-            if (existingRecipe == null)
-            {
-                // create, shouldn't happen because Create Recipe has a dedicated
-                // page
             }
             else
             {
-                _context.Entry(existingRecipe).CurrentValues.SetValues(recipe);
-                var currentIngredients = existingRecipe.Ingredients;
-                existingRecipe.Ingredients = new List<IngredientRequirement>();
-                await CopyIngredients(recipe, existingRecipe, currentIngredients);
-                existingRecipe.Steps = recipe.Steps.Where(s => !string.IsNullOrWhiteSpace(s.Text)).ToList();
-                // update
-                _context.Recipes.Update(existingRecipe);
+                throw;
             }
+        }
 
-            try
+        return NoContent();
+    }
+
+    private async Task CopyIngredients(
+        Recipe recipe,
+        Recipe existingRecipe,
+        List<IngredientRequirement> currentIngredients)
+    {
+        foreach (var ingredientRequirement in recipe.Ingredients)
+        {
+            var matching = currentIngredients
+                .FirstOrDefault(ir =>
+                    ir.Id == ingredientRequirement.Id);
+            if (matching == null)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RecipeExists(id))
+                var existingIngredient = await _context.Ingredients
+                    .FindAsync(ingredientRequirement.Ingredient.Id);
+                if (existingIngredient == null)
                 {
-                    return NotFound();
+                    // new ingredient
+                    ingredientRequirement.Ingredient.Id = Guid.Empty;
+                    _context.Ingredients.Add(ingredientRequirement.Ingredient);
                 }
                 else
                 {
-                    throw;
+                    ingredientRequirement.Ingredient = existingIngredient;
                 }
+                // new ingredient requirement
+                existingRecipe.Ingredients.Add(ingredientRequirement);
             }
-
-            return NoContent();
-        }
-
-        private async Task CopyIngredients(
-            Recipe recipe,
-            Recipe existingRecipe,
-            List<IngredientRequirement> currentIngredients)
-        {
-            foreach (var ingredientRequirement in recipe.Ingredients)
+            else
             {
-                var matching = currentIngredients
-                    .FirstOrDefault(ir =>
-                        ir.Id == ingredientRequirement.Id);
-                if (matching == null)
+                // update of existing ingredient requirement
+                matching.Quantity = ingredientRequirement.Quantity;
+                matching.Unit = ingredientRequirement.Unit;
+                var ingredient = await _context.Ingredients.FindAsync(ingredientRequirement.Ingredient.Id);
+                if (ingredient == null)
                 {
-                    var existingIngredient = await _context.Ingredients
-                        .FindAsync(ingredientRequirement.Ingredient.Id);
-                    if (existingIngredient == null)
-                    {
-                        // new ingredient
-                        ingredientRequirement.Ingredient.Id = Guid.Empty;
-                        _context.Ingredients.Add(ingredientRequirement.Ingredient);
-                    }
-                    else
-                    {
-                        ingredientRequirement.Ingredient = existingIngredient;
-                    }
-                    // new ingredient requirement
-                    existingRecipe.Ingredients.Add(ingredientRequirement);
+                    // entirely new ingredient, client chose ID
+                    ingredientRequirement.Id = Guid.NewGuid();
+                    matching.Ingredient = ingredientRequirement.Ingredient;
                 }
-                else
+                else if (!currentIngredients.Any(i => i.Ingredient.Id == ingredient.Id))
                 {
-                    // update of existing ingredient requirement
-                    matching.Quantity = ingredientRequirement.Quantity;
-                    matching.Unit = ingredientRequirement.Unit;
-                    var ingredient = await _context.Ingredients.FindAsync(ingredientRequirement.Ingredient.Id);
-                    if (ingredient == null)
-                    {
-                        // entirely new ingredient, client chose ID
-                        ingredientRequirement.Id = Guid.NewGuid();
-                        matching.Ingredient = ingredientRequirement.Ingredient;
-                    }
-                    else if (!currentIngredients.Any(i => i.Ingredient.Id == ingredient.Id))
-                    {
-                        // reassignment of existing ingredient
-                        matching.Ingredient = ingredient;
-                    }
-                    // Are you actually changing the ingredient being referenced?
-                    existingRecipe.Ingredients.Add(matching);
+                    // reassignment of existing ingredient
+                    matching.Ingredient = ingredient;
                 }
+                // Are you actually changing the ingredient being referenced?
+                existingRecipe.Ingredients.Add(matching);
             }
         }
+    }
 
-        [HttpGet("ingredients")]
-        public ActionResult<IEnumerable<Ingredient>> GetIngredients(
-            [FromQuery(Name = "name")]
-            string query)
+    [HttpGet("ingredients")]
+    public ActionResult<IEnumerable<Ingredient>> GetIngredients(
+        [FromQuery(Name = "name")]
+        string query)
+    {
+        // god shield me from this
+        var ingredients = _context.Ingredients.Where(i => i.Name.ToUpper().Contains(query.ToUpper())).ToList();
+        return this.Ok(ingredients);
+    }
+
+    // DELETE: api/Recipe/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteRecipe(Guid id)
+    {
+        var recipe = await _context.Recipes.FindAsync(id);
+        if (recipe == null)
         {
-            // god shield me from this
-            var ingredients = _context.Ingredients.Where(i => i.Name.ToUpper().Contains(query.ToUpper())).ToList();
-            return this.Ok(ingredients);
+            return NotFound();
         }
 
-        // DELETE: api/Recipe/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRecipe(Guid id)
-        {
-            var recipe = await _context.Recipes.FindAsync(id);
-            if (recipe == null)
-            {
-                return NotFound();
-            }
+        _context.Recipes.Remove(recipe);
+        var cart = await _context.GetActiveCartAsync();
+        cart.RecipeRequirement = cart.RecipeRequirement.Where(rr => rr.Recipe.Id != id).ToList();
+        await _context.SaveChangesAsync();
 
-            _context.Recipes.Remove(recipe);
-            var cart = await _context.GetActiveCartAsync();
-            cart.RecipeRequirement = cart.RecipeRequirement.Where(rr => rr.Recipe.Id != id).ToList();
-            await _context.SaveChangesAsync();
+        return NoContent();
+    }
 
-            return NoContent();
-        }
-
-        private bool RecipeExists(Guid id)
-        {
-            return _context.Recipes.Any(e => e.Id == id);
-        }
+    private bool RecipeExists(Guid id)
+    {
+        return _context.Recipes.Any(e => e.Id == id);
     }
 }

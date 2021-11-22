@@ -8,22 +8,20 @@ using Microsoft.EntityFrameworkCore;
 using babe_algorithms;
 using babe_algorithms.Services;
 
-namespace babe_algorithms.Pages
+namespace babe_algorithms.Pages;
+public class CartModel : PageModel
 {
-    public class CartModel : PageModel
+    private readonly ApplicationDbContext _context;
+
+    public CartModel(ApplicationDbContext context)
     {
-        private readonly ApplicationDbContext _context;
+        _context = context;
+    }
 
-        public CartModel(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+    public Models.Cart ActiveCart { get; set; }
 
-        public Models.Cart ActiveCart { get;set; }
-
-        public async Task OnGetAsync()
-        {
-            ActiveCart = await _context.GetActiveCartAsync();
-        }
+    public async Task OnGetAsync()
+    {
+        ActiveCart = await _context.GetActiveCartAsync();
     }
 }

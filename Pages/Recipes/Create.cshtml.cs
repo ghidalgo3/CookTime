@@ -8,37 +8,35 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using babe_algorithms;
 using babe_algorithms.Services;
 
-namespace babe_algorithms.Pages.Recipes
+namespace babe_algorithms.Pages.Recipes;
+public class CreateModel : PageModel
 {
-    public class CreateModel : PageModel
+    private readonly babe_algorithms.Services.ApplicationDbContext _context;
+
+    public CreateModel(babe_algorithms.Services.ApplicationDbContext context)
     {
-        private readonly babe_algorithms.Services.ApplicationDbContext _context;
+        _context = context;
+    }
 
-        public CreateModel(babe_algorithms.Services.ApplicationDbContext context)
-        {
-            _context = context;
-        }
+    public IActionResult OnGet()
+    {
+        return Page();
+    }
 
-        public IActionResult OnGet()
+    [BindProperty]
+    public Recipe Recipe { get; set; }
+
+    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
+    public async Task<IActionResult> OnPostAsync()
+    {
+        if (!ModelState.IsValid)
         {
             return Page();
         }
 
-        [BindProperty]
-        public Recipe Recipe { get; set; }
+        _context.Recipes.Add(Recipe);
+        await _context.SaveChangesAsync();
 
-        // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
-        public async Task<IActionResult> OnPostAsync()
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
-
-            _context.Recipes.Add(Recipe);
-            await _context.SaveChangesAsync();
-
-            return RedirectToPage("/Recipes/Details", new { id = this.Recipe.Id });
-        }
+        return RedirectToPage("/Recipes/Details", new { id = this.Recipe.Id });
     }
 }

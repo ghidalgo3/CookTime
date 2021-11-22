@@ -9,45 +9,46 @@ using babe_algorithms;
 using babe_algorithms.Services;
 using babe_algorithms.Models;
 
-namespace babe_algorithms.Pages.Recipes
+namespace babe_algorithms.Pages.Recipes;
+public class IndexModel : PageModel
 {
-    public class IndexModel : PageModel
+    private readonly babe_algorithms.Services.ApplicationDbContext _context;
+
+    public IndexModel(babe_algorithms.Services.ApplicationDbContext context)
     {
-        private readonly babe_algorithms.Services.ApplicationDbContext _context;
+        _context = context;
+    }
 
-        public IndexModel(babe_algorithms.Services.ApplicationDbContext context)
+    public IList<Recipe> Recipes { get; set; }
+
+    public async Task OnGetAsync()
+    {
+        Recipes = await _context.Recipes.ToListAsync();
+    }
+
+    public async Task<ActionResult> OnPostAddToCart(Guid recipeId)
+    {
+        var recipe = await _context.GetRecipeAsync(recipeId);
+        if (recipe == null)
         {
-            _context = context;
+            return this.Page();
         }
 
-        public IList<Recipe> Recipes { get;set; }
-
-        public async Task OnGetAsync()
+        var cart = await _context.GetActiveCartAsync();
+        var existingRecipe = cart.RecipeRequirement.FirstOrDefault(rr => rr.Recipe.Id == recipeId);
+        if (existingRecipe == null)
         {
-            Recipes = await _context.Recipes.ToListAsync();
-        }
-
-        public async Task<ActionResult> OnPostAddToCart(Guid recipeId)
-        {
-            var recipe = await _context.GetRecipeAsync(recipeId);
-            if (recipe == null)
+            cart.RecipeRequirement.Add(new RecipeRequirement()
             {
-                return this.Page();
-            }
-
-            var cart = await _context.GetActiveCartAsync();
-            var existingRecipe = cart.RecipeRequirement.FirstOrDefault(rr => rr.Recipe.Id == recipeId);
-            if (existingRecipe == null) {
-                cart.RecipeRequirement.Add(new RecipeRequirement()
-                {
-                    Recipe = recipe,
-                    Quantity = 1.0
-                });
-            } else {
-                existingRecipe.Quantity += 1.0;
-            }
-            await _context.SaveChangesAsync();
-            return this.RedirectToPage("/Cart");
+                Recipe = recipe,
+                Quantity = 1.0
+            });
         }
+        else
+        {
+            existingRecipe.Quantity += 1.0;
+        }
+        await _context.SaveChangesAsync();
+        return this.RedirectToPage("/Cart");
     }
 }

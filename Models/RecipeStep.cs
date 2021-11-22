@@ -1,10 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace babe_algorithms
+namespace babe_algorithms;
+[Owned]
+public class RecipeStep
 {
-    [Owned]
-    public class RecipeStep
-    {
-        public string Text { get; set; }
-    }
+    public string Text { get; set; }
 }

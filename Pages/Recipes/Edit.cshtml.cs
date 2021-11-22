@@ -9,69 +9,67 @@ using Microsoft.EntityFrameworkCore;
 using babe_algorithms;
 using babe_algorithms.Services;
 
-namespace babe_algorithms.Pages.Recipes
+namespace babe_algorithms.Pages.Recipes;
+public class EditModel : PageModel
 {
-    public class EditModel : PageModel
-    {
-        private readonly babe_algorithms.Services.ApplicationDbContext _context;
+    private readonly babe_algorithms.Services.ApplicationDbContext _context;
 
-        public EditModel(babe_algorithms.Services.ApplicationDbContext context)
+    public EditModel(babe_algorithms.Services.ApplicationDbContext context)
+    {
+        _context = context;
+    }
+
+    [BindProperty]
+    public Recipe Recipe { get; set; }
+
+    public async Task<IActionResult> OnGetAsync(Guid? id)
+    {
+        if (id == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        [BindProperty]
-        public Recipe Recipe { get; set; }
+        Recipe = await _context.Recipes.FirstOrDefaultAsync(m => m.Id == id);
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        if (Recipe == null)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            return NotFound();
+        }
+        return Page();
+    }
 
-            Recipe = await _context.Recipes.FirstOrDefaultAsync(m => m.Id == id);
-
-            if (Recipe == null)
-            {
-                return NotFound();
-            }
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task<IActionResult> OnPostAsync()
+    {
+        if (!ModelState.IsValid)
+        {
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        _context.Attach(Recipe).State = EntityState.Modified;
+
+        try
         {
-            if (!ModelState.IsValid)
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!RecipeExists(Recipe.Id))
             {
-                return Page();
+                return NotFound();
             }
-
-            _context.Attach(Recipe).State = EntityState.Modified;
-
-            try
+            else
             {
-                await _context.SaveChangesAsync();
+                throw;
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RecipeExists(Recipe.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return RedirectToPage("./Index");
         }
 
-        private bool RecipeExists(Guid id)
-        {
-            return _context.Recipes.Any(e => e.Id == id);
-        }
+        return RedirectToPage("./Index");
+    }
+
+    private bool RecipeExists(Guid id)
+    {
+        return _context.Recipes.Any(e => e.Id == id);
     }
 }

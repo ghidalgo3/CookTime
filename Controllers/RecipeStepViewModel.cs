@@ -1,7 +1,5 @@
-namespace babe_algorithms
+namespace babe_algorithms;
+public class RecipeStepViewModel
 {
-    public class RecipeStepViewModel
-    {
-        public string Text { get; set; }
-    }
+    public string Text { get; set; }
 }

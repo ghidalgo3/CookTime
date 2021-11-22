@@ -8,52 +8,50 @@ using Microsoft.EntityFrameworkCore;
 using babe_algorithms;
 using babe_algorithms.Services;
 
-namespace babe_algorithms.Pages.Recipes
+namespace babe_algorithms.Pages.Recipes;
+public class DeleteModel : PageModel
 {
-    public class DeleteModel : PageModel
+    private readonly babe_algorithms.Services.ApplicationDbContext _context;
+
+    public DeleteModel(babe_algorithms.Services.ApplicationDbContext context)
     {
-        private readonly babe_algorithms.Services.ApplicationDbContext _context;
+        _context = context;
+    }
 
-        public DeleteModel(babe_algorithms.Services.ApplicationDbContext context)
+    [BindProperty]
+    public Recipe Recipe { get; set; }
+
+    public async Task<IActionResult> OnGetAsync(Guid? id)
+    {
+        if (id == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        [BindProperty]
-        public Recipe Recipe { get; set; }
+        Recipe = await _context.Recipes.FirstOrDefaultAsync(m => m.Id == id);
 
-        public async Task<IActionResult> OnGetAsync(Guid? id)
+        if (Recipe == null)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            return NotFound();
+        }
+        return Page();
+    }
 
-            Recipe = await _context.Recipes.FirstOrDefaultAsync(m => m.Id == id);
-
-            if (Recipe == null)
-            {
-                return NotFound();
-            }
-            return Page();
+    public async Task<IActionResult> OnPostAsync(Guid? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
         }
 
-        public async Task<IActionResult> OnPostAsync(Guid? id)
+        Recipe = await _context.Recipes.FindAsync(id);
+
+        if (Recipe != null)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            Recipe = await _context.Recipes.FindAsync(id);
-
-            if (Recipe != null)
-            {
-                _context.Recipes.Remove(Recipe);
-                await _context.SaveChangesAsync();
-            }
-
-            return RedirectToPage("./Index");
+            _context.Recipes.Remove(Recipe);
+            await _context.SaveChangesAsync();
         }
+
+        return RedirectToPage("./Index");
     }
 }

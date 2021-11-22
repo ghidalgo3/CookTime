@@ -12,69 +12,67 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using babe_algorithms.Services;
 
-namespace babe_algorithms
+namespace babe_algorithms;
+public class Startup
 {
-    public class Startup
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        Configuration = configuration;
+    }
 
-        public IConfiguration Configuration { get; }
+    public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+    // This method gets called by the runtime. Use this method to add services to the container.
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddControllersWithViews().AddNewtonsoftJson();
+        services.AddRazorPages();
+        services.AddDbContext<ApplicationDbContext>(options =>
         {
-            services.AddControllersWithViews().AddNewtonsoftJson();
-            services.AddRazorPages();
-            services.AddDbContext<ApplicationDbContext>(options =>
+            var connectionString = this.Configuration.GetConnectionString("Postgres");
+            if (string.IsNullOrEmpty(connectionString))
             {
-                var connectionString = this.Configuration.GetConnectionString("Postgres");
-                if (string.IsNullOrEmpty(connectionString))
+                connectionString =
+                    Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres")
+                    ?? throw new NullReferenceException("Connection string was not found.");
+            }
+            options.UseNpgsql(connectionString);
+            options.EnableSensitiveDataLogging(true);
+        });
+    }
+
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        if (env.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage();
+            app.Map(
+                "/js", ctx =>
                 {
-                    connectionString =
-                        Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres")
-                        ?? throw new NullReferenceException("Connection string was not found.");
-                }
-                options.UseNpgsql(connectionString);
-                options.EnableSensitiveDataLogging(true);
-            });
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.Map(
-                    "/js", ctx =>
+                    ctx.UseSpa(spa =>
                     {
-                        ctx.UseSpa(spa =>
-                        {
-                            spa.UseProxyToSpaDevelopmentServer("http://localhost:8080/js");
-                        });
+                        spa.UseProxyToSpaDevelopmentServer("http://localhost:8080/js");
                     });
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-                app.UseHttpsRedirection();
-            }
-
-            app.UseStaticFiles();
-            app.UseRouting();
-            app.UseAuthorization();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapRazorPages();
-            });
+                });
         }
+        else
+        {
+            app.UseExceptionHandler("/Home/Error");
+            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            app.UseHsts();
+            app.UseHttpsRedirection();
+        }
+
+        app.UseStaticFiles();
+        app.UseRouting();
+        app.UseAuthorization();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+            endpoints.MapRazorPages();
+        });
     }
 }

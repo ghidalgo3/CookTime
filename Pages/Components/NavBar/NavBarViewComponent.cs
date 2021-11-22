@@ -1,23 +1,21 @@
-namespace babe_algorithms.ViewComponents
+using babe_algorithms.Services;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+namespace babe_algorithms.ViewComponents;
+
+public class NavBarViewComponent : ViewComponent
 {
-    using babe_algorithms.Services;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Mvc;
+    private readonly ApplicationDbContext _context;
 
-    public class NavBarViewComponent : ViewComponent
+    public NavBarViewComponent(ApplicationDbContext context)
     {
-        private readonly ApplicationDbContext _context;
+        this._context = context;
+    }
 
-        public NavBarViewComponent(ApplicationDbContext context)
-        {
-            this._context = context;
-        }
-
-        public async Task<IViewComponentResult> InvokeAsync()
-        {
-            return await Task.Run(() => this.View(this));
-        }
+    public async Task<IViewComponentResult> InvokeAsync()
+    {
+        return await Task.Run(() => this.View(this));
     }
 }

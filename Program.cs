@@ -12,82 +12,82 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 
-namespace babe_algorithms
+namespace babe_algorithms;
+
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            var host = CreateHostBuilder(args).Build();
-            CreateDbIfNotExists(host);
-            host.Run();
-        }
+        var host = CreateHostBuilder(args).Build();
+        CreateDbIfNotExists(host);
+        host.Run();
+    }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(logging => 
-                {
-                    logging.AddAzureWebAppDiagnostics();
-                })
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+    public static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureLogging(logging =>
+            {
+                logging.AddAzureWebAppDiagnostics();
+            })
+            .ConfigureWebHostDefaults(webBuilder =>
+            {
+                webBuilder.UseStartup<Startup>();
+            });
 
-        private static void CreateDbIfNotExists(IHost host)
+    private static void CreateDbIfNotExists(IHost host)
+    {
+        using var scope = host.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        try
         {
-            using var scope = host.Services.CreateScope();
-            var services = scope.ServiceProvider;
-            try
+            var context = services.GetRequiredService<ApplicationDbContext>();
+            if (context.Database.GetPendingMigrations().Any())
             {
-                var context = services.GetRequiredService<ApplicationDbContext>();
-                if (context.Database.GetPendingMigrations().Any())
-                {
-                    context.Database.Migrate();
-                    using var conn = (NpgsqlConnection)context.Database.GetDbConnection();
-                    conn.Open();
-                    conn.ReloadTypes();
-                    // InitializeDatabase(context);
-                }
-            }
-            catch (Exception ex)
-            {
-                var logger = services.GetRequiredService<ILogger<Program>>();
-                logger.LogError(ex, "An error occurred creating the DB.");
-                throw;
+                context.Database.Migrate();
+                using var conn = (NpgsqlConnection)context.Database.GetDbConnection();
+                conn.Open();
+                conn.ReloadTypes();
+                // InitializeDatabase(context);
             }
         }
-
-        private static void InitializeDatabase(ApplicationDbContext context)
+        catch (Exception ex)
         {
-            var poppySeeds = new Ingredient() { Name = "Poppy seeds" };
-            var rolledOats = new Ingredient() { Name = "Rolled oats" };
-            var nonDairyMilk = new Ingredient() { Name = "Non-dairy milk" };
-            var lemonJuice = new Ingredient() { Name = "Lemon juice" };
-            var agave = new Ingredient() { Name = "Agave" };
-            var driedBlueberries = new Ingredient() { Name = "Dried blueberries" };
-            var sliveredAlmonds = new Ingredient() { Name = "Slivered almonds" };
-            var russetPotatoes = new Ingredient() { Name = "Russet potatoes" };
-            var brocolliFlorets = new Ingredient() { Name = "Brocolli florets" };
-            var bread = new Ingredient() { Name = "Bread" };
-            var garlicCloves = new Ingredient() { Name = "Garlic cloves" };
-            var butter = new Ingredient() { Name = "Butter" };
-            var whiteMisoPaste = new Ingredient() { Name = "White miso paste" };
-            var yellowOnion = new Ingredient() { Name = "Yellow onion" };
-            var nutritionalYeast = new Ingredient() { Name = "Nutritional yeast" };
-            var vegetableBrothConcentrate = new Ingredient() { Name = "Vegetable broth concentrate" };
-            var pieCrust = new Ingredient() { Name = "Pie crust" };
-            var tofu = new Ingredient() { Name = "Tofu" };
-            var onionCeleyCarrotMix = new Ingredient() { Name = "Onion, celery, carrot mix" };
-            var peas = new Ingredient() { Name = "Peas" };
-            var allPurposeFlour = new Ingredient() { Name = "All purpose flour" };
-            var soySauce = new Ingredient() { Name = "Soy sauce" };
-            var vegetableBroth = new Ingredient() { Name = "Vegetable broth" };
-            var sage = new Ingredient() { Name = "Sage" };
-            var thyme = new Ingredient() { Name = "Thyme" };
+            var logger = services.GetRequiredService<ILogger<Program>>();
+            logger.LogError(ex, "An error occurred creating the DB.");
+            throw;
+        }
+    }
 
-            context.Ingredients.AddRange(new Ingredient[]
-            {
+    private static void InitializeDatabase(ApplicationDbContext context)
+    {
+        var poppySeeds = new Ingredient() { Name = "Poppy seeds" };
+        var rolledOats = new Ingredient() { Name = "Rolled oats" };
+        var nonDairyMilk = new Ingredient() { Name = "Non-dairy milk" };
+        var lemonJuice = new Ingredient() { Name = "Lemon juice" };
+        var agave = new Ingredient() { Name = "Agave" };
+        var driedBlueberries = new Ingredient() { Name = "Dried blueberries" };
+        var sliveredAlmonds = new Ingredient() { Name = "Slivered almonds" };
+        var russetPotatoes = new Ingredient() { Name = "Russet potatoes" };
+        var brocolliFlorets = new Ingredient() { Name = "Brocolli florets" };
+        var bread = new Ingredient() { Name = "Bread" };
+        var garlicCloves = new Ingredient() { Name = "Garlic cloves" };
+        var butter = new Ingredient() { Name = "Butter" };
+        var whiteMisoPaste = new Ingredient() { Name = "White miso paste" };
+        var yellowOnion = new Ingredient() { Name = "Yellow onion" };
+        var nutritionalYeast = new Ingredient() { Name = "Nutritional yeast" };
+        var vegetableBrothConcentrate = new Ingredient() { Name = "Vegetable broth concentrate" };
+        var pieCrust = new Ingredient() { Name = "Pie crust" };
+        var tofu = new Ingredient() { Name = "Tofu" };
+        var onionCeleyCarrotMix = new Ingredient() { Name = "Onion, celery, carrot mix" };
+        var peas = new Ingredient() { Name = "Peas" };
+        var allPurposeFlour = new Ingredient() { Name = "All purpose flour" };
+        var soySauce = new Ingredient() { Name = "Soy sauce" };
+        var vegetableBroth = new Ingredient() { Name = "Vegetable broth" };
+        var sage = new Ingredient() { Name = "Sage" };
+        var thyme = new Ingredient() { Name = "Thyme" };
+
+        context.Ingredients.AddRange(new Ingredient[]
+        {
                 poppySeeds,
                 rolledOats,
                 nonDairyMilk,
@@ -113,35 +113,35 @@ namespace babe_algorithms
                 vegetableBroth,
                 sage,
                 thyme,
-            });
+        });
 
-            var breakfastCategory =
-                new Category()
-                {
-                    Name = "Breakfast"
-                };
-            var entreeCategory =
-                new Category()
-                {
-                    Name = "Entree"
-                };
-
-            context.Categories.AddRange(
-                breakfastCategory,
-                entreeCategory
-            );
-
-            var overnightOatsRecipe = new Recipe()
+        var breakfastCategory =
+            new Category()
             {
-                Name = "Lemon Poppy Overnight Oats",
-                Cooktime = TimeSpan.FromMinutes(5),
-                ServingsProduced = 4,
-                CaloriesPerServing = 290,
-                Categories = new SortedSet<Category>()
+                Name = "Breakfast"
+            };
+        var entreeCategory =
+            new Category()
+            {
+                Name = "Entree"
+            };
+
+        context.Categories.AddRange(
+            breakfastCategory,
+            entreeCategory
+        );
+
+        var overnightOatsRecipe = new Recipe()
+        {
+            Name = "Lemon Poppy Overnight Oats",
+            Cooktime = TimeSpan.FromMinutes(5),
+            ServingsProduced = 4,
+            CaloriesPerServing = 290,
+            Categories = new SortedSet<Category>()
                 {
                     breakfastCategory,
                 },
-                Ingredients = new List<IngredientRequirement>()
+            Ingredients = new List<IngredientRequirement>()
                 {
                     new IngredientRequirement()
                     {
@@ -186,8 +186,8 @@ namespace babe_algorithms
                         Quantity = 0.5,
                     },
                 }
-            };
-            overnightOatsRecipe.Steps = new List<RecipeStep>()
+        };
+        overnightOatsRecipe.Steps = new List<RecipeStep>()
             {
                 new RecipeStep()
                 {
@@ -202,19 +202,19 @@ namespace babe_algorithms
                     Text = @"When you're ready to serve, top with almonds and any other toppings you desire."
                 }
             };
-            context.Recipes.Add(overnightOatsRecipe);
+        context.Recipes.Add(overnightOatsRecipe);
 
-            var broccoliCheddarSoup = new Recipe()
-            {
-                Name = "Broccoli Cheddar Soup",
-                Cooktime = TimeSpan.FromMinutes(40),
-                ServingsProduced = 4,
-                CaloriesPerServing = 490.0,
-                Categories = new HashSet<Category>()
+        var broccoliCheddarSoup = new Recipe()
+        {
+            Name = "Broccoli Cheddar Soup",
+            Cooktime = TimeSpan.FromMinutes(40),
+            ServingsProduced = 4,
+            CaloriesPerServing = 490.0,
+            Categories = new HashSet<Category>()
                 {
                     entreeCategory,
                 },
-                Ingredients = new List<IngredientRequirement>()
+            Ingredients = new List<IngredientRequirement>()
                 {
                     new IngredientRequirement()
                     {
@@ -271,8 +271,8 @@ namespace babe_algorithms
                         Unit = Unit.Teaspoon,
                     },
                 }
-            };
-            broccoliCheddarSoup.Steps = new List<RecipeStep>()
+        };
+        broccoliCheddarSoup.Steps = new List<RecipeStep>()
             {
                 new RecipeStep()
                 {
@@ -299,15 +299,15 @@ namespace babe_algorithms
                     Text = "Divide the soup between bowls, top with roasted potatoes, roasted broccoli, and miso garlic croutons."
                 },
             };
-            context.Recipes.Add(broccoliCheddarSoup);
+        context.Recipes.Add(broccoliCheddarSoup);
 
-            var vegetablePotPie = new Recipe()
-            {
-                Name = "Vegetable Pot Pie",
-                Cooktime = TimeSpan.FromMinutes(60),
-                ServingsProduced = 8,
-                Categories = new HashSet<Category>() { entreeCategory },
-                Ingredients = new List<IngredientRequirement>()
+        var vegetablePotPie = new Recipe()
+        {
+            Name = "Vegetable Pot Pie",
+            Cooktime = TimeSpan.FromMinutes(60),
+            ServingsProduced = 8,
+            Categories = new HashSet<Category>() { entreeCategory },
+            Ingredients = new List<IngredientRequirement>()
                 {
                     new IngredientRequirement()
                     {
@@ -382,8 +382,8 @@ namespace babe_algorithms
                         Unit = Unit.Teaspoon,
                     },
                 }
-            };
-            vegetablePotPie.Steps = new List<RecipeStep>()
+        };
+        vegetablePotPie.Steps = new List<RecipeStep>()
             {
                 new RecipeStep()
                 {
@@ -430,9 +430,7 @@ namespace babe_algorithms
                     Text = "Bake in the oven until golden, about 30 minutes.",
                 },
             };
-            context.Recipes.Add(vegetablePotPie);
-            context.SaveChanges();
-        }
+        context.Recipes.Add(vegetablePotPie);
+        context.SaveChanges();
     }
-
 }
