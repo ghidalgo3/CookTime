@@ -97,6 +97,7 @@ hr {
 html {
   font-size: 14px;
 }
+
 @media (min-width: 768px) {
   html {
     font-size: 16px;
@@ -108,6 +109,15 @@ html {
   height: 300px;
   object-fit: cover;
   margin-bottom: 10px;
+}
+
+.list-image {
+  height: 40px;
+  width: 40px;
+  object-fit: cover;
+  margin-right: 10px;
+  border-radius: 10%;
+  /* margin-bottom: 10px; */
 }
 
 .border-top {
@@ -225,11 +235,13 @@ body {
 
 .cart-ingredients-list {
   padding: 0px;
+  margin-top: 8px;
 }
 
 .recipe-counter-column {
   min-width: 120px;
   max-width: 130px;
+  height: 34px;
 }
 
 .new-curr-badge {
@@ -261,8 +273,12 @@ body {
   display: inline-block;
 }
 
-/* Per mesurements, 575px happens to be our breakpoint where we can't have 2 column in the same row for Directions label and Steps text */
-@media all and (max-width: 575px) {
+.serving-counter-in-cart {
+  display: inline-block;
+}
+
+/* Per mesurements, 576px happens to be our breakpoint where we can't have 2 column in the same row for Directions label and Steps text */
+@media all and (max-width: 576px) {
   .step-list {
     padding-left: 4px;
     margin-top: 8px;

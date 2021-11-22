@@ -59,7 +59,7 @@ class ShoppingCart extends React.Component<{}, CartState> {
             return (
                 <Row key={rIndex} className="align-items-center padding-left-0 margin-top-10">
                     <Col className="recipe-counter-column">
-                        <div className="serving-counter">
+                        <div className="serving-counter-in-cart">
                             <i
                                 onClick={(_) => this.addToRecipeRequirement(rIndex, 1)}
                                 className="fas fa-plus-circle green-earth-color"></i>
