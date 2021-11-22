@@ -153,13 +153,17 @@ public class RecipeController : ControllerBase, IImageController
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteRecipe(Guid id)
     {
-        var recipe = await context.Recipes.FindAsync(id);
+        var recipe = await context.GetRecipeAsync(id);
         if (recipe == null)
         {
             return NotFound();
         }
 
         context.Recipes.Remove(recipe);
+        foreach (var image in recipe.Images)
+        {
+            context.Images.Remove(image);
+        }
         var cart = await context.GetActiveCartAsync();
         cart.RecipeRequirement = cart.RecipeRequirement.Where(rr => rr.Recipe.Id != id).ToList();
         await context.SaveChangesAsync();
@@ -198,8 +202,15 @@ public class RecipeController : ControllerBase, IImageController
             LastModifiedAt = DateTimeOffset.UtcNow,
             Data = outputStream.ToArray(),
         };
-        context.Images.Add(image);
+        if (recipe.Images.Count > 0)
+        {
+            // only allow one image
+            var toRemove = recipe.Images[0];
+            context.Images.Remove(toRemove);
+            recipe.Images.Clear();
+        }
         recipe.Images.Add(image);
+        context.Images.Add(image);
         await this.context.SaveChangesAsync();
         return this.Ok();
     }

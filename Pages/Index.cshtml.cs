@@ -23,7 +23,7 @@ public class IndexModel : PageModel
 
     public async Task OnGetAsync()
     {
-        Recipes = await _context.Recipes.ToListAsync();
+        Recipes = await _context.Recipes.Include(r => r.Images).ToListAsync();
     }
 
     public async Task<ActionResult> OnPostAddToCart(Guid recipeId)

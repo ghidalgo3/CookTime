@@ -45,6 +45,7 @@ public class ApplicationDbContext : DbContext
             .Include(recipe => recipe.Ingredients)
                 .ThenInclude(ir => ir.Ingredient)
             .Include(recipe => recipe.Categories)
+            .Include(recipe => recipe.Images)
             .SingleAsync(recipe => recipe.Id == id);
     }
 

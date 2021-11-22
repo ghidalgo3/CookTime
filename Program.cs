@@ -36,6 +36,7 @@ public class Program
 
     private static void CreateDbIfNotExists(IHost host)
     {
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         using var scope = host.Services.CreateScope();
         var services = scope.ServiceProvider;
         try

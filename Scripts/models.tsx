@@ -35,6 +35,11 @@ type RecipeStep = {
     text : string
 }
 
+type Image = {
+    name : string,
+    id : string
+}
+
 type Recipe = {
     id : string,
     name : string,
