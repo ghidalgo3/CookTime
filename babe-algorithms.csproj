@@ -24,14 +24,11 @@
     <PackageReference Include="Microsoft.Extensions.Logging.AzureAppServices" Version="6.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
+    <PackageReference Include="SixLabors.ImageSharp.Web" Version="1.0.4" />
   </ItemGroup>
 
-  <Target
-    Name="RestoreJavascript"
-    Condition=" !Exists('node_modules') "
-    AfterTargets="Restore"
-    Inputs="packages.json"
-    Outputs="node_modules/*">
+  <Target Name="RestoreJavascript" Condition=" !Exists('node_modules') " AfterTargets="Restore" Inputs="packages.json" Outputs="node_modules/*">
     <Message Text="Restore Node.js modules" Importance="High" />
     <Exec Command="npm install" />
   </Target>
@@ -44,12 +41,7 @@
     <Watch Include="**/*.cshtml" />
   </ItemGroup>
 
-  <Target
-    Name="BuildJavascript"
-    Inputs="@(TypeScriptInputs)"
-    Condition=" '$(Configuration)' == 'Release' "
-    Outputs="@(TypeScriptInputs->'wwwroot/js/%(Filename).js')"
-    AfterTargets="Compile">
+  <Target Name="BuildJavascript" Inputs="@(TypeScriptInputs)" Condition=" '$(Configuration)' == 'Release' " Outputs="@(TypeScriptInputs->'wwwroot/js/%(Filename).js')" AfterTargets="Compile">
     <Message Text="Building client-side assets" Importance="High" />
     <Exec Command="npm run-script publish" />
   </Target>
