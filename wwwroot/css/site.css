@@ -110,6 +110,15 @@ html {
   margin-bottom: 10px;
 }
 
+.list-image {
+  height: 40px;
+  width: 40px;
+  object-fit: cover;
+  margin-right: 10px;
+  border-radius: 10%;
+  /* margin-bottom: 10px; */
+}
+
 .border-top {
   border-top: 1px solid #e5e5e5;
 }

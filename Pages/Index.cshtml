@@ -19,11 +19,15 @@
     <form method="POST">
         <div class="row">
             <div class="col-8" style="display: flex; align-items: center;">
+                @{
+                    var image = (item.Images?.FirstOrDefault() == null) ? "/placeholder.jpg" : item.Images?.FirstOrDefault().ToString();
+                    <img class="list-image" src="@image"/>
+                }
                 <a asp-page="./Recipes/Details" asp-route-id="@item.Id">
-                    <i class="fas fa-seedling green-earth-color padding-right-10"></i> @Html.DisplayFor(modelItem => item.Name)
+                    @Html.DisplayFor(modelItem => item.Name)
                 </a>
             </div>
-            <div class="col-4" style="text-align: right;">
+            <div class="col-4" style="display: flex; align-items: center; justify-content: flex-end;">
                 <input value="@item.Id" type="hidden" name="recipeId"/>
                 <button
                     type="submit"
