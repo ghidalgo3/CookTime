@@ -1,13 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using babe_algorithms;
-using babe_algorithms.Services;
-using babe_algorithms.Models;
 
 namespace babe_algorithms.Pages.Recipes;
 public class IndexModel : PageModel
@@ -19,11 +12,11 @@ public class IndexModel : PageModel
         _context = context;
     }
 
-    public IList<Recipe> Recipes { get; set; }
+    public List<Recipe> Recipes { get; set; }
 
     public async Task OnGetAsync()
     {
-        Recipes = await _context.Recipes.Include(r => r.Images).ToListAsync();
+        Recipes = await _context.Recipes.Include(r => r.Images).OrderBy(r => r.Name).ToListAsync();
     }
 
     public async Task<ActionResult> OnPostAddToCart(Guid recipeId)
