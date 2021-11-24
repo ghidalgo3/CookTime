@@ -238,70 +238,48 @@ export class IngredientDisplay extends React.Component<IngredientDisplayProps, {
         
         if (0 < decimal && decimal <= 0.0625) {
             quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>1</sup>&frasl;<sub>16</sub></>
+        } else if (0.0625 < decimal && decimal <= 0.1250) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>1</sup>&frasl;<sub>8</sub></>
+        } else if (0.1250 < decimal && decimal <= 0.1875) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>3</sup>&frasl;<sub>16</sub></>
+        } else if (0.1875 < decimal && decimal <= 0.2500) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}&frac14;</>
+        } else if (0.2500 < decimal && decimal <= 0.3125) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>5</sup>&frasl;<sub>16</sub></>
+        } else if (0.3125 < decimal && decimal <= 0.3333) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>1</sup>&frasl;<sub>3</sub></>
+        } else if (0.3333 < decimal && decimal <= 0.3750) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>6</sup>&frasl;<sub>16</sub></>
+        } else if (0.3750 < decimal && decimal <= 0.4167) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>5</sup>&frasl;<sub>12</sub></>
+        } else if (0.4167 < decimal && decimal <= 0.4375) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>7</sup>&frasl;<sub>16</sub></>
+        } else if (0.4375 < decimal && decimal <= 0.5000) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}&frac12;</>
+        } else if (0.5000 < decimal && decimal <= 0.5625) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>9</sup>&frasl;<sub>16</sub></>
+        } else if (0.5625 < decimal && decimal <= 0.6250) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>10</sup>&frasl;<sub>16</sub></>
+        } else if (0.6250 < decimal && decimal <= 0.6667) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>2</sup>&frasl;<sub>3</sub></>
+        } else if (0.6667 < decimal && decimal <= 0.6875) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>11</sup>&frasl;<sub>16</sub></>
+        } else if (0.6875 < decimal && decimal <= 0.7500) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>3</sup>&frasl;<sub>4</sub></>
+        } else if (0.7500 < decimal && decimal <= 0.8125) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>13</sup>&frasl;<sub>16</sub></>
+        } else if (0.8125 < decimal && decimal <= 0.8333) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>5</sup>&frasl;<sub>6</sub></>
+        } else if (0.8333 < decimal && decimal <= 0.8750) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>14</sup>&frasl;<sub>16</sub></>
+        } else if (0.8750 < decimal && decimal <= 0.9375) {
+            quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>15</sup>&frasl;<sub>16</sub></>
+        } else if (0.9375 < decimal && decimal <= 0.9999) {
+            quantity = <>{Math.round(this.props.ingredientRequirement.quantity)}</>
+        } else {
+            quantity = <>{Math.round(this.props.ingredientRequirement.quantity)}</>
         }
 
-        switch (decimalStr) {
-            case "0.1875":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>3</sup>&frasl;<sub>16</sub></>
-                break;
-            case "0.2500":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}&frac14;</>
-                break;
-            case "0.3125":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>5</sup>&frasl;<sub>16</sub></>
-                break;
-            case "0.3333":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>1</sup>&frasl;<sub>3</sub></>
-                break;
-            case "0.3750":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>6</sup>&frasl;<sub>16</sub></>
-                break;
-            case "0.4167":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>5</sup>&frasl;<sub>12</sub></>
-                break;
-            case "0.4375":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>7</sup>&frasl;<sub>16</sub></>
-                break;
-            case "0.5000":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}&frac12;</>
-                break;
-            case "0.5625":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>9</sup>&frasl;<sub>16</sub></>
-                break;
-            case "0.6250":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>10</sup>&frasl;<sub>16</sub></>
-                break;
-            case "0.6667":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>2</sup>&frasl;<sub>3</sub></>
-                break;
-            case "0.6875":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>11</sup>&frasl;<sub>16</sub></>
-                break;
-            case "0.7500":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>3</sup>&frasl;<sub>4</sub></>
-                break;
-            case "0.8125":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>13</sup>&frasl;<sub>16</sub></>
-                break;
-            case "0.8333":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>5</sup>&frasl;<sub>6</sub></>
-                break;
-            case "0.8750":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>14</sup>&frasl;<sub>16</sub></>
-                break;
-            case "0.9375":
-                quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>15</sup>&frasl;<sub>16</sub></>
-                break;
-            case "0.9999":
-                quantity = <>{Math.round(this.props.ingredientRequirement.quantity)}</>
-                break;
-            case "1.0000":
-                quantity = <>{Math.round(this.props.ingredientRequirement.quantity)}</>
-                break;
-            default:
-                // quantity = <>{this.props.ingredientRequirement.quantity}</>
-                break;
-        }
         var ingredientName = (ingredient.name).toLowerCase()
         var text = <>{quantity} {unitName} {ingredientName}</>
         if (this.props.strikethrough) {
