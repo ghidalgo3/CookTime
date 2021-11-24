@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-using babe_algorithms.Models;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 
@@ -51,6 +45,7 @@ public class ApplicationDbContext : DbContext
             .Include(recipe => recipe.Ingredients)
                 .ThenInclude(ir => ir.Ingredient)
             .Include(recipe => recipe.Categories)
+            .Include(recipe => recipe.Images)
             .SingleAsync(recipe => recipe.Id == id);
     }
 

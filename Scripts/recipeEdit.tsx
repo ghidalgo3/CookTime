@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, Col, Form, FormControl, FormText, Row } from 'react-bootstrap';
-import { v4 as uuidv4 } from 'uuid';
+import { stringify, v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
 import { IngredientDisplay, IngredientInput } from './IngredientInput';
 
@@ -10,6 +10,9 @@ type RecipeEditProps = {
 
 type RecipeEditState = {
     recipe : Recipe,
+    newImage: Blob | undefined,
+    newImageSrc : string | undefined,
+    recipeImages: Image[],
     edit : boolean,
     units: string[],
     newServings: number
@@ -21,6 +24,9 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         this.state = {
             edit: false,
             units: [],
+            newImage: undefined,
+            newImageSrc: undefined,
+            recipeImages: [],
             recipe: {
                 id : '',
                 name: '',
@@ -55,6 +61,16 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     this.setState({units: result as string[]});
                 }
             )
+        fetch(`/api/recipe/${recipeId}/images`)
+                .then(response => response.json())
+                .then(
+                    result => {
+                        let r = result as Image[]
+                        this.setState({
+                            recipeImages : r
+                        })
+                    }
+                )
     }
 
     ingredientEditGrid() {
@@ -246,11 +262,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     {this.editButtons()}
                 </Row>
 
-                {(this.state.recipe.staticImage === null) ?
-                    <img className="recipe-image" src={`/placeholder.jpg`} />
-                    :
-                    <img className="recipe-image" src={`/${this.state.recipe.staticImage}`} />
-                }
+                { this.image() }
 
                 <dl className="row">
                     <Row className="padding-right-0">
@@ -306,6 +318,40 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     {this.state.edit ? 
                         <Row className="padding-right-0">
                             <dt className="col-sm-3 detail-header">
+                                IMAGE
+                            </dt>
+                            <dd className="col-sm-9">
+                                <Form.Group controlId="formFile" className="mb-3">
+                                    <Form.Control
+                                        type="file"
+                                        accept=".jpg,.jpeg,.png"
+                                        multiple={false}
+                                        onChange={e =>
+                                        {
+                                            let fileList = (e.target as HTMLInputElement).files! as FileList;
+                                            if (fileList.length != 1)
+                                            {
+                                                return;
+                                            }
+
+                                            let reader = new FileReader();
+                                            reader.readAsDataURL(fileList.item(0)!);
+                                            reader.onload = (v) => {
+                                                this.setState({
+                                                    newImage: fileList.item(0)!,
+                                                    newImageSrc: reader.result as string
+                                                });
+                                            }
+                                        }}/>
+                                </Form.Group>
+                            </dd>
+                        </Row> 
+                        : 
+                        null
+                    }
+                    {this.state.edit ? 
+                        <Row className="padding-right-0">
+                            <dt className="col-sm-3 detail-header">
                                 STATIC IMAGE
                             </dt>
                             <dd className="col-sm-9">
@@ -346,6 +392,21 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             </div>
         );
     }
+    private image() {
+        if (this.state.newImageSrc != null && this.state.newImageSrc != '') {
+            return <img className="recipe-image" src={this.state.newImageSrc} />
+        } else if (this.state.recipeImages.length > 0) {
+            return <img
+                className="recipe-image"
+                src={`/image/${this.state.recipeImages[0].id}`} />
+        } else {
+            return (this.state.recipe.staticImage === null) ?
+                <img className="recipe-image" src={`/placeholder.jpg`} />
+                :
+                <img className="recipe-image" src={`/${this.state.recipe.staticImage}`} />;
+        }
+    }
+
     private editButtons(): string | number | boolean | {} | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactNodeArray | React.ReactPortal | null | undefined {
         return this.state.edit ?
             <Col>
@@ -383,7 +444,18 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(response => this.setState({edit: !this.state.edit}))
+        }).then(response =>
+            this.setState({edit: !this.state.edit})
+        ).then(() =>  {
+            if (this.state.newImage != null) {
+                let fd = new FormData();
+                fd.append("files", this.state.newImage as Blob);
+                fetch(`/api/Recipe/${this.props.recipeId}/image`, {
+                    method: 'PUT',
+                    body: fd
+                })
+            }
+        })
     }
 }
 

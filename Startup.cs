@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using babe_algorithms.Services;
+using SixLabors.ImageSharp.Web.DependencyInjection;
 
 namespace babe_algorithms;
 public class Startup
@@ -39,6 +40,16 @@ public class Startup
             options.UseNpgsql(connectionString);
             options.EnableSensitiveDataLogging(true);
         });
+        services.AddImageSharp(options => 
+        {
+        })
+            .ClearProviders()
+            .AddProvider<PostgresImageProvider>(sp => 
+            {
+                var scope = sp.CreateScope();
+                var appDbContext = scope.ServiceProvider.GetService<ApplicationDbContext>();
+                return new PostgresImageProvider(appDbContext);
+            });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,6 +75,7 @@ public class Startup
             app.UseHttpsRedirection();
         }
 
+        app.UseImageSharp();
         app.UseStaticFiles();
         app.UseRouting();
         app.UseAuthorization();
