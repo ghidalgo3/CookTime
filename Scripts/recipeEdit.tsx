@@ -349,21 +349,6 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         : 
                         null
                     }
-                    {this.state.edit ? 
-                        <Row className="padding-right-0">
-                            <dt className="col-sm-3 detail-header">
-                                STATIC IMAGE
-                            </dt>
-                            <dd className="col-sm-9">
-                                <Form.Control
-                                    type="text"
-                                    onChange={(e) => this.setState({recipe: {...this.state.recipe, staticImage: e.target.value}})}
-                                    value={this.state.recipe.staticImage}></Form.Control>
-                            </dd>
-                        </Row> 
-                        : 
-                        null
-                    }
                     <Row className="padding-right-0">
                         <dt className="col-sm-3 detail-header">
                             INGREDIENTS

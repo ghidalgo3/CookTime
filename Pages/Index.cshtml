@@ -7,38 +7,37 @@
 
 <div class="row" style="display: flex; align-items: center; justify-content: center;">
         <div class="col-10">
-            <h1>Recipes</h1>
+            <h1 class="margin-bottom-20">Recipes</h1>
         </div>
         <div class="col-2 text-end"> 
             <a asp-page="./Recipes/Create"><i class="fas fa-plus-circle green-earth-color fa-2x"></i></a>
         </div>
 </div>
 
-<hr></hr>
-@foreach (var item in Model.Recipes) {
-    <form method="POST">
-        <div class="row">
-            <div class="col-8" style="display: flex; align-items: center;">
-                @{
-                    // TODO, figure out how to NOT load Image Data when you want to list image IDs
-                    var image = (item.ImageIds.Count == 0) ? "/placeholder.jpg" : $"/image/{item.ImageIds.FirstOrDefault()}?width=100";
-                    <img class="list-image" src="@image"/>
-                }
+<div class="row">
+    @foreach (var item in Model.Recipes) {
+        <div class="col-sm-4">
+            <form method="POST">
                 <a asp-page="./Recipes/Details" asp-route-id="@item.Id">
-                    @Html.DisplayFor(modelItem => item.Name)
+                    <div class="card margin-bottom-20">
+                        @{
+                            var image = (item.ImageIds.Count == 0) ? "/placeholder.jpg" : $"/image/{item.ImageIds.FirstOrDefault()}?width=300";
+                            <img class="card-img-top card-recipe-image" src="@image" alt="Food image">
+                        }
+                        <div class="card-body ">
+                            <p class="card-title" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</p>
+                            <input value="@item.Id" type="hidden" name="recipeId"/>
+                            <button
+                                data-bs-toggle="tooltip" 
+                                data-bs-placement="right" 
+                                title="Add recipe to grocery list"
+                                type="submit"
+                                asp-page-handler="AddToCart"
+                                class="btn btn-primary troubled-water-color width-100">Add to cart</button>
+                        </div>
+                    </div>
                 </a>
-            </div>
-            <div class="col-4" style="display: flex; align-items: center; justify-content: flex-end;">
-                <input value="@item.Id" type="hidden" name="recipeId"/>
-                <button
-                    data-bs-toggle="tooltip" 
-                    data-bs-placement="right" 
-                    title="Add recipe to grocery list"
-                    type="submit"
-                    asp-page-handler="AddToCart"
-                    class="btn btn-primary troubled-water-color">Add to cart</button>
-            </div>
+            </form>
         </div>
-        <hr></hr>
-    </form>
-}
+    }
+</div>
