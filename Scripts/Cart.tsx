@@ -183,12 +183,13 @@ class ShoppingCart extends React.Component<{}, CartState> {
         // render an empty check mark unless the ingredient is present in ingredient state with checked == true
         return reducedIngredientRequirements?.map(ir => {
             var unchecked = uncheckedFn(ir);
+            var onClickFn = unchecked ? () => this.CheckIngredient(ir) : () => this.UncheckIngredient(ir);
             return (
-            <div className="cart-ingredients-list">
+            <div onClick={(_) => onClickFn()} className="cart-ingredients-list">
                 {
                     unchecked ?
-                      <i onClick={(_) => this.CheckIngredient(ir)}className="far fa-circle padding-right-10"></i> : 
-                      <i onClick={(_) => this.UncheckIngredient(ir)} className="far fa-check-circle padding-right-10"></i>
+                      <i className="far fa-circle padding-right-10"></i> : 
+                      <i className="far fa-check-circle padding-right-10"></i>
                     }
                 <IngredientDisplay ingredientRequirement={ir} strikethrough={!unchecked}/>
             </div>
