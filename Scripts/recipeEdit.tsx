@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, Col, Form, FormControl, FormText, Row } from 'react-bootstrap';
+import { Alert, Button, Col, Form, FormControl, FormText, Row } from 'react-bootstrap';
 import { stringify, v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
 import { IngredientDisplay, IngredientInput } from './IngredientInput';
@@ -15,13 +15,15 @@ type RecipeEditState = {
     recipeImages: Image[],
     edit : boolean,
     units: string[],
-    newServings: number
+    newServings: number,
+    error: boolean
 }
 class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 {
     constructor(props : RecipeEditProps) {
         super(props);
         this.state = {
+            error: false,
             edit: false,
             units: [],
             newImage: undefined,
@@ -261,7 +263,14 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     </Col>
                     {this.editButtons()}
                 </Row>
-
+                {/* { this.state.error ? 
+                    <Alert variant="danger" onClose={() => this.setState({error: false})} dismissible>
+                        <Alert.Heading>Could not save recipe.</Alert.Heading>
+                        <p>
+                        </p>
+                    </Alert>
+                :
+                null} */}
                 { this.image() }
 
                 <dl className="row">
@@ -423,14 +432,33 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
     }
 
     onSave() {
+        var filteredSteps = Array.from(this.state.recipe.steps).filter(step => step.text != null && step.text != '');
+        var filteredIngredients = Array.from(this.state.recipe.ingredients).filter(ingredient => ingredient.ingredient.name != null && ingredient.ingredient.name != '');
+        let newState = {
+            ...this.state,
+            recipe: {
+                ...this.state.recipe,
+                steps: filteredSteps,
+                ingredients: filteredIngredients
+            }};
+
+
         fetch(`/api/Recipe/${this.props.recipeId}`, {
             method: 'PUT',
-            body: JSON.stringify(this.state.recipe),
+            body: JSON.stringify(newState.recipe),
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(response =>
-            this.setState({edit: !this.state.edit})
+        }).then(response => {
+            if (response.ok) {
+                this.setState({
+                    ...newState,
+                    edit: false
+                })
+            } else {
+                this.setState({error: true})
+            }
+        }
         ).then(() =>  {
             if (this.state.newImage != null) {
                 let fd = new FormData();
