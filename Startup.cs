@@ -46,9 +46,7 @@ public class Startup
             .ClearProviders()
             .AddProvider<PostgresImageProvider>(sp => 
             {
-                var scope = sp.CreateScope();
-                var appDbContext = scope.ServiceProvider.GetService<ApplicationDbContext>();
-                return new PostgresImageProvider(appDbContext);
+                return new PostgresImageProvider(sp);
             });
     }
 

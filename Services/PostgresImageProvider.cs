@@ -8,11 +8,15 @@ namespace babe_algorithms.Services;
 
 public class PostgresImageProvider : IImageProvider
 {
-    public ApplicationDbContext Context { get; }
-
-    public PostgresImageProvider(ApplicationDbContext context)
+    /// <summary>
+    /// You can't pass in the AppDbContext directly here because we need that to be allocated
+    /// per-request. If you try to re-use the same appdbcontext for everything,
+    /// a memory leak will occur.
+    /// </summary>
+    /// <param name="sp"></param>
+    public PostgresImageProvider(IServiceProvider sp)
     {
-        this.Context = context;
+        this.ServiceProvider = sp;
     }
     /// <summary>
     /// A match function used by the resolver to identify itself as the correct resolver to use.
@@ -26,13 +30,15 @@ public class PostgresImageProvider : IImageProvider
             set => _match = value;
         }
 
+    public IServiceProvider ServiceProvider { get; }
 
     public Task<IImageResolver> GetAsync(HttpContext context)
     {
+        var appDbContext = this.ServiceProvider.CreateAsyncScope().ServiceProvider.GetService<ApplicationDbContext>();
         var value = context.Request.Path.Value;
         var id = value.Split("/")[2];
         var resolver = new PostgresImageResolver(
-                this.Context,
+                appDbContext,
                 Guid.Parse(id)) as IImageResolver;
         return Task.FromResult(resolver);
     }
