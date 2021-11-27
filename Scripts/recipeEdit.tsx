@@ -318,7 +318,11 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                         className="fas fa-plus-circle green-earth-color"></i>
                                     <input className="form-control count" value={this.state.newServings}></input>
                                     <i
-                                        onClick={(_) => this.setState({newServings: this.state.newServings - 1})}
+                                        onClick={(_) => {
+                                            if (this.state.newServings > 1) {
+                                                this.setState({newServings: this.state.newServings - 1})
+                                            }
+                                        }}
                                         className="fas fa-minus-circle red-dirt-color"></i>
                                 </div> 
                             }
