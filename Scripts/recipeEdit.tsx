@@ -3,6 +3,7 @@ import { Alert, Button, Col, Form, FormControl, FormText, Row } from 'react-boot
 import { stringify, v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
 import { IngredientDisplay, IngredientInput } from './IngredientInput';
+import { Step } from './RecipeStep';
 
 type RecipeEditProps = {
     recipeId : string
@@ -250,7 +251,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             return (
                 <Row>
                     <Col className="step-number">{index + 1}</Col>
-                    <Col className="margin-bottom-20" key={step.text}>{step.text}</Col>
+                    <Col className="margin-bottom-20" key={step.text}><Step recipe={this.state.recipe} recipeStep={step} /></Col>
                 </Row>
             )
         });
