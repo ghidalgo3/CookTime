@@ -319,11 +319,6 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                     onChange={(e) => this.setState({recipe: {...this.state.recipe, servingsProduced: parseInt(e.target.value)}})}
                                     value={this.state.recipe.servingsProduced}></Form.Control> :
                                 <div className="serving-counter">
-                                    {/* BABE TO DO: MAKE THE COUNTER WORK AND MULTIPLY THE RENDERED INGREDIENT QTYS */}
-                                    <i
-                                        onClick={(_) => this.setState({newServings: this.state.newServings + 1})}
-                                        className="fas fa-plus-circle green-earth-color"></i>
-                                    <input className="form-control count" value={this.state.newServings}></input>
                                     <i
                                         onClick={(_) => {
                                             if (this.state.newServings > 1) {
@@ -331,6 +326,11 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                             }
                                         }}
                                         className="fas fa-minus-circle red-dirt-color"></i>
+                                    <input className="form-control count" value={this.state.newServings}></input>
+                                    <i
+                                        onClick={(_) => this.setState({newServings: this.state.newServings + 1})}
+                                        className="fas fa-plus-circle green-earth-color"></i>
+                                    
                                 </div> 
                             }
                         </dd>

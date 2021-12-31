@@ -61,9 +61,8 @@ class ShoppingCart extends React.Component<{}, CartState> {
                     <Col className="recipe-counter-column">
                         <div className="serving-counter-in-cart">
                             <i
-                                onClick={(_) => this.addToRecipeRequirement(rIndex, 1)}
-                                className="fas fa-plus-circle green-earth-color"></i>
-                            
+                                onClick={(_) => this.addToRecipeRequirement(rIndex, -1)}
+                                className="fas fa-minus-circle red-dirt-color"></i>
                             <Form.Control
                                 // onChange={(e) => this.setRecipeRequirement(rIndex, parseFloat(e.target.value))}
                                 onChange={(e) => {
@@ -79,8 +78,8 @@ class ShoppingCart extends React.Component<{}, CartState> {
                                 className="form-control count"
                                 value={Math.round(r.quantity * r.recipe.servingsProduced)} />
                             <i
-                                onClick={(_) => this.addToRecipeRequirement(rIndex, -1)}
-                                className="fas fa-minus-circle red-dirt-color"></i>
+                                onClick={(_) => this.addToRecipeRequirement(rIndex, 1)}
+                                className="fas fa-plus-circle green-earth-color"></i>
                         </div> 
                     </Col>
                     <Col>
