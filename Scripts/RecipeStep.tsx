@@ -69,7 +69,7 @@ export class Step extends React.Component<{recipe: Recipe, recipeStep: RecipeSte
         }
         const Link = ({ id, children, title }) => (
             <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
-              <a href="javascript:void(0);">{children}</a>
+              <a className="tooltip-style" href="javascript:void(0);">{children}</a>
             </OverlayTrigger>
           );
         return (

@@ -80,7 +80,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         return (
             <Form>
                 { this.state.recipe.ingredients.map((i, idx) => this.ingredientEditRow(i, idx)) }
-                <Col xs={11}>
+                <Col xs={12}>
                     <Button variant="outline-primary" className="width-100" onClick={_ => this.appendNewIngredientRequirementRow()}>New Ingredient</Button>
                 </Col>
             </Form>
@@ -132,7 +132,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         }
                     </Form.Select>
                 </Col>
-                <Col key={`${id}name`}>
+                <Col className="get-smaller" key={`${id}name`} >
                     <IngredientInput
                         isNew={ir.ingredient.isNew}
                         query={text => `/api/recipe/ingredients?name=${text}`}
@@ -152,8 +152,10 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         value={ir.ingredient.name}
                         placeholder="Ingredient name"></Form.Control> */}
                 </Col>
-                <Col key={`${id}delete`} xs={1} className="d-flex align-items-center">
-                    <i onClick={(_) => this.deleteIngredientRequirement(ir)} className="fas fa-trash-alt"></i>
+                <Col key={`${id}delete`} xs={1} className="">
+                    <Button className="float-end" variant="danger">
+                        <i onClick={(_) => this.deleteIngredientRequirement(ir)} className="fas fa-trash-alt"></i>
+                    </Button>
                 </Col>
             </Row>
         )
@@ -186,7 +188,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         return (
             <Form>
                 { this.state.recipe.steps.map((i, idx) => this.stepEditRow(i, idx)) }
-                <Col xs={11}>
+                <Col xs={12}>
                     <Button variant="outline-primary" className="width-100" onClick={_ => this.appendNewStep()}>New Step</Button>
                 </Col>
             </Form>
@@ -196,7 +198,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
     stepEditRow(i: RecipeStep, idx: number): any {
         return (
             <Row>
-                <Col>
+                <Col className="get-smaller">
                     <FormControl
                         as="textarea" 
                         rows={4}
@@ -219,12 +221,14 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     </FormControl>
                 </Col>
                 <Col xs={1}>
-                    <i onClick={(_) => this.setState({
-                        recipe: {
-                            ...this.state.recipe,
-                            steps: this.state.recipe.steps.filter((s,i) => i !== idx),
-                        }
-                    })} className="fas fa-trash-alt"></i>
+                    <Button className="float-end" variant="danger">
+                        <i onClick={(_) => this.setState({
+                            recipe: {
+                                ...this.state.recipe,
+                                steps: this.state.recipe.steps.filter((s,i) => i !== idx),
+                            }
+                        })} className="fas fa-trash-alt"></i>
+                    </Button>
                 </Col>
             </Row>
         )
@@ -416,7 +420,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         <Button className="width-100" onClick={_ => this.onSave()}>Save</Button>
                     </Col>
                     <Col>
-                        <Button variant="danger" className="width-100" onClick={_ => this.onDelete()}>Delete</Button>
+                        <Button variant="danger" className="width-100 margin-bottom-15" onClick={_ => this.onDelete()}>Delete</Button>
                     </Col>
                 </Row>
             </Col>
