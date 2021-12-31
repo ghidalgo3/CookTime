@@ -251,7 +251,9 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             return (
                 <Row>
                     <Col className="step-number">{index + 1}</Col>
-                    <Col className="margin-bottom-20" key={step.text}><Step recipe={this.state.recipe} recipeStep={step} /></Col>
+                    <Col className="margin-bottom-20" key={step.text}>
+                        <Step recipe={this.state.recipe} recipeStep={step} newServings={this.state.newServings} />
+                    </Col>
                 </Row>
             )
         });

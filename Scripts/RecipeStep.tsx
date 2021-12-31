@@ -1,12 +1,92 @@
 import React from "react";
-
-export class Step extends React.Component<{recipe: Recipe, recipeStep: RecipeStep}, {}>
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
+type Segment = {
+    ingredient : IngredientRequirement | null,
+    text : string
+}
+export class Step extends React.Component<{recipe: Recipe, recipeStep: RecipeStep, newServings: number}, {}>
 {
     constructor(props) {
         super(props);
     }
 
+    trifurcate(s : string, position : number, length : number) {
+        let before = s.substring(0, position)
+        let inside = s.substring(position, position + length)
+        let after = s.substring(position + length, s.length)
+        return {
+            before: before,
+            inside: inside,
+            after: after
+        }
+    }
+
     render() {
-        return <p>{this.props.recipeStep.text}</p>
+        // list ingredient strings array
+        // foreach ingredient find matches of this string in the text
+        // insert tooltip in each match
+        let originalText = this.props.recipeStep.text
+        let segments : Segment[] = [{ingredient: null, text: originalText}]
+        let ingredientRequirements = this.props.recipe.ingredients
+        for (let i = 0; i < ingredientRequirements.length; i++) {
+            console.log(segments);
+            const element = ingredientRequirements[i];
+            let ingredientName = element.ingredient.name
+            console.log(`Matching ingredient ${ingredientName}`);
+            let ingredientRegex = new RegExp(`${ingredientName}`, 'i')
+            let j = 0;
+            while (j < segments.length) {
+                let currentSegment = segments[j];
+                console.log(`Current segment ${j} is '${currentSegment.text}' Segments length ${segments.length}`)
+                let match = currentSegment.text.match(ingredientRegex)
+                if (match != null)
+                {
+                    console.log(`Match for regex ${ingredientName} found at index ${match.index!} for current segment '${currentSegment.text}''`)
+                    let trifurcation = this.trifurcate(currentSegment.text, match.index!, ingredientName.length);
+                    if (match.index! == 0) {
+                        // array size grows by 1
+                        segments.splice(
+                            j,
+                            1,
+                            {text: trifurcation.inside, ingredient: element},
+                            {text: trifurcation.after, ingredient: null})
+                        console.log(segments);
+                        j++;
+                    } else {
+                        // array size grows by 2
+                        segments.splice(
+                            j,
+                            1,
+                            {text: trifurcation.before, ingredient: null},
+                            {text: trifurcation.inside, ingredient: element},
+                            {text: trifurcation.after, ingredient: null})
+                        console.log(segments);
+                        j++;
+                    }
+                }
+                j++;
+            }
+        }
+        const Link = ({ id, children, title }) => (
+            <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
+              <a href="javascript:void(0);">{children}</a>
+            </OverlayTrigger>
+          );
+        return (
+        <div>
+            {segments.map((segment, i) =>  {
+                    if (segment.ingredient == null) {
+                        return segment.text
+                    } else {
+                        let newQuantity = segment.ingredient.quantity * this.props.newServings / this.props.recipe.servingsProduced;
+                        let tooltipTitle = `${newQuantity} ${segment.ingredient.unit}`;
+                        return (
+                            <Link title={tooltipTitle} id={i}>
+                              {segment.text}
+                             </Link>
+                        )
+                }
+                })}
+        </div>)
     }
 }
