@@ -54,13 +54,14 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     let r = result as Recipe
                     const urlParams = new URLSearchParams(window.location.search);
                     const myParam =  urlParams.get('servings');
+                    let newServings = r.servingsProduced;
                     if (myParam != null) {
-                        r.servingsProduced = parseInt(myParam);
+                        newServings = parseInt(myParam);
                     }
                     r.ingredients.sort((a,b) => a.position - b.position);
                     this.setState({
                         recipe: r,
-                        newServings: r.servingsProduced
+                        newServings: newServings
                     })
                 }
             )
