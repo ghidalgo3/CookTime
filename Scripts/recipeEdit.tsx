@@ -296,7 +296,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     </Row>
                     <Row className="padding-right-0">
                         <dt className="col-sm-3 detail-header">
-                            CALORIES
+                            CALORIES PER SERVING
                         </dt>
                         <dd className="col-sm-9">
                             {this.state.edit ?
