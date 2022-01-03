@@ -44,6 +44,7 @@ public class IngredientController : ControllerBase
     // PUT: api/Ingredient/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
+    [BasicAuth]
     public async Task<IActionResult> PutIngredient(Guid id, Ingredient ingredient)
     {
         if (id != ingredient.Id)
@@ -75,6 +76,7 @@ public class IngredientController : ControllerBase
     // POST: api/Ingredient
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
+    [BasicAuth]
     public async Task<ActionResult<Ingredient>> PostIngredient(Ingredient ingredient)
     {
         _context.Ingredients.Add(ingredient);
@@ -85,6 +87,7 @@ public class IngredientController : ControllerBase
 
     // DELETE: api/Ingredient/5
     [HttpDelete("{id}")]
+    [BasicAuth]
     public async Task<IActionResult> DeleteIngredient(Guid id)
     {
         var ingredient = await _context.Ingredients.FindAsync(id);

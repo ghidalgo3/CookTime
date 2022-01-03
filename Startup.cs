@@ -28,6 +28,7 @@ public class Startup
     {
         services.AddControllersWithViews().AddNewtonsoftJson();
         services.AddRazorPages();
+        services.AddScoped<IUserService, UserService>();
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             var connectionString = this.Configuration.GetConnectionString("Postgres");

@@ -44,6 +44,7 @@ public class CartController : ControllerBase
     // PUT: api/Cart/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
+    [BasicAuth]
     public async Task<IActionResult> PutCart(Guid id, Cart cartPayload)
     {
         if (id != cartPayload.Id)
@@ -89,6 +90,7 @@ public class CartController : ControllerBase
     // POST: api/Cart
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
+    [BasicAuth]
     public async Task<ActionResult<Cart>> PostCart(Cart cart)
     {
         _context.Carts.Add(cart);
@@ -99,6 +101,7 @@ public class CartController : ControllerBase
 
     // DELETE: api/Cart/clear
     [HttpPost("clear")]
+    [BasicAuth]
     public async Task<IActionResult> ClearCart()
     {
         var cart = await _context.GetActiveCartAsync();

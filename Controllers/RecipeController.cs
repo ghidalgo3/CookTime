@@ -42,6 +42,7 @@ public class RecipeController : ControllerBase, IImageController
     // PUT: api/Recipe/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
+    [BasicAuth]
     public async Task<IActionResult> PutRecipe(
         Guid id,
         [FromBody] Recipe recipe)
@@ -151,6 +152,7 @@ public class RecipeController : ControllerBase, IImageController
 
     // DELETE: api/Recipe/5
     [HttpDelete("{id}")]
+    [BasicAuth]
     public async Task<IActionResult> DeleteRecipe(Guid id)
     {
         var recipe = await context.GetRecipeAsync(id);
@@ -227,6 +229,7 @@ public class RecipeController : ControllerBase, IImageController
     }
 
     [HttpDelete("{containerId}/image/{imageId}")]
+    [BasicAuth]
     public async Task<IActionResult> DeleteImageAsync(Guid containerId, Guid imageId)
     {
         var recipe = await this.context.Recipes.Where(r => r.Id == containerId).Include(r => r.Images).FirstAsync();
