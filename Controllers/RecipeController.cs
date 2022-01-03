@@ -95,7 +95,7 @@ public class RecipeController : ControllerBase, IImageController
             }
         }
 
-        return NoContent();
+        return Ok(existingRecipe);
     }
 
     private async Task CopyIngredients(

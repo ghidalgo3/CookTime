@@ -491,9 +491,12 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             }
         }).then(response => {
             if (response.ok) {
-                this.setState({
-                    ...newState,
-                    edit: false
+                response.json().then(r => {
+                    this.setState({
+                        ...this.state,
+                        recipe: r as Recipe,
+                        edit: false
+                    })
                 })
             } else {
                 this.setState({error: true})
