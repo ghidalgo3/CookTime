@@ -36,6 +36,14 @@ public class RecipeController : ControllerBase, IImageController
             return NotFound();
         }
 
+        if (recipe.Ingredients.All(ir => ir.Position == 0))
+        {
+            for (int i = 0; i < recipe.Ingredients.Count; i++)
+            {
+                recipe.Ingredients[i].Position = i;
+            }
+        }
+
         return Ok(recipe);
     }
 
@@ -122,6 +130,7 @@ public class RecipeController : ControllerBase, IImageController
                 // update of existing ingredient requirement
                 matching.Quantity = ingredientRequirement.Quantity;
                 matching.Unit = ingredientRequirement.Unit;
+                matching.Position = ingredientRequirement.Position;
                 var ingredient = await context.Ingredients.FindAsync(ingredientRequirement.Ingredient.Id);
                 if (ingredient == null)
                 {

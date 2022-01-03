@@ -4,7 +4,7 @@ param(
     $MigrationName
 )
 
-$dotnetefVersion = "5.0.9"
+$dotnetefVersion = "6.0.0"
 $tools = dotnet tool list --global
 $dotnetEfInstalled = $tools | Where-Object { $_.Contains('dotnet-ef') }
 if ($null -ne $dotnetEfInstalled) {

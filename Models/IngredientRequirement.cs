@@ -6,8 +6,16 @@ namespace babe_algorithms;
 public class IngredientRequirement
 {
     public Guid Id { get; set; }
+
     public Ingredient Ingredient { get; set; }
+
     [JsonConverter(typeof(StringEnumConverter))]
     public Unit Unit { get; set; }
+
     public double Quantity { get; set; }
+
+    /// <summary>
+    /// The position this ingredient should be placed in.
+    /// </summary>
+    public int Position { get; set; }
 }

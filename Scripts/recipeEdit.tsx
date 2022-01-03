@@ -56,6 +56,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     if (myParam != null) {
                         r.servingsProduced = parseInt(myParam);
                     }
+                    r.ingredients.sort((a,b) => a.position - b.position);
                     this.setState({
                         recipe: r,
                         newServings: r.servingsProduced
@@ -97,7 +98,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             ingredient: {name: '', id: uuidv4(), isNew: false},
             unit: 'Cup',
             quantity: 0,
-            id: uuidv4()
+            id: uuidv4(),
+            position: this.state.recipe.ingredients.length
         }
         var newIrs = Array.from(this.state.recipe.ingredients)
         newIrs.push(ir)
@@ -167,10 +169,15 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
     }
 
     deleteIngredientRequirement(ir: IngredientRequirement) {
+        var newIrs = this.state.recipe.ingredients.filter(i => i.id !== ir.id)
+        for (let i = 0; i < newIrs.length; i++) {
+            const element = newIrs[i];
+            element.position = i;
+        }
         this.setState({
             recipe: {
                 ...this.state.recipe,
-                ingredients: this.state.recipe.ingredients.filter(i => i.id !== ir.id),
+                ingredients: newIrs,
             }
         })
     }

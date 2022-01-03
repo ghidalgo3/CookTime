@@ -17,6 +17,7 @@ type IngredientRequirement = {
     unit : string,
     quantity : number,
     id: string
+    position : number
 }
 
 type Ingredient = {
