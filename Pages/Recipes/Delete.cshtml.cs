@@ -9,6 +9,7 @@ using babe_algorithms;
 using babe_algorithms.Services;
 
 namespace babe_algorithms.Pages.Recipes;
+[BasicAuth]
 public class DeleteModel : PageModel
 {
     private readonly babe_algorithms.Services.ApplicationDbContext _context;
