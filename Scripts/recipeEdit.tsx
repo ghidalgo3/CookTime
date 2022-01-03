@@ -33,6 +33,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             recipe: {
                 id : '',
                 name: '',
+                source: '',
                 duration: 5,
                 caloriesPerServing: 100,
                 servingsProduced: 2,
@@ -347,6 +348,21 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                             }
                         </dd>
                     </Row>
+                {this.state.recipe.source == '' && !this.state.edit ? null :
+                    <Row className="padding-right-0">
+                        <dt className="col-sm-3 detail-header">
+                            LINK TO ORIGINAL RECIPE
+                        </dt>
+                        <dd className="col-sm-9">
+                            {this.state.edit ?
+                                <Form.Control
+                                    type="text"
+                                    onChange={(e) => this.setState({recipe: {...this.state.recipe, source: e.target.value}})}
+                                    value={this.state.recipe.source}></Form.Control> :
+                                <div>{this.state.recipe.source}</div> }
+                        </dd>
+                    </Row>
+                }
                     {this.state.edit ? 
                         <Row className="padding-right-0">
                             <dt className="col-sm-3 detail-header">

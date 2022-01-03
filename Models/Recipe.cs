@@ -13,4 +13,9 @@ public class Recipe : IImageContainer
     public Guid Id { get; set; }
     public ISet<Category> Categories { get; set; }
     public List<Image> Images { get; set; }
+
+    /// <summary>
+    /// The source where the recipe came from.
+    /// </summary>
+    public string Source { get; set; }
 }

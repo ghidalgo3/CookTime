@@ -47,6 +47,7 @@ type Recipe = {
     duration : number | undefined,
     caloriesPerServing : number,
     servingsProduced : number,
+    source: string,
     ingredients : IngredientRequirement[],
     steps : RecipeStep[],
     categories : {name: string, id: string, isNew: boolean}[],
