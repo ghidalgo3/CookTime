@@ -65,6 +65,13 @@ public class RecipeController : ControllerBase, IImageController
             var currentIngredients = existingRecipe.Ingredients;
             existingRecipe.Ingredients = new List<IngredientRequirement>();
             await CopyIngredients(recipe, existingRecipe, currentIngredients);
+            var currentTags = existingRecipe.Tags;
+            existingRecipe.Tags = new List<Tag>();
+            await CreateOrUpdateRelatedEntities(
+                recipe,
+                existingRecipe,
+                get: r => r.Tags,
+                set: (r, t) => r.Tags = t);
             existingRecipe.Steps = recipe.Steps.Where(s => !string.IsNullOrWhiteSpace(s.Text)).ToList();
             // update
             context.Recipes.Update(existingRecipe);
@@ -87,6 +94,60 @@ public class RecipeController : ControllerBase, IImageController
         }
 
         return NoContent();
+    }
+
+    // TODO gustavo
+    private async Task CreateOrUpdateRelatedEntities<T>(
+        Recipe payloadRecipe,
+        Recipe existingRecipe,
+        Func<Recipe, List<T>> get,
+        Action<Recipe, List<T>> set)
+    {
+        var currentEntities = get.Invoke(existingRecipe);
+        set.Invoke(existingRecipe, new List<T>());
+        foreach (var entity in currentEntities)
+        {
+            var matching = currentIngredients
+                .FirstOrDefault(ir =>
+                    ir.Id == ingredientRequirement.Id);
+            if (matching == null)
+            {
+                var existingIngredient = await context.Ingredients
+                    .FindAsync(ingredientRequirement.Ingredient.Id);
+                if (existingIngredient == null)
+                {
+                    // new ingredient
+                    ingredientRequirement.Ingredient.Id = Guid.Empty;
+                    context.Ingredients.Add(ingredientRequirement.Ingredient);
+                }
+                else
+                {
+                    ingredientRequirement.Ingredient = existingIngredient;
+                }
+                // new ingredient requirement
+                existingRecipe.Ingredients.Add(ingredientRequirement);
+            }
+            else
+            {
+                // update of existing ingredient requirement
+                matching.Quantity = ingredientRequirement.Quantity;
+                matching.Unit = ingredientRequirement.Unit;
+                var ingredient = await context.Ingredients.FindAsync(ingredientRequirement.Ingredient.Id);
+                if (ingredient == null)
+                {
+                    // entirely new ingredient, client chose ID
+                    ingredientRequirement.Id = Guid.NewGuid();
+                    matching.Ingredient = ingredientRequirement.Ingredient;
+                }
+                else if (!currentIngredients.Any(i => i.Ingredient.Id == ingredient.Id))
+                {
+                    // reassignment of existing ingredient
+                    matching.Ingredient = ingredient;
+                }
+                // Are you actually changing the ingredient being referenced?
+                existingRecipe.Ingredients.Add(matching);
+            }
+        }       await Task.CompletedTask;
     }
 
     private async Task CopyIngredients(

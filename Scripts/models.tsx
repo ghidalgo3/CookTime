@@ -1,3 +1,8 @@
+type Tag = {
+    id: string,
+    name: string
+}
+
 type Cart = {
     id: string,
     recipeRequirement: RecipeRequirement[],
@@ -50,4 +55,5 @@ type Recipe = {
     steps : RecipeStep[],
     categories : {name: string, id: string, isNew: boolean}[],
     staticImage : string
+    tags: Tag[]
 }

@@ -21,9 +21,11 @@ public class ApplicationDbContext : DbContext
 
     public DbSet<Recipe> Recipes { get; set; }
     public DbSet<Ingredient> Ingredients { get; set; }
+    // wtf is a category?
     public DbSet<Category> Categories { get; set; }
     public DbSet<Cart> Carts { get; set; }
     public DbSet<Image> Images { get; set; }
+    public DbSet<Tag> Tags { get; set; }
 
     public async Task<Category> GetCategory(Guid id)
     {
@@ -46,6 +48,7 @@ public class ApplicationDbContext : DbContext
                 .ThenInclude(ir => ir.Ingredient)
             .Include(recipe => recipe.Categories)
             .Include(recipe => recipe.Images)
+            .Include(recipe => recipe.Tags)
             .SingleAsync(recipe => recipe.Id == id);
     }
 

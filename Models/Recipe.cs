@@ -1,6 +1,6 @@
 namespace babe_algorithms;
 
-public class Recipe : IImageContainer
+public class Recipe : IImageContainer, ITaggable
 {
     [Required]
     public string Name { get; set; }
@@ -13,4 +13,5 @@ public class Recipe : IImageContainer
     public Guid Id { get; set; }
     public ISet<Category> Categories { get; set; }
     public List<Image> Images { get; set; }
+    public List<Tag> Tags { get; set; }
 }
