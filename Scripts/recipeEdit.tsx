@@ -51,8 +51,13 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             .then(
                 result => {
                     let r = result as Recipe
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const myParam =  urlParams.get('servings');
+                    if (myParam != null) {
+                        r.servingsProduced = parseInt(myParam);
+                    }
                     this.setState({
-                        recipe: result as Recipe,
+                        recipe: r,
                         newServings: r.servingsProduced
                     })
                 }

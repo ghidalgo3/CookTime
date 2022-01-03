@@ -84,7 +84,7 @@ class ShoppingCart extends React.Component<{}, CartState> {
                     </Col>
                     <Col>
                         <div key={r.recipe.id}>
-                            <a href={`/Recipes/Details?id=${r.recipe.id}`}>{r.recipe.name}</a> 
+                            <a href={`/Recipes/Details?id=${r.recipe.id}&servings=${r.quantity}`}>{r.recipe.name}</a> 
                             <i className="fas fa-trash deep-water-color padding-left-12" onClick={(_) => this.onDeleteRecipe(rIndex)}></i>
                         </div>
                     </Col>
