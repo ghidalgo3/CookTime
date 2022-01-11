@@ -451,12 +451,22 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     <Col>
                         <Button variant="danger" className="width-100 margin-bottom-15" onClick={_ => this.onDelete()}>Delete</Button>
                     </Col>
+                    <Col>
+                        <Button variant="danger" className="width-100 margin-bottom-15" onClick={_ => this.onMigrate()}>Migrate</Button>
+                    </Col>
                 </Row>
             </Col>
             :
             <Col>
                 <Button className="float-end" onClick={(event) => this.setState({ edit: !this.state.edit })}>Edit</Button>
             </Col>;
+    }
+    onMigrate(): void {
+        fetch(`/api/Recipe/${this.props.recipeId}/migrate`, {
+            method: 'POST',
+        }).then(response => {
+            console.log(response.json())
+        })
     }
 
     onDelete(): void {

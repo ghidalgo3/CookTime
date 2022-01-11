@@ -182,6 +182,22 @@ public class RecipeController : ControllerBase, IImageController
         return NoContent();
     }
 
+    [HttpPost("{recipeId}/migrate")]
+    [BasicAuth]
+    public async Task<IActionResult> MigrateRecipe(Guid recipeId)
+    {
+        var recipe = await context.GetRecipeAsync(recipeId);
+        if (recipe == null)
+        {
+            return NotFound();
+        }
+        var mpRecipe = new MultiPartRecipe(recipe);
+        context.MultiPartRecipes.Add(mpRecipe);
+        await context.SaveChangesAsync();
+
+        return this.Ok(mpRecipe);
+    }
+
     private bool RecipeExists(Guid id) => context.Recipes.Any(e => e.Id == id);
 
     [HttpPut("{containerId}/image")]

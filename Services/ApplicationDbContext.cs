@@ -24,6 +24,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<Cart> Carts { get; set; }
     public DbSet<Image> Images { get; set; }
+    public DbSet<MultiPartRecipe> MultiPartRecipes { get; set; }
 
     public async Task<Category> GetCategory(Guid id)
     {
