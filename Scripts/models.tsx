@@ -41,6 +41,25 @@ type Image = {
     id : string
 }
 
+type MultiPartRecipe = {
+    id : string,
+    name : string,
+    duration : number | undefined,
+    caloriesPerServing : number,
+    servingsProduced : number,
+    source: string,
+    categories : {name: string, id: string, isNew: boolean}[],
+    staticImage : string
+    recipeComponents: RecipeComponent[],
+}
+
+type RecipeComponent = {
+    id : string,
+    name : string,
+    ingredients : IngredientRequirement[] | undefined,
+    steps : RecipeStep[] | undefined,
+}
+
 type Recipe = {
     id : string,
     name : string,
@@ -48,8 +67,8 @@ type Recipe = {
     caloriesPerServing : number,
     servingsProduced : number,
     source: string,
-    ingredients : IngredientRequirement[],
-    steps : RecipeStep[],
+    ingredients : IngredientRequirement[] | undefined,
+    steps : RecipeStep[] | undefined,
     categories : {name: string, id: string, isNew: boolean}[],
     staticImage : string
 }

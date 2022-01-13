@@ -27,10 +27,10 @@ export class Step extends React.Component<{recipe: Recipe, recipeStep: RecipeSte
         // insert tooltip in each match
         let originalText = this.props.recipeStep.text
         let segments : Segment[] = [{ingredient: null, text: originalText}]
-        let ingredientRequirements = this.props.recipe.ingredients
-        for (let i = 0; i < ingredientRequirements.length; i++) {
+        let ingredientRequirements = this.props.recipe.ingredients ?? []
+        for (let i = 0; i < ingredientRequirements.length ?? 0; i++) {
             console.log(segments);
-            const element = ingredientRequirements[i];
+            const element = ingredientRequirements![i];
             let ingredientName = element.ingredient.name
             console.log(`Matching ingredient ${ingredientName}`);
             let ingredientRegex = new RegExp(`${ingredientName}`, 'i')

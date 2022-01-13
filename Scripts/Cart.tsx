@@ -147,8 +147,8 @@ class ShoppingCart extends React.Component<{}, CartState> {
         var allRecipeRequirements = this.state.cart?.recipeRequirement;
         // for each recipe, take their original ingredient requirement and multiply by the recipe requirement
         // for example, if recipeRequirement.quantity = 2 and ir.quantity = 2, then the new ir.quantity needs to be 4 = 2 * 2
-        var allIngredientRequirements : IngredientRequirement[] = allRecipeRequirements.flatMap((recipeRequirement, rrIndex) => {
-            return recipeRequirement.recipe.ingredients.map((ir, irIndex) => {
+        var allIngredientRequirements = allRecipeRequirements.flatMap((recipeRequirement, rrIndex) => {
+            return recipeRequirement.recipe.ingredients!.map((ir, irIndex) => {
                 return { ...ir, quantity: ir.quantity * recipeRequirement.quantity};
             })
         })

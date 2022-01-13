@@ -4,6 +4,8 @@ import { stringify, v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
 import { IngredientDisplay, IngredientInput } from './IngredientInput';
 import { Step } from './RecipeStep';
+import { IngredientRequirementList } from './IngredientRequirementList';
+import { RecipeStepList } from './RecipeStepList';
 
 type RecipeEditProps = {
     recipeId : string
@@ -19,6 +21,7 @@ type RecipeEditState = {
     newServings: number,
     error: boolean
 }
+
 class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 {
     constructor(props : RecipeEditProps) {
@@ -58,7 +61,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     if (myParam != null) {
                         newServings = parseInt(myParam);
                     }
-                    r.ingredients.sort((a,b) => a.position - b.position);
+                    r.ingredients?.sort((a,b) => a.position - b.position);
                     this.setState({
                         recipe: r,
                         newServings: newServings
@@ -84,16 +87,6 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 )
     }
 
-    ingredientEditGrid() {
-        return (
-            <Form>
-                { this.state.recipe.ingredients.map((i, idx) => this.ingredientEditRow(i, idx)) }
-                <Col xs={12}>
-                    <Button variant="outline-primary" className="width-100" onClick={_ => this.appendNewIngredientRequirementRow()}>New Ingredient</Button>
-                </Col>
-            </Form>
-        )
-    }
 
     appendNewIngredientRequirementRow(): void {
         var ir : IngredientRequirement = {
@@ -101,9 +94,9 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             unit: 'Cup',
             quantity: 0,
             id: uuidv4(),
-            position: this.state.recipe.ingredients.length
+            position: this.state.recipe.ingredients?.length ?? 0
         }
-        var newIrs = Array.from(this.state.recipe.ingredients)
+        var newIrs = Array.from(this.state.recipe.ingredients ?? [])
         newIrs.push(ir)
         this.setState({
             ...this.state,
@@ -114,68 +107,13 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         })
     }
 
-    ingredientEditRow(ir : IngredientRequirement, idx : number) {
-        // this.updateIngredientQuantity(ir, 10)
-        var id = ir.ingredient.id
-        if (ir.ingredient.id === '' || ir.ingredient.id === '00000000-0000-0000-0000-000000000000') {
-            id = idx.toString()
-        }
-        var unitOptions = this.state.units.map(unit => {
-            return <option key={unit} value={unit}>{unit}</option>
-        })
-        return (
-            <Row key={id} className="margin-bottom-8">
-                <Col key={`${id}quantity`} xs={2}>
-                    <Form.Control
-                        type="number"
-                        onChange={(e) => this.updateIngredientRequirement(ir, ir => { ir.quantity = parseFloat(e.target.value); return ir; } ) }
-                        placeholder={"0"}
-                        value={ir.quantity === 0.0 ? undefined : ir.quantity}></Form.Control>
-                </Col>
-                <Col key={`${id}unit`} xs={3}>
-                    <Form.Select
-                        onChange={(e) => this.updateIngredientRequirement(ir, ir => {ir.unit = e.currentTarget.value; return ir; })}
-                        value={ir.unit}>
-                        {
-                            unitOptions
-                        }
-                    </Form.Select>
-                </Col>
-                <Col className="get-smaller" key={`${id}name`} >
-                    <IngredientInput
-                        isNew={ir.ingredient.isNew}
-                        query={text => `/api/recipe/ingredients?name=${text}`}
-                        ingredient={ir.ingredient}
-                        className=""
-                        onSelect={(i, isNew) => this.updateIngredientRequirement(ir, ir => {
-                            ir.ingredient = i
-                            ir.ingredient.isNew = isNew
-                            if (isNew) {
-                                ir.id = uuidv4()
-                            }
-                            return ir
-                        })}/>
-                    {/* <Form.Control
-                        type="text"
-                        onChange={(e) => this.updateIngredientRequirement(ir, x => { x.ingredient.name = e.target.value; return x;})}
-                        value={ir.ingredient.name}
-                        placeholder="Ingredient name"></Form.Control> */}
-                </Col>
-                <Col key={`${id}delete`} xs={1} className="">
-                    <Button className="float-end" variant="danger">
-                        <i onClick={(_) => this.deleteIngredientRequirement(ir)} className="fas fa-trash-alt"></i>
-                    </Button>
-                </Col>
-            </Row>
-        )
-    }
 
     deleteIngredientRequirement(ir: IngredientRequirement) {
-        var newIrs = this.state.recipe.ingredients.filter(i => i.id !== ir.id)
-        for (let i = 0; i < newIrs.length; i++) {
-            const element = newIrs[i];
-            element.position = i;
-        }
+        var newIrs = this.state.recipe.ingredients?.filter(i => i.id !== ir.id).map((e, i) => {
+            e.position = i;
+            return e;
+        })
+
         this.setState({
             recipe: {
                 ...this.state.recipe,
@@ -185,9 +123,9 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
     }
 
     updateIngredientRequirement(ir: IngredientRequirement, update : (ir : IngredientRequirement) => IngredientRequirement) {
-        const idx = this.state.recipe.ingredients.findIndex(i => i.ingredient.id == ir.ingredient.id);
-        const newIr = update(this.state.recipe.ingredients[idx])
-        let newIrs = Array.from(this.state.recipe.ingredients)
+        const idx = this.state.recipe.ingredients!.findIndex(i => i.ingredient.id == ir.ingredient.id);
+        const newIr = update(this.state.recipe.ingredients![idx])
+        let newIrs = Array.from(this.state.recipe.ingredients!)
         newIrs[idx] = newIr
         this.setState({
             ...this.state,
@@ -198,58 +136,10 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         })
     }
 
-    stepEdit(): React.ReactNode {
-        return (
-            <Form>
-                { this.state.recipe.steps.map((i, idx) => this.stepEditRow(i, idx)) }
-                <Col xs={12}>
-                    <Button variant="outline-primary" className="width-100" onClick={_ => this.appendNewStep()}>New Step</Button>
-                </Col>
-            </Form>
-        )
-    }
 
-    stepEditRow(i: RecipeStep, idx: number): any {
-        return (
-            <Row>
-                <Col className="get-smaller">
-                    <FormControl
-                        as="textarea" 
-                        rows={4}
-                        className="margin-bottom-8"
-                        key={idx}
-                        type="text"
-                        placeholder="Recipe step"
-                        value={i.text}
-                        onChange={e => {
-                            let newSteps = Array.from(this.state.recipe.steps);
-                            newSteps[idx].text = e.target.value;
-                            this.setState({
-                                ...this.state,
-                                recipe: {
-                                    ...this.state.recipe,
-                                    steps: newSteps
-                                }
-                            })}
-                        }>
-                    </FormControl>
-                </Col>
-                <Col xs={1}>
-                    <Button className="float-end" variant="danger">
-                        <i onClick={(_) => this.setState({
-                            recipe: {
-                                ...this.state.recipe,
-                                steps: this.state.recipe.steps.filter((s,i) => i !== idx),
-                            }
-                        })} className="fas fa-trash-alt"></i>
-                    </Button>
-                </Col>
-            </Row>
-        )
-    }
 
     appendNewStep(): void {
-        var newSteps = Array.from(this.state.recipe.steps)
+        var newSteps = Array.from(this.state.recipe.steps ?? [])
         newSteps.push({text: ''})
         this.setState({
             recipe: {
@@ -258,23 +148,16 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             }
         })
     }
+    deleteStep(idx : number) {
+        this.setState({
+            recipe: {
+                ...this.state.recipe,
+                steps: this.state.recipe.steps?.filter((s, i) => i !== idx) ?? [],
+            }
+        })
+    }
 
     render() {
-        let ingredientComponents = this.state.recipe.ingredients.map(ingredient => {
-            let newQuantity = ingredient.quantity * this.state.newServings / this.state.recipe.servingsProduced;
-            return <Row className="ingredient-item"><IngredientDisplay ingredientRequirement={{...ingredient, quantity: newQuantity}} /></Row>
-        });
-
-        let stepComponetns = this.state.recipe.steps.map((step, index) => {
-            return (
-                <Row>
-                    <Col className="step-number">{index + 1}</Col>
-                    <Col className="margin-bottom-20" key={step.text}>
-                        <Step recipe={this.state.recipe} recipeStep={step} newServings={this.state.newServings} />
-                    </Col>
-                </Row>
-            )
-        });
 
         return (
             <div>
@@ -404,9 +287,14 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         </dt>
                         <dd className="col-sm-9">
                             <div className="ingredient-list">
-                            {this.state.edit ?
-                                this.ingredientEditGrid() : 
-                                ingredientComponents}
+                            <IngredientRequirementList
+                                ingredientRequirements={this.state.recipe.ingredients ?? []}
+                                onDelete={(ir) => this.deleteIngredientRequirement(ir)}
+                                onNewIngredientRequirement={() => this.appendNewIngredientRequirementRow()}
+                                updateIngredientRequirement={(ir, u) => this.updateIngredientRequirement(ir, u)}
+                                units={this.state.units}
+                                edit={this.state.edit}
+                                multiplier={this.state.newServings / this.state.recipe.servingsProduced}/>
                             </div>
                         </dd>
                     </Row>
@@ -416,9 +304,21 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         </dt>
                         <dd className="col-sm-9">
                             <div className="step-list">
-                                {this.state.edit ? 
-                                    this.stepEdit() :
-                                    stepComponetns}
+                                <RecipeStepList
+                                 recipe={this.state.recipe}
+                                 newServings={this.state.newServings}
+                                 edit={this.state.edit}
+                                 onDelete={(idx) => this.deleteStep(idx)}
+                                 onChange={(newSteps) => {
+                                    this.setState({
+                                        ...this.state,
+                                        recipe: {
+                                            ...this.state.recipe,
+                                            steps: newSteps
+                                        }
+                                    })}
+                                 }
+                                 onNewStep={() => this.appendNewStep()}/>
                             </div>
                         </dd>
                     </Row>
@@ -451,12 +351,22 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     <Col>
                         <Button variant="danger" className="width-100 margin-bottom-15" onClick={_ => this.onDelete()}>Delete</Button>
                     </Col>
+                    <Col>
+                        <Button variant="danger" className="width-100 margin-bottom-15" onClick={_ => this.onMigrate()}>Migrate</Button>
+                    </Col>
                 </Row>
             </Col>
             :
             <Col>
                 <Button className="float-end" onClick={(event) => this.setState({ edit: !this.state.edit })}>Edit</Button>
             </Col>;
+    }
+    onMigrate(): void {
+        fetch(`/api/Recipe/${this.props.recipeId}/migrate`, {
+            method: 'POST',
+        }).then(response => {
+            console.log(response.json())
+        })
     }
 
     onDelete(): void {
@@ -472,8 +382,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
     }
 
     onSave() {
-        var filteredSteps = Array.from(this.state.recipe.steps).filter(step => step.text != null && step.text != '');
-        var filteredIngredients = Array.from(this.state.recipe.ingredients).filter(ingredient => ingredient.ingredient.name != null && ingredient.ingredient.name != '');
+        var filteredSteps = Array.from(this.state.recipe.steps ?? []).filter(step => step.text != null && step.text != '');
+        var filteredIngredients = Array.from(this.state.recipe.ingredients ?? []).filter(ingredient => ingredient.ingredient.name != null && ingredient.ingredient.name != '');
         let newState = {
             ...this.state,
             recipe: {
