@@ -32,6 +32,7 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
                 <Col key={`${id}quantity`} xs={2}>
                     <Form.Control
                         type="number"
+                        min="0"
                         onChange={(e) => this.props.updateIngredientRequirement(ir, ir => { ir.quantity = parseFloat(e.target.value); return ir; } ) }
                         placeholder={"0"}
                         value={ir.quantity === 0.0 ? undefined : ir.quantity}></Form.Control>

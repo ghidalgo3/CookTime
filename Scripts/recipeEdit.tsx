@@ -199,6 +199,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                             {this.state.edit ?
                                 <Form.Control
                                     type="number"
+                                    min="0"
                                     onChange={(e) => this.setState({recipe: {...this.state.recipe, caloriesPerServing: parseInt(e.target.value)}})}
                                     value={this.state.recipe.caloriesPerServing}></Form.Control> :
                                 <div>{this.state.recipe.caloriesPerServing}</div> }
