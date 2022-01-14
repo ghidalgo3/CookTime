@@ -1,20 +1,16 @@
 @model babe_algorithms.ViewComponents.NavBarViewComponent
-<header></header>
+
+<header>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
         <div class="container">
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">KookTime</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse d-sm-inline-flex" id="navbarSupportedContent">
-                <ul class="navbar-nav flex-grow-1">
-
-                    <span class="nav-item">
-                        <a class="nav-link text-dark" href="/Cart"><i class="fas fa-shopping-cart"></i></a> 
-                    </span>
-                </ul>
+            <div class="navbar-nav me-auto">
+                <a class="nav-link text-dark" href="/Cart"><i class="fas fa-shopping-cart"></i></a> 
             </div>
+            <form class="d-flex">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-primary" type="submit">Search</button>
+            </form>
         </div>
     </nav>
 </header>

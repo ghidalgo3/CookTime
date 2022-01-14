@@ -52,7 +52,7 @@ export class RecipeStepList extends React.Component<RecipeStepListProps, {}> {
                     <Button
                         variant="outline-primary"
                         className="width-100"
-                        onClick={(_) => this.props.onNewStep()}>New Step</Button>
+                        onClick={(_) => this.props.onNewStep()}>New step</Button>
                 </Col>
             </Form>
         )

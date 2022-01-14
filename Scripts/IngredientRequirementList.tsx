@@ -86,7 +86,7 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
                 <Form>
                     { this.props.ingredientRequirements?.map((i, idx) => this.ingredientEditRow(i, idx)) }
                     <Col xs={12}>
-                        <Button variant="outline-primary" className="width-100" onClick={_ => this.props.onNewIngredientRequirement()}>New Ingredient</Button>
+                        <Button variant="outline-primary" className="width-100" onClick={_ => this.props.onNewIngredientRequirement()}>New ingredient</Button>
                     </Col>
                 </Form>
             )
