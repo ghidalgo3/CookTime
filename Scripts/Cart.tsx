@@ -56,6 +56,7 @@ class ShoppingCart extends React.Component<{}, CartState> {
 
     render() {
         let recipes = this.state.cart?.recipeRequirement.map((r, rIndex) => {
+            let recipe = r.recipe ?? r.multiPartRecipe;
             return (
                 <Row key={rIndex} className="align-items-center padding-left-0 margin-top-10">
                     <Col className="recipe-counter-column">
@@ -76,15 +77,15 @@ class ShoppingCart extends React.Component<{}, CartState> {
                                     }
                                 }}
                                 className="form-control count"
-                                value={Math.round(r.quantity * r.recipe.servingsProduced)} />
+                                value={Math.round(r.quantity * recipe.servingsProduced)} />
                             <i
                                 onClick={(_) => this.addToRecipeRequirement(rIndex, 1)}
                                 className="fas fa-plus-circle green-earth-color"></i>
                         </div> 
                     </Col>
                     <Col>
-                        <div key={r.recipe.id}>
-                            <a href={`/Recipes/Details?id=${r.recipe.id}&servings=${r.quantity * r.recipe.servingsProduced}`}>{r.recipe.name}</a> 
+                        <div key={recipe.id}>
+                            <a href={`/Recipes/Details?id=${recipe.id}&servings=${r.quantity * recipe.servingsProduced}`}>{recipe.name}</a> 
                             <i className="fas fa-trash deep-water-color padding-left-12" onClick={(_) => this.onDeleteRecipe(rIndex)}></i>
                         </div>
                     </Col>
@@ -120,7 +121,8 @@ class ShoppingCart extends React.Component<{}, CartState> {
 
     addToRecipeRequirement(rIndex : number, arg1: number): void {
         var newRRequirements = Array.from(this.state.cart.recipeRequirement);
-        newRRequirements[rIndex].quantity += (arg1 / newRRequirements[rIndex].recipe.servingsProduced);
+        let denominator = newRRequirements[rIndex].recipe?.servingsProduced ?? newRRequirements[rIndex].multiPartRecipe.servingsProduced;
+        newRRequirements[rIndex].quantity += (arg1 / denominator);
         let newCart = {...this.state.cart, recipeRequirement: newRRequirements}
         this.setState({cart : newCart});
         this.PutCart(newCart);
@@ -128,7 +130,8 @@ class ShoppingCart extends React.Component<{}, CartState> {
 
     setRecipeRequirement(rIndex : number, newQuantity : number) : void {
         var newRRequirements = Array.from(this.state.cart.recipeRequirement);
-        newRRequirements[rIndex].quantity = (newQuantity / newRRequirements[rIndex].recipe.servingsProduced);
+        let denominator = newRRequirements[rIndex].recipe?.servingsProduced ?? newRRequirements[rIndex].multiPartRecipe.servingsProduced;
+        newRRequirements[rIndex].quantity = (newQuantity / denominator);
         let newCart = {...this.state.cart, recipeRequirement: newRRequirements}
         this.setState({cart : newCart});
         this.PutCart(newCart);
@@ -148,9 +151,17 @@ class ShoppingCart extends React.Component<{}, CartState> {
         // for each recipe, take their original ingredient requirement and multiply by the recipe requirement
         // for example, if recipeRequirement.quantity = 2 and ir.quantity = 2, then the new ir.quantity needs to be 4 = 2 * 2
         var allIngredientRequirements = allRecipeRequirements.flatMap((recipeRequirement, rrIndex) => {
-            return recipeRequirement.recipe.ingredients!.map((ir, irIndex) => {
-                return { ...ir, quantity: ir.quantity * recipeRequirement.quantity};
-            })
+            if (recipeRequirement.recipe !== null) {
+                return recipeRequirement.recipe.ingredients!.map((ir, irIndex) => {
+                    return { ...ir, quantity: ir.quantity * recipeRequirement.quantity};
+                })
+            } else {
+                return recipeRequirement.multiPartRecipe.recipeComponents.flatMap(component => {
+                    return component.ingredients!.map((ir, irIndex) => {
+                        return { ...ir, quantity: ir.quantity * recipeRequirement.quantity};
+                    })
+                })
+            }
         })
         var reducedIngredientRequirements : IngredientRequirement[] = []
         // now we need to add them all up

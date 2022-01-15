@@ -1,15 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using babe_algorithms.Models;
 using babe_algorithms.Services;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Npgsql;
 
 namespace babe_algorithms;
@@ -48,6 +38,7 @@ public class Program
                 using var conn = (NpgsqlConnection)context.Database.GetDbConnection();
                 conn.Open();
                 conn.ReloadTypes();
+                // context = services.GetRequiredService<ApplicationDbContext>();
                 // InitializeDatabase(context);
             }
         }

@@ -2,10 +2,14 @@
 @model babe_algorithms.Pages.Recipes.DetailsModel
 
 @{
-    ViewData["Title"] = Model.Recipe.Name;
+    ViewData["Title"] = Model.Name;
     Layout = "_Layout";
-    var recipeId = Model.Recipe.Id;
+    var isMultipart = Model.IsMultipart;
+    var recipeId = Model.Id;
 
 }
-<div id="recipeEdit" data-recipe-id="@recipeId"></div>
+<div
+    id="recipeEdit"
+    data-recipe-id="@recipeId"
+    data-multipart="@isMultipart"></div>
 <script type="text/javascript" src="~/js/recipeEdit.js" asp-append-version="true"></script>

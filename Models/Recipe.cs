@@ -1,6 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Converters;
+
 namespace babe_algorithms;
 
-public class Recipe : IImageContainer
+public class Recipe : IImageContainer, IRecipeComponent<RecipeStep, IngredientRequirement>
 {
     [Required]
     public string Name { get; set; }
@@ -18,4 +21,28 @@ public class Recipe : IImageContainer
     /// The source where the recipe came from.
     /// </summary>
     public string Source { get; set; }
+}
+
+[Owned]
+public class RecipeStep : IRecipeStep
+{
+    public string Text { get; set; }
+}
+
+[Owned]
+public class IngredientRequirement : IIngredientRequirement
+{
+    public Guid Id { get; set; }
+
+    public Ingredient Ingredient { get; set; }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public Unit Unit { get; set; }
+
+    public double Quantity { get; set; }
+
+    /// <summary>
+    /// The position this ingredient should be placed in.
+    /// </summary>
+    public int Position { get; set; }
 }
