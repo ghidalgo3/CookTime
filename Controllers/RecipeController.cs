@@ -25,6 +25,28 @@ public class RecipeController : ControllerBase, IImageController
     public ActionResult<IEnumerable<string>> GetUnits() =>
         this.Ok(Enum.GetValues<Unit>().Select(v => v.ToString()));
 
+    [HttpPost("{recipeId}/migrate")]
+    [BasicAuth]
+    public async Task<IActionResult> MigrateRecipe(Guid recipeId)
+    {
+        var recipe = await context.GetRecipeAsync(recipeId);
+        if (recipe == null)
+        {
+            return NotFound();
+        }
+        var mpRecipe = new MultiPartRecipe(recipe);
+        context.MultiPartRecipes.Add(mpRecipe);
+        await context.SaveChangesAsync();
+
+        var cart = await context.GetActiveCartAsync();
+        cart.RecipeRequirement = cart.RecipeRequirement.Where(rr => rr.Recipe?.Id != recipe.Id).ToList();
+
+        context.Recipes.Remove(recipe);
+        await context.SaveChangesAsync();
+
+        return this.RedirectToPage("/Recipes/Details", new { id = mpRecipe.Id });
+    }
+
     // GET: api/Recipe/5
     [HttpGet("{id}")]
     public async Task<ActionResult<Recipe>> GetRecipe(Guid id)
@@ -71,9 +93,7 @@ public class RecipeController : ControllerBase, IImageController
         else
         {
             context.Entry(existingRecipe).CurrentValues.SetValues(recipe);
-            var currentIngredients = existingRecipe.Ingredients;
-            existingRecipe.Ingredients = new List<IngredientRequirement>();
-            await CopyIngredients(recipe, existingRecipe, currentIngredients);
+            await CopyIngredients(this.context, recipe, existingRecipe);
             existingRecipe.Steps = recipe.Steps.Where(s => !string.IsNullOrWhiteSpace(s.Text)).ToList();
             // update
             context.Recipes.Update(existingRecipe);
@@ -98,12 +118,16 @@ public class RecipeController : ControllerBase, IImageController
         return Ok(existingRecipe);
     }
 
-    private async Task CopyIngredients(
-        Recipe recipe,
-        Recipe existingRecipe,
-        List<IngredientRequirement> currentIngredients)
+    public static async Task CopyIngredients<TRecipeStep, TIngredientRequirement>(
+        ApplicationDbContext context,
+        IRecipeComponent<TRecipeStep, TIngredientRequirement> payloadComponent,
+        IRecipeComponent<TRecipeStep, TIngredientRequirement> existingComponent)
+        where TRecipeStep : IRecipeStep
+        where TIngredientRequirement : IIngredientRequirement
     {
-        foreach (var ingredientRequirement in recipe.Ingredients)
+        var currentIngredients = existingComponent.Ingredients;
+        existingComponent.Ingredients = new List<TIngredientRequirement>();
+        foreach (var ingredientRequirement in payloadComponent.Ingredients)
         {
             var matching = currentIngredients
                 .FirstOrDefault(ir =>
@@ -123,7 +147,7 @@ public class RecipeController : ControllerBase, IImageController
                     ingredientRequirement.Ingredient = existingIngredient;
                 }
                 // new ingredient requirement
-                existingRecipe.Ingredients.Add(ingredientRequirement);
+                existingComponent.Ingredients.Add(ingredientRequirement);
             }
             else
             {
@@ -144,7 +168,7 @@ public class RecipeController : ControllerBase, IImageController
                     matching.Ingredient = ingredient;
                 }
                 // Are you actually changing the ingredient being referenced?
-                existingRecipe.Ingredients.Add(matching);
+                existingComponent.Ingredients.Add(matching);
             }
         }
     }

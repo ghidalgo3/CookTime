@@ -8,6 +8,7 @@ type Cart = {
 
 type RecipeRequirement = {
     recipe : Recipe,
+    multiPartRecipe : MultiPartRecipe,
     quantity : number,
     id: string
 }
@@ -58,6 +59,7 @@ type RecipeComponent = {
     name : string,
     ingredients : IngredientRequirement[] | undefined,
     steps : RecipeStep[] | undefined,
+    position : number
 }
 
 type Recipe = {

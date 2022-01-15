@@ -19,7 +19,7 @@ public class CreateModel : PageModel
     }
 
     [BindProperty]
-    public Recipe Recipe { get; set; }
+    public MultiPartRecipe Recipe { get; set; }
 
     // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
     public async Task<IActionResult> OnPostAsync()
@@ -28,8 +28,12 @@ public class CreateModel : PageModel
         {
             return Page();
         }
+        this.Recipe.RecipeComponents.Add(new RecipeComponent()
+        {
+            Name = this.Recipe.Name,
+        });
 
-        _context.Recipes.Add(Recipe);
+        _context.MultiPartRecipes.Add(Recipe);
         await _context.SaveChangesAsync();
 
         return RedirectToPage("/Recipes/Details", new { id = this.Recipe.Id });

@@ -18,7 +18,9 @@ public class DetailsModel : PageModel
         _context = context;
     }
 
-    public Recipe Recipe { get; set; }
+    public string Name { get; set; }
+    public Guid Id { get; set; }
+    public bool IsMultipart { get; set; }
 
     public async Task<IActionResult> OnGetAsync(Guid? id)
     {
@@ -27,16 +29,24 @@ public class DetailsModel : PageModel
             return NotFound();
         }
 
-        Recipe = await _context.Recipes
-            .Include(recipe => recipe.Ingredients)
-                .ThenInclude(ir => ir.Ingredient)
-            .Include(recipe => recipe.Categories)
-            .FirstOrDefaultAsync(m => m.Id == id);
-
-        if (Recipe == null)
+        var simpleRecipe = await _context.Recipes.FindAsync(id);
+        if (simpleRecipe == null)
         {
-            return NotFound();
+            var complex = await _context.MultiPartRecipes.FindAsync(id);
+            if (complex == null)
+            {
+                return this.NotFound();
+            }
+            this.IsMultipart = true;
+            this.Name = complex.Name;
+            this.Id = complex.Id;
         }
+        else
+        {
+            this.Name = simpleRecipe.Name;
+            this.Id = simpleRecipe.Id;
+        }
+
         return Page();
     }
 }

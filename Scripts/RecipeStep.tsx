@@ -4,7 +4,12 @@ type Segment = {
     ingredient : IngredientRequirement | null,
     text : string
 }
-export class Step extends React.Component<{recipe: Recipe, recipeStep: RecipeStep, newServings: number}, {}>
+export class Step extends React.Component<{
+    recipe: Recipe | MultiPartRecipe,
+    recipeStep: RecipeStep,
+    multipart : boolean,
+    component? : RecipeComponent,
+    newServings: number}, {}>
 {
     constructor(props) {
         super(props);
@@ -27,7 +32,13 @@ export class Step extends React.Component<{recipe: Recipe, recipeStep: RecipeSte
         // insert tooltip in each match
         let originalText = this.props.recipeStep.text
         let segments : Segment[] = [{ingredient: null, text: originalText}]
-        let ingredientRequirements = this.props.recipe.ingredients ?? []
+        let ingredientRequirements : IngredientRequirement[] = []
+        if (this.props.multipart) {
+            ingredientRequirements = this.props.component!.ingredients!
+        } else {
+            ingredientRequirements = (this.props.recipe as Recipe).ingredients ?? []
+        }
+
         for (let i = 0; i < ingredientRequirements.length ?? 0; i++) {
             console.log(segments);
             const element = ingredientRequirements![i];

@@ -20,6 +20,7 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<Recipe> Recipes { get; set; }
+    public DbSet<MultiPartRecipe> MultiPartRecipes { get; set; }
     public DbSet<Ingredient> Ingredients { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Cart> Carts { get; set; }
@@ -39,6 +40,19 @@ public class ApplicationDbContext : DbContext
         return recipe.Categories.Any(c => c.Id == categoryId);
     }
 
+    public async Task<MultiPartRecipe> GetMultiPartRecipeAsync(Guid id)
+    {
+        return await this.MultiPartRecipes
+            .Include(mpr => mpr.RecipeComponents)
+                .ThenInclude(component => component.Ingredients)
+                    .ThenInclude(ingredient => ingredient.Ingredient)
+            .Include(mpr => mpr.RecipeComponents)
+                .ThenInclude(component => component.Steps)
+            .Include(recipe => recipe.Categories)
+            .Include(recipe => recipe.Images)
+            .SingleOrDefaultAsync(recipe => recipe.Id == id);
+    }
+
     public async Task<Recipe> GetRecipeAsync(Guid id)
     {
         return await this.Recipes
@@ -46,7 +60,7 @@ public class ApplicationDbContext : DbContext
                 .ThenInclude(ir => ir.Ingredient)
             .Include(recipe => recipe.Categories)
             .Include(recipe => recipe.Images)
-            .SingleAsync(recipe => recipe.Id == id);
+            .SingleOrDefaultAsync(recipe => recipe.Id == id);
     }
 
     public Ingredient GetIngredient(Guid id)
@@ -58,6 +72,11 @@ public class ApplicationDbContext : DbContext
     {
         var activeCart = await this.Carts
             .Where(c => c.Active)
+            .Include(c => c.RecipeRequirement)
+                .ThenInclude(rr => rr.MultiPartRecipe)
+                    .ThenInclude(mpRecipe => mpRecipe.RecipeComponents)
+                        .ThenInclude(c => c.Ingredients)
+                            .ThenInclude(i => i.Ingredient)
             .Include(c => c.RecipeRequirement)
                 .ThenInclude(rr => rr.Recipe)
                     .ThenInclude(recipe => recipe.Ingredients)
