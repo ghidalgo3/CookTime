@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Alert, Button, Col, Form, FormControl, FormText, Row } from 'react-bootstrap';
+import { Alert, Button, Col, Form, FormControl, FormText, Row, Spinner } from 'react-bootstrap';
 import { stringify, v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
 import { IngredientDisplay, IngredientInput } from './IngredientInput';
@@ -20,7 +20,8 @@ type RecipeEditState = {
     edit : boolean,
     units: string[],
     newServings: number,
-    error: boolean
+    error: boolean,
+    operationInProgress: boolean,
 }
 
 class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
@@ -47,6 +48,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 staticImage: ''
             },
             newServings: 1,
+            operationInProgress: false,
         }
     }
 
@@ -630,7 +632,19 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             <Col>
                 <Row>
                     <Col>
-                        <Button className="width-100" onClick={_ => this.onSave()}>Save</Button>
+                        <Button className="width-100" onClick={_ => this.onSave()}>
+                            {
+                                this.state.operationInProgress ?
+                                    <Spinner
+                                        as="span"
+                                        animation="border"
+                                        size="sm"
+                                        role="status"
+                                        aria-hidden="true"
+                                        /> 
+                                    : "Save"
+                            }
+                        </Button>
                     </Col>
                     <Col>
                         <Button variant="danger" className="width-100 margin-bottom-15" onClick={_ => this.onDelete()}>Delete</Button>
@@ -684,6 +698,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
     }
 
     onSave() {
+        this.setState({ operationInProgress: true });
         if (!this.props.multipart) {
             this.saveSimpleRecipe();
         } else {
@@ -711,7 +726,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     this.setState({
                         ...this.state,
                         recipe: r as MultiPartRecipe,
-                        edit: false
+                        edit: false,
+                        operationInProgress: false
                     });
                 });
             } else {
@@ -756,7 +772,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     this.setState({
                         ...this.state,
                         recipe: r as Recipe,
-                        edit: false
+                        edit: false,
+                        operationInProgress: false
                     });
                 });
             } else {
