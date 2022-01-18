@@ -7,7 +7,7 @@ type RecipeStepListProps = {
     newServings : number,
     multipart : boolean,
     component? : RecipeComponent,
-    onDelete : (i : number) => void,
+    onDeleteStep : (i : number, component? : RecipeComponent) => void,
     onChange : (newSteps: RecipeStep[]) => void,
     onNewStep: () => void,
     edit: boolean
@@ -45,7 +45,7 @@ export class RecipeStepList extends React.Component<RecipeStepListProps, {}> {
                 </Col>
                 <Col xs={1}>
                     <Button className="float-end" variant="danger">
-                        <i onClick={(_) => this.props.onDelete(idx)} className="fas fa-trash-alt"></i>
+                        <i onClick={(_) => this.props.onDeleteStep(idx, this.props.component)} className="fas fa-trash-alt"></i>
                     </Button>
                 </Col>
             </Row>

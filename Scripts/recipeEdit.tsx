@@ -277,13 +277,25 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         }
     }
 
-    deleteStep(idx : number) {
+    deleteStep(idx : number, component? : RecipeComponent) {
         if (!this.props.multipart) {
-            var recipe = (this.state.recipe as Recipe)
+            let recipe = (this.state.recipe as Recipe)
             this.setState({
                 recipe: {
                     ...this.state.recipe,
                     steps: recipe.steps?.filter((s, i) => i !== idx) ?? [],
+                }
+            })
+        } else {
+            let mpRecipe = (this.state.recipe as MultiPartRecipe)
+            let newComponents = Array.from(mpRecipe.recipeComponents);
+            let modifiedIndex = newComponents.findIndex(c => c.id === component!.id);
+            let newSteps = component?.steps?.filter((_, i) => i !== idx)
+            newComponents[modifiedIndex].steps = newSteps
+            this.setState({
+                recipe: {
+                    ...mpRecipe,
+                    recipeComponents: newComponents,
                 }
             })
         }
@@ -544,7 +556,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 component={component}
                                 newServings={this.state.newServings}
                                 edit={this.state.edit}
-                                onDelete={(idx) => this.deleteStep(idx)}
+                                onDeleteStep={(idx) => this.deleteStep(idx, component)}
                                 onChange={(newSteps) => {
                                     this.setState({
                                         ...this.state,
@@ -594,7 +606,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 recipe={r}
                                 newServings={this.state.newServings}
                                 edit={this.state.edit}
-                                onDelete={(idx) => this.deleteStep(idx)}
+                                onDeleteStep={(idx, _) => this.deleteStep(idx)}
                                 onChange={(newSteps) => {
                                     this.setState({
                                         ...this.state,
