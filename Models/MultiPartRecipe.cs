@@ -47,6 +47,7 @@ public class MultiPartRecipe : IImageContainer
     /// The source where the recipe came from.
     /// </summary>
     public string Source { get; set; }
+    [JsonIgnore]
     public NpgsqlTsVector SearchVector { get; set; }
 }
 
