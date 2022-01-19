@@ -21,7 +21,7 @@ export class RecipeStepList extends React.Component<RecipeStepListProps, {}> {
     stepEditRow(i: RecipeStep, idx: number): any {
         return (
             <Row>
-                <Col className="get-smaller">
+                <Col className="col d-flex align-items-center">
                     <FormControl
                         as="textarea" 
                         rows={4}
@@ -76,7 +76,7 @@ export class RecipeStepList extends React.Component<RecipeStepListProps, {}> {
                 return (
                     <Row>
                         <Col className="step-number">{index + 1}</Col>
-                        <Col className="margin-bottom-20" key={step.text}>
+                        <Col className="margin-bottom-12" key={step.text}>
                             <Step
                                 multipart={this.props.multipart}
                                 recipe={this.props.recipe}
@@ -91,7 +91,7 @@ export class RecipeStepList extends React.Component<RecipeStepListProps, {}> {
                 return (
                     <Row>
                         <Col className="step-number">{index + 1}</Col>
-                        <Col className="margin-bottom-20" key={step.text}>
+                        <Col className="margin-bottom-12" key={step.text}>
                             <Step
                                 multipart={this.props.multipart}
                                 recipe={this.props.recipe}

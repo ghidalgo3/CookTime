@@ -262,6 +262,10 @@ body {
   margin-bottom: 8px;
 }
 
+.margin-bottom-12 {
+  margin-bottom: 12px;
+}
+
 .margin-bottom-20 {
   margin-bottom: 20px;
 }
@@ -315,6 +319,12 @@ body {
 .ingredient-list {
   padding-left: 0px;
   margin-bottom: 8px;
+  width: 100%;
+}
+
+.step-list {
+  padding-left: 0px;
+  width: 100%;
 }
 
 .ingredient-item {
@@ -339,11 +349,13 @@ body {
   .step-list {
     padding-left: 4px;
     margin-top: 8px;
+    width: 100%;
   }
 
   .ingredient-list {
     padding-left: 4px;
     margin-top: 8px;
+    width: 100%;
   }
 
   .serving-counter {

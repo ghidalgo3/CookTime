@@ -376,7 +376,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                             }
                         </Col>
                     </Row>
-                {this.state.recipe.source == '' && !this.state.edit ? null :
+                {(this.state.recipe.source == '' || this.state.recipe.source == null) && !this.state.edit ? null :
                     <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                         <Col className="col-3 recipe-field-title">
                             LINK TO ORIGINAL RECIPE
@@ -496,33 +496,40 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     <Col className="col-3 recipe-field-title">
                         COMPONENT NAME
                     </Col>
-                    <Col className="col d-flex align-items-center">
-                        {this.state.edit ?
-                            <Form.Control
-                                type="text"
-                                onChange={(e) => {
-                                    let newComponents = Array.from(recipe.recipeComponents);
-                                    newComponents[componentIndex].name = e.target.value
-                                    this.setState({
-                                        recipe: {
-                                            ...recipe,
-                                            recipeComponents: newComponents
-                                        }
-                                    })
-                                }}
-                                value={component.name}></Form.Control> :
-                            <div>{component.name}</div> }
-                    </Col>
-                    <Col className="col-sm-1">
-                        <Button className="float-end" variant="danger">
-                            <i onClick={(_) => this.deleteComponent(recipe, componentIndex)}
-                                className="fas fa-trash-alt"></i>
-                        </Button>
+                    <Col>
+                        <Row>
+                            <Col className="col d-flex align-items-center">
+                                {this.state.edit ?
+                                    <Form.Control
+                                        type="text"
+                                        onChange={(e) => {
+                                            let newComponents = Array.from(recipe.recipeComponents);
+                                            newComponents[componentIndex].name = e.target.value
+                                            this.setState({
+                                                recipe: {
+                                                    ...recipe,
+                                                    recipeComponents: newComponents
+                                                }
+                                            })
+                                        }}
+                                        value={component.name}></Form.Control> :
+                                    <div>{component.name}</div> }
+                            </Col>
+                            {this.state.edit ?
+                                <Col xs={1}>
+                                    <Button className="float-end" variant="danger">
+                                        <i onClick={(_) => this.deleteComponent(recipe, componentIndex)}
+                                            className="fas fa-trash-alt"></i>
+                                    </Button>
+                                </Col> 
+                                : null
+                            }
+                        </Row>
                     </Col>
                 </Row>
                 : null
                 }
-                <Row className="padding-right-0 recipe-edit-row ">
+                <Row className="padding-right-0 recipe-edit-row">
                     <Col className="col-3 recipe-field-title margin-top-8">
                         INGREDIENTS
                     </Col>
@@ -539,8 +546,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         </div>
                     </Col>
                 </Row>
-                <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
-                    <Col className="col-3 recipe-field-title">
+                <Row className="padding-right-0">
+                    <Col className="col-3 recipe-field-title margin-top-8">
                         DIRECTIONS
                     </Col>
                     <Col className="col d-flex align-items-center">
