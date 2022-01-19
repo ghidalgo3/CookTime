@@ -308,25 +308,25 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 null} */}
                 { this.image() }
 
-                <dl className="row">
-                    <Row className="padding-right-0">
-                        <dt className="col-sm-3">
+                <div>
+                    <Row className="padding-right-0 d-flex align-items-center recipe-edit-row margin-top-20">
+                        <Col className="col-3 recipe-field-title">
                             NAME
-                        </dt>
-                        <dd className="col-sm-9">
+                        </Col>
+                        <Col className="col d-flex align-items-center">
                             {this.state.edit ?
                                 <Form.Control
                                     type="text"
                                     onChange={(e) => this.setState({recipe: {...this.state.recipe, name: e.target.value}})}
                                     value={this.state.recipe.name}></Form.Control> :
                                 <div>{this.state.recipe.name}</div> }
-                        </dd>
+                        </Col>
                     </Row>
-                    <Row className="padding-right-0">
-                        <dt className="col-sm-3 detail-header">
+                    <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
+                        <Col className="col-3 recipe-field-title">
                             CALORIES PER SERVING
-                        </dt>
-                        <dd className="col-sm-9">
+                        </Col>
+                        <Col className="col d-flex align-items-center">
                             {this.state.edit ?
                                 <Form.Control
                                     type="number"
@@ -334,13 +334,13 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                     onChange={(e) => this.setState({recipe: {...this.state.recipe, caloriesPerServing: parseInt(e.target.value)}})}
                                     value={this.state.recipe.caloriesPerServing}></Form.Control> :
                                 <div>{this.state.recipe.caloriesPerServing}</div> }
-                        </dd>
+                        </Col>
                     </Row>
-                    <Row className="padding-right-0">
-                        <dt className="col-sm-3 detail-header">
+                    <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
+                        <Col className="col-3 recipe-field-title">
                             SERVINGS
-                        </dt>
-                        <dd className="col-sm-9">
+                        </Col>
+                        <Col className="col d-flex align-items-center">
                             {this.state.edit ?
                                 <Form.Control
                                     type="number"
@@ -362,30 +362,30 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                     
                                 </div> 
                             }
-                        </dd>
+                        </Col>
                     </Row>
                 {this.state.recipe.source == '' && !this.state.edit ? null :
-                    <Row className="padding-right-0">
-                        <dt className="col-sm-3 detail-header">
+                    <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
+                        <Col className="col-3 recipe-field-title">
                             LINK TO ORIGINAL RECIPE
-                        </dt>
-                        <dd className="col-sm-9">
+                        </Col>
+                        <Col className="col d-flex align-items-center">
                             {this.state.edit ?
                                 <Form.Control
                                     type="text"
                                     onChange={(e) => this.setState({recipe: {...this.state.recipe, source: e.target.value}})}
                                     value={this.state.recipe.source}></Form.Control> :
                                 <div>{this.state.recipe.source}</div> }
-                        </dd>
+                        </Col>
                     </Row>
                 }
                     {this.state.edit ? 
-                        <Row className="padding-right-0">
-                            <dt className="col-sm-3 detail-header">
+                        <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
+                            <Col className="col-3 recipe-field-title">
                                 IMAGE
-                            </dt>
-                            <dd className="col-sm-9">
-                                <Form.Group controlId="formFile" className="mb-3">
+                            </Col>
+                            <Col className="col d-flex align-items-center">
+                                <Form.Group controlId="formFile" className="image-selector">
                                     <Form.Control
                                         type="file"
                                         accept=".jpg,.jpeg,.png"
@@ -408,13 +408,13 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                             }
                                         }}/>
                                 </Form.Group>
-                            </dd>
+                            </Col>
                         </Row> 
                         : 
                         null
                     }
                     {this.RecipeOrComponents()}
-                </dl>
+                </div>
             </div>
         );
     }
@@ -436,7 +436,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 <Button
                                     variant="outline-primary"
                                     className="width-100"
-                                    onClick={(_) => this.appendNewComponent()}>New Component</Button>
+                                    onClick={(_) => this.appendNewComponent()}>New component</Button>
                             </Col>
                         </Form>
                         : null}
@@ -478,48 +478,43 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         recipe : MultiPartRecipe,
         component : RecipeComponent) {
         return (
-            <div>
+            <div className="card margin-bottom-20 component-card">
                 {recipe.recipeComponents.length > 1 ? 
-                <Col>
-                    <Row className="padding-right-0">
-                        <dt className="col-sm-3">
-                            COMPONENT NAME
-                        </dt>
-                        <dd className="col-sm-6">
-                            {this.state.edit ?
-                                <Form.Control
-                                    type="text"
-                                    onChange={(e) => {
-                                        let newComponents = Array.from(recipe.recipeComponents);
-                                        newComponents[componentIndex].name = e.target.value
-                                        this.setState({
-                                            recipe: {
-                                                ...recipe,
-                                                recipeComponents: newComponents
-                                            }
-                                        })
-                                    }}
-                                    value={component.name}></Form.Control> :
-                                <div>{component.name}</div> }
-                        </dd>
-                        {this.state.edit && recipe.recipeComponents.length > 1 ?
-                            <div className="col-sm-3">
-                                <Button className="float-end" variant="danger">
-                                    <i
-                                        onClick={(_) => this.deleteComponent(recipe, componentIndex)}
-                                        className="fas fa-trash-alt"></i>
-                                </Button>
-                            </div>
-                        : null}
-                    </Row>
-                </Col>
+                <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
+                    <Col className="col-3 recipe-field-title">
+                        COMPONENT NAME
+                    </Col>
+                    <Col className="col d-flex align-items-center">
+                        {this.state.edit ?
+                            <Form.Control
+                                type="text"
+                                onChange={(e) => {
+                                    let newComponents = Array.from(recipe.recipeComponents);
+                                    newComponents[componentIndex].name = e.target.value
+                                    this.setState({
+                                        recipe: {
+                                            ...recipe,
+                                            recipeComponents: newComponents
+                                        }
+                                    })
+                                }}
+                                value={component.name}></Form.Control> :
+                            <div>{component.name}</div> }
+                    </Col>
+                    <Col className="col-sm-1">
+                        <Button className="float-end" variant="danger">
+                            <i onClick={(_) => this.deleteComponent(recipe, componentIndex)}
+                                className="fas fa-trash-alt"></i>
+                        </Button>
+                    </Col>
+                </Row>
                 : null
                 }
-                <Row className="padding-right-0">
-                    <dt className="col-sm-3 detail-header">
+                <Row className="padding-right-0 recipe-edit-row ">
+                    <Col className="col-3 recipe-field-title margin-top-8">
                         INGREDIENTS
-                    </dt>
-                    <dd className="col-sm-9">
+                    </Col>
+                    <Col className="col d-flex align-items-center">
                         <div className="ingredient-list">
                             <IngredientRequirementList
                                 ingredientRequirements={component.ingredients ?? []}
@@ -530,13 +525,13 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 edit={this.state.edit}
                                 multiplier={this.state.newServings / this.state.recipe.servingsProduced} />
                         </div>
-                    </dd>
+                    </Col>
                 </Row>
-                <Row className="padding-right-0">
-                    <dt className="col-sm-3 detail-header">
+                <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
+                    <Col className="col-3 recipe-field-title">
                         DIRECTIONS
-                    </dt>
-                    <dd className="col-sm-9">
+                    </Col>
+                    <Col className="col d-flex align-items-center">
                         <div className="step-list">
                             <RecipeStepList
                                 multipart={this.props.multipart}
@@ -557,7 +552,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 }
                                 onNewStep={() => this.appendNewStepForComponent(componentIndex, component)} />
                         </div>
-                    </dd>
+                    </Col>
                 </Row>
             </div>
         )
