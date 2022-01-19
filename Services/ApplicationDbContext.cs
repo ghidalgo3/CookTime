@@ -17,6 +17,13 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasPostgresEnum<Unit>();
+        modelBuilder.Entity<MultiPartRecipe>()
+        .HasGeneratedTsVectorColumn(
+            p => p.SearchVector,
+            "english",  // Text search config
+            p => new { p.Name })  // Included properties
+        .HasIndex(p => p.SearchVector)
+        .HasMethod("GIN"); // Index method on the search vector (GIN or GIST)
     }
 
     public DbSet<Recipe> Recipes { get; set; }
@@ -25,6 +32,11 @@ public class ApplicationDbContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<Cart> Carts { get; set; }
     public DbSet<Image> Images { get; set; }
+
+    public IQueryable<MultiPartRecipe> SearchRecipes(string search)
+    {
+        return this.MultiPartRecipes.Where(r => r.SearchVector.Matches(search));
+    }
 
     public async Task<Category> GetCategory(Guid id)
     {

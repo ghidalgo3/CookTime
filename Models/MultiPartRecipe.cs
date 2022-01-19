@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
+using NpgsqlTypes;
 
 namespace babe_algorithms.Models;
 
@@ -29,6 +30,7 @@ public class MultiPartRecipe : IImageContainer
                 Steps = recipe.Steps.Select(s => new MultiPartRecipeStep(s)).ToList(),
             },
         };
+
     }
 
     [Required]
@@ -45,7 +47,7 @@ public class MultiPartRecipe : IImageContainer
     /// The source where the recipe came from.
     /// </summary>
     public string Source { get; set; }
-
+    public NpgsqlTsVector SearchVector { get; set; }
 }
 
 public class RecipeComponent : IRecipeComponent<MultiPartRecipeStep, MultiPartIngredientRequirement>

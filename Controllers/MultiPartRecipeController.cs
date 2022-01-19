@@ -58,6 +58,7 @@ namespace babe_algorithms.Controllers
             {
                 var existingComponent = currentComponents.FirstOrDefault(c => c.Id == component.Id);
                 if (existingComponent != null) {
+                    _context.Entry(existingComponent).CurrentValues.SetValues(component);
                     existingComponent.Steps = component.Steps.Where(s => !string.IsNullOrWhiteSpace(s.Text)).ToList();
                     await RecipeController.CopyIngredients(this._context, component, existingComponent);
                     if (!existingComponent.IsEmpty())
