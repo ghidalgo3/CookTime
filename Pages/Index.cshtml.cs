@@ -15,16 +15,53 @@ public class IndexModel : PageModel
 
     public List<RecipeView> Recipes { get; set; }
 
-    public async Task OnGetAsync()
+    public async Task OnGetAsync(
+        [FromQuery] string search)
+    {
+        if (search != null)
+        {
+            await this.Search(search);
+        }
+        else
+        {
+            await AllRecipes();
+        }
+    }
+
+    private async Task Search(string search)
+    {
+        var recipes = await this._context.SearchRecipes(search)
+            .AsSplitQuery()
+            .Include(r => r.Images)
+            .Select(r => new
+            {
+                Id = r.Id,
+                Name = r.Name,
+                Images = r.Images.Select(image => new
+                {
+                    Id = image.Id,
+                    Name = image.Name,
+                })
+            })
+            .OrderBy(r => r.Name)
+            .ToListAsync();
+        this.Recipes = recipes
+            .Select(r =>
+                new RecipeView(r.Name, r.Id, r.Images.Select(image => image.Id).ToList()))
+                .ToList();
+    }
+
+    private async Task AllRecipes()
     {
         var complexQueryResults = await _context
             .MultiPartRecipes
             .AsSplitQuery()
             .Include(r => r.Images)
-            .Select(r => new {
+            .Select(r => new
+            {
                 Id = r.Id,
                 Name = r.Name,
-                Images = r.Images.Select(image => new 
+                Images = r.Images.Select(image => new
                 {
                     Id = image.Id,
                     Name = image.Name,
@@ -36,10 +73,11 @@ public class IndexModel : PageModel
             .Recipes
             .AsSplitQuery()
             .Include(r => r.Images)
-            .Select(r => new {
+            .Select(r => new
+            {
                 Id = r.Id,
                 Name = r.Name,
-                Images = r.Images.Select(image => new 
+                Images = r.Images.Select(image => new
                 {
                     Id = image.Id,
                     Name = image.Name,
