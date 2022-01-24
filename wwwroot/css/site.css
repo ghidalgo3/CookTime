@@ -238,6 +238,10 @@ body {
   display: inline-block;
 }
 
+.padding-left-4 {
+  padding-left: 4px;
+}
+
 .padding-left-12 {
   padding-left: 12px;
 }
@@ -354,8 +358,8 @@ body {
 
   .ingredient-list {
     padding-left: 4px;
-    margin-top: 8px;
     width: 100%;
+    margin-bottom: 0;
   }
 
   .serving-counter {
@@ -364,6 +368,10 @@ body {
 
   .detail-header {
     margin-top: 8px;
+  }
+
+  .recipe-field-title {
+    width: 100%;
   }
 }
 

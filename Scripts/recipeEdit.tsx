@@ -513,7 +513,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                             })
                                         }}
                                         value={component.name}></Form.Control> :
-                                    <div>{component.name}</div> }
+                                    <div className="padding-left-4">{component.name}</div> }
                             </Col>
                             {this.state.edit ?
                                 <Col xs={1}>
@@ -530,7 +530,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 : null
                 }
                 <Row className="padding-right-0 recipe-edit-row">
-                    <Col className="col-3 recipe-field-title margin-top-8">
+                    <Col className="col-3 recipe-field-title">
                         INGREDIENTS
                     </Col>
                     <Col className="col d-flex align-items-center">
@@ -547,8 +547,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     </Col>
                 </Row>
                 <Row className="padding-right-0">
-                    <Col className="col-3 recipe-field-title margin-top-8">
-                        DIRECTIONS
+                    <Col className="col-3 recipe-field-title">
+                        STEPS
                     </Col>
                     <Col className="col d-flex align-items-center">
                         <div className="step-list">
@@ -580,11 +580,11 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
     private EditBlock(r : Recipe) {
         return (
             <div>
-                <Row className="padding-right-0">
-                    <dt className="col-sm-3 detail-header">
+                <Row className="padding-right-0 recipe-edit-row">
+                    <Col className="col-3 recipe-field-title">
                         INGREDIENTS
-                    </dt>
-                    <dd className="col-sm-9">
+                    </Col>
+                    <Col className="col d-flex align-items-center">
                         <div className="ingredient-list">
                             <IngredientRequirementList
                                 ingredientRequirements={r.ingredients ?? []}
@@ -595,13 +595,13 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 edit={this.state.edit}
                                 multiplier={this.state.newServings / this.state.recipe.servingsProduced} />
                         </div>
-                    </dd>
+                    </Col>
                 </Row>
                 <Row className="padding-right-0">
-                    <dt className="col-sm-3 detail-header">
-                        DIRECTIONS
-                    </dt>
-                    <dd className="col-sm-9">
+                    <Col className="col-3 recipe-field-title">
+                        STEPS
+                    </Col>
+                    <Col className="col d-flex align-items-center">
                         <div className="step-list">
                             <RecipeStepList
                                 multipart={this.props.multipart}
@@ -621,7 +621,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 }
                                 onNewStep={() => this.appendNewStep()} />
                         </div>
-                    </dd>
+                    </Col>
                 </Row>
             </div>)
 
