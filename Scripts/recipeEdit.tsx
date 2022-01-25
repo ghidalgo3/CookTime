@@ -131,7 +131,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         if (this.props.multipart) {
             var ir : IngredientRequirement = {
                 ingredient: {name: '', id: uuidv4(), isNew: false},
-                unit: 'Cup',
+                unit: 'Count',
                 quantity: 0,
                 id: uuidv4(),
                 position: component.ingredients?.length ?? 0
@@ -155,7 +155,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             var recipe = (this.state.recipe as Recipe)
             var ir : IngredientRequirement = {
                 ingredient: {name: '', id: uuidv4(), isNew: false},
-                unit: 'Cup',
+                unit: 'Count',
                 quantity: 0,
                 id: uuidv4(),
                 position: recipe.ingredients?.length ?? 0
