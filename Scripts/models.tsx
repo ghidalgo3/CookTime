@@ -1,3 +1,8 @@
+type MeasureUnit = {
+   name: string,
+   siType : string
+}
+
 type Cart = {
     id: string,
     recipeRequirement: RecipeRequirement[],

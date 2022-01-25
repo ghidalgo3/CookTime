@@ -18,7 +18,7 @@ type RecipeEditState = {
     newImageSrc : string | undefined,
     recipeImages: Image[],
     edit : boolean,
-    units: string[],
+    units: MeasureUnit[],
     newServings: number,
     error: boolean,
     operationInProgress: boolean,
@@ -57,7 +57,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             .then(response => response.json())
             .then(
                 result => {
-                    this.setState({units: result as string[]});
+                    this.setState({units: result as MeasureUnit[]});
                 }
             )
         if (this.props.multipart) {

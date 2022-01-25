@@ -8,7 +8,7 @@ type IngredientRequirementListProps = {
     onDelete : (ir : IngredientRequirement) => void,
     onNewIngredientRequirement : () => void,
     updateIngredientRequirement : (ir: IngredientRequirement, update : (ir : IngredientRequirement) => IngredientRequirement) => void,
-    units : string[],
+    units : MeasureUnit[],
     edit: boolean
     multiplier : number
 }
@@ -24,9 +24,22 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
         if (ir.ingredient.id === '' || ir.ingredient.id === '00000000-0000-0000-0000-000000000000') {
             id = idx.toString()
         }
-        var unitOptions = this.props.units.map(unit => {
-            return <option key={unit} value={unit}>{unit}</option>
+        var massOptions = this.props.units.filter(u => u.siType === "Weight").map(unit => {
+            return <option key={unit.name} value={unit.name}>{unit.name}</option>
         })
+        var volumeOptions = this.props.units.filter(u => u.siType === "Volume").map(unit => {
+            return <option key={unit.name} value={unit.name}>{unit.name}</option>
+        })
+        var countOptions = this.props.units.filter(u => u.siType === "Count").map(unit => {
+            return <option key={unit.name} value={unit.name}>{unit.name}</option>
+        })
+        var innerSelect = ( [
+            {group: "Weight", options: massOptions},
+            {group: "Volume", options: volumeOptions},
+            {group: "Count", options: countOptions}
+        ].map(x => {
+            return (<optgroup label={x.group}>{x.options}</optgroup>)
+        }))
         return (
             <Row key={id} className="margin-bottom-8">
                 <Col key={`${id}quantity`} xs={2}>
@@ -41,9 +54,7 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
                     <Form.Select
                         onChange={(e) => this.props.updateIngredientRequirement(ir, ir => {ir.unit = e.currentTarget.value; return ir; })}
                         value={ir.unit}>
-                        {
-                            unitOptions
-                        }
+                        { innerSelect }
                     </Form.Select>
                 </Col>
                 <Col className="get-smaller" key={`${id}name`} >

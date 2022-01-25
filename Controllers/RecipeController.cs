@@ -22,8 +22,24 @@ public class RecipeController : ControllerBase, IImageController
         await context.Recipes.ToListAsync();
 
     [HttpGet("units")]
-    public ActionResult<IEnumerable<string>> GetUnits() =>
-        this.Ok(Enum.GetValues<Unit>().Select(v => v.ToString()));
+    public ActionResult<IEnumerable<string>> GetUnits()
+    {
+        var allUnits = Enum.GetValues<Unit>();
+        var body = allUnits.Select(unit => 
+        {
+            string siType = "Count";
+            if ((int)unit < 1000)
+            {
+                siType = "Volume";
+            }
+            else if ((int)unit >= 2000)
+            {
+                siType = "Weight";
+            }
+            return new { Name = unit.ToString(), SIType = siType };
+        });
+        return this.Ok(body);
+    }
 
     [HttpPost("{recipeId}/migrate")]
     [BasicAuth]
