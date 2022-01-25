@@ -306,7 +306,12 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             <div>
                 <Row>
                     <Col className="justify-content-md-left" xs={6}>
-                        <h1 className="margin-bottom-20">Recipe</h1>
+                        {this.state.edit ?
+                            <Form.Control
+                                type="text"
+                                onChange={(e) => this.setState({recipe: {...this.state.recipe, name: e.target.value}})}
+                                value={this.state.recipe.name}></Form.Control> :
+                                <h1 className="margin-bottom-20">{this.state.recipe.name}</h1> }
                     </Col>
                     {this.editButtons()}
                 </Row>
@@ -321,19 +326,6 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 { this.image() }
 
                 <div>
-                    <Row className="padding-right-0 d-flex align-items-center recipe-edit-row margin-top-20">
-                        <Col className="col-3 recipe-field-title">
-                            NAME
-                        </Col>
-                        <Col className="col d-flex align-items-center">
-                            {this.state.edit ?
-                                <Form.Control
-                                    type="text"
-                                    onChange={(e) => this.setState({recipe: {...this.state.recipe, name: e.target.value}})}
-                                    value={this.state.recipe.name}></Form.Control> :
-                                <div>{this.state.recipe.name}</div> }
-                        </Col>
-                    </Row>
                     <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                         <Col className="col-3 recipe-field-title">
                             CALORIES PER SERVING
