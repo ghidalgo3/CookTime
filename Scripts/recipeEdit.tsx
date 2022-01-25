@@ -326,6 +326,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 { this.image() }
 
                 <div>
+                {this.state.recipe.caloriesPerServing === 0 && !this.state.edit ? null :
                     <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                         <Col className="col-3 recipe-field-title">
                             CALORIES PER SERVING
@@ -340,6 +341,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 <div>{this.state.recipe.caloriesPerServing}</div> }
                         </Col>
                     </Row>
+                }
                     <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                         <Col className="col-3 recipe-field-title">
                             SERVINGS
