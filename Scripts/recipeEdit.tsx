@@ -728,6 +728,14 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             component.ingredients = Array.from(component.ingredients ?? []).filter(ingredient => ingredient.ingredient.name != null && ingredient.ingredient.name != '');
         }
 
+        if (recipe.caloriesPerServing === null || isNaN(recipe.caloriesPerServing)) {
+            recipe.caloriesPerServing = 0.0
+        }
+
+        if (recipe.servingsProduced === null || isNaN(recipe.servingsProduced)) {
+            recipe.servingsProduced = 1
+        }
+
         fetch(`/api/MultiPartRecipe/${this.props.recipeId}`, {
             method: 'PUT',
             body: JSON.stringify(recipe),
