@@ -97,7 +97,7 @@ class ShoppingCart extends React.Component<{}, CartState> {
             <Form>
                 <Row>
                     <Col className="justify-content-md-left" xs={6}>
-                        <h1 className="margin-bottom-20">Cart</h1>
+                        <h1 className="margin-bottom-20">Groceries List</h1>
                     </Col>
                     <Col>
                         <Button variant="danger" className="float-end" onClick={_ => this.onClear()}>Clear Cart</Button>
