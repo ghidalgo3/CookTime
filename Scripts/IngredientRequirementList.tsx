@@ -34,9 +34,9 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
             return <option key={unit.name} value={unit.name}>{unit.name}</option>
         })
         var innerSelect = ( [
+            {group: "Count", options: countOptions},
             {group: "Weight", options: massOptions},
-            {group: "Volume", options: volumeOptions},
-            {group: "Count", options: countOptions}
+            {group: "Volume", options: volumeOptions}
         ].map(x => {
             return (<optgroup label={x.group}>{x.options}</optgroup>)
         }))

@@ -36,7 +36,7 @@ public class RecipeController : ControllerBase, IImageController
             {
                 siType = "Weight";
             }
-            return new { Name = unit.ToString(), SIType = siType };
+            return new { Name = unit.ToString(), SIType = siType, siValue = unit.GetSIValue() };
         });
         return this.Ok(body);
     }
