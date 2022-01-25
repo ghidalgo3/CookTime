@@ -34,6 +34,32 @@ public enum Unit
     Kilogram = 2004
 }
 
+public static class UnitExtension {
+    public static double GetSIValue(this Unit value) {
+        return value switch
+        {
+            // Volume
+            Unit.Tablespoon => 0.0147868,
+            Unit.Teaspoon => 0.00492892,
+            Unit.Milliliter => 0.0001,
+            Unit.Cup => 0.236588,
+            Unit.FluidOunce => 0.0295735,
+            Unit.Pint  => 0.568261,
+            Unit.Quart => 0.946353,
+            Unit.Gallon => 3.78541,
+            Unit.Liter => 1.0,
+            // Count
+            Unit.Count => 1.0,
+            // Weight
+            Unit.Ounce => 0.0283495,
+            Unit.Pound => 0.453592,
+            Unit.Milligram => 0.0001,
+            Unit.Gram => 0.001,
+            Unit.Kilogram => 1.0,
+        };
+    }
+}
+
 public class Category
 {
     [Required]

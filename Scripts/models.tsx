@@ -1,6 +1,7 @@
 type MeasureUnit = {
    name: string,
    siType : string
+   siValue: number
 }
 
 type Cart = {
