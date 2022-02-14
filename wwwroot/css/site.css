@@ -380,6 +380,11 @@ body {
   justify-content: space-between;
 }
 
+.serving-counter-in-cart {
+  display: flex;
+  justify-content: space-between;
+}
+
 /* Per mesurements, 576px happens to be our breakpoint where we can't have 2 column in the same row for Directions label and Steps text */
 @media all and (max-width: 576px) {
   .step-list {

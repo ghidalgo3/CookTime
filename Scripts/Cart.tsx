@@ -60,7 +60,7 @@ class ShoppingCart extends React.Component<{}, CartState> {
             return (
                 <Row key={rIndex} className="align-items-center padding-left-0 margin-top-10">
                     <Col className="col d-flex align-items-center">
-                        <div className="serving-counter">
+                        <div className="serving-counter-in-cart">
                             <Button
                                 variant="success"
                                 className="plus-counter-button"
