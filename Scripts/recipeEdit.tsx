@@ -353,19 +353,24 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                     min="1"
                                     onChange={(e) => this.setState({recipe: {...this.state.recipe, servingsProduced: parseInt(e.target.value)}})}
                                     value={this.state.recipe.servingsProduced}></Form.Control> :
-                                <div className="serving-counter">
-                                    <i
+                                <div className='serving-counter'>
+                                    <Button
+                                        variant="success"
+                                        className="plus-counter-button"
+                                        onClick={(_) => this.setState({newServings: this.state.newServings + 1})}>
+                                        <i className="fas fa-solid fa-plus"></i>
+                                    </Button>
+                                    <input className="form-control count" value={this.state.newServings}></input>
+                                    <Button
+                                        variant="danger"
+                                        className="minus-counter-button"
                                         onClick={(_) => {
                                             if (this.state.newServings > 1) {
                                                 this.setState({newServings: this.state.newServings - 1})
                                             }
-                                        }}
-                                        className="fas fa-minus-circle red-dirt-color"></i>
-                                    <input className="form-control count" value={this.state.newServings}></input>
-                                    <i
-                                        onClick={(_) => this.setState({newServings: this.state.newServings + 1})}
-                                        className="fas fa-plus-circle green-earth-color"></i>
-                                    
+                                        }}>
+                                        <i className="fas fa-regular fa-minus"></i>
+                                    </Button>
                                 </div> 
                             }
                         </Col>
@@ -511,9 +516,11 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                             </Col>
                             {this.state.edit ?
                                 <Col xs={1}>
-                                    <Button className="float-end" variant="danger">
-                                        <i onClick={(_) => this.deleteComponent(recipe, componentIndex)}
-                                            className="fas fa-trash-alt"></i>
+                                    <Button 
+                                        className="float-end" 
+                                        variant="danger"
+                                        onClick={(_) => this.deleteComponent(recipe, componentIndex)}>
+                                        <i className="fas fa-trash-alt"></i>
                                     </Button>
                                 </Col> 
                                 : null

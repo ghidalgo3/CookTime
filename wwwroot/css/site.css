@@ -5,6 +5,9 @@ for details on configuring this project to bundle and minify static web assets. 
 :root {
   --light-grey: #F7F9FB;
   --green-earth: #687864;
+  --green-earth-border: #566353;
+  --green-earth-highlight: #455042;
+  --green-earth-highlight-border: #374135;
   --deep-water: #31708E;
   --deep-water-border: #2b627c;
   --deep-water-highlight: #193a49;
@@ -55,19 +58,31 @@ hr {
   border-color: var(--deep-water-border);
 }
 
+.btn-success {
+  color: var(--light-grey);
+  background-color: var(--green-earth);
+  border-color: var(--green-earth-border);
+}
+
+.btn-success:hover, .btn-success:active, .btn-success:focus {
+  color: var(--light-grey);
+  background-color: var(--green-earth-highlight);
+  border-color: var(--green-earth-highlight-border);
+}
+
 .btn-danger {
   color: var(--light-grey);
   background-color: var(--red-dirt);
   border-color: var(--red-dirt-border);
 }
 
-.btn-danger:hover, .btn-danger:active {
+.btn-danger:hover, .btn-danger:active, .btn-danger:focus {
   color: var(--light-grey);
   background-color: var(--red-dirt-highlight);
   border-color: var(--red-dirt-highlight-border);
 }
 
-.btn-primary:hover, .btn-primary.btn-primary:active, .btn-outline-primary:hover, .btn-outline-primary:active {
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-outline-primary:hover, .btn-outline-primary:active {
   color: var(--light-grey);
   background-color: var(--deep-water-highlight);
   border-color: var(--deep-water-highlight-border);
@@ -211,13 +226,30 @@ body {
 }
 
 .count {
-  background-color: rgba(255, 255, 255, 0);
   text-align: center;
-  margin-left: 10px;
-  margin-right: 10px;
-  min-width: 40px;
-  max-width: 50px;
+  width: 50px;
   display: inline;
+  border-radius: 0;
+}
+
+.plus-counter-button {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.minus-counter-button {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.component-on-right {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.component-on-left {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .step-number {
@@ -294,6 +326,10 @@ body {
   margin-top: 20px;
 }
 
+.margin-left-20 {
+  margin-left: 20px;
+}
+
 .width-100 {
   width: 100%;
 }
@@ -304,9 +340,8 @@ body {
 }
 
 .recipe-counter-column {
-  min-width: 120px;
-  max-width: 130px;
-  height: 34px;
+  width: 130px;
+  height: 38px;
 }
 
 .new-curr-badge {
@@ -341,11 +376,8 @@ body {
 }
 
 .serving-counter {
-  display: inline-block;
-}
-
-.serving-counter-in-cart {
-  display: inline-block;
+  display: flex;
+  justify-content: space-between;
 }
 
 /* Per mesurements, 576px happens to be our breakpoint where we can't have 2 column in the same row for Directions label and Steps text */

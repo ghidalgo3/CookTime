@@ -59,13 +59,15 @@ class ShoppingCart extends React.Component<{}, CartState> {
             let recipe = r.recipe ?? r.multiPartRecipe;
             return (
                 <Row key={rIndex} className="align-items-center padding-left-0 margin-top-10">
-                    <Col className="recipe-counter-column">
-                        <div className="serving-counter-in-cart">
-                            <i
-                                onClick={(_) => this.addToRecipeRequirement(rIndex, -1)}
-                                className="fas fa-minus-circle red-dirt-color"></i>
+                    <Col className="col d-flex align-items-center">
+                        <div className="serving-counter">
+                            <Button
+                                variant="success"
+                                className="plus-counter-button"
+                                onClick={(_) => this.addToRecipeRequirement(rIndex, 1)}>
+                                <i className="fas fa-solid fa-plus"></i>
+                            </Button>
                             <Form.Control
-                                // onChange={(e) => this.setRecipeRequirement(rIndex, parseFloat(e.target.value))}
                                 onChange={(e) => {
                                     if (e.target.value === '') {
                                         this.setRecipeRequirement(rIndex, 0)
@@ -78,16 +80,27 @@ class ShoppingCart extends React.Component<{}, CartState> {
                                 }}
                                 className="form-control count"
                                 value={Math.round(r.quantity * recipe.servingsProduced)} />
-                            <i
-                                onClick={(_) => this.addToRecipeRequirement(rIndex, 1)}
-                                className="fas fa-plus-circle green-earth-color"></i>
+                            <Button
+                                variant="danger"
+                                className="minus-counter-button"
+                                onClick={(_) => {
+                                    let qty = Array.from(this.state.cart.recipeRequirement)[rIndex].quantity;
+                                    if (qty > 0) {
+                                        this.addToRecipeRequirement(rIndex, -1)}
+                                    }
+                                }>
+                                <i className="fas fa-regular fa-minus"></i>
+                            </Button>
                         </div> 
-                    </Col>
-                    <Col>
-                        <div key={recipe.id}>
+                        <div className="form-control margin-left-20 component-on-left" key={recipe.id}>
                             <a href={`/Recipes/Details?id=${recipe.id}&servings=${r.quantity * recipe.servingsProduced}`}>{recipe.name}</a> 
-                            <i className="fas fa-trash deep-water-color padding-left-12" onClick={(_) => this.onDeleteRecipe(rIndex)}></i>
                         </div>
+                        <Button 
+                                className="float-end component-on-right" 
+                                variant="danger"
+                                onClick={(_) => this.onDeleteRecipe(rIndex)}>
+                                <i className="fas fa-trash-alt"></i>
+                            </Button>
                     </Col>
                 </Row>
             )
@@ -120,12 +133,17 @@ class ShoppingCart extends React.Component<{}, CartState> {
     }
 
     addToRecipeRequirement(rIndex : number, arg1: number): void {
-        var newRRequirements = Array.from(this.state.cart.recipeRequirement);
-        let denominator = newRRequirements[rIndex].recipe?.servingsProduced ?? newRRequirements[rIndex].multiPartRecipe.servingsProduced;
-        newRRequirements[rIndex].quantity += (arg1 / denominator);
-        let newCart = {...this.state.cart, recipeRequirement: newRRequirements}
-        this.setState({cart : newCart});
-        this.PutCart(newCart);
+            var newRRequirements = Array.from(this.state.cart.recipeRequirement);
+            let denominator = newRRequirements[rIndex].recipe?.servingsProduced ?? newRRequirements[rIndex].multiPartRecipe.servingsProduced;
+            newRRequirements[rIndex].quantity += (arg1 / denominator);
+            if (newRRequirements[rIndex].quantity > 0) {
+                let newCart = {...this.state.cart, recipeRequirement: newRRequirements}
+                this.setState({cart : newCart});
+                this.PutCart(newCart);
+            }
+            else {
+                console.log(newRRequirements[rIndex].quantity);
+            }
     }
 
     setRecipeRequirement(rIndex : number, newQuantity : number) : void {
