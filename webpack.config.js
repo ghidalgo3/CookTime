@@ -1,6 +1,10 @@
 const path = require('path');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+const ReactRefreshTypeScript = require('react-refresh-typescript');
+const isDevelopment = process.env.NODE_ENV !== 'production';
 
 module.exports = {
+    mode: isDevelopment ? 'development' : 'production',
     devtool: 'inline-source-map',
     devServer: {
         static: './wwwroot/js',
@@ -23,9 +27,22 @@ module.exports = {
     module: {
         rules: [
             {
-              test: /\.tsx?$/,
-              use: 'ts-loader',
-              exclude: /node_modules/,
+                test: /\.tsx?$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'ts-loader',
+                        options: {
+                            configFile: isDevelopment ? 'tsconfig.dev.json' : 'tsconfig.json',
+                            transpileOnly: isDevelopment,
+                            ...(isDevelopment && {
+                                getCustomTransformers: () => ({
+                                    before: [isDevelopment && ReactRefreshTypeScript()].filter(Boolean),
+                                }),
+                            }),
+                        },
+                    },
+                ]
             },
             {
                 test: /\.css$/i,
@@ -33,7 +50,8 @@ module.exports = {
             },
           ],
     },
-    plugins: [
+    plugins: [isDevelopment && new ReactRefreshWebpackPlugin()].filter(Boolean),
+    // plugins: [
         // new CopyWebpackPlugin(
         //     {
         //         patterns: [
@@ -53,5 +71,5 @@ module.exports = {
         //         ]
         //     }
         // )
-    ]
+    // ]
 };
