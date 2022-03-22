@@ -32,6 +32,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Category> Categories { get; set; }
     public DbSet<Cart> Carts { get; set; }
     public DbSet<Image> Images { get; set; }
+    public DbSet<StandardReferenceNutritionData> SRNutritionData { get; set; }
 
     public IQueryable<MultiPartRecipe> SearchRecipes(string search)
     {

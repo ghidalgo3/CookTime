@@ -1,6 +1,8 @@
 using babe_algorithms.Services;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using System.Text.Json.Nodes;
 
 namespace babe_algorithms;
 
@@ -40,6 +42,26 @@ public class Program
                 conn.ReloadTypes();
                 // context = services.GetRequiredService<ApplicationDbContext>();
                 // InitializeDatabase(context);
+                var fileName = "FoodData_Central_sr_legacy_food_json_2021-10-28.json";
+                if (File.Exists(fileName) && !context.SRNutritionData.Any())
+                {
+                    var foods = JsonNode.Parse(File.ReadAllText(fileName));
+                    foreach(var food in foods["SRLegacyFoods"].AsArray())
+                    {
+                        var foodData = new StandardReferenceNutritionData()
+                        {
+                            NdbNumber = food["ndbNumber"].GetValue<int>(),
+                            FdcId = food["fdcId"].GetValue<int>(),
+                            Description = food["description"].GetValue<string>(),
+                            FoodNutrients = JsonDocument.Parse(food["foodNutrients"].ToJsonString()),
+                            NutrientConversionFactors = JsonDocument.Parse(food["nutrientConversionFactors"].ToJsonString()),
+                            FoodCategory = JsonDocument.Parse(food["foodCategory"].ToJsonString()),
+                            FoodPortions = JsonDocument.Parse(food["foodPortions"].ToJsonString()),
+                        };
+                        context.SRNutritionData.Add(foodData);
+                    }
+                    context.SaveChanges();
+                }
             }
         }
         catch (Exception ex)
