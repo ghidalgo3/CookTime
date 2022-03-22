@@ -59,10 +59,21 @@ public class ApplicationDbContext : DbContext
             .Include(mpr => mpr.RecipeComponents)
                 .ThenInclude(component => component.Ingredients)
                     .ThenInclude(ingredient => ingredient.Ingredient)
+                        // .ThenInclude(ingredient => ingredient.NutritionData)
             .Include(mpr => mpr.RecipeComponents)
                 .ThenInclude(component => component.Steps)
             .Include(recipe => recipe.Categories)
             .Include(recipe => recipe.Images)
+            .SingleOrDefaultAsync(recipe => recipe.Id == id);
+    }
+
+    public async Task<MultiPartRecipe> GetMultiPartRecipeNutritionDataAsync(Guid id)
+    {
+        return await this.MultiPartRecipes
+            .Include(mpr => mpr.RecipeComponents)
+                .ThenInclude(component => component.Ingredients)
+                    .ThenInclude(ingredient => ingredient.Ingredient)
+                        .ThenInclude(ingredient => ingredient.NutritionData)
             .SingleOrDefaultAsync(recipe => recipe.Id == id);
     }
 

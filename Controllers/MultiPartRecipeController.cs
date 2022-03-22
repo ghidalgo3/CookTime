@@ -37,6 +37,24 @@ namespace babe_algorithms.Controllers
             return multiPartRecipe;
         }
 
+        // GET: api/MultiPartRecipe/5/nutritionData
+        [HttpGet("{id}/nutritionData")]
+        public async Task<ActionResult<MultiPartRecipe>> GetMultiPartRecipeNutritionData(Guid id)
+        {
+            var multiPartRecipe = await _context.GetMultiPartRecipeNutritionDataAsync(id);
+            if (multiPartRecipe == null)
+            {
+                return NotFound();
+            }
+            var ingredients = multiPartRecipe.RecipeComponents.SelectMany(component => component.Ingredients).Select(ir => ir.Ingredient);
+            var result = ingredients.Select(ingredient => new {
+                Ingredient = ingredient,
+                nutritionData = ingredient.NutritionData?.ToJObject(),
+            });
+
+            return this.Ok(result);
+        }
+
         // PUT: api/MultiPartRecipe/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [BasicAuth]

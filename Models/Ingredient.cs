@@ -7,6 +7,9 @@ public class Ingredient
     public string Name { get; set; }
     // public MeasureType MeasureType { get; set; }
     public Guid Id { get; set; }
+
+    [JsonIgnore]
+    public StandardReferenceNutritionData NutritionData { get; set; }
 }
 
 [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
