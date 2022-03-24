@@ -353,3 +353,4 @@ MigrationBackup/
 *.g.*
 wwwroot/js/*.js
 wwwroot/is-cache/*
+FoodData_Central_sr_legacy_food_json_2021-10-28.json
