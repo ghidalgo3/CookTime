@@ -18,6 +18,7 @@ public class IngredientsViewModel : PageModel
     public async Task<IActionResult> OnGet()
     {
         this.Ingredients = await this._context.GetIngredients();
+        this.Ingredients.Sort((a, b) => string.Compare(a.Name, b.Name));
         return Page();
     }
 
