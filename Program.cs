@@ -71,7 +71,8 @@ public class Program
                 freq[ingredient] = 1;
             }
         }
-        var duplicateIngredients = freq.Where(kvpPair => kvpPair.Value > 1).Select(kvPair => kvPair.Key);
+        var duplicateIngredientFrequencies = freq.Where(kvpPair => kvpPair.Value > 1);
+        var duplicateIngredients = duplicateIngredientFrequencies.Select(kvPair => kvPair.Key);
         // fix up recipes so they only reference one of the duplicate ingredients
         foreach (var duplicateIngredient in duplicateIngredients)
         {
@@ -83,7 +84,8 @@ public class Program
                 {
                     foreach (var ingredientRequirement in component.Ingredients)
                     {
-                        if (ingredientRequirement.Ingredient.Equals(duplicateIngredient) && ingredientRequirement.Ingredient.Id != duplicateIngredient.Id)
+                        if (ingredientRequirement.Ingredient.Equals(duplicateIngredient)
+                            && ingredientRequirement.Ingredient.Id != duplicateIngredient.Id)
                         {
                             ingredientRequirement.Ingredient = duplicateIngredient;
                         }

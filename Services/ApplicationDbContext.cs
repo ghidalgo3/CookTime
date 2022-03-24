@@ -53,6 +53,11 @@ public class ApplicationDbContext : DbContext
                             ir.Ingredient.Name.Trim()))));
     }
 
+    public async Task<List<Ingredient>> GetIngredients()
+    {
+        return await this.Ingredients.Include(ingredient => ingredient.NutritionData).ToListAsync();
+    }
+
     public async Task<Category> GetCategory(Guid id)
     {
         return await this.Categories

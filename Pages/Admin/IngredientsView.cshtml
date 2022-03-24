@@ -13,25 +13,28 @@
     <tr>
       <th scope="col">ID</th>
       <th scope="col">Ingredient</th>
-      <th scope="col">Recipes Where Used</th>
+      @* <th scope="col">Recipes Where Used</th> *@
       <th scope="col">NDB Number</th>
       <th scope="col">Save/Delete</th>
     </tr>
   </thead>
   <tbody>
+    @foreach (var ingredient in Model.Ingredients) {
     <tr>
-      <th scope="row">cdcsd-df3df-343fd-232f</th>
-      <td>Garlic clove</td>
-      <td>Vegetable Soup</td>
-      <td><input type="text" value="11215"></td>
-      <td><button>Save</button><button>Delete</button></td>
+      <th scope="row">@ingredient.Id</th>
+      <th >@ingredient.Name</th>
+      @* <td>Garlic clove</td> *@
+      @* <td>Vegetable Soup</td> *@
+      <form method="POST">
+        <td>
+          <input type="number" name="ndbNumber" value="@ingredient.NutritionData?.NdbNumber">
+        </td>
+        <td>
+          <input type="hidden" name="ingredientId" value="@ingredient.Id">
+          <button type="submit" asp-page-handler="UpdateIngredientNdbNumber">Save</button>
+        </td>
+      </form>
     </tr>
-    <tr>
-      <th scope="row">cdcsd-df3df-343fd-232f</th>
-      <td>Garlic clove</td>
-      <td>Vegetable Soup</td>
-      <td><input type="text" value="11215"></td>
-      <td><button>Save</button><button>Delete</button></td>
-    </tr>
+    }
   </tbody>
 </table>
