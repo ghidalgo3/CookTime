@@ -117,6 +117,15 @@ namespace babe_algorithms.Controllers
             return this.Ok(existingRecipe);
         }
 
+        [BasicAuth]
+        [HttpPost("deduplicate")]
+        // POST: api/MultiPartRecipe/deduplicate
+        public async Task<IActionResult> Deduplicate()
+        {
+            await Program.DeduplicateIngredients(this._context);
+            return this.Ok();
+        }
+
         // DELETE: api/MultiPartRecipe/5
         [BasicAuth]
         [HttpDelete("{id}")]

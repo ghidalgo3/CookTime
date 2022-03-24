@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using babe_algorithms.Models;
 using babe_algorithms.Services;
 
 namespace babe_algorithms;
@@ -22,9 +16,17 @@ public class IngredientController : ControllerBase
 
     // GET: api/Ingredient
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients()
+    public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients(
+        [FromQuery] string name)
     {
-        return await _context.Ingredients.ToListAsync();
+        if (string.IsNullOrEmpty(name))
+        {
+            return await _context.Ingredients.ToListAsync();
+        }
+        else
+        {
+            return await _context.Ingredients.Where(ingredient => EF.Functions.Like(ingredient.Name, name)).ToListAsync();
+        }
     }
 
     // GET: api/Ingredient/5

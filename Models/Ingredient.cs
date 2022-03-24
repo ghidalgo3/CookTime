@@ -5,11 +5,24 @@ public class Ingredient
 {
     [Required]
     public string Name { get; set; }
-    // public MeasureType MeasureType { get; set; }
     public Guid Id { get; set; }
 
     [JsonIgnore]
     public StandardReferenceNutritionData NutritionData { get; set; }
+
+    public override bool Equals(object obj)
+    {
+        return obj is Ingredient ingredient &&
+               string.Equals(
+                   Name.Trim().ToUpper(),
+                   ingredient.Name.Trim().ToUpper(),
+                   StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Name.Trim().ToUpper());
+    }
 }
 
 [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
