@@ -270,6 +270,12 @@ body {
   display: inline-block;
 }
 
+.do-not-overflow-text {
+  overflow: hidden; 
+  white-space: nowrap; 
+  text-overflow: ellipsis;
+}
+
 .padding-left-4 {
   padding-left: 4px;
 }

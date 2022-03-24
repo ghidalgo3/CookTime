@@ -92,8 +92,8 @@ class ShoppingCart extends React.Component<{}, CartState> {
                                 <i className="fas fa-regular fa-minus"></i>
                             </Button>
                         </div> 
-                        <div className="form-control margin-left-20 component-on-left" key={recipe.id}>
-                            <a href={`/Recipes/Details?id=${recipe.id}&servings=${r.quantity * recipe.servingsProduced}`}>{recipe.name}</a> 
+                        <div className="form-control margin-left-20 component-on-left do-not-overflow-text" key={recipe.id}>
+                            <a href={`/Recipes/Details?id=${recipe.id}&servings=${r.quantity * recipe.servingsProduced}`} >{recipe.name}</a> 
                         </div>
                         <Button 
                                 className="float-end component-on-right" 

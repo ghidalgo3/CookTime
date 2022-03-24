@@ -25,7 +25,7 @@
                             <img class="card-img-top card-recipe-image" src="@image" alt="Food image">
                         }
                         <div class="card-body ">
-                            <p class="card-title" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">@Html.DisplayFor(modelItem => item.Name)</p>
+                            <p class="card-title do-not-overflow-text">@Html.DisplayFor(modelItem => item.Name)</p>
                             <input value="@item.Id" type="hidden" name="recipeId"/>
                             <button
                                 data-bs-toggle="tooltip" 
@@ -33,7 +33,7 @@
                                 title="Add recipe to grocery list"
                                 type="submit"
                                 asp-page-handler="AddToCart"
-                                class="btn btn-primary troubled-water-color width-100">Add to groceries list</button>
+                                class="btn btn-primary troubled-water-color width-100">Add to groceries</button>
                         </div>
                     </div>
                 </a>
