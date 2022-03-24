@@ -40,28 +40,12 @@ public class Program
                 using var conn = (NpgsqlConnection)context.Database.GetDbConnection();
                 conn.Open();
                 conn.ReloadTypes();
-                // context = services.GetRequiredService<ApplicationDbContext>();
                 // InitializeDatabase(context);
-                var fileName = "FoodData_Central_sr_legacy_food_json_2021-10-28.json";
-                if (File.Exists(fileName) && !context.SRNutritionData.Any())
-                {
-                    var foods = JsonNode.Parse(File.ReadAllText(fileName));
-                    foreach(var food in foods["SRLegacyFoods"].AsArray())
-                    {
-                        var foodData = new StandardReferenceNutritionData()
-                        {
-                            NdbNumber = food["ndbNumber"].GetValue<int>(),
-                            FdcId = food["fdcId"].GetValue<int>(),
-                            Description = food["description"].GetValue<string>(),
-                            FoodNutrients = JsonDocument.Parse(food["foodNutrients"].ToJsonString()),
-                            NutrientConversionFactors = JsonDocument.Parse(food["nutrientConversionFactors"].ToJsonString()),
-                            FoodCategory = JsonDocument.Parse(food["foodCategory"].ToJsonString()),
-                            FoodPortions = JsonDocument.Parse(food["foodPortions"].ToJsonString()),
-                        };
-                        context.SRNutritionData.Add(foodData);
-                    }
-                    context.SaveChanges();
-                }
+                LoadFoodData(context);
+            }
+            else
+            {
+                DeduplicateIngredients(context).Wait();
             }
         }
         catch (Exception ex)
@@ -69,6 +53,78 @@ public class Program
             var logger = services.GetRequiredService<ILogger<Program>>();
             logger.LogError(ex, "An error occurred creating the DB.");
             throw;
+        }
+    }
+
+    public static async Task DeduplicateIngredients(ApplicationDbContext context)
+    {
+        var allIngredients = await context.Ingredients.ToListAsync();
+        var freq = new Dictionary<Ingredient, int>();
+        foreach (var ingredient in allIngredients)
+        {
+            if (freq.ContainsKey(ingredient))
+            {
+                freq[ingredient]++;
+            }
+            else
+            {
+                freq[ingredient] = 1;
+            }
+        }
+        var duplicateIngredients = freq.Where(kvpPair => kvpPair.Value > 1).Select(kvPair => kvPair.Key);
+        // fix up recipes so they only reference one of the duplicate ingredients
+        foreach (var duplicateIngredient in duplicateIngredients)
+        {
+            // all these recipes contain a duplicate ingredient
+            var recipes = context.GetRecipesWithIngredient(duplicateIngredient.Name).ToList();
+            foreach (var recipe in recipes)
+            {
+                foreach (var component in recipe.RecipeComponents)
+                {
+                    foreach (var ingredientRequirement in component.Ingredients)
+                    {
+                        if (ingredientRequirement.Ingredient.Equals(duplicateIngredient) && ingredientRequirement.Ingredient.Id != duplicateIngredient.Id)
+                        {
+                            ingredientRequirement.Ingredient = duplicateIngredient;
+                        }
+                    }
+                }
+            }
+        }
+        context.SaveChanges();
+        // one of the duplicates is "priviledged", the others will be removed.
+        foreach (var ingredient in duplicateIngredients)
+        {
+            var toRemove = allIngredients.Where(ing => ing.Equals(ingredient) && ing.Id != ingredient.Id);
+            foreach (var ingredientToRemove in toRemove)
+            {
+                context.Ingredients.Remove(ingredientToRemove);
+            }
+        }
+        context.SaveChanges();
+    }
+
+    private static void LoadFoodData(ApplicationDbContext context)
+    {
+        var fileName = "FoodData_Central_sr_legacy_food_json_2021-10-28.json";
+        if (File.Exists(fileName) && !context.SRNutritionData.Any())
+        {
+            var foods = JsonNode.Parse(File.ReadAllText(fileName));
+            foreach (var food in foods["SRLegacyFoods"].AsArray())
+            {
+                var foodData = new StandardReferenceNutritionData()
+                {
+                    NdbNumber = food["ndbNumber"].GetValue<int>(),
+                    FdcId = food["fdcId"].GetValue<int>(),
+                    Description = food["description"].GetValue<string>(),
+                    FoodNutrients = JsonDocument.Parse(food["foodNutrients"].ToJsonString()),
+                    NutrientConversionFactors = JsonDocument.Parse(food["nutrientConversionFactors"].ToJsonString()),
+                    FoodCategory = JsonDocument.Parse(food["foodCategory"].ToJsonString()),
+                    FoodPortions = JsonDocument.Parse(food["foodPortions"].ToJsonString()),
+                };
+                context.SRNutritionData.Add(foodData);
+            }
+            context.SaveChanges();
         }
     }
 

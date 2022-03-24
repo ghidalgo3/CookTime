@@ -39,6 +39,20 @@ public class ApplicationDbContext : DbContext
         return this.MultiPartRecipes.Where(r => r.SearchVector.Matches(search));
     }
 
+    public IQueryable<MultiPartRecipe> GetRecipesWithIngredient(string ingredient)
+    {
+        return this.MultiPartRecipes
+            .Include(mpr => mpr.RecipeComponents)
+                .ThenInclude(component => component.Ingredients)
+                    .ThenInclude(ingredient => ingredient.Ingredient)
+            .Where(mpRecipe =>
+                mpRecipe.RecipeComponents.Any(rc =>
+                    rc.Ingredients.Any(ir =>
+                        EF.Functions.ILike(
+                            ingredient.Trim(),
+                            ir.Ingredient.Name.Trim()))));
+    }
+
     public async Task<Category> GetCategory(Guid id)
     {
         return await this.Categories

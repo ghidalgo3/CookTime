@@ -151,11 +151,12 @@ public class RecipeController : ControllerBase, IImageController
             if (matching == null)
             {
                 var existingIngredient = await context.Ingredients
-                    .FindAsync(ingredientRequirement.Ingredient.Id);
+                    .FirstAsync(ingredient => EF.Functions.Like(ingredientRequirement.Ingredient.Name.Trim(), ingredient.Name.Trim()));
                 if (existingIngredient == null)
                 {
                     // new ingredient
                     ingredientRequirement.Ingredient.Id = Guid.Empty;
+                    ingredientRequirement.Ingredient.Name = ingredientRequirement.Ingredient.Name.Trim();
                     context.Ingredients.Add(ingredientRequirement.Ingredient);
                 }
                 else
@@ -176,6 +177,7 @@ public class RecipeController : ControllerBase, IImageController
                 {
                     // entirely new ingredient, client chose ID
                     ingredientRequirement.Id = Guid.NewGuid();
+                    ingredientRequirement.Ingredient.Name = ingredientRequirement.Ingredient.Name.Trim();
                     matching.Ingredient = ingredientRequirement.Ingredient;
                 }
                 else if (!currentIngredients.Any(i => i.Ingredient.Id == ingredient.Id))
