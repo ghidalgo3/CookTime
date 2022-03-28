@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using NpgsqlTypes;
 
 namespace babe_algorithms.Models;
@@ -104,4 +105,24 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
     /// The position this ingredient should be placed in.
     /// </summary>
     public int Position { get; set; }
+
+    public NutritionFacts CalculateNutritionFacts()
+    {
+        var nutritionFacts = new NutritionFacts();
+        if (this.Ingredient.NutritionData == null)
+        {
+            return nutritionFacts;
+        }
+        // find the food nutrient 
+        var nutritionData = JObject.Parse(this.Ingredient.NutritionData.FoodNutrients.RootElement.GetRawText());
+        // this represents calories in 100 grams of this ingredient
+        var calorieData =  nutritionData.SelectTokens(@"$.foodNutrients[?(@.nutrient.name == ""Energy"" && @.nutrient.unitName == ""kcal"")]").First();
+        if (this.Unit.IsMass())
+        {
+            var kilgramsOfUnit = this.Unit.GetSIValue() * this.Quantity;
+            // * 10 because the SR data is for 100g 
+            nutritionFacts.Calories = kilgramsOfUnit * 10 * calorieData.Value<double>("amount");
+        }
+        return nutritionFacts;
+    }
 }

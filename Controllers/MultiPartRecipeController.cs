@@ -46,11 +46,13 @@ namespace babe_algorithms.Controllers
             {
                 return NotFound();
             }
-            var ingredients = multiPartRecipe.RecipeComponents.SelectMany(component => component.Ingredients).Select(ir => ir.Ingredient);
-            var result = ingredients.Select(ingredient => new {
-                Ingredient = ingredient,
-                nutritionData = ingredient.NutritionData?.ToJObject(),
+            var ingredientRequirements = multiPartRecipe.RecipeComponents.SelectMany(component => component.Ingredients);
+            var result = ingredientRequirements.Select(ir => new {
+                Ingredient = ir,
+                nutritionData = ir.Ingredient.NutritionData?.ToJObject(),
+                NutritionFacts = ir.CalculateNutritionFacts(),
             });
+
 
             return this.Ok(result);
         }

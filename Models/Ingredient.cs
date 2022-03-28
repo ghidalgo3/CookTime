@@ -51,6 +51,12 @@ public enum Unit
 }
 
 public static class UnitExtension {
+
+    public static bool IsMass(this Unit value)
+    {
+        return (int)value >= 2000;
+    }
+
     public static double GetSIValue(this Unit value) {
         return value switch
         {

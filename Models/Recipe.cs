@@ -45,4 +45,9 @@ public class IngredientRequirement : IIngredientRequirement
     /// The position this ingredient should be placed in.
     /// </summary>
     public int Position { get; set; }
+
+    public NutritionFacts CalculateNutritionFacts()
+    {
+        throw new NotImplementedException();
+    }
 }

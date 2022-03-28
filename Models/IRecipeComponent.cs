@@ -21,4 +21,5 @@ public interface IIngredientRequirement
     double Quantity { get; set; }
     Unit Unit { get; set; }
     int Position { get; set; }
+    NutritionFacts CalculateNutritionFacts();
 }
