@@ -57,7 +57,7 @@ public class RecipeComponent : IRecipeComponent<MultiPartRecipeStep, MultiPartIn
     public string Name { get; set; }
     public Guid Id { get; set; }
     public int Position { get; set; }
-    public Guid MultiPartRecipeId { get; set; }
+    // public Guid MultiPartRecipeId { get; set; }
     public List<MultiPartIngredientRequirement> Ingredients { get; set; } = new List<MultiPartIngredientRequirement>();
     public List<MultiPartRecipeStep> Steps { get; set; } = new List<MultiPartRecipeStep>();
 
@@ -114,9 +114,9 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
             return nutritionFacts;
         }
         // find the food nutrient 
-        var nutritionData = JObject.Parse(this.Ingredient.NutritionData.FoodNutrients.RootElement.GetRawText());
+        var nutritionData = JToken.Parse(this.Ingredient.NutritionData.FoodNutrients.RootElement.GetRawText());
         // this represents calories in 100 grams of this ingredient
-        var calorieData =  nutritionData.SelectTokens(@"$.foodNutrients[?(@.nutrient.name == ""Energy"" && @.nutrient.unitName == ""kcal"")]").First();
+        var calorieData =  nutritionData.SelectTokens(@"$[?(@.nutrient.name == 'Energy' && @.nutrient.unitName == 'kcal')]").First();
         if (this.Unit.IsMass())
         {
             var kilgramsOfUnit = this.Unit.GetSIValue() * this.Quantity;

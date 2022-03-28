@@ -41,10 +41,10 @@ public class Program
                 conn.Open();
                 conn.ReloadTypes();
                 // InitializeDatabase(context);
-                LoadFoodData(context);
             }
             else
             {
+                LoadFoodData(context);
                 DeduplicateIngredients(context).Wait();
             }
         }

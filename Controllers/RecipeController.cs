@@ -148,10 +148,11 @@ public class RecipeController : ControllerBase, IImageController
             var matching = currentIngredients
                 .FirstOrDefault(ir =>
                     ir.Id == ingredientRequirement.Id);
+            // is this an existing ingredient requirement?
             if (matching == null)
             {
                 var existingIngredient = await context.Ingredients
-                    .FirstAsync(ingredient => EF.Functions.Like(ingredientRequirement.Ingredient.Name.Trim(), ingredient.Name.Trim()));
+                    .FirstOrDefaultAsync(ingredient => EF.Functions.Like(ingredientRequirement.Ingredient.Name.Trim(), ingredient.Name.Trim()));
                 if (existingIngredient == null)
                 {
                     // new ingredient

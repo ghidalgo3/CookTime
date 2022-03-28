@@ -54,7 +54,10 @@ namespace babe_algorithms.Controllers
             });
 
 
-            return this.Ok(result);
+            return this.Ok(new {
+                NutritionFacts = result.Select(r => r.NutritionFacts).Aggregate((a,b) => a.Combine(b)),
+                Ingredients = result
+                });
         }
 
         // PUT: api/MultiPartRecipe/5
@@ -64,17 +67,17 @@ namespace babe_algorithms.Controllers
         public async Task<IActionResult> PutMultiPartRecipe(
             Guid id,
             [FromBody]
-            MultiPartRecipe recipe)
+            MultiPartRecipe payload)
         {
-            if (id != recipe.Id)
+            if (id != payload.Id)
             {
                 return BadRequest();
             }
             var existingRecipe = await _context.GetMultiPartRecipeAsync(id);
-            _context.Entry(existingRecipe).CurrentValues.SetValues(recipe);
+            _context.Entry(existingRecipe).CurrentValues.SetValues(payload);
             var currentComponents = existingRecipe.RecipeComponents;
             existingRecipe.RecipeComponents = new List<RecipeComponent>();
-            foreach (var component in recipe.RecipeComponents)
+            foreach (var component in payload.RecipeComponents)
             {
                 var existingComponent = currentComponents.FirstOrDefault(c => c.Id == component.Id);
                 if (existingComponent != null) {
