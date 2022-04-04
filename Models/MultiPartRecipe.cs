@@ -117,11 +117,18 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
         var nutritionData = JToken.Parse(this.Ingredient.NutritionData.FoodNutrients.RootElement.GetRawText());
         // this represents calories in 100 grams of this ingredient
         var calorieData =  nutritionData.SelectTokens(@"$[?(@.nutrient.name == 'Energy' && @.nutrient.unitName == 'kcal')]").First();
+        
         if (this.Unit.IsMass())
         {
             var kilgramsOfUnit = this.Unit.GetSIValue() * this.Quantity;
             // * 10 because the SR data is for 100g 
             nutritionFacts.Calories = kilgramsOfUnit * 10 * calorieData.Value<double>("amount");
+        }
+        else if (this.Unit.IsVolume())
+        {
+            var ingredientDensity = this.Ingredient.NutritionData.CalculateDensity();
+            var kilogramsOfUnit = this.Unit.GetSIValue() * this.Quantity * ingredientDensity;
+            nutritionFacts.Calories = kilogramsOfUnit * 10 * calorieData.Value<double>("amount");
         }
         return nutritionFacts;
     }
