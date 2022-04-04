@@ -15,6 +15,7 @@
       <th scope="col">Ingredient</th>
       @* <th scope="col">Recipes Where Used</th> *@
       <th scope="col">NDB Number</th>
+      <th scope="col">Count RegEx</th>
       <th scope="col">Save/Delete</th>
     </tr>
   </thead>
@@ -28,6 +29,9 @@
       <form method="POST">
         <td>
           <input type="number" name="ndbNumber" value="@ingredient.NutritionData?.NdbNumber">
+        </td>
+        <td>
+          <input type="text" name="countRegex" value="@ingredient.NutritionData?.CountRegex">
         </td>
         <td>
           <input type="hidden" name="ingredientId" value="@ingredient.Id">

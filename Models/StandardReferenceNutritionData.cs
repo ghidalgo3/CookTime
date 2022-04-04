@@ -3,6 +3,7 @@ using System.Text.Json;
 using Newtonsoft.Json;
 using babe_algorithms.Services;
 using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
 
 namespace babe_algorithms.Models;
 public class StandardReferenceNutritionData
@@ -26,6 +27,8 @@ public class StandardReferenceNutritionData
     [JsonIgnore]
     public JsonDocument FoodPortions { get; set; }
 
+    public string CountRegex { get; set; }
+
     /// <summary>
     /// Calculates the density of an ingredient in kilograms per liter.
     /// </summary>
@@ -48,7 +51,7 @@ public class StandardReferenceNutritionData
         var foodPortions = JArray.Parse(this.FoodPortions.RootElement.GetRawText());
         foreach (var portion in foodPortions)
         {
-            if (TryParseUnit(portion["modifier"].Value<string>(), out Unit unit))
+            if (TryParseUnit(portion["modifier"].Value<string>(), null, out Unit unit))
             {
                 if (unit.IsVolume())
                 {
@@ -59,7 +62,24 @@ public class StandardReferenceNutritionData
         return 1.0;
     }
 
-    public static bool TryParseUnit(string modifier, out Unit unit)
+    public double CalculateUnitMass()
+    {
+        var foodPortions = JArray.Parse(this.FoodPortions.RootElement.GetRawText());
+        foreach (var portion in foodPortions)
+        {
+            if (TryParseUnit(portion["modifier"].Value<string>(), this, out Unit unit))
+            {
+                if (unit.IsCount())
+                {
+                    return portion["gramWeight"].Value<double>() / 1000.0;
+                }
+            }
+        }
+
+        return 1.0;
+    }
+
+    public static bool TryParseUnit(string modifier, StandardReferenceNutritionData srData, out Unit unit)
     {
         unit = Unit.Count;
         var normalize = modifier.ToUpperInvariant();
@@ -86,11 +106,22 @@ public class StandardReferenceNutritionData
             default:
                 break;
         }
+
         if (normalize.Contains("CUP"))
         {
             unit = Unit.Cup;
             return true;
         }
+
+        if (!string.IsNullOrWhiteSpace(srData?.CountRegex))
+        {
+            if (Regex.IsMatch(modifier, srData.CountRegex, RegexOptions.IgnoreCase))
+            {
+                unit = Unit.Count;
+                return true;
+            }
+        }
+
         return false;
     }
 

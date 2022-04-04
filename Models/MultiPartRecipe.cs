@@ -129,6 +129,9 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
             var ingredientDensity = this.Ingredient.NutritionData.CalculateDensity();
             var kilogramsOfUnit = this.Unit.GetSIValue() * this.Quantity * ingredientDensity;
             nutritionFacts.Calories = kilogramsOfUnit * 10 * calorieData.Value<double>("amount");
+        } else {
+            var kilogramsOfUnit = this.Ingredient.NutritionData.CalculateUnitMass() * this.Quantity;
+            nutritionFacts.Calories = kilogramsOfUnit * 10 * calorieData.Value<double>("amount");
         }
         return nutritionFacts;
     }
