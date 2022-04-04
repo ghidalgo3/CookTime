@@ -106,9 +106,9 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
     /// </summary>
     public int Position { get; set; }
 
-    public NutritionFacts CalculateNutritionFacts()
+    public NutritionFactVector CalculateNutritionFacts()
     {
-        var nutritionFacts = new NutritionFacts();
+        var nutritionFacts = new NutritionFactVector();
         if (this.Ingredient.NutritionData == null)
         {
             return nutritionFacts;

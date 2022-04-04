@@ -80,3 +80,12 @@ type Recipe = {
     categories : {name: string, id: string, isNew: boolean}[],
     staticImage : string
 }
+
+type NutritionFactVector = {
+    calories : number
+}
+
+type RecipeNutritionFacts = {
+    recipe : NutritionFactVector,
+    components : NutritionFactVector[]
+}

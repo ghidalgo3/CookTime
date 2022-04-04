@@ -22,6 +22,7 @@ type RecipeEditState = {
     newServings: number,
     error: boolean,
     operationInProgress: boolean,
+    nutritionFacts : RecipeNutritionFacts | undefined
 }
 
 class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
@@ -34,6 +35,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             units: [],
             newImage: undefined,
             newImageSrc: undefined,
+            nutritionFacts: undefined,
             recipeImages: [],
             recipe: {
                 id : '',
@@ -87,6 +89,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         })
                     }
                 )
+            this.getNutritionData();
         } else {
             fetch(`/api/recipe/${recipeId}`)
                 .then(response => response.json())
@@ -114,6 +117,19 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 
     }
 
+
+    private getNutritionData() {
+        fetch(`/api/MultiPartRecipe/${recipeId}/nutritionData`)
+            .then(response => response.json())
+            .then(
+                result => {
+                    let r = result as RecipeNutritionFacts;
+                    this.setState({
+                        nutritionFacts: r
+                    });
+                }
+            );
+    }
 
     private setServingsFromQueryParameters(r: Recipe | MultiPartRecipe) {
         const urlParams = new URLSearchParams(window.location.search);
@@ -326,22 +342,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 { this.image() }
 
                 <div>
-                {this.state.recipe.caloriesPerServing === 0 && !this.state.edit ? null :
-                    <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
-                        <Col className="col-3 recipe-field-title">
-                            CALORIES PER SERVING
-                        </Col>
-                        <Col className="col d-flex align-items-center">
-                            {this.state.edit ?
-                                <Form.Control
-                                    type="number"
-                                    min="0"
-                                    onChange={(e) => this.setState({recipe: {...this.state.recipe, caloriesPerServing: parseInt(e.target.value)}})}
-                                    value={this.state.recipe.caloriesPerServing}></Form.Control> :
-                                <div>{this.state.recipe.caloriesPerServing}</div> }
-                        </Col>
-                    </Row>
-                }
+                    { this.caloriesPerServingComponent() }
                     <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                         <Col className="col-3 recipe-field-title">
                             SERVINGS
@@ -427,6 +428,49 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     {this.RecipeOrComponents()}
                 </div>
             </div>
+        );
+    }
+
+    private caloriesPerServingComponent() {
+        var rightColContents : any = null;
+        if (!this.state.edit
+            && this.state.recipe.caloriesPerServing === 0
+            && (this.state.nutritionFacts?.recipe?.calories ?? 0) === 0) {
+            // if there is no static calories per serving and if cannot compute a non-0 calories per serving, don't render anything
+            return null
+        } else if (!this.state.edit
+            && this.state.recipe.caloriesPerServing === 0
+            && (this.state.nutritionFacts?.recipe?.calories ?? 0) !== 0) {
+            // if the user did not provide a value and we computed one, use that
+            rightColContents =
+                <div>
+                    {Math.round(this.state.nutritionFacts!.recipe.calories / this.state.recipe.servingsProduced)}
+                    <i className="fas fa-solid fa-calculator"></i>
+                </div>
+        } else if (!this.state.edit
+            && this.state.recipe.caloriesPerServing !== 0) {
+            rightColContents =
+                <div>
+                    {this.state.recipe.caloriesPerServing}
+                </div>
+        } else if (this.state.edit) {
+            rightColContents =
+                <Form.Control
+                        type="number"
+                        min="0"
+                        onChange={(e) => this.setState({ recipe: { ...this.state.recipe, caloriesPerServing: parseInt(e.target.value) } })}
+                        value={this.state.recipe.caloriesPerServing}></Form.Control> 
+        }
+
+        return (
+            <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
+                <Col className="col-3 recipe-field-title">
+                    CALORIES PER SERVING
+                </Col>
+                <Col className="col d-flex align-items-center">
+                    {rightColContents}
+                </Col>
+            </Row>
         );
     }
 
@@ -718,6 +762,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             this.saveSimpleRecipe();
         } else {
             this.saveMultiPartRecipe();
+            this.getNutritionData();
         }
     }
 
