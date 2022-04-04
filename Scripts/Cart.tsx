@@ -117,13 +117,13 @@ class ShoppingCart extends React.Component<{}, CartState> {
                     </Col>
                 </Row>
                 <div className="cart-header">
-                    SERVINGS
+                    Servings
                 </div>
                 <div>
                     {recipes}
                 </div>
                 <div className="cart-header margin-top-15">
-                    INGREDIENTS
+                    Ingredients
                 </div>
                 <div>
                     {aggregateIngredients}
