@@ -39,25 +39,23 @@ namespace babe_algorithms.Controllers
 
         // GET: api/MultiPartRecipe/5/nutritionData
         [HttpGet("{id}/nutritionData")]
-        public async Task<ActionResult<MultiPartRecipe>> GetMultiPartRecipeNutritionData(Guid id)
+        public async Task<ActionResult<RecipeNutritionFacts>> GetMultiPartRecipeNutritionData(Guid id)
         {
             var multiPartRecipe = await _context.GetMultiPartRecipeNutritionDataAsync(id);
             if (multiPartRecipe == null)
             {
                 return NotFound();
             }
-            var ingredientRequirements = multiPartRecipe.RecipeComponents.SelectMany(component => component.Ingredients);
-            var result = ingredientRequirements.Select(ir => new {
-                Ingredient = ir,
-                nutritionData = ir.Ingredient.NutritionData?.ToJObject(),
-                NutritionFacts = ir.CalculateNutritionFacts(),
-            });
-
-            return this.Ok(new
+            var body = new RecipeNutritionFacts();
+            foreach (var component in multiPartRecipe.RecipeComponents)
             {
-                AggregateNutritionFacts = result.Select(r => r.NutritionFacts).Aggregate((a,b) => a.Combine(b)),
-                IngredientRequirements = result
-            });
+                var allIngredientRequirements = component.Ingredients;
+                // irs.Sort((first, second) => first.Position.CompareTo(second.Position));
+                var result = allIngredientRequirements.Select(ir => ir.CalculateNutritionFacts()).ToList();
+                body.Components.Add(result.Aggregate((a,b) => a + b));
+            }
+            body.Recipe = body.Components.Aggregate((a, b) => a + b);
+            return this.Ok(body);
         }
 
         // PUT: api/MultiPartRecipe/5

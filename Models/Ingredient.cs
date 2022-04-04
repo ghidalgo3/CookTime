@@ -57,6 +57,16 @@ public static class UnitExtension {
         return (int)value >= 2000;
     }
 
+    public static bool IsVolume(this Unit value)
+    {
+        return (int)value < 1000;
+    }
+
+    public static bool IsCount(this Unit value)
+    {
+        return (int)value < 2000 && (int)value >= 1000;
+    }
+
     public static double GetSIValue(this Unit value) {
         return value switch
         {
