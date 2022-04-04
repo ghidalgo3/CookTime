@@ -28,14 +28,16 @@ public class StandardReferenceNutritionData
 
     public JObject ToJObject()
     {
-        var result = new JObject();
-        result["ndbNumber"] = this.NdbNumber;
-        result["description"] = this.Description;
-        result["fdcId"] = this.FdcId;
-        result["foodNutrients"] = JToken.Parse(this.FoodNutrients.RootElement.GetRawText());
-        result["nutrientConversionFactors"] = JToken.Parse(this.NutrientConversionFactors.RootElement.GetRawText());
-        result["foodCategory"] = JToken.Parse(this.FoodCategory.RootElement.GetRawText());
-        result["foodPortions"] = JToken.Parse(this.FoodPortions.RootElement.GetRawText());
+        var result = new JObject
+        {
+            ["ndbNumber"] = this.NdbNumber,
+            ["description"] = this.Description,
+            ["fdcId"] = this.FdcId,
+            ["foodNutrients"] = JToken.Parse(this.FoodNutrients.RootElement.GetRawText()),
+            ["nutrientConversionFactors"] = JToken.Parse(this.NutrientConversionFactors.RootElement.GetRawText()),
+            ["foodCategory"] = JToken.Parse(this.FoodCategory.RootElement.GetRawText()),
+            ["foodPortions"] = JToken.Parse(this.FoodPortions.RootElement.GetRawText())
+        };
         return result;
     }
 }

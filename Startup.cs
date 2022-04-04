@@ -1,22 +1,31 @@
 using Microsoft.EntityFrameworkCore;
 using babe_algorithms.Services;
 using SixLabors.ImageSharp.Web.DependencyInjection;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace babe_algorithms;
 public class Startup
 {
-    public Startup(IConfiguration configuration)
+    public Startup(IConfiguration configuration, IWebHostEnvironment env)
     {
-        Configuration = configuration;
+        this.Configuration = configuration;
+        this.Environment = env;
     }
 
     public IConfiguration Configuration { get; }
+
+    public IWebHostEnvironment Environment { get; }
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllersWithViews().AddNewtonsoftJson();
-        services.AddRazorPages();
+        var mvcBuilder = services.AddRazorPages();
+        if (this.Environment.IsDevelopment())
+        {
+            mvcBuilder.AddRazorRuntimeCompilation();
+        }
+
         services.AddScoped<IUserService, UserService>();
         services.AddDbContext<ApplicationDbContext>(options =>
         {
@@ -24,7 +33,7 @@ public class Startup
             if (string.IsNullOrEmpty(connectionString))
             {
                 connectionString =
-                    Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres")
+                    System.Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres")
                     ?? throw new NullReferenceException("Connection string was not found.");
             }
             options.UseNpgsql(connectionString);

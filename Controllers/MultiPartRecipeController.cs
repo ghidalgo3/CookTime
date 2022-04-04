@@ -53,11 +53,11 @@ namespace babe_algorithms.Controllers
                 NutritionFacts = ir.CalculateNutritionFacts(),
             });
 
-
-            return this.Ok(new {
-                NutritionFacts = result.Select(r => r.NutritionFacts).Aggregate((a,b) => a.Combine(b)),
-                Ingredients = result
-                });
+            return this.Ok(new
+            {
+                AggregateNutritionFacts = result.Select(r => r.NutritionFacts).Aggregate((a,b) => a.Combine(b)),
+                IngredientRequirements = result
+            });
         }
 
         // PUT: api/MultiPartRecipe/5

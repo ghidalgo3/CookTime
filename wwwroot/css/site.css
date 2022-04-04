@@ -5,7 +5,7 @@ for details on configuring this project to bundle and minify static web assets. 
 :root {
   --light-grey: #F7F9FB;
   --green-earth: #687864;
-  --green-earth-border: #566353;
+  --green-earth-border: #0f100e;
   --green-earth-highlight: #455042;
   --green-earth-highlight-border: #374135;
   --deep-water: #31708E;
@@ -19,6 +19,59 @@ for details on configuring this project to bundle and minify static web assets. 
   --red-dirt-border: #d8785d;
   --red-dirt-highlight: #c26950;
   --red-dirt-highlight-border: #a35844;
+}
+/* These are the colors generated from the Microsoft theme builder tool. */
+/* Primary color = #0cad85
+Text color = #323232
+background color = #fafafa */
+/* const myTheme = createTheme({
+  palette: {
+    themePrimary: '#0cad85',
+    themeLighterAlt: '#f2fcf9',
+    themeLighter: '#cef2e9',
+    themeLight: '#a6e7d6',
+    themeTertiary: '#5bceb1',
+    themeSecondary: '#21b792',
+    themeDarkAlt: '#0b9c78',
+    themeDark: '#098465',
+    themeDarker: '#07614b',
+    neutralLighterAlt: '#f3f3f3',
+    neutralLighter: '#efefef',
+    neutralLight: '#e5e5e5',
+    neutralQuaternaryAlt: '#d6d6d6',
+    neutralQuaternary: '#cccccc',
+    neutralTertiaryAlt: '#c4c4c4',
+    neutralTertiary: '#c2c2c2',
+    neutralSecondary: '#858585',
+    neutralPrimaryAlt: '#4b4b4b',
+    neutralPrimary: '#323232',
+    neutralDark: '#272727',
+    black: '#1d1d1d',
+    white: '#fafafa',
+  }}); */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-text: #fafafa;
+    --primary-background: #272727;
+    --secondary-background: #c4c4c4;
+  }
+}
+
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --primary-text: #1d1d1d;
+    --primary-background: #fafafa;
+    --secondary-background: #fafafa;
+  }
+}
+
+.navbar {
+  background-color: var(--primary-background);
+}
+.nav-link {
+  color: var(--primary-text);
 }
 
 a.navbar-brand {
@@ -130,6 +183,11 @@ html {
 
 .component-card {
   padding: 10px;
+  background-color: var(--secondary-background);
+}
+
+.recipe-card {
+  background-color: var(--secondary-background);
 }
 
 .recipe-edit-row {
@@ -210,7 +268,8 @@ html {
 body {
   /* Margin bottom by footer height */
   margin-bottom: 60px;
-  background-color: var(--light-grey);
+  background-color: var(--primary-background);
+  color: var(--primary-text);
 }
 
 .footer {
