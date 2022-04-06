@@ -442,9 +442,16 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             && this.state.recipe.caloriesPerServing === 0
             && (this.state.nutritionFacts?.recipe?.calories ?? 0) !== 0) {
             // if the user did not provide a value and we computed one, use that
+            let allFats =
+                this.state.nutritionFacts!.recipe.saturatedFats
+                + this.state.nutritionFacts!.recipe.monoUnsaturatedFats
+                + this.state.nutritionFacts!.recipe.polyUnsaturatedFats;
             rightColContents =
                 <div>
-                    {Math.round(this.state.nutritionFacts!.recipe.calories / this.state.recipe.servingsProduced)}
+                    {Math.round(this.state.nutritionFacts!.recipe.calories / this.state.recipe.servingsProduced)} kcal, 
+                    {Math.round(this.state.nutritionFacts!.recipe.carbohydrates / this.state.recipe.servingsProduced)}g carbs,
+                    {Math.round(this.state.nutritionFacts!.recipe.proteins / this.state.recipe.servingsProduced)}g protein, 
+                    {Math.round(allFats/ this.state.recipe.servingsProduced)}g fats. 
                     <i className="fas fa-solid fa-calculator"></i>
                 </div>
         } else if (!this.state.edit

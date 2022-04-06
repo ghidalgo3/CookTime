@@ -115,24 +115,33 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
         }
         // find the food nutrient 
         var nutritionData = JToken.Parse(this.Ingredient.NutritionData.FoodNutrients.RootElement.GetRawText());
-        // this represents calories in 100 grams of this ingredient
-        var calorieData =  nutritionData.SelectTokens(@"$[?(@.nutrient.name == 'Energy' && @.nutrient.unitName == 'kcal')]").First();
-        
+        this.ComputeNutritionValue(nutritionData, "Energy", "kcal", n => nutritionFacts.Calories = n);
+        this.ComputeNutritionValue(nutritionData, "Protein", "g", n => nutritionFacts.Proteins = n);
+        this.ComputeNutritionValue(nutritionData, "Carbohydrate, by difference", "g", n => nutritionFacts.Carbohydrates = n);
+        this.ComputeNutritionValue(nutritionData, "Fatty acids, total monounsaturated", "g", n => nutritionFacts.MonoUnsaturatedFats = n);
+        this.ComputeNutritionValue(nutritionData, "Fatty acids, total polyunsaturated", "g", n => nutritionFacts.PolyUnsaturatedFats = n);
+        this.ComputeNutritionValue(nutritionData, "Fatty acids, total saturated",       "g", n => nutritionFacts.SaturatedFats = n);
+        return nutritionFacts;
+    }
+
+    private void ComputeNutritionValue(JToken nutritionData, string nutrientName, string unitName, Action<double> propertySetter)
+    {
+        // this represents nutrients in 100 grams of this ingredient
+        var calorieData =  nutritionData.SelectTokens(@$"$[?(@.nutrient.name == '{nutrientName}' && @.nutrient.unitName == '{unitName}')]").First();
         if (this.Unit.IsMass())
         {
             var kilgramsOfUnit = this.Unit.GetSIValue() * this.Quantity;
             // * 10 because the SR data is for 100g 
-            nutritionFacts.Calories = kilgramsOfUnit * 10 * calorieData.Value<double>("amount");
+            propertySetter.Invoke(kilgramsOfUnit * 10 * calorieData.Value<double>("amount"));
         }
         else if (this.Unit.IsVolume())
         {
             var ingredientDensity = this.Ingredient.NutritionData.CalculateDensity();
             var kilogramsOfUnit = this.Unit.GetSIValue() * this.Quantity * ingredientDensity;
-            nutritionFacts.Calories = kilogramsOfUnit * 10 * calorieData.Value<double>("amount");
+            propertySetter.Invoke(kilogramsOfUnit * 10 * calorieData.Value<double>("amount"));
         } else {
             var kilogramsOfUnit = this.Ingredient.NutritionData.CalculateUnitMass() * this.Quantity;
-            nutritionFacts.Calories = kilogramsOfUnit * 10 * calorieData.Value<double>("amount");
+            propertySetter.Invoke(kilogramsOfUnit * 10 * calorieData.Value<double>("amount"));
         }
-        return nutritionFacts;
     }
 }
