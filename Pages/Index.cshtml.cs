@@ -95,50 +95,7 @@ public class IndexModel : PageModel
 
     public async Task<ActionResult> OnPostAddToCart(Guid recipeId)
     {
-        var recipe = await _context.GetRecipeAsync(recipeId);
-        var mpRecipe = await _context.GetMultiPartRecipeAsync(recipeId);
-        if (recipe == null && mpRecipe == null)
-        {
-            return this.Page();
-        }
-
-        if (recipe != null)
-        {
-            var cart = await _context.GetActiveCartAsync();
-            var existingRecipe = cart.RecipeRequirement.FirstOrDefault(rr => rr.Recipe?.Id == recipeId);
-            if (existingRecipe == null)
-            {
-                cart.RecipeRequirement.Add(new RecipeRequirement()
-                {
-                    Recipe = recipe,
-                    Quantity = 1.0
-                });
-            }
-            else
-            {
-                existingRecipe.Quantity += 1.0;
-            }
-            await _context.SaveChangesAsync();
-        }
-        else
-        {
-            var cart = await _context.GetActiveCartAsync();
-            var existingRecipe = cart.RecipeRequirement.FirstOrDefault(rr => rr.MultiPartRecipe.Id == recipeId);
-            if (existingRecipe == null)
-            {
-                cart.RecipeRequirement.Add(new RecipeRequirement()
-                {
-                    MultiPartRecipe = mpRecipe,
-                    Quantity = 1.0
-                });
-            }
-            else
-            {
-                existingRecipe.Quantity += 1.0;
-            }
-            await _context.SaveChangesAsync();
-        }
-
+        await CartController.AddRecipeToCart(this._context, recipeId);
         return this.RedirectToPage("/Cart");
     }
 }

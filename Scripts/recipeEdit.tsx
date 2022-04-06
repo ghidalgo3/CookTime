@@ -345,7 +345,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     { this.caloriesPerServingComponent() }
                     <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                         <Col className="col-3 recipe-field-title">
-                            SERVINGS
+                            Servings
                         </Col>
                         <Col className="col d-flex align-items-center">
                             {this.state.edit ?
@@ -379,7 +379,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 {(this.state.recipe.source == '' || this.state.recipe.source == null) && !this.state.edit ? null :
                     <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                         <Col className="col-3 recipe-field-title">
-                            LINK TO ORIGINAL RECIPE
+                            Link to Original Recipe
                         </Col>
                         <Col className="col d-flex align-items-center">
                             {this.state.edit ?
@@ -394,7 +394,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     {this.state.edit ? 
                         <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                             <Col className="col-3 recipe-field-title">
-                                IMAGE
+                                Image
                             </Col>
                             <Col className="col d-flex align-items-center">
                                 <Form.Group controlId="formFile" className="image-selector">
@@ -472,7 +472,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         return (
             <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                 <Col className="col-3 recipe-field-title">
-                    CALORIES PER SERVING
+                    Calories per Serving
                 </Col>
                 <Col className="col d-flex align-items-center">
                     {rightColContents}
@@ -544,7 +544,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 {recipe.recipeComponents.length > 1 ? 
                 <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                     <Col className="col-3 recipe-field-title">
-                        COMPONENT NAME
+                        Component Name
                     </Col>
                     <Col>
                         <Row>
@@ -583,7 +583,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 }
                 <Row className="padding-right-0 recipe-edit-row">
                     <Col className="col-3 recipe-field-title">
-                        INGREDIENTS
+                        Ingredients
                     </Col>
                     <Col className="col d-flex align-items-center">
                         <div className="ingredient-list">
@@ -600,7 +600,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 </Row>
                 <Row className="padding-right-0">
                     <Col className="col-3 recipe-field-title">
-                        STEPS
+                        Steps
                     </Col>
                     <Col className="col d-flex align-items-center">
                         <div className="step-list">
@@ -634,7 +634,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             <div>
                 <Row className="padding-right-0 recipe-edit-row">
                     <Col className="col-3 recipe-field-title">
-                        INGREDIENTS
+                        Ingredients
                     </Col>
                     <Col className="col d-flex align-items-center">
                         <div className="ingredient-list">
@@ -651,7 +651,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 </Row>
                 <Row className="padding-right-0">
                     <Col className="col-3 recipe-field-title">
-                        STEPS
+                        Steps
                     </Col>
                     <Col className="col d-flex align-items-center">
                         <div className="step-list">
@@ -725,7 +725,14 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             </Col>
             :
             <Col>
-                <Button className="float-end" onClick={(event) => this.setState({ edit: !this.state.edit })}>Edit</Button>
+                <Row>
+                    <Col>
+                        <Button className="width-100" onClick={(event) => this.setState({ edit: !this.state.edit })}>Edit</Button>
+                    </Col>
+                    <Col>
+                        <Button className="width-100" onClick={(event) => this.onAddtoCard()}>Add to Groceries</Button>
+                    </Col>
+                </Row>
             </Col>;
     }
     onMigrate(): void {
@@ -736,6 +743,16 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 window.location.href = response.url
             }
             // TODO redirect to new page
+        })
+    }
+
+    onAddtoCard() : void {
+        fetch(`/api/Cart?recipeId=${this.props.recipeId}`, {
+            method: 'POST',
+        }).then(response => {
+            if (response.redirected) {
+                window.location.href = response.url
+            }
         })
     }
 

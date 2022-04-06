@@ -20,6 +20,55 @@ public class CartController : ControllerBase
         _context = context;
     }
 
+    
+
+    public static async Task AddRecipeToCart(ApplicationDbContext _context, Guid recipeId)
+    {
+        var recipe = await _context.GetRecipeAsync(recipeId);
+        var mpRecipe = await _context.GetMultiPartRecipeAsync(recipeId);
+        if (recipe == null && mpRecipe == null)
+        {
+            return;
+        }
+
+        if (recipe != null)
+        {
+            var cart = await _context.GetActiveCartAsync();
+            var existingRecipe = cart.RecipeRequirement.FirstOrDefault(rr => rr.Recipe?.Id == recipeId);
+            if (existingRecipe == null)
+            {
+                cart.RecipeRequirement.Add(new RecipeRequirement()
+                {
+                    Recipe = recipe,
+                    Quantity = 1.0
+                });
+            }
+            else
+            {
+                existingRecipe.Quantity += 1.0;
+            }
+            await _context.SaveChangesAsync();
+        }
+        else
+        {
+            var cart = await _context.GetActiveCartAsync();
+            var existingRecipe = cart.RecipeRequirement.FirstOrDefault(rr => rr.MultiPartRecipe.Id == recipeId);
+            if (existingRecipe == null)
+            {
+                cart.RecipeRequirement.Add(new RecipeRequirement()
+                {
+                    MultiPartRecipe = mpRecipe,
+                    Quantity = 1.0
+                });
+            }
+            else
+            {
+                existingRecipe.Quantity += 1.0;
+            }
+            await _context.SaveChangesAsync();
+        }
+    }
+
     // GET: api/Cart
     [HttpGet]
     public async Task<ActionResult<Cart>> GetCart()
@@ -91,12 +140,10 @@ public class CartController : ControllerBase
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
     [BasicAuth]
-    public async Task<ActionResult<Cart>> PostCart(Cart cart)
+    public async Task<ActionResult<Cart>> PostCart(Guid recipeId)
     {
-        _context.Carts.Add(cart);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction("GetCart", new { id = cart.Id }, cart);
+        await CartController.AddRecipeToCart(this._context, recipeId);
+        return this.Redirect("/Cart");
     }
 
     // DELETE: api/Cart/clear

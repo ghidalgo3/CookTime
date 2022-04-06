@@ -10,7 +10,7 @@
             <h1 class="margin-bottom-20">Recipes</h1>
         </div>
         <div class="col-2 text-end"> 
-            <a asp-page="./Recipes/Create"><i class="fas fa-plus-circle green-earth-color fa-2x"></i></a>
+            <a asp-page="./Recipes/Create"><i class="fas fa-plus-circle themePrimary-color fa-2x"></i></a>
         </div>
 </div>
 
@@ -25,15 +25,16 @@
                             <img class="card-img-top card-recipe-image" src="@image" alt="Food image">
                         }
                         <div class="card-body ">
-                            <p class="card-title do-not-overflow-text">@Html.DisplayFor(modelItem => item.Name)</p>
-                            <input value="@item.Id" type="hidden" name="recipeId"/>
-                            <button
+                            <p class="tag-style margin-bottom-0">[tag]</p>
+                            <h5 class="margin-bottom-0 card-title do-not-overflow-text">@Html.DisplayFor(modelItem => item.Name)</h5>
+                            @* <input value="@item.Id" type="hidden" name="recipeId"/> *@
+                            @* <button
                                 data-bs-toggle="tooltip" 
                                 data-bs-placement="right" 
                                 title="Add recipe to grocery list"
                                 type="submit"
                                 asp-page-handler="AddToCart"
-                                class="btn btn-primary troubled-water-color width-100">Add to groceries</button>
+                                class="btn btn-primary troubled-water-color width-100">Add to groceries</button> *@
                         </div>
                     </div>
                 </a>

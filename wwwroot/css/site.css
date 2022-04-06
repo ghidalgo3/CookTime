@@ -19,76 +19,157 @@ for details on configuring this project to bundle and minify static web assets. 
   --red-dirt-border: #d8785d;
   --red-dirt-highlight: #c26950;
   --red-dirt-highlight-border: #a35844;
-}
+
 /* These are the colors generated from the Microsoft theme builder tool. */
 /* Primary color = #0cad85
 Text color = #323232
-background color = #fafafa */
-/* const myTheme = createTheme({
-  palette: {
-    themePrimary: '#0cad85',
-    themeLighterAlt: '#f2fcf9',
-    themeLighter: '#cef2e9',
-    themeLight: '#a6e7d6',
-    themeTertiary: '#5bceb1',
-    themeSecondary: '#21b792',
-    themeDarkAlt: '#0b9c78',
-    themeDark: '#098465',
-    themeDarker: '#07614b',
-    neutralLighterAlt: '#f3f3f3',
-    neutralLighter: '#efefef',
-    neutralLight: '#e5e5e5',
-    neutralQuaternaryAlt: '#d6d6d6',
-    neutralQuaternary: '#cccccc',
-    neutralTertiaryAlt: '#c4c4c4',
-    neutralTertiary: '#c2c2c2',
-    neutralSecondary: '#858585',
-    neutralPrimaryAlt: '#4b4b4b',
-    neutralPrimary: '#323232',
-    neutralDark: '#272727',
-    black: '#1d1d1d',
-    white: '#fafafa',
-  }}); */
+Background color = #fafafa */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary-text: #fafafa;
-    --primary-background: #272727;
-    --secondary-background: #c4c4c4;
-  }
+  --themePrimary: #0cad85;
+  --themeLighterAlt: #f2fcf9;
+  --themeLighter: #cef2e9;
+  --themeLight: #a6e7d6;
+  --themeTertiary: #5bceb1;
+  --themeSecondary: #21b792;
+  --themeDarkAlt: #0b9c78;
+  --themeDark: #098465;
+  --themeDarker: #07614b;
+  --neutralLighterAlt: #f3f3f3;
+  --neutralLighter: #efefef;
+  --neutralLight: #e5e5e5;
+  --neutralQuaternaryAlt: #d6d6d6;
+  --neutralQuaternary: #cccccc;
+  --neutralTertiaryAlt: #c4c4c4;
+  --neutralTertiary: #c2c2c2;
+  --neutralSecondary: #858585;
+  --neutralPrimaryAlt: #4b4b4b;
+  --neutralPrimary: #323232;
+  --neutralDark: #272727;
+  --black: #1d1d1d;
+  --white: #fafafa;
 }
 
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary-text: var(--white);
+    --primary-background: var(--neutralDark);
+    --secondary-background: var(--neutralDark);
+  }
+
+  .btn-outline-primary {
+    color: var(--primary-text);
+    border-color: var(--white);
+    background-color: var(--neutralDark);
+  }
+  .btn-outline-primary:hover, .btn-outline-primary:active {
+    color: var(--primary-text);
+    border-color: var(--white);
+    background-color: var(--neutralPrimaryAlt);
+  }
+
+  .input-field-style {
+    color: var(--primary-text);
+    border-color: var(--white);
+    background-color: var(--neutralDark);
+  }
+  .input-field-style:hover, .input-field-style:active, .input-field-style:focus {
+    color: var(--primary-text);
+    border-color: white;
+    background-color: var(--neutralDark);
+  }
+
+  a {
+    color: var(--themeTertiary);
+    text-decoration: none;
+  }
+  a:hover, a:active {
+    color: var(--themeSecondary);
+  }
+
+  .nav-link {
+    color: var(--primary-text);
+  }
+  .nav-link:hover, .nav-link:active {
+    color: var(--themeSecondary);
+  }
+
+  .card {
+    border-color: var(--neutralLight);
+  }
+
+  .btn-primary {
+    color: var(--primary-text);
+    background-color: var(--themePrimary);
+    border-width: 0;
+  }
+  .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    color: var(--primary-text);
+    background-color: var(--themeDark);
+  }
+}
+
 @media (prefers-color-scheme: light) {
   :root {
-    --primary-text: #1d1d1d;
-    --primary-background: #fafafa;
-    --secondary-background: #fafafa;
+    --primary-text: var(--neutralPrimary);
+    --primary-background: var(--white);
+    --secondary-background: white;
+  }
+
+  .btn-outline-primary {
+    color: var(--primary-text);
+    border-color: var(--neutralPrimary);
+    background-color: var(--white);
+  }
+  .btn-outline-primary:hover, .btn-outline-primary:active {
+    color: var(--primary-text);
+    border-color: var(--neutralPrimary);
+    background-color: var(--neutralLighter);
+  }
+
+  .input-field-style {
+    border-color: var(--neutralPrimary);
+    background-color: var(--white);
+  }
+  .input-field-style:hover, .input-field-style:active {
+    border-color: var(--black);
+    background-color: var(--white);
+  }
+
+  a {
+    color: var(--themeDark);
+    text-decoration: none;
+  }
+  a:hover, a:active {
+    color: var(--themeDarker);
+  }
+
+  .nav-link {
+    color: var(--primary-text);
+  }
+  .nav-link:hover, .nav-link:active {
+    color: var(--themeDarker);
+  }
+
+  .btn-primary {
+    color: var(--white);
+    background-color: var(--themePrimary);
+    border-width: 0;
+  }
+  .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    color: var(--white);
+    background-color: var(--themeDark);
   }
 }
 
 .navbar {
   background-color: var(--primary-background);
 }
-.nav-link {
-  color: var(--primary-text);
-}
 
 a.navbar-brand {
   white-space: normal;
   text-align: center;
   word-break: break-all;
-}
-
-/* Provide sufficient contrast against white background */
-a {
-  color: var(--deep-water);
-  text-decoration: none;
-}
-
-a:hover, a:active {
-  color: var(--deep-water-highlight);
-  text-decoration: underline;
 }
 
 .tooltip-style {
@@ -99,16 +180,14 @@ hr {
   margin: 8px 0;
 }
 
-.btn-outline-primary {
-  color: var(--deep-water);
-  border-color: var(--deep-water);
-  background-color: var(--light-grey);
+.tag-style {
+  color: var(--primary-text);
+  font-variant: small-caps;
 }
 
-.btn-primary {
-  color: var(--light-grey);
-  background-color: var(--deep-water);
-  border-color: var(--deep-water-border);
+.tag-style:hover, .tag-style:active {
+  color: var(--primary-text);
+  font-variant: small-caps;
 }
 
 .btn-success {
@@ -135,12 +214,6 @@ hr {
   border-color: var(--red-dirt-highlight-border);
 }
 
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-outline-primary:hover, .btn-outline-primary:active {
-  color: var(--light-grey);
-  background-color: var(--deep-water-highlight);
-  border-color: var(--deep-water-highlight-border);
-}
-
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
   color: var(--light-grey);
   background-color: var(--deep-water-highlight);
@@ -156,8 +229,8 @@ hr {
   color: var(--deep-water);
 }
 
-.green-earth-color {
-  color: var(--green-earth);
+.themePrimary-color {
+  color: var(--themePrimary);
 }
 
 .red-dirt-color {
@@ -197,6 +270,7 @@ html {
 .recipe-field-title {
   font-weight: 700;
   display: block;
+  font-variant: small-caps;
 }
 
 .recipe-image {
@@ -282,6 +356,7 @@ body {
 
 .cart-header {
   font-weight: 700;
+  font-variant: small-caps;
 }
 
 .count {
@@ -333,6 +408,7 @@ body {
   overflow: hidden; 
   white-space: nowrap; 
   text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
 }
 
 .padding-left-4 {
@@ -359,20 +435,20 @@ body {
   padding-right: 10px;
 }
 
+.margin-bottom-0 {
+  margin-bottom: 0px;
+}
 .margin-bottom-8 {
   margin-bottom: 8px;
 }
-
 .margin-bottom-12 {
   margin-bottom: 12px;
 }
-
-.margin-bottom-20 {
-  margin-bottom: 20px;
-}
-
 .margin-bottom-15 {
   margin-bottom: 15px;
+}
+.margin-bottom-20 {
+  margin-bottom: 20px;
 }
 
 .margin-top-8 {
@@ -564,4 +640,3 @@ body {
 .react-autosuggest__suggestion--highlighted {
   background-color: #ddd;
 }
-
