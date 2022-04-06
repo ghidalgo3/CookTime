@@ -489,7 +489,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     {Math.round(this.state.nutritionFacts!.recipe.calories / this.state.recipe.servingsProduced)} kcal, 
                     {Math.round(this.state.nutritionFacts!.recipe.carbohydrates / this.state.recipe.servingsProduced)}g carbs,
                     {Math.round(this.state.nutritionFacts!.recipe.proteins / this.state.recipe.servingsProduced)}g protein, 
-                    {Math.round(allFats/ this.state.recipe.servingsProduced)}g fats. 
+                    {Math.round(this.state.nutritionFacts!.recipe.sugars / this.state.recipe.servingsProduced)}g sugars, 
+                    {Math.round(allFats/ this.state.recipe.servingsProduced)}g total fats. 
                     <i className="fas fa-solid fa-calculator"></i>
                 </div>
         } else if (!this.state.edit
