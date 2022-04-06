@@ -60,7 +60,7 @@ public class Startup
                 {
                     ctx.UseSpa(spa =>
                     {
-                        spa.UseProxyToSpaDevelopmentServer("http://localhost:8080/js");
+                        spa.UseProxyToSpaDevelopmentServer("http://localhost:8081/js");
                     });
                 });
         }
