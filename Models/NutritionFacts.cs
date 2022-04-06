@@ -14,13 +14,21 @@ public class RecipeNutritionFacts
 public class NutritionFactVector
 {
     public double Calories { get; set; }
-    // public Unit  { get; set; }
-    // public Unit ServingUnit { get; set; }
+    public double Carbohydrates { get; set; }
+    public double SaturatedFats { get; set; }
+    public double MonoUnsaturatedFats { get; set; }
+    public double PolyUnsaturatedFats { get; set; }
+    public double Proteins { get; set; }
 
     public NutritionFactVector Combine(NutritionFactVector nf) =>
         new()
         {
             Calories = this.Calories + nf.Calories,
+            Carbohydrates = this.Carbohydrates + nf.Carbohydrates,
+            SaturatedFats = this.SaturatedFats + nf.SaturatedFats,
+            MonoUnsaturatedFats = this.MonoUnsaturatedFats + nf.MonoUnsaturatedFats,
+            PolyUnsaturatedFats = this.PolyUnsaturatedFats + nf.PolyUnsaturatedFats,
+            Proteins = this.Proteins + nf.Proteins,
         };
     
     public static NutritionFactVector operator +(
