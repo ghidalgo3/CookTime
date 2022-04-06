@@ -19,6 +19,7 @@ public class NutritionFactVector
     public double MonoUnsaturatedFats { get; set; }
     public double PolyUnsaturatedFats { get; set; }
     public double Proteins { get; set; }
+    public double Sugars { get; set; }
 
     public NutritionFactVector Combine(NutritionFactVector nf) =>
         new()
@@ -29,6 +30,7 @@ public class NutritionFactVector
             MonoUnsaturatedFats = this.MonoUnsaturatedFats + nf.MonoUnsaturatedFats,
             PolyUnsaturatedFats = this.PolyUnsaturatedFats + nf.PolyUnsaturatedFats,
             Proteins = this.Proteins + nf.Proteins,
+            Sugars = this.Sugars + nf.Sugars,
         };
     
     public static NutritionFactVector operator +(

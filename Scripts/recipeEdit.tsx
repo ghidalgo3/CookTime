@@ -427,8 +427,46 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     }
                     {this.RecipeOrComponents()}
                 </div>
+                <div>
+                    { this.nutritionFacts() } 
+                </div>
             </div>
         );
+    }
+    nutritionFacts() {
+        return null;
+        // if ((this.state.nutritionFacts?.recipe ?? null) !== null) {
+        //     let {
+        //         calories,
+        //         carbohydrates,
+        //         proteins,
+        //         polyUnsaturatedFats,
+        //         monoUnsaturatedFats,
+        //         saturatedFats,
+        //         sugars
+        //     } = this.state.nutritionFacts!.recipe;
+        //     return (
+        //     <NutritionLabel
+        //         // servingSize={'1 cup (228g)'}
+        //         // servingsPerContainer={2}
+        //         calories={Math.round(calories)}
+        //         totalFat={Math.round(monoUnsaturatedFats + polyUnsaturatedFats + saturatedFats)}
+        //         saturatedFat={Math.round(saturatedFats)}
+        //         // transFat={0}
+        //         // cholesterol={0}
+        //         // sodium={0}
+        //         totalCarbs={Math.round(carbohydrates)}
+        //         // dietaryFiber={0}
+        //         sugars={Math.round(sugars)}
+        //         protein={Math.round(proteins)}
+        //         vitaminA={0}
+        //         vitaminC={0}
+        //         calcium={0}
+        //         iron={0}
+        //     />)
+        // } else {
+        //     return null;
+        // }
     }
 
     private caloriesPerServingComponent() {

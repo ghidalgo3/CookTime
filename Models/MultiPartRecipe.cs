@@ -121,6 +121,7 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
         this.ComputeNutritionValue(nutritionData, "Fatty acids, total monounsaturated", "g", n => nutritionFacts.MonoUnsaturatedFats = n);
         this.ComputeNutritionValue(nutritionData, "Fatty acids, total polyunsaturated", "g", n => nutritionFacts.PolyUnsaturatedFats = n);
         this.ComputeNutritionValue(nutritionData, "Fatty acids, total saturated",       "g", n => nutritionFacts.SaturatedFats = n);
+        this.ComputeNutritionValue(nutritionData, "Sugars, total including NLEA",       "g", n => nutritionFacts.Sugars = n);
         return nutritionFacts;
     }
 
