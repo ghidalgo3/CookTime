@@ -162,6 +162,10 @@ Background color = #fafafa */
   }
 }
 
+.table {
+  color: var(--primary-text) !important;
+}
+
 .navbar {
   background-color: var(--primary-background);
 }
