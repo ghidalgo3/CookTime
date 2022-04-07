@@ -53,7 +53,7 @@ export class NutritionFacts extends React.Component<NutritionFactVector, {}>
                                 {monoUnsaturatedFats + polyUnsaturatedFats + saturatedFats}g
                             </th>
                             <td>
-                                <b>{Math.round(monoUnsaturatedFats + polyUnsaturatedFats + saturatedFats / 65)}%</b>
+                                <b>{Math.round(100 * (monoUnsaturatedFats + polyUnsaturatedFats + saturatedFats) / 65)}%</b>
                             </td>
                         </tr>
                         <tr>
@@ -63,7 +63,7 @@ export class NutritionFacts extends React.Component<NutritionFactVector, {}>
                                 Saturated Fat {saturatedFats}g
                             </th>
                             <td>
-                                <b>{Math.round(saturatedFats / 65)}%</b>
+                                <b>{Math.round(100 * saturatedFats / 65)}%</b>
                             </td>
                         </tr>
                         <tr>
@@ -73,7 +73,7 @@ export class NutritionFacts extends React.Component<NutritionFactVector, {}>
                                 Trans Fat {transFats}g
                             </th>
                             <td>
-                                <b>{Math.round(transFats / 65)}%</b>
+                                <b>{Math.round(100 * transFats / 65)}%</b>
                             </td>
                         </tr>
                         <tr>
@@ -100,7 +100,7 @@ export class NutritionFacts extends React.Component<NutritionFactVector, {}>
                                 {carbohydrates}g
                             </th>
                             <td>
-                                <b>{Math.round(carbohydrates / 300)}%</b>
+                                <b>{Math.round(100 * carbohydrates / 300)}%</b>
                             </td>
                         </tr>
                         <tr>
