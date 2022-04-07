@@ -149,11 +149,12 @@ export class Tags extends React.Component<TagsProps, TagsState> {
             value,
             onChange: this.onChange,
             onKeyDown: this.onKeyDown,
+            className: 'form-control width-100',
         };
 
         // Finally, render it!
         return (
-            <div>
+            <div className="width-100">
                 <TagList
                     data={tags.map(t => t.name)}
                     onDelete={this.onDelete} />
