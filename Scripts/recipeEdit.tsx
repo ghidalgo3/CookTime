@@ -479,18 +479,18 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             <NutritionFacts
                 // servingSize={'1 cup (228g)'}
                 // servingsPerContainer={2}
-                calories={Math.round(calories)}
+                calories={Math.round(calories / this.state.recipe.servingsProduced)}
                 // totalFat={Math.round(monoUnsaturatedFats + polyUnsaturatedFats + saturatedFats)}
-                saturatedFats={Math.round(saturatedFats)}
-                monoUnsaturatedFats={Math.round(monoUnsaturatedFats)}
-                polyUnsaturatedFats={Math.round(polyUnsaturatedFats)}
+                saturatedFats={Math.round(saturatedFats / this.state.recipe.servingsProduced)}
+                monoUnsaturatedFats={Math.round(monoUnsaturatedFats / this.state.recipe.servingsProduced)}
+                polyUnsaturatedFats={Math.round(polyUnsaturatedFats / this.state.recipe.servingsProduced)}
                 // transFat={0}
                 // cholesterol={0}
                 // sodium={0}
-                carbohydrates={Math.round(carbohydrates)}
+                carbohydrates={Math.round(carbohydrates / this.state.recipe.servingsProduced)}
                 // dietaryFiber={0}
-                sugars={Math.round(sugars)}
-                proteins={Math.round(proteins)}
+                sugars={Math.round(sugars / this.state.recipe.servingsProduced)}
+                proteins={Math.round(proteins / this.state.recipe.servingsProduced)}
                 // vitaminA={0}
                 // vitaminC={0}
                 // calcium={0}
