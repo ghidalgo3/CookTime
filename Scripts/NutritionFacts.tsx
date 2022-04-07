@@ -14,7 +14,8 @@ export class NutritionFacts extends React.Component<NutritionFactVector, {}>
             polyUnsaturatedFats,
             monoUnsaturatedFats,
             saturatedFats,
-            sugars
+            sugars,
+            transFats
         } = this.props;
         return (
             <div className="nf-body performance-facts">
@@ -38,14 +39,13 @@ export class NutritionFacts extends React.Component<NutritionFactVector, {}>
                                 {calories} 
                             </th>
                             <td>
-                                {/* Calories from Fat
-                                130 */}
+                                Calories from Fat {Math.round(9 * (monoUnsaturatedFats + polyUnsaturatedFats + saturatedFats))}
                             </td>
                         </tr>
-                        <tr>
-                            {/* <td colSpan={3} className="thick-row small-info">
+                        <tr className="thick-row">
+                            <td colSpan={3} className="thick-row small-info">
                                 <b>% Daily Value*</b>
-                            </td> */}
+                            </td>
                         </tr>
                         <tr>
                             <th colSpan={2}>
@@ -53,7 +53,7 @@ export class NutritionFacts extends React.Component<NutritionFactVector, {}>
                                 {monoUnsaturatedFats + polyUnsaturatedFats + saturatedFats}g
                             </th>
                             <td>
-                                {/* <b>44%</b> */}
+                                <b>{Math.round(100 * (monoUnsaturatedFats + polyUnsaturatedFats + saturatedFats) / 65)}%</b>
                             </td>
                         </tr>
                         <tr>
@@ -63,18 +63,18 @@ export class NutritionFacts extends React.Component<NutritionFactVector, {}>
                                 Saturated Fat {saturatedFats}g
                             </th>
                             <td>
-                                {/* <b>22%</b> */}
+                                <b>{Math.round(100 * saturatedFats / 65)}%</b>
                             </td>
                         </tr>
                         <tr>
-                            {/* <td className="blank-cell">
+                            <td className="blank-cell">
                             </td>
                             <th>
-                                Trans Fat 
-                                0g
+                                Trans Fat {transFats}g
                             </th>
                             <td>
-                            </td> */}
+                                <b>{Math.round(100 * transFats / 65)}%</b>
+                            </td>
                         </tr>
                         <tr>
                             {/* <th colSpan={2}>
@@ -100,7 +100,7 @@ export class NutritionFacts extends React.Component<NutritionFactVector, {}>
                                 {carbohydrates}g
                             </th>
                             <td>
-                                {/* <b>6%</b> */}
+                                <b>{Math.round(100 * carbohydrates / 300)}%</b>
                             </td>
                         </tr>
                         <tr>
@@ -123,8 +123,7 @@ export class NutritionFacts extends React.Component<NutritionFactVector, {}>
                             <td>
                             </td>
                         </tr>
-                        {/* <tr className="thick-end"> */}
-                        <tr>
+                        <tr className="thick-end">
                             <th colSpan={2}>
                                 <b>Protein </b>
                                 {proteins}g
@@ -160,7 +159,7 @@ export class NutritionFacts extends React.Component<NutritionFactVector, {}>
                     </tbody>
                 </table> */}
 
-                {/* <p className="nf-p small-info">* Percent Daily Values are based on a 2,000 calorie diet. Your daily values may be higher or lower depending on your calorie needs:</p>
+                <p className="nf-p small-info">* Percent Daily Values are based on a 2,000 calorie diet. Your daily values may be higher or lower depending on your calorie needs:</p>
 
                 <table className="performance-facts__table performance-facts__table__small small-info">
                     <thead>
@@ -209,9 +208,9 @@ export class NutritionFacts extends React.Component<NutritionFactVector, {}>
                             <td className="nf-small-th-and-td nf-small-td-lastchild" style={{border: 0, padding: 0, textAlign: 'left'}} >30g</td>
                         </tr>
                     </tbody>
-                </table> */}
+                </table>
 
-                {/* <p className="nf-p small-info">
+                <p className="nf-p small-info">
                     Calories per gram:
                 </p>
                 <p className="nf-p small-info nf-text-center">
@@ -220,7 +219,7 @@ export class NutritionFacts extends React.Component<NutritionFactVector, {}>
                     Carbohydrate 4
                     &bull;
                     Protein 4
-                </p> */}
+                </p>
             
             </div>
         )

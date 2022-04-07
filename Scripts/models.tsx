@@ -88,6 +88,7 @@ type NutritionFactVector = {
     calories : number,
     carbohydrates : number,
     saturatedFats : number,
+    transFats : number,
     monoUnsaturatedFats : number,
     polyUnsaturatedFats : number,
     proteins : number,

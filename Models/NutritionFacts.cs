@@ -18,6 +18,7 @@ public class NutritionFactVector
     public double SaturatedFats { get; set; }
     public double MonoUnsaturatedFats { get; set; }
     public double PolyUnsaturatedFats { get; set; }
+    public double TransFats { get; set; }
     public double Proteins { get; set; }
     public double Sugars { get; set; }
 
@@ -29,6 +30,7 @@ public class NutritionFactVector
             SaturatedFats = this.SaturatedFats + nf.SaturatedFats,
             MonoUnsaturatedFats = this.MonoUnsaturatedFats + nf.MonoUnsaturatedFats,
             PolyUnsaturatedFats = this.PolyUnsaturatedFats + nf.PolyUnsaturatedFats,
+            TransFats = this.TransFats + nf.TransFats,
             Proteins = this.Proteins + nf.Proteins,
             Sugars = this.Sugars + nf.Sugars,
         };
