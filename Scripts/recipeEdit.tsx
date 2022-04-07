@@ -333,11 +333,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     </Col>
                     {this.editButtons()}
                 </Row>
-                <Row>
-                    <Col>
-                    { this.tagsComponent() }
-                    </Col>
-                </Row>
+
                 {/* { this.state.error ? 
                     <Alert variant="danger" onClose={() => this.setState({error: false})} dismissible>
                         <Alert.Heading>Could not save recipe.</Alert.Heading>
@@ -382,6 +378,17 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                             }
                         </Col>
                     </Row>
+
+                    {/* TO DO: ONLY SHOW IF NOT EMPTY */}
+                    <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
+                        <Col className="col-3 recipe-field-title">
+                            Tags
+                        </Col>
+                        <Col className="col d-flex align-items-center">
+                            { this.tagsComponent() }
+                        </Col>
+                    </Row>
+
                 {(this.state.recipe.source == '' || this.state.recipe.source == null) && !this.state.edit ? null :
                     <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                         <Col className="col-3 recipe-field-title">
@@ -434,7 +441,11 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     {this.RecipeOrComponents()}
                 </div>
                 <div>
-                    { this.nutritionFacts() } 
+                    { this.state.edit ? 
+                        null
+                        :
+                        this.nutritionFacts() 
+                    } 
                 </div>
             </div>
         );
@@ -457,11 +468,20 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     }}/>);
         } else {
             let categoryComponents = this.state.recipe.categories.map(category => {
-                return <div>{category.name}</div>
-            })
-            return <div>{categoryComponents}</div>
+                return this.toTitleCase(category.name)
+            }).join(", ")
+            return <div className="tag-style">{categoryComponents}</div>
         }
     }
+
+    toTitleCase(str) {
+        return str.replace(
+          /\w\S*/g,
+          function(txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+          }
+        );
+      }
 
     nutritionFacts() {
         // return null;
@@ -606,7 +626,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         recipe : MultiPartRecipe,
         component : RecipeComponent) {
         return (
-            <div className="card margin-bottom-20 component-card">
+            <div className="border-top-1">
                 {recipe.recipeComponents.length > 1 ? 
                 <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                     <Col className="col-3 recipe-field-title">

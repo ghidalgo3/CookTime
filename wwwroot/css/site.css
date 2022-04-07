@@ -162,6 +162,11 @@ Background color = #fafafa */
   }
 }
 
+.border-top-1 {
+  border-top: 1px solid #e5e5e5;
+  padding-top: 10px;
+}
+
 .table {
   color: var(--primary-text) !important;
 }
@@ -283,6 +288,12 @@ html {
   object-fit: cover;
   margin-bottom: 10px;
 }
+
+.badge {
+  color: var(--themePrimary);
+  font-variant: small-caps;
+}
+
 
 .card-recipe-image {
   width: 100%;
@@ -415,26 +426,22 @@ body {
   -webkit-line-clamp: 2;
 }
 
+.padding-left-0 {
+  padding-left: 0px;
+}
 .padding-left-4 {
   padding-left: 4px;
 }
-
 .padding-left-12 {
   padding-left: 12px;
 }
-
 .padding-left-58 {
   padding-left: 58px;
-}
-
-.padding-left-0 {
-  padding-left: 0px;
 }
 
 .padding-right-0 {
   padding-right: 0px;
 }
-
 .padding-right-10 {
   padding-right: 10px;
 }
@@ -444,6 +451,9 @@ body {
 }
 .margin-bottom-8 {
   margin-bottom: 8px;
+}
+.margin-bottom-10 {
+  margin-bottom: 10px;
 }
 .margin-bottom-12 {
   margin-bottom: 12px;
@@ -458,19 +468,19 @@ body {
 .margin-top-8 {
   margin-top: 8px;
 }
-
 .margin-top-10 {
   margin-top: 10px;
 }
-
 .margin-top-15 {
   margin-top: 15px;
 }
-
 .margin-top-20 {
   margin-top: 20px;
 }
 
+.margin-left-4 {
+  margin-left: 4px;
+}
 .margin-left-20 {
   margin-left: 20px;
 }
@@ -650,6 +660,7 @@ body {
   font-size: small;
   line-height: 1.4;
   box-sizing: content-box;
+  margin-top: 10px;
 }
 .nf-p {
   margin: 0;

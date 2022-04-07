@@ -13,7 +13,7 @@ export class TagList extends React.Component<TagListProps,{}> {
                         <input type="hidden" name={`Skills[${i}]`} value={item}></input>
                         {item}
                         <i
-                            className="fas fa-times margin-left-025rem"
+                            className="fas fa-times margin-left-4"
                             onClick={(e)=>this.props.onDelete(i)}></i>
                     </span>)
         })

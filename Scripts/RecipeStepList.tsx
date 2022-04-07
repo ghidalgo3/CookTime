@@ -61,7 +61,7 @@ export class RecipeStepList extends React.Component<RecipeStepListProps, {}> {
                 <Col xs={12}>
                     <Button
                         variant="outline-primary"
-                        className="width-100"
+                        className="width-100 margin-bottom-10"
                         onClick={(_) => this.props.onNewStep()}>New step</Button>
                 </Col>
             </Form>
