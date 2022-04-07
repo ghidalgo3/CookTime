@@ -31,7 +31,6 @@ public class MultiPartRecipe : IImageContainer
                 Steps = recipe.Steps.Select(s => new MultiPartRecipeStep(s)).ToList(),
             },
         };
-
     }
 
     [Required]

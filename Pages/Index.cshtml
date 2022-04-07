@@ -16,6 +16,11 @@
 
 <div class="row">
     @foreach (var item in Model.Recipes) {
+        var cats = string.Join(", ", item.Categories);
+        if (string.IsNullOrEmpty(cats))
+        {
+            cats = "Recipe";
+        }
         <div class="col-sm-4">
             <form method="POST">
                 <a asp-page="./Recipes/Details" asp-route-id="@item.Id">
@@ -25,7 +30,7 @@
                             <img class="card-img-top card-recipe-image" src="@image" alt="Food image">
                         }
                         <div class="card-body ">
-                            <p class="tag-style margin-bottom-0">[tag]</p>
+                            <p class="tag-style margin-bottom-0">@cats</p>
                             <h5 class="margin-bottom-0 card-title do-not-overflow-text">@Html.DisplayFor(modelItem => item.Name)</h5>
                             @* <input value="@item.Id" type="hidden" name="recipeId"/> *@
                             @* <button

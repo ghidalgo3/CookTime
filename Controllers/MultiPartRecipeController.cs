@@ -73,34 +73,7 @@ namespace babe_algorithms.Controllers
             }
             var existingRecipe = await _context.GetMultiPartRecipeAsync(id);
             _context.Entry(existingRecipe).CurrentValues.SetValues(payload);
-            var currentComponents = existingRecipe.RecipeComponents;
-            existingRecipe.RecipeComponents = new List<RecipeComponent>();
-            foreach (var component in payload.RecipeComponents)
-            {
-                var existingComponent = currentComponents.FirstOrDefault(c => c.Id == component.Id);
-                if (existingComponent != null) {
-                    _context.Entry(existingComponent).CurrentValues.SetValues(component);
-                    existingComponent.Steps = component.Steps.Where(s => !string.IsNullOrWhiteSpace(s.Text)).ToList();
-                    await RecipeController.CopyIngredients(this._context, component, existingComponent);
-                    if (!existingComponent.IsEmpty())
-                    {
-                        existingRecipe.RecipeComponents.Add(existingComponent);
-                    }
-                } else {
-                    // new component
-                    var newComponent = new RecipeComponent()
-                    {
-                        Name = component.Name,
-                        Position = component.Position,
-                        Steps = component.Steps,
-                    };
-                    await RecipeController.CopyIngredients(this._context, component, newComponent);
-                    if (!newComponent.IsEmpty())
-                    {
-                        existingRecipe.RecipeComponents.Add(newComponent);
-                    }
-                }
-            }
+            await MergeRecipeRelations(payload, existingRecipe);
             try
             {
                 await _context.SaveChangesAsync();
@@ -118,6 +91,106 @@ namespace babe_algorithms.Controllers
             }
 
             return this.Ok(existingRecipe);
+        }
+
+        private async Task MergeRecipeRelations(MultiPartRecipe payload, MultiPartRecipe existingRecipe)
+        {
+            await MergeCategories(payload, existingRecipe);
+            await MergeComponents(payload, existingRecipe);
+        }
+
+        private async Task MergeCategories(MultiPartRecipe payload, MultiPartRecipe existingRecipe)
+        {
+            var currentCategories = existingRecipe.Categories;
+            existingRecipe.Categories = new HashSet<Category>();
+            foreach (var category in payload.Categories)
+            {
+                var existingCategory = currentCategories.FirstOrDefault(c => c.Id == category.Id);
+                if (existingCategory != null)
+                {
+                    // category exists, add it back.
+                    existingRecipe.Categories.Add(existingCategory);
+
+                }
+                else if (await this._context.GetCategoryAsync(category.Name) is Category existing)
+                {
+                    // category exists, adding it to this recipe
+                    existingRecipe.Categories.Add(existing);
+                }
+                else
+                {
+                    var allowedCategories = new List<string>()
+                    {
+                        "Breakfast",
+                        "Lunch",
+                        "Dinner",
+                        "Snack",
+                        "Appetizer",
+                        "Side dish",
+                        "Main dish",
+                        "Dessert",
+                        "Drink",
+                        "Alcohol",
+                        "Brunch",
+                        "Plant-based",
+                        "Vegetarian",
+                        "Salad",
+                        "Soup",
+                        "Baked good",
+                        "Holiday",
+                        "Brazilian",
+                        "Indian",
+                        "Venezuelan",
+                        "Korean",
+                        "French",
+                        "Sauce",
+                        "Seasoning"
+                    };
+
+                    if (allowedCategories.Select(c => c.ToUpperInvariant()).Contains(category.Name.Trim().ToUpperInvariant()))
+                    {
+                        // entirely new category
+                        category.Name = category.Name.Trim();
+                        category.Id = Guid.Empty;
+                        existingRecipe.Categories.Add(category);
+                    }
+                }
+            }
+        }
+
+        private async Task MergeComponents(MultiPartRecipe payload, MultiPartRecipe existingRecipe)
+        {
+            var currentComponents = existingRecipe.RecipeComponents;
+            existingRecipe.RecipeComponents = new List<RecipeComponent>();
+            foreach (var component in payload.RecipeComponents)
+            {
+                var existingComponent = currentComponents.FirstOrDefault(c => c.Id == component.Id);
+                if (existingComponent != null)
+                {
+                    _context.Entry(existingComponent).CurrentValues.SetValues(component);
+                    existingComponent.Steps = component.Steps.Where(s => !string.IsNullOrWhiteSpace(s.Text)).ToList();
+                    await RecipeController.CopyIngredients(this._context, component, existingComponent);
+                    if (!existingComponent.IsEmpty())
+                    {
+                        existingRecipe.RecipeComponents.Add(existingComponent);
+                    }
+                }
+                else
+                {
+                    // new component
+                    var newComponent = new RecipeComponent()
+                    {
+                        Name = component.Name,
+                        Position = component.Position,
+                        Steps = component.Steps,
+                    };
+                    await RecipeController.CopyIngredients(this._context, component, newComponent);
+                    if (!newComponent.IsEmpty())
+                    {
+                        existingRecipe.RecipeComponents.Add(newComponent);
+                    }
+                }
+            }
         }
 
         [BasicAuth]

@@ -1,3 +1,9 @@
+type Autosuggestable = {
+    name: string,
+    id: string,
+    isNew: boolean
+}
+
 type MeasureUnit = {
    name: string,
    siType : string
@@ -27,11 +33,7 @@ type IngredientRequirement = {
     position : number
 }
 
-type Ingredient = {
-    name: string,
-    id: string,
-    isNew: boolean
-}
+type Ingredient = Autosuggestable
 
 type CartIngredient = {
     id: string,
@@ -47,6 +49,7 @@ type Image = {
     name : string,
     id : string
 }
+type Category = Autosuggestable
 
 type MultiPartRecipe = {
     id : string,
@@ -55,7 +58,7 @@ type MultiPartRecipe = {
     caloriesPerServing : number,
     servingsProduced : number,
     source: string,
-    categories : {name: string, id: string, isNew: boolean}[],
+    categories : Category[],
     staticImage : string
     recipeComponents: RecipeComponent[],
 }
