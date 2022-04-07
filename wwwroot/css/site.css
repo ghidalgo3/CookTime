@@ -402,8 +402,8 @@ body {
 }
 
 .step-number {
-  border-right: var(--troubled-water);
-  color: var(--deep-water);
+  border-right: var(--themePrimary);
+  color: var(--themePrimary);
   font-weight:600;
   border-top: none;
   border-style: solid;
