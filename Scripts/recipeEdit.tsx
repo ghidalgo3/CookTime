@@ -7,6 +7,7 @@ import { Step } from './RecipeStep';
 import { IngredientRequirementList } from './IngredientRequirementList';
 import { RecipeStepList } from './RecipeStepList';
 import { NutritionFacts } from './NutritionFacts';
+import { Tags } from './Tags';
 
 type RecipeEditProps = {
     recipeId : string,
@@ -332,6 +333,11 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     </Col>
                     {this.editButtons()}
                 </Row>
+                <Row>
+                    <Col>
+                    { this.tagsComponent() }
+                    </Col>
+                </Row>
                 {/* { this.state.error ? 
                     <Alert variant="danger" onClose={() => this.setState({error: false})} dismissible>
                         <Alert.Heading>Could not save recipe.</Alert.Heading>
@@ -341,7 +347,6 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 :
                 null} */}
                 { this.image() }
-
                 <div>
                     { this.caloriesPerServingComponent() }
                     <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
@@ -434,6 +439,30 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             </div>
         );
     }
+
+    tagsComponent() {
+        if (this.state.edit) {
+            return (
+                <Tags
+                    queryBuilder={value => `/api/recipe/tags?query=${value}`}
+                    initialTags={this.state.recipe.categories}
+                    tagsChanged={(newTags) => {
+                        this.setState({
+                            ...this.state,
+                            recipe: {
+                                ...this.state.recipe,
+                                categories: newTags
+                            }
+                        })
+                    }}/>);
+        } else {
+            let categoryComponents = this.state.recipe.categories.map(category => {
+                return <div>{category.name}</div>
+            })
+            return <div>{categoryComponents}</div>
+        }
+    }
+
     nutritionFacts() {
         return null;
         // if ((this.state.nutritionFacts?.recipe ?? null) !== null) {

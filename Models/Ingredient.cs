@@ -99,4 +99,6 @@ public class Category
     public Guid Id { get; set; }
     [Newtonsoft.Json.JsonIgnore]
     public ICollection<Recipe> Recipes { get; set; }
+    [JsonIgnore]
+    public ICollection<MultiPartRecipe> MultiPartRecipes { get; set; }
 }

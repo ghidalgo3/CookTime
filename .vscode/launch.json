@@ -1,18 +1,8 @@
 {
     "version": "0.2.0",
-    "compounds": [
-        {
-            "name": "Hot Reload",
-            "configurations": [
-                ".NET Hot Reload",
-                "Webpack dev server",
-                "Launch Edge"
-            ]
-        }
-    ],
     "configurations": [
         {
-            "name": ".NET Hot Reload",
+            "name": "Attach babe-algorithms",
             "type": "coreclr",
             "request": "attach",
             "processName": "babe-algorithms"

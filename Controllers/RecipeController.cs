@@ -41,6 +41,19 @@ public class RecipeController : ControllerBase, IImageController
         return this.Ok(body);
     }
 
+    [HttpGet("tags")]
+    public ActionResult<IEnumerable<string>> GetTags(string query)
+    {
+        var result =
+            string.IsNullOrEmpty(query) ?
+                this.context.Categories.Select(cat => new { cat.Name, cat.Id }).ToList()
+            :
+            this.context.Categories
+                .Where(cat => cat.Name.ToUpper().Contains(query.ToUpper()))
+                .Select(cat => new { cat.Name, cat.Id }).ToList();
+        return this.Ok(result);
+    }
+
     [HttpPost("{recipeId}/migrate")]
     [BasicAuth]
     public async Task<IActionResult> MigrateRecipe(Guid recipeId)

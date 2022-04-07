@@ -33,10 +33,12 @@ public class IndexModel : PageModel
         var recipes = await this._context.SearchRecipes(search)
             .AsSplitQuery()
             .Include(r => r.Images)
+            .Include(r => r.Categories)
             .Select(r => new
             {
                 Id = r.Id,
                 Name = r.Name,
+                Categories = r.Categories.Select(c => c.Name),
                 Images = r.Images.Select(image => new
                 {
                     Id = image.Id,
@@ -47,7 +49,7 @@ public class IndexModel : PageModel
             .ToListAsync();
         this.Recipes = recipes
             .Select(r =>
-                new RecipeView(r.Name, r.Id, r.Images.Select(image => image.Id).ToList()))
+                new RecipeView(r.Name, r.Id, r.Images.Select(image => image.Id).ToList(), r.Categories.ToList()))
                 .ToList();
     }
 
@@ -57,10 +59,12 @@ public class IndexModel : PageModel
             .MultiPartRecipes
             .AsSplitQuery()
             .Include(r => r.Images)
+            .Include(r => r.Categories)
             .Select(r => new
             {
                 Id = r.Id,
                 Name = r.Name,
+                Categories = r.Categories.Select(c => c.Name),
                 Images = r.Images.Select(image => new
                 {
                     Id = image.Id,
@@ -73,10 +77,12 @@ public class IndexModel : PageModel
             .Recipes
             .AsSplitQuery()
             .Include(r => r.Images)
+            .Include(r => r.Categories)
             .Select(r => new
             {
                 Id = r.Id,
                 Name = r.Name,
+                Categories = r.Categories.Select(c => c.Name),
                 Images = r.Images.Select(image => new
                 {
                     Id = image.Id,
@@ -89,7 +95,7 @@ public class IndexModel : PageModel
         simpleQueryResults.AddRange(complexQueryResults);
         this.Recipes = simpleQueryResults
             .Select(r =>
-                new RecipeView(r.Name, r.Id, r.Images.Select(image => image.Id).ToList()))
+                new RecipeView(r.Name, r.Id, r.Images.Select(image => image.Id).ToList(), r.Categories.ToList()))
                 .ToList();
     }
 
@@ -100,4 +106,4 @@ public class IndexModel : PageModel
     }
 }
 
-public record RecipeView(string Name, Guid Id, List<Guid> ImageIds) {}
+public record RecipeView(string Name, Guid Id, List<Guid> ImageIds, List<string> Categories) {}

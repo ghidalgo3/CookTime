@@ -61,7 +61,14 @@ public class ApplicationDbContext : DbContext
     public async Task<Category> GetCategory(Guid id)
     {
         return await this.Categories
-            .FirstAsync(category => category.Id == id);
+            .FirstOrDefaultAsync(category => category.Id == id);
+    }
+
+    public async Task<Category> GetCategoryAsync(string name)
+    {
+        return await this.Categories
+            .Where(c => c.Name.ToUpper().Equals(name.ToUpper()))
+            .SingleOrDefaultAsync();
     }
 
     public async Task<bool> RecipeHasCategory(Guid categoryId, Guid recipeId)
