@@ -473,7 +473,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 polyUnsaturatedFats,
                 monoUnsaturatedFats,
                 saturatedFats,
-                sugars
+                sugars,
+                transFats,
             } = this.state.nutritionFacts!.recipe;
             return (
             <NutritionFacts
@@ -484,7 +485,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 saturatedFats={Math.round(saturatedFats / this.state.recipe.servingsProduced)}
                 monoUnsaturatedFats={Math.round(monoUnsaturatedFats / this.state.recipe.servingsProduced)}
                 polyUnsaturatedFats={Math.round(polyUnsaturatedFats / this.state.recipe.servingsProduced)}
-                // transFat={0}
+                transFats={Math.round(transFats / this.state.recipe.servingsProduced)}
                 // cholesterol={0}
                 // sodium={0}
                 carbohydrates={Math.round(carbohydrates / this.state.recipe.servingsProduced)}
