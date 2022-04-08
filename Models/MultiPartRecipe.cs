@@ -5,7 +5,7 @@ using NpgsqlTypes;
 
 namespace babe_algorithms.Models;
 
-public class MultiPartRecipe : IImageContainer
+public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>
 {
     public MultiPartRecipe() 
     {
@@ -49,6 +49,8 @@ public class MultiPartRecipe : IImageContainer
     public string Source { get; set; }
     [JsonIgnore]
     public NpgsqlTsVector SearchVector { get; set; }
+
+    public bool Equals(MultiPartRecipe other) => this.Id == other.Id;
 }
 
 public class RecipeComponent : IRecipeComponent<MultiPartRecipeStep, MultiPartIngredientRequirement>
