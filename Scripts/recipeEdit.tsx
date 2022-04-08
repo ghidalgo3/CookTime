@@ -785,7 +785,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             <Col>
                 <Row>
                     <Col>
-                        <Button className="width-100" onClick={_ => this.onSave()}>
+                        <Button className="recipe-edit-buttons" onClick={_ => this.onSave()}>
                             {
                                 this.state.operationInProgress ?
                                     <Spinner
@@ -800,11 +800,11 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         </Button>
                     </Col>
                     <Col>
-                        <Button variant="danger" className="width-100 margin-bottom-15" onClick={_ => this.onDelete()}>Delete</Button>
+                        <Button variant="danger" className="recipe-edit-buttons margin-bottom-15" onClick={_ => this.onDelete()}>Delete</Button>
                     </Col>
                     {!this.props.multipart ?
                         <Col>
-                            <Button variant="danger" className="width-100 margin-bottom-15" onClick={_ => this.onMigrate()}>Migrate</Button>
+                            <Button variant="danger" className="recipe-edit-buttons margin-bottom-15" onClick={_ => this.onMigrate()}>Migrate</Button>
                         </Col>
                         :
                         null}
@@ -814,10 +814,10 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             <Col>
                 <Row>
                     <Col>
-                        <Button className="width-100" onClick={(event) => this.setState({ edit: !this.state.edit })}>Edit</Button>
+                        <Button className="recipe-edit-buttons" onClick={(event) => this.setState({ edit: !this.state.edit })}>Edit</Button>
                     </Col>
                     <Col>
-                        <Button className="width-100" onClick={(event) => this.onAddtoCard()}>Add to Groceries</Button>
+                        <Button className="recipe-edit-buttons" onClick={(event) => this.onAddtoCard()}>Add to Groceries</Button>
                     </Col>
                 </Row>
             </Col>;

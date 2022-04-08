@@ -83,6 +83,12 @@ Background color = #fafafa */
   #my-nav-link-disabled {
     color: var(--neutralSecondary);
   }
+
+  #my-burger-menu {
+    color: rgba(255,255,255,.55);
+    border-color: rgba(255,255,255,.1);
+    background-color: var(--white);
+  }
 }
 
 @media (prefers-color-scheme: light) {
@@ -167,6 +173,29 @@ a:hover, a:active {
   border-color: var(--btn-outline-primary-border);
   background-color: var(--btn-outline-primary-bg-color-hover);
 }
+.btn-success {
+  color: var(--white);
+  background-color: var(--btn-primary-bg-color);
+  border: 0;
+}
+.btn-success:hover, .btn-success:active {
+  color: var(--white);
+  background-color: var(--btn-primary-bg-color-hover);
+}
+.btn-danger {
+  color: var(--white);
+  background-color: var(--red-dirt);
+  border: 0;
+}
+.btn-danger:hover, .btn-danger:active {
+  color: var(--white);
+  background-color: var(--red-dirt-highlight);
+}
+
+.recipe-edit-buttons {
+  min-width: 132px;
+  width: 100%;
+}
 
 .border-top-1 {
   border-top: 1px solid #e5e5e5;
@@ -199,30 +228,9 @@ hr {
   color: var(--primary-text);
   font-variant: small-caps;
 }
-
 .tag-style:hover, .tag-style:active {
   color: var(--primary-text);
   font-variant: small-caps;
-}
-
-.btn-success {
-  color: var(--white);
-  background-color: var(--btn-primary-bg-color);
-  border: 0;
-}
-.btn-success:hover, .btn-success:active {
-  color: var(--white);
-  background-color: var(--btn-primary-bg-color-hover);
-}
-
-.btn-danger {
-  color: var(--white);
-  background-color: var(--red-dirt);
-  border: 0;
-}
-.btn-danger:hover, .btn-danger:active {
-  color: var(--white);
-  background-color: var(--red-dirt-highlight);
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
@@ -313,6 +321,10 @@ html {
 
   .get-smaller {
     padding-right: 30px;
+  }
+
+  .recipe-edit-buttons {
+    margin-bottom: 10px;
   }
 }
 
