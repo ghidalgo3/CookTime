@@ -55,17 +55,14 @@ Background color = #fafafa */
     --primary-text: var(--white);
     --primary-background: var(--neutralDark);
     --secondary-background: var(--neutralDark);
-  }
-
-  .btn-outline-primary {
-    color: var(--primary-text);
-    border-color: var(--white);
-    background-color: var(--neutralDark);
-  }
-  .btn-outline-primary:hover, .btn-outline-primary:active {
-    color: var(--primary-text);
-    border-color: var(--white);
-    background-color: var(--neutralPrimaryAlt);
+    --nutrition-facts-table-outline: var(--white);
+    --btn-primary-bg-color: var(--themePrimary);
+    --btn-primary-bg-color-hover: var(--themeDark);
+    --btn-outline-primary-border: var(--white);
+    --btn-outline-primary-bg-color: var(--neutralDark);
+    --btn-outline-primary-bg-color-hover: var(--neutralPrimaryAlt);
+    --a-text: var(--themeTertiary);
+    --a-text-hover: var(--themeSecondary);
   }
 
   .input-field-style {
@@ -79,33 +76,12 @@ Background color = #fafafa */
     background-color: var(--neutralDark);
   }
 
-  a {
-    color: var(--themeTertiary);
-    text-decoration: none;
-  }
-  a:hover, a:active {
-    color: var(--themeSecondary);
-  }
-
-  .nav-link {
-    color: var(--primary-text);
-  }
-  .nav-link:hover, .nav-link:active {
-    color: var(--themeSecondary);
-  }
-
   .card {
     border-color: var(--neutralLight);
   }
 
-  .btn-primary {
-    color: var(--primary-text);
-    background-color: var(--themePrimary);
-    border-width: 0;
-  }
-  .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
-    color: var(--primary-text);
-    background-color: var(--themeDark);
+  #my-nav-link-disabled {
+    color: var(--neutralSecondary);
   }
 }
 
@@ -114,17 +90,15 @@ Background color = #fafafa */
     --primary-text: var(--neutralPrimary);
     --primary-background: var(--white);
     --secondary-background: white;
-  }
-
-  .btn-outline-primary {
-    color: var(--primary-text);
-    border-color: var(--neutralPrimary);
-    background-color: var(--white);
-  }
-  .btn-outline-primary:hover, .btn-outline-primary:active {
-    color: var(--primary-text);
-    border-color: var(--neutralPrimary);
-    background-color: var(--neutralLighter);
+    --nutrition-facts-table-outline: var(--black);
+    --btn-primary-text: var(--white);
+    --btn-primary-bg-color: var(--themePrimary);
+    --btn-primary-bg-color-hover: var(--themeDark);
+    --btn-outline-primary-border: var(--neutralPrimary);
+    --btn-outline-primary-bg-color: var(--white);
+    --btn-outline-primary-bg-color-hover: var(--neutralLighter);
+    --a-text: var(--themeDark);
+    --a-text-hover: var(--themeDarker);
   }
 
   .input-field-style {
@@ -136,30 +110,67 @@ Background color = #fafafa */
     background-color: var(--white);
   }
 
-  a {
-    color: var(--themeDark);
-    text-decoration: none;
-  }
-  a:hover, a:active {
-    color: var(--themeDarker);
-  }
+}
 
-  .nav-link {
-    color: var(--primary-text);
-  }
-  .nav-link:hover, .nav-link:active {
-    color: var(--themeDarker);
-  }
+.navbar-light .navbar-nav .nav-link {
+  color: var(--primary-text);
+}
+.navbar-light .navbar-nav .nav-link:hover, .navbar-light .navbar-nav .nav-link:active {
+  color: var(--a-text-hover);
+}
 
-  .btn-primary {
-    color: var(--white);
-    background-color: var(--themePrimary);
-    border-width: 0;
-  }
-  .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
-    color: var(--white);
-    background-color: var(--themeDark);
-  }
+#my-navbar-brand {
+  color: var(--a-text);
+}
+#my-navbar-brand:hover #my-navbar-brand:active {
+  color: var(--a-text-hover);
+}
+
+.step-number {
+  border-right: var(--a-text);
+  color: var(--a-text);
+  font-weight:600;
+  border-top: none;
+  border-style: solid;
+  border-right-width: 3px;
+  margin-bottom: 12px;
+  border-top-width: 0px;
+  border-bottom-width: 0px;
+  border-left-width: 0px;
+  max-width: 40px;
+}
+
+a {
+  color: var(--a-text);
+  text-decoration: none;
+}
+a:hover, a:active {
+  color: var(--a-text-hover);
+}
+
+.btn-primary {
+  color: var(--btn-primary-text);
+  background-color: var(--btn-primary-bg-color);
+  border-width: 0;
+}
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+  color: var(--btn-primary-text);
+  background-color: var(--btn-primary-bg-color-hover);
+}
+.btn-outline-primary {
+  color: var(--primary-text);
+  border-color: var(--btn-outline-primary-border);
+  background-color: var(--btn-outline-primary-bg-color);
+}
+.btn-outline-primary:hover, .btn-outline-primary:active {
+  color: var(--primary-text);
+  border-color: var(--btn-outline-primary-border);
+  background-color: var(--btn-outline-primary-bg-color-hover);
+}
+
+.border-top-1 {
+  border-top: 1px solid #e5e5e5;
+  padding-top: 10px;
 }
 
 .table {
@@ -284,6 +295,12 @@ html {
   margin-bottom: 10px;
 }
 
+.badge {
+  color: var(--themePrimary);
+  font-variant: small-caps;
+}
+
+
 .card-recipe-image {
   width: 100%;
   height: 180px;
@@ -390,20 +407,6 @@ body {
   border-bottom-right-radius: 0;
 }
 
-.step-number {
-  border-right: var(--troubled-water);
-  color: var(--deep-water);
-  font-weight:600;
-  border-top: none;
-  border-style: solid;
-  border-right-width: 3px;
-  margin-bottom: 12px;
-  border-top-width: 0px;
-  border-bottom-width: 0px;
-  border-left-width: 0px;
-  max-width: 40px;
-}
-
 .actual-display-inline {
   display: inline-block;
 }
@@ -415,26 +418,26 @@ body {
   -webkit-line-clamp: 2;
 }
 
-.padding-left-4 {
-  padding-left: 4px;
-}
-
-.padding-left-12 {
-  padding-left: 12px;
-}
-
-.padding-left-58 {
-  padding-left: 58px;
+.padding-top-2 {
+  padding-top: 2px;
 }
 
 .padding-left-0 {
   padding-left: 0px;
 }
+.padding-left-4 {
+  padding-left: 4px;
+}
+.padding-left-12 {
+  padding-left: 12px;
+}
+.padding-left-58 {
+  padding-left: 58px;
+}
 
 .padding-right-0 {
   padding-right: 0px;
 }
-
 .padding-right-10 {
   padding-right: 10px;
 }
@@ -444,6 +447,9 @@ body {
 }
 .margin-bottom-8 {
   margin-bottom: 8px;
+}
+.margin-bottom-10 {
+  margin-bottom: 10px;
 }
 .margin-bottom-12 {
   margin-bottom: 12px;
@@ -458,19 +464,19 @@ body {
 .margin-top-8 {
   margin-top: 8px;
 }
-
 .margin-top-10 {
   margin-top: 10px;
 }
-
 .margin-top-15 {
   margin-top: 15px;
 }
-
 .margin-top-20 {
   margin-top: 20px;
 }
 
+.margin-left-4 {
+  margin-left: 4px;
+}
 .margin-left-20 {
   margin-left: 20px;
 }
@@ -554,6 +560,10 @@ body {
 
   .recipe-field-title {
     width: 100%;
+  }
+
+  .component-name-field {
+    padding-left: 4px;
   }
 }
 
@@ -650,12 +660,13 @@ body {
   font-size: small;
   line-height: 1.4;
   box-sizing: content-box;
+  margin-top: 10px;
 }
 .nf-p {
   margin: 0;
 }
 .performance-facts {
-  border: 1px solid black;
+  border: 1px solid var(--nutrition-facts-table-outline);
   width: 280px;
   padding: 0.5rem;
 }
@@ -668,7 +679,7 @@ body {
   margin: 0 0 0.25rem 0;
 }
 .performance-facts__header {
-  border-bottom: 10px solid black;
+  border-bottom: 10px solid var(--nutrition-facts-table-outline);
   padding: 0 0 0.25rem 0;
   margin: 0 0 0.5rem 0;
 }
@@ -685,7 +696,7 @@ body {
   font-weight: normal;
   text-align: left;
   padding: 0.25rem 0;
-  border-top: 1px solid black;
+  border-top: 1px solid var(--nutrition-facts-table-outline);
   white-space: nowrap;
 }
 .performance-facts__table td:last-child {
@@ -696,14 +707,13 @@ body {
   border-top: 0;
 } 
 .thick-row {
-  border-top-width: 5px;
-  border-top-style: solid;
+  border-top: 5px solid var(--nutrition-facts-table-outline);
 } 
 .small-info {
   font-size: 0.7rem;
 }
 .performance-facts__table__small {
-  border-bottom: 1px solid #999;
+  border-bottom: 1px solid var(--nutrition-facts-table-outline);
   margin: 0 0 0.5rem 0;
 }
 .nf-small-th-and-td {
@@ -711,7 +721,7 @@ body {
   padding: 0;
 }
 .nf-thead-tr {
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid var(--nutrition-facts-table-outline);
 }
 .nf-small-td-lastchild {
   text-align: left;
@@ -729,9 +739,9 @@ body {
   text-align: center;
 }
 .thick-end {
-  border-bottom: 10px solid black;
+  border-bottom: 10px solid var(--nutrition-facts-table-outline);
 }
 .thin-end {
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid var(--nutrition-facts-table-outline);
 }
 
