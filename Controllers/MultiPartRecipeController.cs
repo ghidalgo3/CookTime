@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using babe_algorithms.Services;
 using SixLabors.ImageSharp.Formats.Jpeg;
+using System.Globalization;
 
 namespace babe_algorithms.Controllers
 {
@@ -11,9 +12,12 @@ namespace babe_algorithms.Controllers
     {
         private readonly ApplicationDbContext _context;
 
+        public TextInfo TextInfo { get; }
+
         public MultiPartRecipeController(ApplicationDbContext context)
         {
             _context = context;
+            this.TextInfo = new CultureInfo("en-US",false).TextInfo;
         }
 
         // GET: api/MultiPartRecipe
@@ -47,14 +51,22 @@ namespace babe_algorithms.Controllers
                 return NotFound();
             }
             var body = new RecipeNutritionFacts();
+            var ingredientDescriptors = new List<IngredientNutritionDescription>();
             foreach (var component in multiPartRecipe.RecipeComponents)
             {
                 var allIngredientRequirements = component.Ingredients;
                 // irs.Sort((first, second) => first.Position.CompareTo(second.Position));
-                var result = allIngredientRequirements.Select(ir => ir.CalculateNutritionFacts()).ToList();
+                var result = allIngredientRequirements.Select(ir => {
+                    var nutritionForIngredient = ir.CalculateNutritionFacts();
+                    var ingredientDescriptor = ir.GetPartialIngredientDescription();
+                    ingredientDescriptor.CaloriesPerServing = nutritionForIngredient.Calories / multiPartRecipe.ServingsProduced;
+                    ingredientDescriptors.Add(ingredientDescriptor);
+                    return nutritionForIngredient;
+                });
                 body.Components.Add(result.Aggregate((a,b) => a + b));
             }
             body.Recipe = body.Components.Aggregate((a, b) => a + b);
+            body.Ingredients = ingredientDescriptors;
             return this.Ok(body);
         }
 
@@ -150,7 +162,7 @@ namespace babe_algorithms.Controllers
                     if (allowedCategories.Select(c => c.ToUpperInvariant()).Contains(category.Name.Trim().ToUpperInvariant()))
                     {
                         // entirely new category
-                        category.Name = category.Name.Trim();
+                        category.Name = this.TextInfo.ToTitleCase(category.Name.Trim());
                         category.Id = Guid.Empty;
                         existingRecipe.Categories.Add(category);
                     }

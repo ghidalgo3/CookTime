@@ -5,7 +5,7 @@ using NpgsqlTypes;
 
 namespace babe_algorithms.Models;
 
-public class MultiPartRecipe : IImageContainer
+public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>
 {
     public MultiPartRecipe() 
     {
@@ -49,6 +49,8 @@ public class MultiPartRecipe : IImageContainer
     public string Source { get; set; }
     [JsonIgnore]
     public NpgsqlTsVector SearchVector { get; set; }
+
+    public bool Equals(MultiPartRecipe other) => this.Id == other.Id;
 }
 
 public class RecipeComponent : IRecipeComponent<MultiPartRecipeStep, MultiPartIngredientRequirement>
@@ -104,6 +106,30 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
     /// The position this ingredient should be placed in.
     /// </summary>
     public int Position { get; set; }
+
+    public IngredientNutritionDescription GetPartialIngredientDescription()
+    {
+        var description = new IngredientNutritionDescription
+        {
+            Name = this.Ingredient.Name,
+            Unit = this.Unit.ToString(),
+            Quantity = this.Quantity
+        };
+        if (this.Ingredient.NutritionData is StandardReferenceNutritionData data)
+        {
+            description.nutritionDatabaseId = data.FdcId.ToString();
+            description.NutritionDatabaseDescriptor = data.Description;
+            if (this.Unit.IsCount())
+            {
+                description.Modifier = this.Ingredient.NutritionData.GetCountModifier();
+            }
+        }
+        else
+        {
+            description.NutritionDatabaseDescriptor = "Unknown";
+        }
+        return description;
+    }
 
     public NutritionFactVector CalculateNutritionFacts()
     {

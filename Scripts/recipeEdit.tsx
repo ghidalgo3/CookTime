@@ -446,6 +446,11 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         :
                         this.nutritionFacts() 
                     } 
+                    { this.state.edit ? 
+                        null
+                        :
+                        this.ingredientNutritionFacts() 
+                    } 
                 </div>
             </div>
         );
@@ -481,6 +486,20 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
             }
         );
+    }
+
+    ingredientNutritionFacts() {
+        var lis = this.state.nutritionFacts?.ingredients.map((description, i) => {
+            return <li key={i}>{description.quantity} {description.unit} {description.name}: {description.quantity} {description.unit} {description.nutritionDatabaseId !== null ? <a target="_blank" href={`https://fdc.nal.usda.gov/fdc-app.html#/food-details/${description.nutritionDatabaseId}/nutrients`}>{description.nutritionDatabaseDescriptor}</a> : description.nutritionDatabaseDescriptor}
+                -- {Math.round(description.caloriesPerServing)} Calories per serving</li>;
+        })
+        return(
+            <div>
+                <h2>Nutrition by ingredient</h2>
+                <ul>
+                    {lis}
+                </ul>
+            </div>);
     }
 
     nutritionFacts() {

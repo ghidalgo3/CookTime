@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -28,29 +29,39 @@ public class IndexModel : PageModel
         }
     }
 
-    private async Task Search(string search)
+    private async Task<List<RecipeView>> GetRecipeViewsForQuery(IQueryable<MultiPartRecipe> query)
     {
-        var recipes = await this._context.SearchRecipes(search)
-            .AsSplitQuery()
-            .Include(r => r.Images)
-            .Include(r => r.Categories)
-            .Select(r => new
-            {
-                Id = r.Id,
-                Name = r.Name,
-                Categories = r.Categories.Select(c => c.Name),
-                Images = r.Images.Select(image => new
+        var recipes =
+            await query
+                .AsSplitQuery()
+                .Include(r => r.Images)
+                .Include(r => r.Categories)
+                .Select(r => new
                 {
-                    Id = image.Id,
-                    Name = image.Name,
+                    Id = r.Id,
+                    Name = r.Name,
+                    Categories = r.Categories.Select(c => c.Name),
+                    Images = r.Images.Select(image => new
+                    {
+                        Id = image.Id,
+                        Name = image.Name,
+                    })
                 })
-            })
-            .OrderBy(r => r.Name)
-            .ToListAsync();
-        this.Recipes = recipes
+                .OrderBy(r => r.Name)
+                .ToListAsync();
+        return recipes
             .Select(r =>
                 new RecipeView(r.Name, r.Id, r.Images.Select(image => image.Id).ToList(), r.Categories.ToList()))
                 .ToList();
+    }
+
+    private async Task Search(string search)
+    {
+        var byName = await GetRecipeViewsForQuery(this._context.SearchRecipesByName(search));
+        byName.AddRange(await GetRecipeViewsForQuery(this._context.GetRecipesWithIngredient(search)));
+        byName.AddRange(await GetRecipeViewsForQuery(this._context.SearchRecipesByTag(search)));
+        var x = new HashSet<RecipeView>(byName, new RecipeViewEqualityComparer());
+        this.Recipes = x.ToList();
     }
 
     private async Task AllRecipes()
@@ -107,3 +118,12 @@ public class IndexModel : PageModel
 }
 
 public record RecipeView(string Name, Guid Id, List<Guid> ImageIds, List<string> Categories) {}
+
+public class RecipeViewEqualityComparer : IEqualityComparer<RecipeView>
+{
+    public bool Equals(RecipeView x, RecipeView y) =>
+        x.Id == y.Id;
+
+    public int GetHashCode([DisallowNull] RecipeView obj) => 
+        obj.Id.GetHashCode();
+}

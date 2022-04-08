@@ -34,9 +34,14 @@ public class ApplicationDbContext : DbContext
     public DbSet<Image> Images { get; set; }
     public DbSet<StandardReferenceNutritionData> SRNutritionData { get; set; }
 
-    public IQueryable<MultiPartRecipe> SearchRecipes(string search)
+    public IQueryable<MultiPartRecipe> SearchRecipesByName(string search)
     {
         return this.MultiPartRecipes.Where(r => r.SearchVector.Matches(search));
+    }
+
+    public IQueryable<MultiPartRecipe> SearchRecipesByTag(string search)
+    {
+        return this.MultiPartRecipes.Include(mpr => mpr.Categories).Where(r => r.Categories.Any(c => c.Name.ToUpper().Contains(search.ToUpper())));
     }
 
     public IQueryable<MultiPartRecipe> GetRecipesWithIngredient(string ingredient)
@@ -48,9 +53,7 @@ public class ApplicationDbContext : DbContext
             .Where(mpRecipe =>
                 mpRecipe.RecipeComponents.Any(rc =>
                     rc.Ingredients.Any(ir =>
-                        EF.Functions.ILike(
-                            ingredient.Trim(),
-                            ir.Ingredient.Name.Trim()))));
+                            ir.Ingredient.Name.Trim().ToUpper().Contains(ingredient.Trim().ToUpper()))));
     }
 
     public async Task<List<Ingredient>> GetIngredients()
