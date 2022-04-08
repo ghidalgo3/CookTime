@@ -650,7 +650,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                             })
                                         }}
                                         value={component.name}></Form.Control> :
-                                    <div className="padding-left-4">{component.name}</div> }
+                                    <div className="component-name-field">{component.name}</div> }
                             </Col>
                             {this.state.edit ?
                                 <Col xs={1}>

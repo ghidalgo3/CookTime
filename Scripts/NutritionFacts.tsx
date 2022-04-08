@@ -159,7 +159,7 @@ export class NutritionFacts extends React.Component<NutritionFactVector, {}>
                     </tbody>
                 </table> */}
 
-                <p className="nf-p small-info">* Percent Daily Values are based on a 2,000 calorie diet. Your daily values may be higher or lower depending on your calorie needs:</p>
+                <p className="nf-p padding-top-2 small-info">* Percent Daily Values are based on a 2,000 calorie diet. Your daily values may be higher or lower depending on your calorie needs:</p>
 
                 <table className="performance-facts__table performance-facts__table__small small-info">
                     <thead>

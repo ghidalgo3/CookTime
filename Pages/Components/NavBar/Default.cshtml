@@ -1,20 +1,31 @@
 @model babe_algorithms.ViewComponents.NavBarViewComponent
 
 <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3">
+    <nav class="navbar navbar-expand-lg navbar-light border-bottom box-shadow mb-3">
         <div class="container">
-            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">KookTime</a>
-            <div class="navbar-nav">
-                <a class="nav-link" href="/Cart">Groceries List</a> 
-            </div>
-            <div class="navbar-nav me-auto">
-                <a class="nav-link" href="/Admin/IngredientsView">Ingredient Edit</a> 
-            </div>
-            @* TODO: Implement search bar *@
+            <a id="my-navbar-brand" class="navbar-brand my-navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">KookTime</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Recipes</a>
+                        @* <a class="nav-link" href="/Cart">Groceries List <span class="sr-only"></span></a> *@
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/Cart">Groceries List</a>
+                    </li>
+                    <li class="nav-item">
+                        <a id="my-nav-link-disabled" class="nav-link disabled" href="/Admin/IngredientsView">Ingredients View</a>
+                    </li>
+                </ul>
             <form action="/" class="d-flex">
-                <input name="search" class="form-control input-field-style me-2" type="search" placeholder="Search" aria-label="Search" >
+                <input name="search" class="form-control input-field-style me-2" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-primary" type="submit">Search</button>
             </form>
+            </div>
         </div>
     </nav>
 </header>
