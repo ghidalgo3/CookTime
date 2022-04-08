@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -59,7 +60,8 @@ public class IndexModel : PageModel
         var byName = await GetRecipeViewsForQuery(this._context.SearchRecipesByName(search));
         byName.AddRange(await GetRecipeViewsForQuery(this._context.GetRecipesWithIngredient(search)));
         byName.AddRange(await GetRecipeViewsForQuery(this._context.SearchRecipesByTag(search)));
-        this.Recipes = byName.ToHashSet().ToList();
+        var x = new HashSet<RecipeView>(byName, new RecipeViewEqualityComparer());
+        this.Recipes = x.ToList();
     }
 
     private async Task AllRecipes()
@@ -116,3 +118,12 @@ public class IndexModel : PageModel
 }
 
 public record RecipeView(string Name, Guid Id, List<Guid> ImageIds, List<string> Categories) {}
+
+public class RecipeViewEqualityComparer : IEqualityComparer<RecipeView>
+{
+    public bool Equals(RecipeView x, RecipeView y) =>
+        x.Id == y.Id;
+
+    public int GetHashCode([DisallowNull] RecipeView obj) => 
+        obj.Id.GetHashCode();
+}
