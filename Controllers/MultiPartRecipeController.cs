@@ -51,14 +51,22 @@ namespace babe_algorithms.Controllers
                 return NotFound();
             }
             var body = new RecipeNutritionFacts();
+            var ingredientDescriptors = new List<IngredientNutritionDescription>();
             foreach (var component in multiPartRecipe.RecipeComponents)
             {
                 var allIngredientRequirements = component.Ingredients;
                 // irs.Sort((first, second) => first.Position.CompareTo(second.Position));
-                var result = allIngredientRequirements.Select(ir => ir.CalculateNutritionFacts()).ToList();
+                var result = allIngredientRequirements.Select(ir => {
+                    var nutritionForIngredient = ir.CalculateNutritionFacts();
+                    var ingredientDescriptor = ir.GetPartialIngredientDescription();
+                    ingredientDescriptor.CaloriesPerServing = nutritionForIngredient.Calories / multiPartRecipe.ServingsProduced;
+                    ingredientDescriptors.Add(ingredientDescriptor);
+                    return nutritionForIngredient;
+                });
                 body.Components.Add(result.Aggregate((a,b) => a + b));
             }
             body.Recipe = body.Components.Aggregate((a, b) => a + b);
+            body.Ingredients = ingredientDescriptors;
             return this.Ok(body);
         }
 

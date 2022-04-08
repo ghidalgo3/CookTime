@@ -9,6 +9,18 @@ public class RecipeNutritionFacts
 
     public NutritionFactVector Recipe { get; set; }
     public List<NutritionFactVector> Components { get; set; }
+    public List<IngredientNutritionDescription> Ingredients { get; set; }
+}
+
+public class IngredientNutritionDescription
+{
+    public string nutritionDatabaseId { get; set; }
+    public string NutritionDatabaseDescriptor { get; set; }
+    public string Name { get; set; }
+    public string Unit { get; set; }
+    public double Quantity { get; set; }
+    public string Modifier { get; set; }
+    public double CaloriesPerServing { get; set; }
 }
 
 public class NutritionFactVector

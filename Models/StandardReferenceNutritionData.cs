@@ -79,6 +79,24 @@ public class StandardReferenceNutritionData
         return 1.0;
     }
 
+    public string GetCountModifier()
+    {
+        var foodPortions = JArray.Parse(this.FoodPortions.RootElement.GetRawText());
+        foreach (var portion in foodPortions)
+        {
+            var modifier = portion["modifier"].Value<string>();
+            if (TryParseUnit(modifier, this, out Unit unit))
+            {
+                if (unit.IsCount())
+                {
+                    return modifier;
+                }
+            }
+        }
+
+        return string.Empty;
+    }
+
     public static bool TryParseUnit(string modifier, StandardReferenceNutritionData srData, out Unit unit)
     {
         unit = Unit.Count;

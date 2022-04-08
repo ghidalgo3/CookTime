@@ -107,6 +107,30 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
     /// </summary>
     public int Position { get; set; }
 
+    public IngredientNutritionDescription GetPartialIngredientDescription()
+    {
+        var description = new IngredientNutritionDescription
+        {
+            Name = this.Ingredient.Name,
+            Unit = this.Unit.ToString(),
+            Quantity = this.Quantity
+        };
+        if (this.Ingredient.NutritionData is StandardReferenceNutritionData data)
+        {
+            description.nutritionDatabaseId = data.FdcId.ToString();
+            description.NutritionDatabaseDescriptor = data.Description;
+            if (this.Unit.IsCount())
+            {
+                description.Modifier = this.Ingredient.NutritionData.GetCountModifier();
+            }
+        }
+        else
+        {
+            description.NutritionDatabaseDescriptor = "Unknown";
+        }
+        return description;
+    }
+
     public NutritionFactVector CalculateNutritionFacts()
     {
         var nutritionFacts = new NutritionFactVector();

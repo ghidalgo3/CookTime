@@ -98,4 +98,15 @@ type NutritionFactVector = {
 type RecipeNutritionFacts = {
     recipe : NutritionFactVector,
     components : NutritionFactVector[]
+    ingredients: IngredientNutritionDescription[]
+}
+
+type IngredientNutritionDescription = {
+    nutritionDatabaseId : string,
+    nutritionDatabaseDescriptor : string,
+    name : string,
+    unit : string,
+    modifier : string,
+    quantity : number,
+    caloriesPerServing : number,
 }
