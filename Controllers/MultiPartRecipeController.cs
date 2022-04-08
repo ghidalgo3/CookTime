@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using babe_algorithms.Services;
 using SixLabors.ImageSharp.Formats.Jpeg;
+using System.Globalization;
 
 namespace babe_algorithms.Controllers
 {
@@ -11,9 +12,12 @@ namespace babe_algorithms.Controllers
     {
         private readonly ApplicationDbContext _context;
 
+        public TextInfo TextInfo { get; }
+
         public MultiPartRecipeController(ApplicationDbContext context)
         {
             _context = context;
+            this.TextInfo = new CultureInfo("en-US",false).TextInfo;
         }
 
         // GET: api/MultiPartRecipe
@@ -150,7 +154,7 @@ namespace babe_algorithms.Controllers
                     if (allowedCategories.Select(c => c.ToUpperInvariant()).Contains(category.Name.Trim().ToUpperInvariant()))
                     {
                         // entirely new category
-                        category.Name = category.Name.Trim();
+                        category.Name = this.TextInfo.ToTitleCase(category.Name.Trim());
                         category.Id = Guid.Empty;
                         existingRecipe.Categories.Add(category);
                     }
