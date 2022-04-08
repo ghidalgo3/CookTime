@@ -206,27 +206,23 @@ hr {
 }
 
 .btn-success {
-  color: var(--light-grey);
-  background-color: var(--green-earth);
-  border-color: var(--green-earth-border);
+  color: var(--white);
+  background-color: var(--btn-primary-bg-color);
+  border: 0;
 }
-
-.btn-success:hover, .btn-success:active, .btn-success:focus {
-  color: var(--light-grey);
-  background-color: var(--green-earth-highlight);
-  border-color: var(--green-earth-highlight-border);
+.btn-success:hover, .btn-success:active {
+  color: var(--white);
+  background-color: var(--btn-primary-bg-color-hover);
 }
 
 .btn-danger {
-  color: var(--light-grey);
+  color: var(--white);
   background-color: var(--red-dirt);
-  border-color: var(--red-dirt-border);
+  border: 0;
 }
-
-.btn-danger:hover, .btn-danger:active, .btn-danger:focus {
-  color: var(--light-grey);
+.btn-danger:hover, .btn-danger:active {
+  color: var(--white);
   background-color: var(--red-dirt-highlight);
-  border-color: var(--red-dirt-highlight-border);
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
