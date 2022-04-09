@@ -23,7 +23,7 @@
         }
         <div class="col-sm-4">
             <form method="POST">
-                <a asp-page="./Recipes/Details" asp-route-id="@item.Id">
+                <a href="./Recipes/Details/@item.Id">
                     <div class="card margin-bottom-20 recipe-card">
                         @{
                             var image = (item.ImageIds.Count == 0) ? "/placeholder.jpg" : $"/image/{item.ImageIds.FirstOrDefault()}?width=300";

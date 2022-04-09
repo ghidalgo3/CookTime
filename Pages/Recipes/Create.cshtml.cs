@@ -36,6 +36,6 @@ public class CreateModel : PageModel
         _context.MultiPartRecipes.Add(Recipe);
         await _context.SaveChangesAsync();
 
-        return RedirectToPage("/Recipes/Details", new { id = this.Recipe.Id });
+        return RedirectToPage($"/Recipes/Details/{this.Recipe.Id}");
     }
 }
