@@ -73,7 +73,7 @@ public class RecipeController : ControllerBase, IImageController
         context.Recipes.Remove(recipe);
         await context.SaveChangesAsync();
 
-        return this.RedirectToPage($"/Recipes/Details/{mpRecipe.Id}");
+        return this.RedirectToPage("/Recipes/Details", new { id = mpRecipe.Id });
     }
 
     // GET: api/Recipe/5

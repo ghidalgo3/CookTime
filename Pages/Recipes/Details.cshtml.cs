@@ -16,19 +16,17 @@ public class DetailsModel : PageModel
     public Guid Id { get; set; }
     public bool IsMultipart { get; set; }
 
-    public async Task<IActionResult> OnGetAsync(
-        [FromRoute] Guid? recipeId,
-        [FromQuery] Guid? id)
+    public async Task<IActionResult> OnGetAsync(Guid? id)
     {
-        if (id == null && recipeId == null)
+        if (id == null)
         {
             return NotFound();
         }
 
-        var simpleRecipe = await _context.Recipes.FindAsync(recipeId);
+        var simpleRecipe = await _context.Recipes.FindAsync(id);
         if (simpleRecipe == null)
         {
-            var complex = await _context.MultiPartRecipes.FindAsync(recipeId);
+            var complex = await _context.MultiPartRecipes.FindAsync(id);
             if (complex == null)
             {
                 return this.NotFound();
