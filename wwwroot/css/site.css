@@ -97,6 +97,14 @@ Background color = #fafafa */
   }
 }
 
+#react-autowhatever-1 {
+  color: var(--neutralPrimary);
+  top: 35px;
+  width: 100%;
+  border: 1px solid #ced4da;
+  line-height: 1.9;
+}
+
 .input-field-style {
   color: var(--primary-text);
   border-color: var(--btn-outline-primary-border);
