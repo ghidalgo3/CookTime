@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Npgsql;
+using babe_algorithms.Models.Users;
 
 namespace babe_algorithms.Services;
-public class ApplicationDbContext : DbContext
+
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     static ApplicationDbContext()
     {
@@ -27,6 +30,7 @@ public class ApplicationDbContext : DbContext
     }
 
     public DbSet<Recipe> Recipes { get; set; }
+    public DbSet<StandardUser> StandardUsers { get; set; }
     public DbSet<MultiPartRecipe> MultiPartRecipes { get; set; }
     public DbSet<Ingredient> Ingredients { get; set; }
     public DbSet<Category> Categories { get; set; }

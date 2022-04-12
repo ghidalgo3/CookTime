@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using babe_algorithms.Services;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using GustavoTech.Implementation;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace babe_algorithms;
 public class Startup
@@ -27,6 +29,7 @@ public class Startup
         }
 
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IEmailSender, EmailSender>();
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             var connectionString = this.Configuration.GetConnectionString("Postgres");
