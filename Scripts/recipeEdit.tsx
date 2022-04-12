@@ -440,7 +440,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     }
                     {this.RecipeOrComponents()}
                 </div>
-                <div>
+                <div className="border-top-1">
                     { this.state.edit ? 
                         null
                         :

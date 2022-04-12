@@ -64,18 +64,7 @@ Background color = #fafafa */
     --a-text: var(--themeTertiary);
     --a-text-hover: var(--themeSecondary);
   }
-
-  .input-field-style {
-    color: var(--primary-text);
-    border-color: var(--white);
-    background-color: var(--neutralDark);
-  }
-  .input-field-style:hover, .input-field-style:active, .input-field-style:focus {
-    color: var(--primary-text);
-    border-color: white;
-    background-color: var(--neutralDark);
-  }
-
+  
   .card {
     border-color: var(--neutralLight);
   }
@@ -106,16 +95,17 @@ Background color = #fafafa */
     --a-text: var(--themeDark);
     --a-text-hover: var(--themeDarker);
   }
+}
 
-  .input-field-style {
-    border-color: var(--neutralPrimary);
-    background-color: var(--white);
-  }
-  .input-field-style:hover, .input-field-style:active {
-    border-color: var(--black);
-    background-color: var(--white);
-  }
-
+.input-field-style {
+  color: var(--primary-text);
+  border-color: var(--btn-outline-primary-border);
+  background-color: var(--btn-outline-primary-bg-color);
+}
+.input-field-style:hover, .input-field-style:active, .input-field-style:focus {
+  color: var(--primary-text);
+  border-color: var(--btn-outline-primary-border);
+  background-color: var(--btn-outline-primary-bg-color);
 }
 
 .navbar-light .navbar-nav .nav-link {
@@ -256,6 +246,10 @@ hr {
   color: var(--red-dirt);
 }
 
+.height-38 {
+  height: 38px;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
@@ -393,6 +387,7 @@ body {
   width: 50px;
   display: inline;
   border-radius: 0;
+  border: 0;
 }
 
 .plus-counter-button {

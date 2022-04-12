@@ -92,11 +92,11 @@ class ShoppingCart extends React.Component<{}, CartState> {
                                 <i className="fas fa-regular fa-minus"></i>
                             </Button>
                         </div> 
-                        <div className="form-control margin-left-20 component-on-left do-not-overflow-text" key={recipe.id}>
+                        <div className="form-control input-field-style margin-left-20 component-on-left do-not-overflow-text" key={recipe.id}>
                             <a href={`/Recipes/Details?id=${recipe.id}&servings=${r.quantity * recipe.servingsProduced}`} >{recipe.name}</a> 
                         </div>
                         <Button 
-                                className="float-end component-on-right" 
+                                className="float-end component-on-right height-38" 
                                 variant="danger"
                                 onClick={(_) => this.onDeleteRecipe(rIndex)}>
                                 <i className="fas fa-trash-alt"></i>
