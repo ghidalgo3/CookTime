@@ -81,10 +81,6 @@ Background color = #fafafa */
     background-color: var(--primary-background);
   }
 
-  /* .card p {
-    color: 
-  } */
-
   #my-nav-link-disabled {
     color: var(--neutralSecondary);
   }
