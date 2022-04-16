@@ -3,6 +3,8 @@ using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using System.Text.Json.Nodes;
+using Microsoft.AspNetCore.Identity;
+using babe_algorithms.Models.Users;
 
 namespace babe_algorithms;
 
@@ -34,6 +36,7 @@ public class Program
         try
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
+            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
             if (context.Database.GetPendingMigrations().Any())
             {
                 context.Database.Migrate();
@@ -47,12 +50,27 @@ public class Program
                 LoadFoodData(context);
                 DeduplicateIngredients(context).Wait();
             }
+            CreateRoles(roleManager).Wait();
         }
         catch (Exception ex)
         {
             var logger = services.GetRequiredService<ILogger<Program>>();
             logger.LogError(ex, "An error occurred creating the DB.");
             throw;
+        }
+    }
+
+    public static async Task CreateRoles(RoleManager<IdentityRole> roleManager)
+    {
+        string[] roleNames = Enum.GetValues(typeof(Role)).Cast<Role>().Select(r => r.ToString()).ToArray();
+        foreach (var roleName in roleNames)
+        {
+            // creating the roles and seeding them to the database
+            var roleExist = await roleManager.RoleExistsAsync(roleName);
+            if (!roleExist)
+            {
+                await roleManager.CreateAsync(new IdentityRole(roleName));
+            }
         }
     }
 

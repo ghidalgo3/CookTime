@@ -1,3 +1,5 @@
+namespace GustavoTech;
+
 using System.Security.Claims;
 using babe_algorithms.Models.Users;
 using Microsoft.AspNetCore.Identity;
@@ -8,7 +10,7 @@ public interface ISignInManager
 
     Task SignInAsync(ApplicationUser user, bool isPersistent);
 
-    Task<SignInResult> PasswordSignInAsync(
+    Task<SignInResult> SignInWithUserName(
         string userName,
         string password,
         bool isPersistent,

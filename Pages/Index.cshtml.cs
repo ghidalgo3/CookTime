@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using babe_algorithms.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -7,10 +8,15 @@ namespace babe_algorithms.Pages.Recipes;
 
 public class IndexModel : PageModel
 {
-    private readonly babe_algorithms.Services.ApplicationDbContext _context;
+    public ISignInManager SigninManager { get; }
 
-    public IndexModel(babe_algorithms.Services.ApplicationDbContext context)
+    private readonly ApplicationDbContext _context;
+
+    public IndexModel(
+        ISignInManager signinManager,
+        ApplicationDbContext context)
     {
+        this.SigninManager = signinManager;
         _context = context;
     }
 
@@ -19,6 +25,7 @@ public class IndexModel : PageModel
     public async Task OnGetAsync(
         [FromQuery] string search)
     {
+        // var signedIn = this.SigninManager.IsSignedIn(this.User);
         if (search != null)
         {
             await this.Search(search);

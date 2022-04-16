@@ -10,6 +10,7 @@ module.exports = {
         recipeEdit: './Scripts/recipeEdit.tsx',
         cart: './Scripts/Cart.tsx',
         ingredients: './Scripts/Ingredients.tsx',
+        registration: './Scripts/Registration.ts',
         css: './wwwroot/css/site.css',
     },
     output: {

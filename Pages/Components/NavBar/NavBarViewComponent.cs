@@ -40,20 +40,20 @@ public class NavBarViewComponent : ViewComponent
             }
 
             var roles = this.UserManager.GetRoles(user);
-            if (roles[0] == Role.StandardUser)
+            if (roles[0] == Role.User)
             {
-                this.Name = user.StandardUser.Name;
+                this.Name = user.UserName;
                 this.Initials = string.Join(string.Empty, this.Name.Split(" ").Select(token => token.Substring(0, 1).ToUpper()) ?? new List<string>());
-                this.Role = Role.StandardUser;
+                this.Role = Role.User;
             }
-            else if (roles[0] == Role.SiteAdministrator)
+            else if (roles[0] == Role.Administrator)
             {
-                this.Name = user.Name;
+                this.Name = user.UserName;
                 this.Initials = "ADMIN";
-                this.Role = Role.SiteAdministrator;
+                this.Role = Role.Administrator;
             }
 
-            this.Events = user.Events.Where(e => e.Type == EventType.Public).OrderByDescending(e => e.EventCreation).Take(10);
+            this.Events = user.Events.Where(e => e.Type == EventType.Public).OrderByDescending(e => e.CreatedAt).Take(10);
             this.UnseenEvents = user.Events.Where(e => e.Type == EventType.Public).Count(e => !e.EventSeen);
         }
 

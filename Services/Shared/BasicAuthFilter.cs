@@ -26,7 +26,9 @@ public class BasicAuthFilter : IAuthorizationFilter
             if (authHeader != null)
             {
                 var authHeaderValue = AuthenticationHeaderValue.Parse(authHeader);
-                if (authHeaderValue.Scheme.Equals(AuthenticationSchemes.Basic.ToString(), StringComparison.OrdinalIgnoreCase))
+                if (authHeaderValue.Scheme.Equals(
+                    AuthenticationSchemes.Basic.ToString(),
+                    StringComparison.OrdinalIgnoreCase))
                 {
                     var credentials = Encoding.UTF8
                                         .GetString(Convert.FromBase64String(authHeaderValue.Parameter ?? string.Empty))

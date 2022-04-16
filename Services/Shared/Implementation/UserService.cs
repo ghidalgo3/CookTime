@@ -14,8 +14,8 @@ public class UserService : IUserService
 {
     private readonly ILogger<UserService> _logger;
 
-    private string username;
-    private string password;
+    private readonly string username;
+    private readonly string password;
 
     private readonly ILogger logger;
     private readonly ApplicationDbContext applicationDbContext;
@@ -23,8 +23,6 @@ public class UserService : IUserService
     public IEmailSender EmailSender { get; }
 
     public UserManager<ApplicationUser> UserManager { get; }
-
-    // public IQueryable<ApplicationUser> Users { get; } => 
 
     protected ILogger Logger { get => this.logger; }
 
@@ -47,23 +45,26 @@ public class UserService : IUserService
 
     public bool IsValidBasicAuthUser(string userName, string password)
     {
-        _logger.LogInformation($"Validating user [{userName}]");
-
+        var result = false;
         if (string.IsNullOrWhiteSpace(userName))
         {
-            return false;
+            result = false;;
         }
 
         if (string.IsNullOrWhiteSpace(password))
         {
-            return false;
+            result = false;;
         }
         if (userName.Equals(this.username) && password.Equals(this.password))
         {
-            return true;
+            result = true;
         }
 
-        return false;
+        _logger.LogInformation(
+            "Validating user with basic authentication [{userName}]. Authenticated? {result}",
+            userName,
+            result);
+        return result;
     }
 
     public IQueryable<ApplicationUser> Users => this.UserManager.Users;
@@ -80,7 +81,7 @@ public class UserService : IUserService
     public async Task<IEnumerable<string>> GetRolesAsync(ApplicationUser user) =>
         await this.UserManager.GetRolesAsync(user);
 
-    public ApplicationUser GetUser(ClaimsPrincipal claimsPrincipal)
+    public ApplicationUser? GetUser(ClaimsPrincipal claimsPrincipal)
     {
         var u = this.GetUserAsync(claimsPrincipal).Result;
         if (u == null)
@@ -96,18 +97,27 @@ public class UserService : IUserService
     public async Task<ApplicationUser> GetUserAsync(ClaimsPrincipal claimsPrincipal) =>
         await this.UserManager.GetUserAsync(claimsPrincipal);
 
-    public async Task<ApplicationUser> FindUser(string email)
+    public async Task<ApplicationUser?> FindUserByEmail(string email)
     {
         return await this.FindByEmailAsync(email);
+    }
+
+    public async Task<ApplicationUser?> FindUserByUserName(string userName)
+    {
+        return await this.UserManager.FindByNameAsync(userName);
     }
 
     public async Task<ApplicationUser> FindByEmailAsync(string email) =>
         await this.UserManager.FindByEmailAsync(email);
 
-    public async Task<IdentityResult> AddToRoleAsync(ApplicationUser user, string v)
+    public async Task<IdentityResult> AddToRoleAsync(ApplicationUser user, string role)
     {
-        var result = await this.UserManager.AddToRoleAsync(user, v);
-        this.Logger.LogInformation("Result of adding user {User} to tole {Role}: {Result}", user.Name, v, result);
+        var result = await this.UserManager.AddToRoleAsync(user, role);
+        this.Logger.LogInformation(
+            "Result of adding user {User} to tole {Role}: {Result}", 
+            user.UserName,
+            role,
+            result);
         return result;
     }
 
@@ -139,7 +149,7 @@ public class UserService : IUserService
     public async Task<IdentityResult> UpdateAsync(ApplicationUser user) =>
         await this.UserManager.UpdateAsync(user);
 
-    public async Task<IdentityResult> CreateAsync(
+    private async Task<IdentityResult> CreateAsync(
         ApplicationUser user,
         string? password = null)
     {
@@ -174,34 +184,25 @@ public class UserService : IUserService
         var url = callback(token);
         await this.EmailSender.SendEmailAsync(
             user.Email,
-            "Reset your password",
-            $"Hello! Please <a href='{HtmlEncoder.Default.Encode(url)}'>click here</a> to reset your Protabla password.");
+            subject: "CookTime password reset",
+            htmlMessage: $"Hello! Please <a href='{HtmlEncoder.Default.Encode(url)}'>click here</a> to reset your CookTime password.");
     }
 
-    public async Task<(IdentityResult, ApplicationUser)> CreateStandardUser(UserSignUp registrationData)
+    public async Task<(IdentityResult, ApplicationUser)> CreateUser(UserSignUp registrationData)
     {
         var user = new ApplicationUser
         {
-            Name = registrationData.Name,
-            UserName = registrationData.Email,
+            // Name = registrationData.Name,
+            UserName = registrationData.UserName,
             Email = registrationData.Email,
         };
         var toReturn = await this.CreateAsync(user, registrationData.Password);
         if (toReturn.Succeeded)
         {
-            this.Logger.LogInformation("Created user with email {Email}", user.Email);
-            toReturn = await this.AddToRoleAsync(user, Role.StandardUser.ToString());
+            this.Logger.LogInformation("Created user {userName} with email {email}", user.UserName, user.Email);
             if (toReturn.Succeeded)
             {
-                var student = new StandardUser()
-                {
-                    User = user,
-                };
-                user.StandardUser = student;
-                user.EmailConfirmed = registrationData.BypassEmailVerification;
-                this.applicationDbContext.StandardUsers.Add(student);
-                await this.applicationDbContext.SaveChangesAsync();
-                await this.UpdateAsync(user);
+                await this.AddToRoleAsync(user, Role.User.ToString());
                 this.Logger.LogInformation("Created student");
             }
         }
@@ -213,15 +214,14 @@ public class UserService : IUserService
     {
         var user = new ApplicationUser
         {
-            Name = "Admin",
-            UserName = "Admin@letscooktime.com",
+            UserName = "Admin",
             Email = "Admin@letscooktime.com",
         };
         var toReturn = await this.CreateAsync(user, password);
         if (toReturn.Succeeded)
         {
             this.Logger.LogInformation("Created admin user with email {Email}", user.Email);
-            toReturn = await this.AddToRoleAsync(user, Role.SiteAdministrator.ToString());
+            toReturn = await this.AddToRoleAsync(user, Role.Administrator.ToString());
             user.EmailConfirmed = true;
             await this.UpdateAsync(user);
         }
@@ -231,7 +231,7 @@ public class UserService : IUserService
 
     public async Task UpdateEmailSentTimestampAsync(string email)
     {
-        var user = await this.FindUser(email);
+        var user = await this.FindUserByEmail(email);
         if (user != null)
         {
             user.LastEmailedDate = DateTime.UtcNow;

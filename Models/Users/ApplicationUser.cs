@@ -6,13 +6,10 @@ namespace babe_algorithms.Models.Users;
 
 /// <summary>
 /// Base class for identity.
+/// All per-user information should be stored as properties of this class.
 /// </summary>
 public class ApplicationUser : IdentityUser
 {
-    public string Name { get; set; }
-
-    public StandardUser StandardUser { get; set; }
-
     public virtual ICollection<Event> Events { get; set; } = new List<Event>();
 
     public EmailFrequency EmailFrequency { get; set; }

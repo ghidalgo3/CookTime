@@ -78,7 +78,12 @@ Background color = #fafafa */
 
   .card {
     border-color: var(--neutralLight);
+    background-color: var(--primary-background);
   }
+
+  /* .card p {
+    color: 
+  } */
 
   #my-nav-link-disabled {
     color: var(--neutralSecondary);

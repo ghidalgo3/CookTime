@@ -18,7 +18,7 @@ public class SignInManager : ISignInManager
         return this.signInManager.IsSignedIn(user);
     }
 
-    public async Task<SignInResult> PasswordSignInAsync(
+    public async Task<SignInResult> SignInWithUserName(
         string userName,
         string password,
         bool isPersistent,

@@ -19,6 +19,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.HasPostgresEnum<Unit>();
         modelBuilder.Entity<MultiPartRecipe>()
         .HasGeneratedTsVectorColumn(
@@ -30,7 +31,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     }
 
     public DbSet<Recipe> Recipes { get; set; }
-    public DbSet<StandardUser> StandardUsers { get; set; }
     public DbSet<MultiPartRecipe> MultiPartRecipes { get; set; }
     public DbSet<Ingredient> Ingredients { get; set; }
     public DbSet<Category> Categories { get; set; }

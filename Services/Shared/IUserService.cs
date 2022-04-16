@@ -4,25 +4,35 @@ using Microsoft.AspNetCore.Identity;
 
 namespace GustavoTech;
 
+#nullable enable
+
+/// <summary>
+/// A Microsoft.AspNetCore.Identity.UserMaager<TUser> the framework-provided
+/// user management abstration, but it does not implement an interface
+/// and so it is difficult to test. 
+/// </summary>
 public interface IUserService
 {
     bool IsValidBasicAuthUser(string userName, string password);
 
-    Task<(IdentityResult, ApplicationUser)> CreateAdmin(string password);
-
-    Task<(IdentityResult, ApplicationUser)> CreateStandardUser(UserSignUp user);
+    Task<(IdentityResult, ApplicationUser)> CreateUser(UserSignUp user);
 
     Task<ApplicationUser> FindByIdAsync(string id);
 
     Task<IdentityResult> SetPassword(ApplicationUser user, string newPassword);
 
-    Task<IdentityResult> ConfirmEmailAsync(ApplicationUser user, string verificationCode);
+    Task<IdentityResult> ConfirmEmailAsync(
+        ApplicationUser user,
+        string verificationCode);
 
     Task<string> GenerateEmailConfirmationTokenAsync(ApplicationUser user);
 
     Task<string> GeneratePasswordResetTokenAsync(ApplicationUser user);
 
-    Task<IdentityResult> ResetPasswordAsync(ApplicationUser user, string resetToken, string newPassword);
+    Task<IdentityResult> ResetPasswordAsync(
+        ApplicationUser user,
+        string resetToken,
+        string newPassword);
 
     /// <summary>
     /// Sends an email verification token. Callers control where the link takes the user.
@@ -44,13 +54,15 @@ public interface IUserService
         ApplicationUser user,
         Func<string, string> callback);
 
-    Task<ApplicationUser> FindUser(string email);
+    Task<ApplicationUser?> FindUserByEmail(string email);
+
+    Task<ApplicationUser?> FindUserByUserName(string email);
 
     Task UpdateEmailSentTimestampAsync(string email);
 
     IList<Role> GetRoles(ApplicationUser user);
 
-    ApplicationUser GetUser(ClaimsPrincipal claimsPrincipal);
+    ApplicationUser? GetUser(ClaimsPrincipal claimsPrincipal);
 
     Task<IdentityResult> UpdateAsync(ApplicationUser user);
 }

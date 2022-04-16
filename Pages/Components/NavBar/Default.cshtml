@@ -37,7 +37,7 @@
                         <div class="dropdown-menu dropdown-menu-right dropdown-wider" aria-lablledby="notifications-dropdown">
                                 @foreach (var e in Model.Events)
                                 {
-                                    var (cssClass, text) = (DateTime.UtcNow - e.EventCreation).GetElapsedTimeDisplay();
+                                    var (cssClass, text) = (DateTime.UtcNow - e.CreatedAt).GetElapsedTimeDisplay();
                                 <a class="dropdown-item green-dropdown text-wrap" id="customNavButton" href="@e.Link">@(e.Text) <span
                                 class="@(cssClass)">@(text)</span> </a>
                                 }
@@ -58,7 +58,7 @@
                             <a class="dropdown-item green-dropdown" id="customNavButton" href="/Profile">Profile</a>
                             <a class="dropdown-item green-dropdown" id="customNavButton" href="#">Security</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item green-dropdown" id="customNavButton" href="/Account/Signout">Sign Out</a>
+                            <a class="dropdown-item green-dropdown" id="customNavButton" href="api/account/signout">Sign Out</a>
                         </div>
                     </div>
                     }
@@ -67,7 +67,7 @@
                     <li class="nav-item active margin-right-05rem">
                         <a class="nav-link" id="customNavButton" href="/SignIn">Sign In</a>
                     </li>
-                    <a href="/SignUp" id="userButton" class="btn" role="button">SIGN UP</a>
+                    <a href="/SignUp" id="userButton" class="btn nav-link" role="button">SIGN UP</a>
                     }
                 </ul>
             <form action="/" class="d-flex">

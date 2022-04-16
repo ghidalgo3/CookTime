@@ -1,5 +1,7 @@
+namespace babe_algorithms.Models.Users;
+
 public enum Role
 {
-    SiteAdministrator,
-    StandardUser
+    User,
+    Administrator
 }

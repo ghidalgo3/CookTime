@@ -5,7 +5,7 @@ public class Event : IComparable<Event>
     [Key]
     public Guid Id { get; set; }
 
-    public DateTime EventCreation { get; set; }
+    public DateTime CreatedAt { get; set; }
 
     public bool EventSeen { get; set; }
 
@@ -19,7 +19,7 @@ public class Event : IComparable<Event>
 
     public int CompareTo(Event other)
     {
-        return this.EventCreation.CompareTo(other.EventCreation);
+        return this.CreatedAt.CompareTo(other.CreatedAt);
     }
 }
 
