@@ -1,8 +1,11 @@
 import React from "react";
-
-export class NutritionFacts extends React.Component<NutritionFactVector, {}>
+interface NutritionFactsAdditional {
+    servings : number
+}
+type NutritionFactsProps = NutritionFactVector & NutritionFactsAdditional
+export class NutritionFacts extends React.Component<NutritionFactsProps, {}>
 {
-    constructor(props: NutritionFactVector) {
+    constructor(props: NutritionFactsProps) {
         super(props);
     }
 
@@ -15,32 +18,33 @@ export class NutritionFacts extends React.Component<NutritionFactVector, {}>
             monoUnsaturatedFats,
             saturatedFats,
             sugars,
-            transFats
+            transFats,
+            servings
         } = this.props;
         return (
             <div className="nf-body performance-facts">
                 <header className="performance-facts__header">
-                    <h1 className="performance-facts__title">Nutrition Facts</h1>
-                    {/* <p className="nf-p">Serving Size 1/2 cup (about 82g)</p>
-                        <p className="nf-p">Serving Per Container 8</p> */}
+                    <h1 className="performance-facts__title border-bottom">Nutrition Facts</h1>
+                    {/* <p className="nf-p">Serving Size 1/2 cup (about 82g)</p> */}
+                    <p className="nf-p">{servings} servings in recipe</p>
                 </header>
                 <table className="performance-facts__table">
                     <thead>
                         <tr>
-                            <th colSpan={3} className="small-info">
-                                Amount Per Serving
+                            <th colSpan={3} id="padding-0">
+                                <b>Amount per serving</b>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <th colSpan={2}>
-                                <b>Calories </b>
-                                {calories} 
+                            <th className="border-0 vertical-align-bottom" colSpan={2}>
+                                <b className="calories-title">Calories</b>
                             </th>
-                            <td>
+                            <td className="border-0"><b className="calories-qty">{calories}</b></td>
+                            {/* <td>
                                 Calories from Fat {Math.round(9 * (monoUnsaturatedFats + polyUnsaturatedFats + saturatedFats))}
-                            </td>
+                            </td> */}
                         </tr>
                         <tr className="thick-row">
                             <td colSpan={3} className="thick-row small-info">

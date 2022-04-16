@@ -148,7 +148,7 @@ namespace babe_algorithms.Controllers
                         "Vegetarian",
                         "Salad",
                         "Soup",
-                        "Baked good",
+                        "Baked goods",
                         "Holiday",
                         "Brazilian",
                         "Indian",

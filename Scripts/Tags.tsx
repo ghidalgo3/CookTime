@@ -72,8 +72,14 @@ export class Tags extends React.Component<TagsProps, TagsState> {
     };
 
     onSuggestionSelected = (event, {suggestion, suggestionValue}) => {
+        console.log(suggestionValue)
+        let newTag = {
+            name: suggestionValue,
+            id: uuidv4(),
+            isNew: true,
+        }
         this.setState({
-            tags: [...this.state.tags, suggestionValue],
+            tags: [...this.state.tags, newTag],
             value: ''
         });
     }
@@ -134,6 +140,8 @@ export class Tags extends React.Component<TagsProps, TagsState> {
                     tags: newTags,
                     value: ''
                 });
+                console.log("ENTER KEY PRESSED: ")
+                console.log(newTag)
                 this.props.tagsChanged(newTags);
             }
           }
