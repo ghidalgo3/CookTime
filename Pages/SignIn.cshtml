@@ -1,0 +1,57 @@
+@page
+@model babe_algorithms.Pages.SignInModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = "_PlainLayout";
+}
+<div class="container">
+    <div class="row justify-content-md-center">
+        <div class="col-lg" style="max-width: 540px; text-align: center; margin-top: 1rem;">
+            <h3 id="signinTitle">Sign in to Protabla</h3>
+            @if (@Model.IncorrectUsernameOrPassword)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    Incorrect username or password.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            } 
+            @if (@Model.UnconfirmedEmail)
+            {
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <!--TODO: CREATE COMPANY PAGE FOR RESENDING EMAIL AS WELL -->
+                    Your email has not been confirmed. <a class="a-protabla-style" href="/SignUpStudent#resendemail">Resend your confirmation email.</a>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            } 
+            @if (@Model.NoPassword)
+            {
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <!--TODO: CREATE COMPANY PAGE FOR RESENDING EMAIL AS WELL -->
+                    You have not set a password. <a href="/ResetPassword">Reset your password.</a>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            } 
+            <form class="form-signin" method="POST">
+                <label for="inputUserName" class="sr-only">User name</label>
+                <input asp-for="SignInData.UserName" asp-validation-for="SignInData.UserName" id="inputUserName" class="form-control bg-light" placeholder="User name" required="" autofocus="">
+                <label for="inputPassword" class="sr-only">Password</label>
+                <input asp-for="SignInData.Password" type="password" id="inputPassword" class="form-control bg-light" placeholder="Password" required="">
+                <span asp-validation-for="SignInData.Password" class="text-danger"></span>
+                <button type="submit" class="btn btn-success btn-large btn-block">Sign in</button>
+            </form>
+
+            <div class="createAccount">
+                New to Protabla? <a href="/SignUp">Create an account.</a>
+            </div>
+            <div class="createAccount">
+                <a href="/ResetPassword">Forgot your password?</a>
+            </div>
+        </div>
+    </div>
+</div>

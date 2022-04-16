@@ -1,0 +1,20 @@
+<!doctype html>
+
+<html lang="en">
+    <head>
+        @await Html.PartialAsync("_Head")
+        <title>CookTime</title>
+    </head>
+
+    <body class="background-color-grey2">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand mx-auto" href="/Index">
+                <img src="/logo.png" height="30" class="d-inline-block align-top" alt="">
+                CookTime
+            </a>
+        </nav>
+        @RenderBody()
+        @RenderSection("scripts", required: false)
+        @* @await Component.InvokeAsync("Feedback") *@
+    </body>
+</html>

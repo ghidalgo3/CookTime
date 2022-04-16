@@ -1,7 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using babe_algorithms.Services;
 using SixLabors.ImageSharp.Web.DependencyInjection;
-using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using GustavoTech.Implementation;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using babe_algorithms.Models.Users;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace babe_algorithms;
 public class Startup
@@ -25,8 +29,34 @@ public class Startup
         {
             mvcBuilder.AddRazorRuntimeCompilation();
         }
+        services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        {
+            options.Password.RequiredLength = 10;
+            options.Password.RequiredUniqueChars = 2;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireDigit = false;
+            options.Password.RequireLowercase = false;
+            options.Password.RequireUppercase = false;
+            options.SignIn.RequireConfirmedEmail = true;
+        })
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
+        services.ConfigureApplicationCookie(options => 
+        {
+            // Cookie settings
+            options.Cookie.HttpOnly = true;
+            options.ExpireTimeSpan = TimeSpan.FromDays(1);
 
+            options.LoginPath = "/SignIn";
+            options.AccessDeniedPath = "/SignIn";
+            options.SlidingExpiration = true;
+        });
+
+        services.AddScoped<ISignInManager, SignInManager>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IEmailSender, EmailSender>();
+        services.Configure<AuthMessageSenderOptions>(this.Configuration);
+        services.AddTransient<IEmailSender, EmailSender>();
         services.AddDbContext<ApplicationDbContext>(options =>
         {
             var connectionString = this.Configuration.GetConnectionString("Postgres");
@@ -75,6 +105,7 @@ public class Startup
         app.UseImageSharp();
         app.UseStaticFiles();
         app.UseRouting();
+        app.UseAuthentication();
         app.UseAuthorization();
         app.UseEndpoints(endpoints =>
         {

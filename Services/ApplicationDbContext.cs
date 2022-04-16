@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Npgsql;
+using babe_algorithms.Models.Users;
 
 namespace babe_algorithms.Services;
-public class ApplicationDbContext : DbContext
+
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     static ApplicationDbContext()
     {
@@ -16,6 +19,7 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.HasPostgresEnum<Unit>();
         modelBuilder.Entity<MultiPartRecipe>()
         .HasGeneratedTsVectorColumn(

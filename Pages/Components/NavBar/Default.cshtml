@@ -1,4 +1,7 @@
 @model babe_algorithms.ViewComponents.NavBarViewComponent
+@{
+    var isSignedIn = Model.SignInManager.IsSignedIn(User);
+}
 
 <header>
     <nav class="navbar navbar-expand-lg navbar-light border-bottom box-shadow mb-3">
@@ -23,6 +26,52 @@
                     <li class="nav-item">
                         <a id="my-nav-link-disabled" class="nav-link disabled" href="/Admin/IngredientsView">Ingredients View</a>
                     </li>
+                    @if (isSignedIn)
+                    {
+                    <li class="nav-item dropdown active visible">
+                        <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="notifications-dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                            Events
+                                @if (@Model.UnseenEvents > 0)
+                                {
+                                <span id="notifications-count" class="badge badge-pill badge-danger">@Model.UnseenEvents</span>
+                                }
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right dropdown-wider" aria-lablledby="notifications-dropdown">
+                                @foreach (var e in Model.Events)
+                                {
+                                    var (cssClass, text) = (DateTime.UtcNow - e.CreatedAt).GetElapsedTimeDisplay();
+                                <a class="dropdown-item green-dropdown text-wrap" id="customNavButton" href="@e.Link">@(e.Text) <span
+                                class="@(cssClass)">@(text)</span> </a>
+                                }
+                            <a class="dropdown-item green-dropdown text-center" id="customNavButton" href="/Events">
+                                    @if (Model.UnseenEvents > Model.Events.Count())
+                                    {
+                                    <p>more new events...</p>
+                                    }
+                                <u>See Events</u>
+                            </a>
+                        </div>
+                    </li>
+
+                    <div class="dropdown" id="userDropdown">
+                        <button id="userButton" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> @Model.Initials </button>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                            <a class="dropdown-item green-dropdown" id="customNavButton" href="/Profile">Profile</a>
+                            <a class="dropdown-item green-dropdown" id="customNavButton" href="#">Security</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item green-dropdown" id="customNavButton" href="api/account/signout">Sign Out</a>
+                        </div>
+                    </div>
+                    }
+                    else
+                    {
+                    <li class="nav-item active margin-right-05rem">
+                        <a class="nav-link" id="customNavButton" href="/SignIn">Sign In</a>
+                    </li>
+                    <a href="/SignUp" id="userButton" class="btn nav-link" role="button">SIGN UP</a>
+                    }
                 </ul>
             <form action="/" class="d-flex">
                 <input name="search" class="form-control input-field-style me-2" type="search" placeholder="Search" aria-label="Search">

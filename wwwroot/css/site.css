@@ -67,6 +67,7 @@ Background color = #fafafa */
   
   .card {
     border-color: var(--neutralLight);
+    background-color: var(--primary-background);
   }
 
   #my-nav-link-disabled {
