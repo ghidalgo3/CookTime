@@ -441,16 +441,22 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     {this.RecipeOrComponents()}
                 </div>
                 <div className="border-top-1">
-                    { this.state.edit ? 
-                        null
-                        :
-                        this.nutritionFacts() 
-                    } 
-                    { this.state.edit ? 
-                        null
-                        :
-                        this.ingredientNutritionFacts() 
-                    } 
+                    <Row>
+                        <Col xs={3} className="nft-row">
+                            { this.state.edit ? 
+                                null
+                                :
+                                this.nutritionFacts()
+                            }
+                        </Col>
+                        <Col>
+                            { this.state.edit ? 
+                                null
+                                :
+                                this.ingredientNutritionFacts() 
+                            }
+                        </Col>
+                    </Row>
                 </div>
             </div>
         );
@@ -490,15 +496,19 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 
     ingredientNutritionFacts() {
         var lis = this.state.nutritionFacts?.ingredients.map((description, i) => {
-            return <li key={i}>{description.quantity} {description.unit} {description.name}: {description.quantity} {description.unit} {description.nutritionDatabaseId !== null ? <a target="_blank" href={`https://fdc.nal.usda.gov/fdc-app.html#/food-details/${description.nutritionDatabaseId}/nutrients`}>{description.nutritionDatabaseDescriptor}</a> : description.nutritionDatabaseDescriptor}
-                -- {Math.round(description.caloriesPerServing)} Calories per serving</li>;
+            return (
+                <div className="nbi-table-entry" key={i}>
+                    <div>{description.quantity} {description.unit == "Count" ? "" : description.unit.toLowerCase()} {description.name}</div>
+                    <div className="nbi-table-source">
+                        {description.quantity} {description.unit == "Count" ? "" : description.unit.toLowerCase()} {description.nutritionDatabaseId !== null ? <a target="_blank" href={`https://fdc.nal.usda.gov/fdc-app.html#/food-details/${description.nutritionDatabaseId}/nutrients`}>{description.nutritionDatabaseDescriptor}</a> : description.nutritionDatabaseDescriptor} | {Math.round(description.caloriesPerServing)} calories per serving</div>
+                </div>);
         })
         return(
-            <div>
-                <h2>Nutrition by ingredient</h2>
-                <ul>
+            <div className="nbi-table">
+                <h1 className="performance-facts__title padding-8">Nutrition by Ingredient</h1>
+                <div>
                     {lis}
-                </ul>
+                </div>
             </div>);
     }
 
@@ -531,6 +541,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 // dietaryFiber={0}
                 sugars={Math.round(sugars / this.state.recipe.servingsProduced)}
                 proteins={Math.round(proteins / this.state.recipe.servingsProduced)}
+                servings={this.state.recipe.servingsProduced}
                 // vitaminA={0}
                 // vitaminC={0}
                 // calcium={0}
