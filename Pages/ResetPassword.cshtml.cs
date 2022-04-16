@@ -4,13 +4,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace babe_algorithms.Pages;
 
-// open Microsoft.AspNetCore.Mvc
-// open Microsoft.AspNetCore.Mvc.RazorPages
-// open System.ComponentModel.DataAnnotations
-// open Protabla.Models
-// open Protabla.DTO
-// open Microsoft.Extensions.Logging
-
 public enum AlertMessage
 {
     None,

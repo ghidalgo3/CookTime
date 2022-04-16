@@ -7,7 +7,7 @@
 <div class="container">
     <div class="row justify-content-md-center">
         <div class="col-lg" style="max-width: 540px; text-align: center; margin-top: 1rem;">
-            <h3 id="signinTitle">Sign in to Protabla</h3>
+            <h3 id="signinTitle">Sign in to CookTime</h3>
             @if (@Model.IncorrectUsernameOrPassword)
             {
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -21,7 +21,7 @@
             {
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
                     <!--TODO: CREATE COMPANY PAGE FOR RESENDING EMAIL AS WELL -->
-                    Your email has not been confirmed. <a class="a-protabla-style" href="/SignUpStudent#resendemail">Resend your confirmation email.</a>
+                    Your email has not been confirmed. <a class="a-protabla-style" href="/SignUp#resendemail">Resend your confirmation email.</a>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -47,7 +47,7 @@
             </form>
 
             <div class="createAccount">
-                New to Protabla? <a href="/SignUp">Create an account.</a>
+                New to CookTime? <a href="/SignUp">Create an account.</a>
             </div>
             <div class="createAccount">
                 <a href="/ResetPassword">Forgot your password?</a>

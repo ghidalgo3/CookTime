@@ -66,21 +66,6 @@ public class AccountController : ControllerBase
         return this.Redirect("/Index");
     }
 
-    // [AcceptVerbs("Get", "Post")]
-    // public IActionResult ValidateEmailDomain(string email)
-    // {
-    //     this.logger.LogInformation("Validating {Email}", email);
-    //     var domain = Student.GetUniversity(email);
-    //     if (domain == null)
-    //     {
-    //         return this.Json($"{email} is not from a university.");
-    //     }
-    //     else
-    //     {
-    //         return this.Json(true);
-    //     }
-    // }
-
     // GET api/account/confirmEmail
     [HttpGet("confirmEmail")]
     public async Task<IActionResult> ConfirmEmail(

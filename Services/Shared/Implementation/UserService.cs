@@ -200,11 +200,7 @@ public class UserService : IUserService
         if (toReturn.Succeeded)
         {
             this.Logger.LogInformation("Created user {userName} with email {email}", user.UserName, user.Email);
-            if (toReturn.Succeeded)
-            {
-                await this.AddToRoleAsync(user, Role.User.ToString());
-                this.Logger.LogInformation("Created student");
-            }
+            await this.AddToRoleAsync(user, Role.User.ToString());
         }
 
         return (toReturn, user);
