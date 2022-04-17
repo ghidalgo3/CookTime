@@ -32,10 +32,10 @@ public class SignUpModel : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        // if (!this.ModelState.IsValid)
-        // {
-        //     return this.Page();
-        // }
+        if (!this.ModelState.IsValid)
+        {
+            return this.Page();
+        }
         var user = await this.UserService.FindUserByEmail(this.SignUp.Email);
 
         if (user == null)

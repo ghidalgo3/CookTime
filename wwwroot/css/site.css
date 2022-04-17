@@ -98,6 +98,23 @@ Background color = #fafafa */
   }
 }
 
+.my-card {
+  margin-top: 40px;
+
+}
+
+#pl-navbar-brand {
+  color: var(--themePrimary);
+}
+
+#userButton {
+  color: var(--primary-text);
+}
+
+#userButton:hover {
+  color: var(--a-text-hover);
+}
+
 #react-autowhatever-1 {
   color: var(--neutralPrimary);
   top: 35px;
@@ -457,6 +474,11 @@ body {
   -webkit-line-clamp: 2;
 }
 
+.pl-button {
+  margin-top: 30px;
+  display: block;
+  min-width: 200px;
+}
 #padding-0 {
   padding: 0;
 }
@@ -504,6 +526,9 @@ body {
   margin-bottom: 20px;
 }
 
+.margin-top-5 {
+  margin-top: 5px;
+}
 .margin-top-8 {
   margin-top: 8px;
 }

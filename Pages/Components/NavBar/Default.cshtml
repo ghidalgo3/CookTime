@@ -23,12 +23,15 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/Cart">Groceries List</a>
                     </li>
-                    <li class="nav-item">
-                        <a id="my-nav-link-disabled" class="nav-link disabled" href="/Admin/IngredientsView">Ingredients View</a>
-                    </li>
                     @if (isSignedIn)
                     {
-                    <li class="nav-item dropdown active visible">
+                        @if(Model.IsAdmin())
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="/Admin/IngredientsView">Ingredients View</a>
+                            </li>
+                        }
+                    @* <li class="nav-item dropdown active visible">
                         <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" id="notifications-dropdown" aria-haspopup="true"
                         aria-expanded="false">
                             Events
@@ -52,25 +55,35 @@
                                 <u>See Events</u>
                             </a>
                         </div>
-                    </li>
+                    </li> *@
 
-                    <div class="dropdown" id="userDropdown">
-                        <button id="userButton" class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> @Model.Initials </button>
+                    <li class="nav-item dropdown" id="userDropdown">
+                        <a
+                            id="userButton"
+                            class="nav-link dropdown-toggle"
+                            id="dropdownMenuButton"
+                            role="button"
+                            href="#"
+                            data-bs-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false"> 
+                                @Model.UserName
+                        </a>
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                            @*
                             <a class="dropdown-item green-dropdown" id="customNavButton" href="/Profile">Profile</a>
                             <a class="dropdown-item green-dropdown" id="customNavButton" href="#">Security</a>
                             <div class="dropdown-divider"></div>
+                            *@
                             <a class="dropdown-item green-dropdown" id="customNavButton" href="api/account/signout">Sign Out</a>
                         </div>
-                    </div>
+                    </li>
                     }
                     else
                     {
                     <li class="nav-item active margin-right-05rem">
                         <a class="nav-link" id="customNavButton" href="/SignIn">Sign In</a>
                     </li>
-                    <a href="/SignUp" id="userButton" class="btn nav-link" role="button">SIGN UP</a>
                     }
                 </ul>
             <form action="/" class="d-flex">

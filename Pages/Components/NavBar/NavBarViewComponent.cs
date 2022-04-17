@@ -17,11 +17,9 @@ public class NavBarViewComponent : ViewComponent
 
     public IUserService UserManager { get; }
 
-    public string Initials { get; set; }
+    public string UserName { get; set; }
 
-    public string Name { get; set; }
-
-    public Role Role { get; set; }
+    public List<Role> Roles { get; set; }
 
     public int UnseenEvents { get; set; }
 
@@ -34,29 +32,23 @@ public class NavBarViewComponent : ViewComponent
             var user = this.UserManager.GetUser(this.UserClaimsPrincipal);
             if (user == null)
             {
-                this.Initials = "UNKNOWN";
+                this.UserName = "UNKNOWN";
                 this.Events = new List<Event>();
                 return await Task.Run(() => this.View(this));
             }
 
             var roles = this.UserManager.GetRoles(user);
-            if (roles[0] == Role.User)
-            {
-                this.Name = user.UserName;
-                this.Initials = string.Join(string.Empty, this.Name.Split(" ").Select(token => token.Substring(0, 1).ToUpper()) ?? new List<string>());
-                this.Role = Role.User;
-            }
-            else if (roles[0] == Role.Administrator)
-            {
-                this.Name = user.UserName;
-                this.Initials = "ADMIN";
-                this.Role = Role.Administrator;
-            }
-
+            this.UserName = user.UserName;
+            this.Roles = roles;
             this.Events = user.Events.Where(e => e.Type == EventType.Public).OrderByDescending(e => e.CreatedAt).Take(10);
             this.UnseenEvents = user.Events.Where(e => e.Type == EventType.Public).Count(e => !e.EventSeen);
         }
 
         return await Task.Run(() => this.View(this));
+    }
+
+    public bool IsAdmin()
+    {
+        return this.Roles.Contains(Role.Administrator);
     }
 }

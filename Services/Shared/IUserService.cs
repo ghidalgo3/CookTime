@@ -60,7 +60,7 @@ public interface IUserService
 
     Task UpdateEmailSentTimestampAsync(string email);
 
-    IList<Role> GetRoles(ApplicationUser user);
+    List<Role> GetRoles(ApplicationUser user);
 
     ApplicationUser? GetUser(ClaimsPrincipal claimsPrincipal);
 

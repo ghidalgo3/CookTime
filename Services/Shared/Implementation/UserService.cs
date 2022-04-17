@@ -69,7 +69,7 @@ public class UserService : IUserService
 
     public IQueryable<ApplicationUser> Users => this.UserManager.Users;
 
-    public IList<Role> GetRoles(ApplicationUser user)
+    public List<Role> GetRoles(ApplicationUser user)
     {
         return this.GetRolesAsync(user).Result
             .Where(role => Enum.TryParse<Role>(role, true, out _))
