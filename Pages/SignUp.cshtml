@@ -64,13 +64,17 @@
                 <div class="card-body margin-25rem">
                     <h5 class="card-title">Oops something went wrong</h5>
                     <div class="card-text">
-                        <p>Please try again (sorry!).</p>
                         <form class="form" method="POST">
+                            Please try again (sorry!)
                             <div class="form-group mx-auto">
                                 <input asp-for="SignUp.Email" class="form-control bg-light" placeholder="Email">
                                 <span asp-validation-for="SignUp.Email" class="text-danger"></span>
+                                 <input asp-for="Resend" type="hidden" value="true">
                             </div>
-                            <button type="submit" class="btn btn-success btn-large btn-block mx-auto">Confirm email</button>
+                            <div class="mx-auto">
+                                <button type="submit" class="pl-button btn btn-success btn-large btn-block mx-auto">Confirm email</button>
+                            </div>
+                            
                         </form>
                     </div>
                 </div>
@@ -80,16 +84,16 @@
                 <div class="card-body margin-25rem">
                     <h5 class="card-title">Confirmation email was already sent, would you like to resend it?</h5>
                     <div class="card-text">
-                        <p>
-                            Please confirm your email.
-                        </p>
                         <form class="form" method="POST">
+                            We will send another confirmation email
                             <div class="form-group mx-auto">
                                 <input asp-for="SignUp.Email" class="form-control bg-light" placeholder="Email">
                                 <span asp-validation-for="SignUp.Email" class="text-danger"></span>
                             </div>
-                            <button type="submit" class="btn btn-success btn-large btn-block mx-auto">Resend confirmation email</button>
                             <input asp-for="Resend" type="hidden" value="true">
+                            <div class="mx-auto">
+                                 <button type="submit" class="pl-button btn btn-success btn-large btn-block mx-auto">Resend confirmation email</button>
+                            </div>
                         </form>
                     </div>
                 </div>

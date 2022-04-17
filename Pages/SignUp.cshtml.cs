@@ -32,7 +32,7 @@ public class SignUpModel : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        if (!this.ModelState.IsValid)
+        if (!this.ModelState.IsValid && !this.Resend)
         {
             return this.Page();
         }
