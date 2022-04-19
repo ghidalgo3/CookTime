@@ -3,14 +3,18 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace babe_algorithms.Pages.Recipes;
 
-[BasicAuth]
 public class CreateModel : PageModel
 {
-    private readonly babe_algorithms.Services.ApplicationDbContext _context;
+    private readonly Services.ApplicationDbContext _context;
 
-    public CreateModel(babe_algorithms.Services.ApplicationDbContext context)
+    public ISessionManager Session { get; }
+
+    public CreateModel(
+        Services.ApplicationDbContext context,
+        ISessionManager sessionManager)
     {
         _context = context;
+        this.Session = sessionManager;
     }
 
     public IActionResult OnGet()
@@ -28,6 +32,13 @@ public class CreateModel : PageModel
         {
             return Page();
         }
+
+        var user = await this.Session.GetSignedInUserAsync(this.User);
+        if (user == null)
+        {
+            return this.RedirectToPage("SignIn");
+        }
+
         this.Recipe.RecipeComponents.Add(new RecipeComponent()
         {
             Name = this.Recipe.Name,
