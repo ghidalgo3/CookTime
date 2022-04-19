@@ -1,16 +1,19 @@
-using System;
-using System.Collections.Generic;
+using babe_algorithms.Models.Users;
 using Microsoft.EntityFrameworkCore;
 
 namespace babe_algorithms.Models;
-public class Cart
+
+public class Cart : IOwned
 {
     public Guid Id { get; set; }
     public List<RecipeRequirement> RecipeRequirement { get; set; }
     public List<CartIngredient> IngredientState { get; set; }
     public DateTime CreateAt { get; set; }
     public bool Active { get; set; }
+    [JsonIgnore]
+    public ApplicationUser Owner { get ; set ; }
 }
+
 
 [Owned]
 public class RecipeRequirement : IEquatable<RecipeRequirement>

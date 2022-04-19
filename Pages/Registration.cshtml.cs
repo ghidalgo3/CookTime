@@ -31,7 +31,7 @@ public class RegistrationModel : PageModel
 
     public async Task<IActionResult> OnGet()
     {
-        var currentUser = this.UserService.GetUser(this.User);
+        var currentUser = await this.UserService.GetUserAsync(this.User);
         if (currentUser == null)
         {
             return this.Redirect("/Index");

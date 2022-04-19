@@ -1,28 +1,31 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using babe_algorithms.Models;
 using babe_algorithms.Services;
+using babe_algorithms.Models.Users;
+using GustavoTech.Implementation;
 
 namespace babe_algorithms;
+
 [Route("api/[controller]")]
 [ApiController]
 public class CartController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
 
-    public CartController(ApplicationDbContext context)
+    public ISessionManager Session { get; }
+
+    public CartController(
+        ApplicationDbContext context,
+        ISessionManager sessionManager)
     {
         _context = context;
+        this.Session = sessionManager;
     }
 
-    
-
-    public static async Task AddRecipeToCart(ApplicationDbContext _context, Guid recipeId)
+    public static async Task AddRecipeToCart(
+        ApplicationDbContext _context,
+        ApplicationUser user,
+        Guid recipeId)
     {
         var recipe = await _context.GetRecipeAsync(recipeId);
         var mpRecipe = await _context.GetMultiPartRecipeAsync(recipeId);
@@ -33,7 +36,7 @@ public class CartController : ControllerBase
 
         if (recipe != null)
         {
-            var cart = await _context.GetActiveCartAsync();
+            var cart = await _context.GetActiveCartAsync(user);
             var existingRecipe = cart.RecipeRequirement.FirstOrDefault(rr => rr.Recipe?.Id == recipeId);
             if (existingRecipe == null)
             {
@@ -51,7 +54,7 @@ public class CartController : ControllerBase
         }
         else
         {
-            var cart = await _context.GetActiveCartAsync();
+            var cart = await _context.GetActiveCartAsync(user);
             var existingRecipe = cart.RecipeRequirement.FirstOrDefault(rr => rr.MultiPartRecipe.Id == recipeId);
             if (existingRecipe == null)
             {
@@ -73,35 +76,34 @@ public class CartController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<Cart>> GetCart()
     {
-        return await _context.GetActiveCartAsync();
-    }
-
-    // GET: api/Cart/5
-    [HttpGet("{id}")]
-    public async Task<ActionResult<Cart>> GetCart(Guid id)
-    {
-        var cart = await _context.Carts.FindAsync(id);
-
-        if (cart == null)
+        if ((await this.Session.GetSignedInUserAsync(this.User)) is ApplicationUser user)
         {
-            return NotFound();
+            return await _context.GetActiveCartAsync(user);
         }
-
-        return cart;
+        else
+        {
+            return this.Unauthorized();
+        }
     }
 
     // PUT: api/Cart/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
-    [BasicAuth]
-    public async Task<IActionResult> PutCart(Guid id, Cart cartPayload)
+    public async Task<IActionResult> PutCart(
+        Guid id,
+        Cart cartPayload)
     {
         if (id != cartPayload.Id)
         {
             return BadRequest();
         }
+        var user = await this.Session.GetSignedInUserAsync(this.User);
+        if (user == null)
+        {
+            return this.Unauthorized();
+        }
 
-        var cart = await this._context.GetActiveCartAsync();
+        var cart = await this._context.GetActiveCartAsync(user);
         _context.Entry(cart).CurrentValues.SetValues(cartPayload);
         cart.RecipeRequirement = cart.RecipeRequirement
             .Where(rr => cartPayload.RecipeRequirement.Contains(rr))
@@ -139,19 +141,30 @@ public class CartController : ControllerBase
     // POST: api/Cart
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
-    [BasicAuth]
     public async Task<ActionResult<Cart>> PostCart(Guid recipeId)
     {
-        await CartController.AddRecipeToCart(this._context, recipeId);
-        return this.Redirect("/Cart");
+        if ((await this.Session.GetSignedInUserAsync(this.User)) is ApplicationUser user)
+        {
+            await CartController.AddRecipeToCart(this._context, user, recipeId);
+            return this.Redirect("/Cart");
+        }
+        else
+        {
+            return this.Unauthorized();
+        }
     }
 
     // DELETE: api/Cart/clear
     [HttpPost("clear")]
-    [BasicAuth]
     public async Task<IActionResult> ClearCart()
     {
-        var cart = await _context.GetActiveCartAsync();
+        var user = await this.Session.GetSignedInUserAsync(this.User);
+        if (user == null)
+        {
+            return this.Unauthorized();
+        }
+
+        var cart = await _context.GetActiveCartAsync(user);
         if (cart == null)
         {
             return NotFound();

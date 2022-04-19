@@ -83,15 +83,7 @@ public class UserService : IUserService
 
     public ApplicationUser? GetUser(ClaimsPrincipal claimsPrincipal)
     {
-        var u = this.GetUserAsync(claimsPrincipal).Result;
-        if (u == null)
-        {
-            return null;
-        }
-
-        return this.Users
-            .Include(us => us.Events)
-            .First(user => user.Id == u.Id);
+        return this.GetUserAsync(claimsPrincipal).Result;
     }
 
     public async Task<ApplicationUser> GetUserAsync(ClaimsPrincipal claimsPrincipal) =>

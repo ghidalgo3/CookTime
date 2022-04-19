@@ -11,9 +11,14 @@ public class RecipeController : ControllerBase, IImageController
 {
     private readonly ApplicationDbContext context;
 
-    public RecipeController(ApplicationDbContext context)
+    public ISessionManager Session { get; }
+
+    public RecipeController(
+        ApplicationDbContext context,
+        ISessionManager sessionManager)
     {
         this.context = context;
+        this.Session = sessionManager;
     }
 
     // GET: api/Recipe
@@ -54,28 +59,6 @@ public class RecipeController : ControllerBase, IImageController
         return this.Ok(result);
     }
 
-    [HttpPost("{recipeId}/migrate")]
-    [BasicAuth]
-    public async Task<IActionResult> MigrateRecipe(Guid recipeId)
-    {
-        var recipe = await context.GetRecipeAsync(recipeId);
-        if (recipe == null)
-        {
-            return NotFound();
-        }
-        var mpRecipe = new MultiPartRecipe(recipe);
-        context.MultiPartRecipes.Add(mpRecipe);
-        await context.SaveChangesAsync();
-
-        var cart = await context.GetActiveCartAsync();
-        cart.RecipeRequirement = cart.RecipeRequirement.Where(rr => rr.Recipe?.Id != recipe.Id).ToList();
-
-        context.Recipes.Remove(recipe);
-        await context.SaveChangesAsync();
-
-        return this.RedirectToPage("/Recipes/Details", new { id = mpRecipe.Id });
-    }
-
     // GET: api/Recipe/5
     [HttpGet("{id}")]
     public async Task<ActionResult<Recipe>> GetRecipe(Guid id)
@@ -96,55 +79,6 @@ public class RecipeController : ControllerBase, IImageController
         }
 
         return Ok(recipe);
-    }
-
-    // PUT: api/Recipe/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
-    [BasicAuth]
-    public async Task<IActionResult> PutRecipe(
-        Guid id,
-        [FromBody] Recipe recipe)
-    {
-        if (id != recipe.Id)
-        {
-            return BadRequest();
-        }
-
-        // TODO
-        // Sending the whole EF object back and forth puts you in a bad state
-        var existingRecipe = await context.GetRecipeAsync(recipe.Id);
-        if (existingRecipe == null)
-        {
-            // create, shouldn't happen because Create Recipe has a dedicated
-            // page
-        }
-        else
-        {
-            context.Entry(existingRecipe).CurrentValues.SetValues(recipe);
-            await CopyIngredients(this.context, recipe, existingRecipe);
-            existingRecipe.Steps = recipe.Steps.Where(s => !string.IsNullOrWhiteSpace(s.Text)).ToList();
-            // update
-            context.Recipes.Update(existingRecipe);
-        }
-
-        try
-        {
-            await context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!RecipeExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
-
-        return Ok(existingRecipe);
     }
 
     public static async Task CopyIngredients<TRecipeStep, TIngredientRequirement>(
@@ -217,9 +151,14 @@ public class RecipeController : ControllerBase, IImageController
 
     // DELETE: api/Recipe/5
     [HttpDelete("{id}")]
-    [BasicAuth]
     public async Task<IActionResult> DeleteRecipe(Guid id)
     {
+        var user = await this.Session.GetSignedInUserAsync(this.User);
+        if (user == null)
+        {
+            return this.Unauthorized();
+        }
+
         var recipe = await context.GetRecipeAsync(id);
         if (recipe == null)
         {
@@ -231,7 +170,7 @@ public class RecipeController : ControllerBase, IImageController
         {
             context.Images.Remove(image);
         }
-        var cart = await context.GetActiveCartAsync();
+        var cart = await context.GetActiveCartAsync(user);
         cart.RecipeRequirement = cart.RecipeRequirement.Where(rr => rr.Recipe.Id != id).ToList();
         await context.SaveChangesAsync();
 

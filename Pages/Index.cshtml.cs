@@ -9,14 +9,17 @@ namespace babe_algorithms.Pages.Recipes;
 public class IndexModel : PageModel
 {
     public ISignInManager SigninManager { get; }
+    public ISessionManager Session { get; }
 
     private readonly ApplicationDbContext _context;
 
     public IndexModel(
         ISignInManager signinManager,
+        ISessionManager sessionManager,
         ApplicationDbContext context)
     {
         this.SigninManager = signinManager;
+        this.Session = sessionManager;
         _context = context;
     }
 
@@ -119,7 +122,13 @@ public class IndexModel : PageModel
 
     public async Task<ActionResult> OnPostAddToCart(Guid recipeId)
     {
-        await CartController.AddRecipeToCart(this._context, recipeId);
+        var user = await this.Session.GetSignedInUserAsync(this.User);
+        if (user == null)
+        {
+            return this.RedirectToPage("SignIn");
+        }
+
+        await CartController.AddRecipeToCart(this._context, user, recipeId);
         return this.RedirectToPage("/Cart");
     }
 }

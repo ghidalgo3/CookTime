@@ -125,9 +125,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         return this.Ingredients.Single(i => i.Id == id);
     }
 
-    public async Task<Cart> GetActiveCartAsync()
+    public async Task<Cart> GetActiveCartAsync(ApplicationUser user)
     {
         var activeCart = await this.Carts
+            .Where(c => c.Owner.Id == user.Id)
             .Where(c => c.Active)
             .Include(c => c.RecipeRequirement)
                 .ThenInclude(rr => rr.MultiPartRecipe)
@@ -145,6 +146,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             {
                 CreateAt = DateTime.Now,
                 Active = true,
+                Owner = user,
                 RecipeRequirement = new List<RecipeRequirement>(),
             };
             this.Carts.Add(cart);

@@ -12,11 +12,15 @@ namespace babe_algorithms.Controllers
     {
         private readonly ApplicationDbContext _context;
 
+        public ISessionManager Session { get; }
         public TextInfo TextInfo { get; }
 
-        public MultiPartRecipeController(ApplicationDbContext context)
+        public MultiPartRecipeController(
+            ApplicationDbContext context,
+            ISessionManager sessionManager)
         {
             _context = context;
+            this.Session = sessionManager;
             this.TextInfo = new CultureInfo("en-US",false).TextInfo;
         }
 
@@ -72,7 +76,6 @@ namespace babe_algorithms.Controllers
 
         // PUT: api/MultiPartRecipe/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [BasicAuth]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMultiPartRecipe(
             Guid id,
@@ -82,6 +85,11 @@ namespace babe_algorithms.Controllers
             if (id != payload.Id)
             {
                 return BadRequest();
+            }
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user == null)
+            {
+                return this.Unauthorized();
             }
             var existingRecipe = await _context.GetMultiPartRecipeAsync(id);
             _context.Entry(existingRecipe).CurrentValues.SetValues(payload);
@@ -205,20 +213,30 @@ namespace babe_algorithms.Controllers
             }
         }
 
-        [BasicAuth]
         [HttpPost("deduplicate")]
         // POST: api/MultiPartRecipe/deduplicate
         public async Task<IActionResult> Deduplicate()
         {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user == null)
+            {
+                return this.Unauthorized();
+            }
+
             await Program.DeduplicateIngredients(this._context);
             return this.Ok();
         }
 
         // DELETE: api/MultiPartRecipe/5
-        [BasicAuth]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMultiPartRecipe(Guid id)
         {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user == null)
+            {
+                return this.Unauthorized();
+            }
+
             var recipe = await _context.GetMultiPartRecipeAsync(id);
             if (recipe == null)
             {
@@ -230,7 +248,7 @@ namespace babe_algorithms.Controllers
             {
                 _context.Images.Remove(image);
             }
-            var cart = await _context.GetActiveCartAsync();
+            var cart = await _context.GetActiveCartAsync(user);
             cart.RecipeRequirement = cart.RecipeRequirement.Where(rr => rr.MultiPartRecipe.Id != id).ToList();
             await _context.SaveChangesAsync();
 

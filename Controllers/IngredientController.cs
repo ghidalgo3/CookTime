@@ -43,67 +43,6 @@ public class IngredientController : ControllerBase
         return ingredient;
     }
 
-    // PUT: api/Ingredient/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
-    [BasicAuth]
-    public async Task<IActionResult> PutIngredient(Guid id, Ingredient ingredient)
-    {
-        if (id != ingredient.Id)
-        {
-            return BadRequest();
-        }
-
-        _context.Entry(ingredient).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!IngredientExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
-
-        return NoContent();
-    }
-
-    // POST: api/Ingredient
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPost]
-    [BasicAuth]
-    public async Task<ActionResult<Ingredient>> PostIngredient(Ingredient ingredient)
-    {
-        _context.Ingredients.Add(ingredient);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction("GetIngredient", new { id = ingredient.Id }, ingredient);
-    }
-
-    // DELETE: api/Ingredient/5
-    [HttpDelete("{id}")]
-    [BasicAuth]
-    public async Task<IActionResult> DeleteIngredient(Guid id)
-    {
-        var ingredient = await _context.Ingredients.FindAsync(id);
-        if (ingredient == null)
-        {
-            return NotFound();
-        }
-
-        _context.Ingredients.Remove(ingredient);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
     private bool IngredientExists(Guid id)
     {
         return _context.Ingredients.Any(e => e.Id == id);

@@ -12,7 +12,7 @@ Accounts will allow for some exciting new features like:
 3. Ratings
 4. Comments
 5. Recipe lists
-6. Personal shopping lists
+6. Personal shopping lists ✅
 
 And many more!
 To create an account, navigate to the Sign In page and fill in the form.

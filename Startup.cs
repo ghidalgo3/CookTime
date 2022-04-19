@@ -38,6 +38,7 @@ public class Startup
             options.Password.RequireLowercase = false;
             options.Password.RequireUppercase = false;
             options.SignIn.RequireConfirmedEmail = true;
+            options.User.RequireUniqueEmail = !this.Environment.IsDevelopment();
         })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
@@ -54,6 +55,7 @@ public class Startup
 
         services.AddScoped<ISignInManager, SignInManager>();
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ISessionManager, SessionManager>();
         services.AddScoped<IEmailSender, EmailSender>();
         services.Configure<AuthMessageSenderOptions>(this.Configuration);
         services.AddTransient<IEmailSender, EmailSender>();

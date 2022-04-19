@@ -15,6 +15,8 @@ public class ApplicationUser : IdentityUser
     public EmailFrequency EmailFrequency { get; set; }
 
     public DateTime LastEmailedDate { get; set; }
+
+    public List<Cart> Carts { get; set; }
 }
 
 public enum EmailFrequency

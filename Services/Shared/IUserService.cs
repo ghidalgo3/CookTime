@@ -64,5 +64,7 @@ public interface IUserService
 
     ApplicationUser? GetUser(ClaimsPrincipal claimsPrincipal);
 
+    Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal claimsPrincipal);
+
     Task<IdentityResult> UpdateAsync(ApplicationUser user);
 }

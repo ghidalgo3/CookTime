@@ -1,27 +1,33 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
-using babe_algorithms;
 using babe_algorithms.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace babe_algorithms.Pages;
 public class CartModel : PageModel
 {
     private readonly ApplicationDbContext _context;
 
-    public CartModel(ApplicationDbContext context)
+    public ISessionManager Session { get; }
+
+    public CartModel(
+        ApplicationDbContext context,
+        ISessionManager sessionManager)
     {
         _context = context;
+        this.Session = sessionManager;
     }
 
     public Models.Cart ActiveCart { get; set; }
 
-    public async Task OnGetAsync()
+    public async Task<ActionResult> OnGetAsync()
     {
-        ActiveCart = await _context.GetActiveCartAsync();
+        var user = await this.Session.GetSignedInUserAsync(this.User);
+        if (user == null)
+        {
+            return this.RedirectToPage("SignIn");
+        }
+
+        ActiveCart = await _context.GetActiveCartAsync(user);
+        return this.Page();
     }
 }

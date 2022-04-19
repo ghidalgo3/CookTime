@@ -1,6 +1,7 @@
 @model babe_algorithms.ViewComponents.NavBarViewComponent
 @{
     var isSignedIn = Model.SignInManager.IsSignedIn(User);
+    var disabledClass = isSignedIn ? string.Empty : "disabled";
 }
 
 <header>
@@ -21,7 +22,7 @@
                         @* <a class="nav-link" href="/Cart">Groceries List <span class="sr-only"></span></a> *@
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/Cart">Groceries List</a>
+                        <a class="nav-link @disabledClass" href="/Cart">Groceries List</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/Blog">Blog</a>
