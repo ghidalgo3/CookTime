@@ -9,7 +9,7 @@ type TagListProps = {
 export class TagList extends React.Component<TagListProps,{}> {
     render() {
         let lis = this.props.data.map((item, i) => {
-            return (<span key={i} className="badge badge-secondary">
+            return (<span key={i} className="badge">
                         <input type="hidden" name={`Skills[${i}]`} value={item}></input>
                         {item}
                         <i

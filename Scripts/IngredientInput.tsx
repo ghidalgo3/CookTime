@@ -168,7 +168,7 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
         const { value, suggestions } = this.state;
         
         let badgeComponent = this.state.newIngredient ?
-            <Badge className="new-curr-badge" bg="secondary">New</Badge> :
+            <Badge className="new-curr-badge" bg="">New</Badge> :
             null;
 
         // Autosuggest will pass through all these props to the input.
@@ -183,7 +183,7 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
 
         // Finally, render it!
         return (
-            <div>
+            <div className="ingredient-input">
                 <Autosuggest
                     suggestions={suggestions}
                     onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}

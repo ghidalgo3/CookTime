@@ -440,7 +440,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     }
                     {this.RecipeOrComponents()}
                 </div>
-                <div className="border-top-1">
+                <div className="border-top-1 margin-top-10">
                     <Row>
                         <Col xs={3} className="nft-row">
                             { this.state.edit ? 
@@ -495,21 +495,25 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
     }
 
     ingredientNutritionFacts() {
-        var lis = this.state.nutritionFacts?.ingredients.map((description, i) => {
-            return (
-                <div className="nbi-table-entry" key={i}>
-                    <div>{description.quantity} {description.unit == "Count" ? "" : description.unit.toLowerCase()} {description.name}</div>
-                    <div className="nbi-table-source">
-                        {description.quantity} {description.unit == "Count" ? "" : description.unit.toLowerCase()} {description.nutritionDatabaseId !== null ? <a target="_blank" href={`https://fdc.nal.usda.gov/fdc-app.html#/food-details/${description.nutritionDatabaseId}/nutrients`}>{description.nutritionDatabaseDescriptor}</a> : description.nutritionDatabaseDescriptor} | {Math.round(description.caloriesPerServing)} calories per serving</div>
+        if ((this.state.nutritionFacts?.recipe ?? null) !== null) {
+            var lis = this.state.nutritionFacts?.ingredients.map((description, i) => {
+                return (
+                    <div className="nbi-table-entry" key={i}>
+                        <div>{description.quantity} {description.unit == "Count" ? "" : description.unit.toLowerCase()} {description.name}</div>
+                        <div className="nbi-table-source">
+                            {description.quantity} {description.unit == "Count" ? "" : description.unit.toLowerCase()} {description.nutritionDatabaseId !== null ? <a target="_blank" href={`https://fdc.nal.usda.gov/fdc-app.html#/food-details/${description.nutritionDatabaseId}/nutrients`}>{description.nutritionDatabaseDescriptor}</a> : description.nutritionDatabaseDescriptor} | {Math.round(description.caloriesPerServing)} calories per serving</div>
+                    </div>);
+            })
+            return(
+                <div className="nbi-table">
+                    <h1 className="performance-facts__title padding-8">Nutrition by Ingredient</h1>
+                    <div>
+                        {lis}
+                    </div>
                 </div>);
-        })
-        return(
-            <div className="nbi-table">
-                <h1 className="performance-facts__title padding-8">Nutrition by Ingredient</h1>
-                <div>
-                    {lis}
-                </div>
-            </div>);
+        } else {
+            return null;
+        }
     }
 
     nutritionFacts() {
