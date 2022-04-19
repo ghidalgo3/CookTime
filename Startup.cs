@@ -103,6 +103,7 @@ public class Startup
         }
 
         app.UseImageSharp();
+        app.UseDefaultFiles();
         app.UseStaticFiles();
         app.UseRouting();
         app.UseAuthentication();
