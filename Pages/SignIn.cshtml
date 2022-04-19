@@ -6,8 +6,8 @@
 }
 <div class="container">
     <div class="row justify-content-md-center">
-        <div class="col-lg" style="max-width: 540px; text-align: center; margin-top: 1rem;">
-            <h3 id="signinTitle">Sign in to CookTime</h3>
+        <div class="col" style="max-width: 540px; margin-top: 1rem;">
+            <h1 id="signinTitle">Sign in to CookTime</h1>
             @if (@Model.IncorrectUsernameOrPassword)
             {
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -38,12 +38,12 @@
                 </div>
             } 
             <form class="form-signin" method="POST">
-                <label for="inputUserName" class="sr-only">User name</label>
-                <input asp-for="SignInData.UserName" asp-validation-for="SignInData.UserName" id="inputUserName" class="form-control bg-light" placeholder="User name" required="" autofocus="">
+                <label for="inputUserName" class="sr-only">Username</label>
+                <input asp-for="SignInData.UserName" asp-validation-for="SignInData.UserName" id="inputUserName" class="form-control bg-light margin-bottom-8" placeholder="Username" required="" autofocus="">
                 <label for="inputPassword" class="sr-only">Password</label>
-                <input asp-for="SignInData.Password" type="password" id="inputPassword" class="form-control bg-light" placeholder="Password" required="">
+                <input asp-for="SignInData.Password" type="password" id="inputPassword" class="form-control bg-light margin-bottom-8" placeholder="Password" required="">
                 <span asp-validation-for="SignInData.Password" class="text-danger"></span>
-                <button type="submit" class="btn btn-success btn-large btn-block">Sign in</button>
+                <button type="submit" class="btn btn-primary width-100 margin-bottom-8">Sign in</button>
             </form>
 
             <div class="createAccount">
