@@ -38,7 +38,7 @@ public class StandardReferenceNutritionData : USDANutritionData
     /// a density of 244g / 0.236L * 1kg/1000g == 1.033 kg/L.
     /// </remarks>
     /// <returns></returns>
-    public new double CalculateDensity()
+    public override double CalculateDensity()
     {
         var foodPortions = JArray.Parse(this.FoodPortions.RootElement.GetRawText());
         foreach (var portion in foodPortions)
@@ -54,7 +54,7 @@ public class StandardReferenceNutritionData : USDANutritionData
         return 1.0;
     }
 
-    public new double CalculateUnitMass()
+    public override double CalculateUnitMass()
     {
         var foodPortions = JArray.Parse(this.FoodPortions.RootElement.GetRawText());
         foreach (var portion in foodPortions)
@@ -71,7 +71,7 @@ public class StandardReferenceNutritionData : USDANutritionData
         return 1.0;
     }
 
-    public new string GetCountModifier()
+    public override string GetCountModifier()
     {
         var foodPortions = JArray.Parse(this.FoodPortions.RootElement.GetRawText());
         foreach (var portion in foodPortions)

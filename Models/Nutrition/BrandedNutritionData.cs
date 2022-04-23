@@ -19,4 +19,10 @@ public class BrandedNutritionData : USDANutritionData
     public JsonDocument LabelNutrients { get; set; }
 
     public string BrandedFoodCategory { get; set; }
+
+    public override double CalculateDensity() => 1;
+
+    public override double CalculateUnitMass() => 1;
+
+    public override string GetCountModifier() => "";
 }

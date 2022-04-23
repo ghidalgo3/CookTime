@@ -15,9 +15,9 @@ public abstract class USDANutritionData
 
     // public Ingredient? Ingredient { get; set; }
 
-    public double CalculateDensity() => 1;
+    public abstract double CalculateDensity();
 
-    public double CalculateUnitMass() => 1;
+    public abstract double CalculateUnitMass();
 
-    public string GetCountModifier() => string.Empty;
+    public abstract string GetCountModifier();
 }

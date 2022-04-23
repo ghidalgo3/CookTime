@@ -121,7 +121,7 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
             description.NutritionDatabaseDescriptor = data.Description;
             if (this.Unit.IsCount())
             {
-                description.Modifier = this.Ingredient.NormalNutritionData.GetCountModifier();
+                description.Modifier = data.GetCountModifier();
             }
         }
         else if (this.Ingredient.NormalNutritionData is BrandedNutritionData brandedData)
