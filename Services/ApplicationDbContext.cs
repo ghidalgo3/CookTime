@@ -37,6 +37,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Cart> Carts { get; set; }
     public DbSet<Image> Images { get; set; }
     public DbSet<StandardReferenceNutritionData> SRNutritionData { get; set; }
+    public DbSet<BrandedNutritionData> BrandedNutritionData { get; set; }
 
     public IQueryable<MultiPartRecipe> SearchRecipesByName(string search)
     {
@@ -62,7 +63,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public async Task<List<Ingredient>> GetIngredients()
     {
-        return await this.Ingredients.Include(ingredient => ingredient.NutritionData).ToListAsync();
+        return await this.Ingredients
+            .Include(ingredient => ingredient.NutritionData)
+            .Include(ingredient => ingredient.BrandedNutritionData)
+            .ToListAsync();
     }
 
     public async Task<Category> GetCategory(Guid id)
@@ -107,6 +111,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 .ThenInclude(component => component.Ingredients)
                     .ThenInclude(ingredient => ingredient.Ingredient)
                         .ThenInclude(ingredient => ingredient.NutritionData)
+            .Include(mpr => mpr.RecipeComponents)
+                .ThenInclude(component => component.Ingredients)
+                    .ThenInclude(ingredient => ingredient.Ingredient)
+                        .ThenInclude(ingredient => ingredient.BrandedNutritionData)
             .SingleOrDefaultAsync(recipe => recipe.Id == id);
     }
 

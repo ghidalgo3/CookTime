@@ -5,7 +5,6 @@ using GustavoTech.Implementation;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using babe_algorithms.Models.Users;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace babe_algorithms;
 public class Startup

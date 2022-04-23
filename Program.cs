@@ -126,6 +126,45 @@ public class Program
 
     private static void LoadFoodData(ApplicationDbContext context)
     {
+        LoadSrLegacy(context);
+        LoadBrandedFoods(context);
+    }
+
+    private static void LoadBrandedFoods(ApplicationDbContext context)
+    {
+        var fileName = "FoodData_Central_branded_food_json_2021-10-28.json";
+        // var fileName = "Small.json";
+        if (File.Exists(fileName) && !context.BrandedNutritionData.Any())
+        {
+            foreach (var line in File.ReadLines(fileName))
+            {
+                try
+                {
+                    var food = JsonNode.Parse(line.TrimEnd(','));
+                    var foodData = new BrandedNutritionData()
+                    {
+                        GtinUpc = food["gtinUpc"].GetValue<string>(),
+                        Ingredients = food["ingredients"].GetValue<string>(),
+                        ServingSize = food["servingSize"].GetValue<double>(),
+                        ServingSizeUnit = food["servingSizeUnit"].GetValue<string>(),
+                        FdcId = food["fdcId"].GetValue<int>(),
+                        Description = food["description"].GetValue<string>(),
+                        BrandedFoodCategory = food["brandedFoodCategory"].GetValue<string>(),
+                        FoodNutrients = JsonDocument.Parse(food["foodNutrients"].ToJsonString()),
+                        LabelNutrients = JsonDocument.Parse(food["labelNutrients"].ToJsonString()),
+                    };
+                    context.BrandedNutritionData.Add(foodData);
+                    context.SaveChanges();
+                }
+                catch
+                {
+                }
+            }
+        }
+    }
+
+    private static void LoadSrLegacy(ApplicationDbContext context)
+    {
         var fileName = "FoodData_Central_sr_legacy_food_json_2021-10-28.json";
         if (File.Exists(fileName) && !context.SRNutritionData.Any())
         {

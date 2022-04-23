@@ -115,14 +115,19 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
             Unit = this.Unit.ToString(),
             Quantity = this.Quantity
         };
-        if (this.Ingredient.NutritionData is StandardReferenceNutritionData data)
+        if (this.Ingredient.NormalNutritionData is StandardReferenceNutritionData data)
         {
             description.nutritionDatabaseId = data.FdcId.ToString();
             description.NutritionDatabaseDescriptor = data.Description;
             if (this.Unit.IsCount())
             {
-                description.Modifier = this.Ingredient.NutritionData.GetCountModifier();
+                description.Modifier = this.Ingredient.NormalNutritionData.GetCountModifier();
             }
+        }
+        else if (this.Ingredient.NormalNutritionData is BrandedNutritionData brandedData)
+        {
+            description.nutritionDatabaseId = brandedData.FdcId.ToString();
+            description.NutritionDatabaseDescriptor = brandedData.Description;
         }
         else
         {
@@ -134,12 +139,12 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
     public NutritionFactVector CalculateNutritionFacts()
     {
         var nutritionFacts = new NutritionFactVector();
-        if (this.Ingredient.NutritionData == null)
+        if (this.Ingredient.NormalNutritionData == null)
         {
             return nutritionFacts;
         }
         // find the food nutrient 
-        var nutritionData = JToken.Parse(this.Ingredient.NutritionData.FoodNutrients.RootElement.GetRawText());
+        var nutritionData = JToken.Parse(this.Ingredient.NormalNutritionData.FoodNutrients.RootElement.GetRawText());
         this.ComputeNutritionValue(nutritionData, "Energy", "kcal", n => nutritionFacts.Calories = n);
         this.ComputeNutritionValue(nutritionData, "Protein", "g", n => nutritionFacts.Proteins = n);
         this.ComputeNutritionValue(nutritionData, "Carbohydrate, by difference", "g", n => nutritionFacts.Carbohydrates = n);
@@ -169,13 +174,13 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
         }
         else if (this.Unit.IsVolume())
         {
-            var ingredientDensity = this.Ingredient.NutritionData.CalculateDensity();
+            var ingredientDensity = this.Ingredient.NormalNutritionData.CalculateDensity();
             var kilogramsOfUnit = this.Unit.GetSIValue() * this.Quantity * ingredientDensity;
             propertySetter.Invoke(kilogramsOfUnit * 10 * calorieData.Value<double>("amount"));
         }
         else
         {
-            var kilogramsOfUnit = this.Ingredient.NutritionData.CalculateUnitMass() * this.Quantity;
+            var kilogramsOfUnit = this.Ingredient.NormalNutritionData.CalculateUnitMass() * this.Quantity;
             propertySetter.Invoke(kilogramsOfUnit * 10 * calorieData.Value<double>("amount"));
         }
     }

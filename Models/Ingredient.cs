@@ -1,14 +1,36 @@
 using Newtonsoft.Json.Converters;
 
+#nullable enable
+
 namespace babe_algorithms.Models;
 public class Ingredient
 {
-    [Required]
-    public string Name { get; set; }
     public Guid Id { get; set; }
 
+    [Required]
+    public string Name { get; set; }
+
     [JsonIgnore]
-    public StandardReferenceNutritionData NutritionData { get; set; }
+    public USDANutritionData? NormalNutritionData
+    {
+        get
+        {
+            if (this.NutritionData != null)
+            {
+                return this.NutritionData;
+            }
+            else
+            {
+                return this.BrandedNutritionData;
+            }
+        }
+    }
+
+    [JsonIgnore]
+    public StandardReferenceNutritionData? NutritionData { get; set; }
+
+    [JsonIgnore]
+    public BrandedNutritionData? BrandedNutritionData { get; set; }
 
     public override bool Equals(object obj)
     {

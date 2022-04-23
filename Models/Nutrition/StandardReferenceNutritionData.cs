@@ -1,22 +1,14 @@
 
 using System.Text.Json;
-using Newtonsoft.Json;
-using babe_algorithms.Services;
 using Newtonsoft.Json.Linq;
 using System.Text.RegularExpressions;
 
 namespace babe_algorithms.Models;
-public class StandardReferenceNutritionData
+
+public class StandardReferenceNutritionData : USDANutritionData
 {
     [Key]
     public int NdbNumber { get; set; }
-
-    public int FdcId { get; set; }
-
-    public string Description { get; set; }
-
-    [JsonIgnore]
-    public JsonDocument FoodNutrients { get; set; }
 
     [JsonIgnore]
     public JsonDocument NutrientConversionFactors { get; set; }
@@ -46,7 +38,7 @@ public class StandardReferenceNutritionData
     /// a density of 244g / 0.236L * 1kg/1000g == 1.033 kg/L.
     /// </remarks>
     /// <returns></returns>
-    public double CalculateDensity()
+    public new double CalculateDensity()
     {
         var foodPortions = JArray.Parse(this.FoodPortions.RootElement.GetRawText());
         foreach (var portion in foodPortions)
@@ -62,7 +54,7 @@ public class StandardReferenceNutritionData
         return 1.0;
     }
 
-    public double CalculateUnitMass()
+    public new double CalculateUnitMass()
     {
         var foodPortions = JArray.Parse(this.FoodPortions.RootElement.GetRawText());
         foreach (var portion in foodPortions)
@@ -79,7 +71,7 @@ public class StandardReferenceNutritionData
         return 1.0;
     }
 
-    public string GetCountModifier()
+    public new string GetCountModifier()
     {
         var foodPortions = JArray.Parse(this.FoodPortions.RootElement.GetRawText());
         foreach (var portion in foodPortions)

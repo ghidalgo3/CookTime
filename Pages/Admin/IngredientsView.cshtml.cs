@@ -37,6 +37,7 @@ public class IngredientsViewModel : PageModel
     public async Task<ActionResult> OnPostUpdateIngredientNdbNumber(
         Guid ingredientId,
         int ndbNumber,
+        string gtinUpc,
         string countRegex)
     {
 
@@ -53,12 +54,17 @@ public class IngredientsViewModel : PageModel
 
         var ingredient = this._context.GetIngredient(ingredientId);
         var nutrition = await this._context.SRNutritionData.FindAsync(ndbNumber);
-        if (ingredient == null || nutrition == null)
+        var brandedNutrition = await this._context.BrandedNutritionData.FindAsync(gtinUpc);
+        if (ingredient == null && (nutrition == null || brandedNutrition == null))
         {
             return this.RedirectToPage();
         }
         ingredient.NutritionData = nutrition;
-        nutrition.CountRegex = countRegex;
+        ingredient.BrandedNutritionData = brandedNutrition;
+        if (nutrition != null)
+        {
+            nutrition.CountRegex = countRegex;
+        }
         await this._context.SaveChangesAsync();
         return this.RedirectToPage();
     }
