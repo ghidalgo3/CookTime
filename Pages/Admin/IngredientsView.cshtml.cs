@@ -68,5 +68,4 @@ public class IngredientsViewModel : PageModel
         await this._context.SaveChangesAsync();
         return this.RedirectToPage();
     }
-    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
 }

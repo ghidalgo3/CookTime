@@ -130,7 +130,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public Ingredient GetIngredient(Guid id)
     {
-        return this.Ingredients.Single(i => i.Id == id);
+        return this.Ingredients
+            .Include(i => i.BrandedNutritionData)
+            .Include(i => i.NutritionData)
+        .Single(i => i.Id == id);
     }
 
     public async Task<Cart> GetActiveCartAsync(ApplicationUser user)
