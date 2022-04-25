@@ -43,7 +43,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 id : '',
                 name: '',
                 source: '',
-                duration: 5,
+                cooktime: 5,
                 caloriesPerServing: 100,
                 servingsProduced: 2,
                 ingredients: [],
@@ -379,15 +379,32 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         </Col>
                     </Row>
 
-                    {/* TO DO: ONLY SHOW IF NOT EMPTY */}
-                    <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
-                        <Col className="col-3 recipe-field-title">
-                            Tags
-                        </Col>
-                        <Col className="col d-flex align-items-center">
-                            { this.tagsComponent() }
-                        </Col>
-                    </Row>
+                    {!this.state.edit && (this.state.recipe.categories.length === 0) ? null : 
+                        <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
+                            <Col className="col-3 recipe-field-title">
+                                Tags
+                            </Col>
+                            <Col className="col d-flex align-items-center">
+                                { this.tagsComponent() }
+                            </Col>
+                        </Row>
+                    }
+
+                    { !this.state.edit && ((this.state.recipe.cooktime == 0) || (this.state.recipe.cooktime == null)) ? null : 
+                        <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
+                            <Col className="col-3 recipe-field-title">
+                                Cook Time (Minutes)
+                            </Col>
+                            <Col className="col d-flex align-items-center">
+                                {this.state.edit ?
+                                    <Form.Control
+                                        type="number"
+                                        onChange={(e) => this.setState({...this.state, recipe: {...this.state.recipe, cooktime: `00:${parseInt(e.target.value)}:00`}})}
+                                        value={ this.state.recipe.cooktime }></Form.Control> :
+                                    <div>{this.state.recipe.cooktime}</div> }
+                            </Col>
+                        </Row>
+                    }
 
                 {(this.state.recipe.source == '' || this.state.recipe.source == null) && !this.state.edit ? null :
                     <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
