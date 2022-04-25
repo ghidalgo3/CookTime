@@ -9,7 +9,6 @@ import { IngredientRequirementList } from './IngredientRequirementList';
 import { RecipeStepList } from './RecipeStepList';
 import { NutritionFacts } from './NutritionFacts';
 import { Tags } from './Tags';
-import moment from 'moment';
 
 type RecipeEditProps = {
     recipeId : string,
