@@ -54,7 +54,7 @@ type Category = Autosuggestable
 type MultiPartRecipe = {
     id : string,
     name : string,
-    cooktime : string | undefined,
+    cooktimeMinutes : number | undefined,
     caloriesPerServing : number,
     servingsProduced : number,
     source: string,
@@ -74,7 +74,7 @@ type RecipeComponent = {
 type Recipe = {
     id : string,
     name : string,
-    cooktime : string | undefined,
+    cooktimeMinutes : number | undefined,
     caloriesPerServing : number,
     servingsProduced : number,
     source: string,

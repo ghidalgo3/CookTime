@@ -9,6 +9,7 @@ import { IngredientRequirementList } from './IngredientRequirementList';
 import { RecipeStepList } from './RecipeStepList';
 import { NutritionFacts } from './NutritionFacts';
 import { Tags } from './Tags';
+import moment from 'moment';
 
 type RecipeEditProps = {
     recipeId : string,
@@ -44,7 +45,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 id : '',
                 name: '',
                 source: '',
-                cooktime: "00:05:00",
+                cooktimeMinutes: 5,
                 caloriesPerServing: 100,
                 servingsProduced: 2,
                 ingredients: [],
@@ -391,7 +392,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         </Row>
                     }
 
-                    { !this.state.edit && ((this.state.recipe.cooktime == "") || (this.state.recipe.cooktime == null)) ? null : 
+                    { !this.state.edit && ((this.state.recipe.cooktimeMinutes == 0) || (this.state.recipe.cooktimeMinutes == null)) ? null : 
                         <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                             <Col className="col-3 recipe-field-title">
                                 Cook Time (Minutes)
@@ -400,9 +401,10 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 {this.state.edit ?
                                     <Form.Control
                                         type="number"
-                                        onChange={(e) => this.setState({...this.state, recipe: {...this.state.recipe, cooktime: `00:${parseInt(e.target.value)}:00`}})}
-                                        value={ this.state.recipe.cooktime }></Form.Control> :
-                                    <div>{this.state.recipe.cooktime}</div> }
+                                        onChange={(e) => this.setState({...this.state, recipe: {...this.state.recipe, cooktimeMinutes: parseInt(e.target.value)}})}
+                                        value={ this.state.recipe.cooktimeMinutes }></Form.Control> :
+                                    <div>{this.state.recipe.cooktimeMinutes}</div>
+                                     }
                             </Col>
                         </Row>
                     }
@@ -964,14 +966,15 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             }
         }).then(response => {
             if (response.ok) {
-                response.json().then(r => {
-                    this.setState({
-                        ...this.state,
-                        recipe: r as MultiPartRecipe,
-                        edit: false,
-                        operationInProgress: false
-                    });
-                });
+                location.reload();
+                // response.json().then(r => {
+                //     this.setState({
+                //         ...this.state,
+                //         recipe: r as MultiPartRecipe,
+                //         edit: false,
+                //         operationInProgress: false
+                //     });
+                // });
             } else {
                 // alert("Could not save recipe!")
                 this.setState({ error: true, operationInProgress: false});

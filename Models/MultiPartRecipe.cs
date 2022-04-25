@@ -16,7 +16,7 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>
         this.Name = recipe.Name;
         this.StaticImage = recipe.StaticImage;
         this.ServingsProduced = recipe.ServingsProduced;
-        this.Cooktime = recipe.Cooktime;
+        this.CooktimeMinutes = (int)recipe.Cooktime.TotalMinutes;
         this.CaloriesPerServing = recipe.CaloriesPerServing;
         // this.Id = recipe.Id;
         this.Categories = recipe.Categories;
@@ -37,7 +37,7 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>
     public string Name { get; set; }
     public string StaticImage { get; set; }
     public double ServingsProduced { get; set; } = 1.0;
-    public TimeSpan Cooktime { get; set; }
+    public int CooktimeMinutes { get; set; }
     public double CaloriesPerServing { get; set; }
     public Guid Id { get; set; }
     public ISet<Category> Categories { get; set; }
