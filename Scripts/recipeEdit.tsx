@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Alert, Button, Col, Form, FormControl, FormText, Row, Spinner } from 'react-bootstrap';
-import { isSignedIn, isSignedIn } from './AuthState'
+import { isSignedIn } from './AuthState'
 import { stringify, v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
 import { IngredientDisplay, IngredientInput } from './IngredientInput';
@@ -44,7 +44,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 id : '',
                 name: '',
                 source: '',
-                cooktime: 5,
+                cooktime: "00:05:00",
                 caloriesPerServing: 100,
                 servingsProduced: 2,
                 ingredients: [],
@@ -391,7 +391,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         </Row>
                     }
 
-                    { !this.state.edit && ((this.state.recipe.cooktime == 0) || (this.state.recipe.cooktime == null)) ? null : 
+                    { !this.state.edit && ((this.state.recipe.cooktime == "") || (this.state.recipe.cooktime == null)) ? null : 
                         <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                             <Col className="col-3 recipe-field-title">
                                 Cook Time (Minutes)
