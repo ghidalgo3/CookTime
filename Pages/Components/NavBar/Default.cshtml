@@ -5,6 +5,11 @@
 }
 
 <header>
+    <div
+        id="authState"
+        data-signed-in="@isSignedIn"
+        class="display-none">
+    </div>
     <nav class="navbar navbar-expand-lg navbar-light border-bottom box-shadow mb-3">
         <div class="container">
             <a id="my-navbar-brand" class="navbar-brand my-navbar-brand" asp-area="" asp-controller="Home">
@@ -79,7 +84,7 @@
                             <a class="dropdown-item green-dropdown" id="customNavButton" href="#">Security</a>
                             <div class="dropdown-divider"></div>
                             *@
-                            <a class="dropdown-item green-dropdown" id="customNavButton" href="api/account/signout">Sign Out</a>
+                            <a class="dropdown-item green-dropdown" id="customNavButton" href="/api/account/signout">Sign Out</a>
                         </div>
                     </li>
                     }

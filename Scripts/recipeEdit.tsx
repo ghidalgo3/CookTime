@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Alert, Button, Col, Form, FormControl, FormText, Row, Spinner } from 'react-bootstrap';
+import { isSignedIn } from './AuthState'
 import { stringify, v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
 import { IngredientDisplay, IngredientInput } from './IngredientInput';
@@ -334,14 +335,14 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     {this.editButtons()}
                 </Row>
 
-                {/* { this.state.error ? 
+                { this.state.error ? 
                     <Alert variant="danger" onClose={() => this.setState({error: false})} dismissible>
                         <Alert.Heading>Could not save recipe.</Alert.Heading>
                         <p>
                         </p>
                     </Alert>
                 :
-                null} */}
+                null}
                 { this.image() }
                 <div>
                     { this.caloriesPerServingComponent() }
@@ -846,14 +847,20 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             </Col>
             :
             <Col>
-                <Row>
-                    <Col>
-                        <Button className="recipe-edit-buttons" onClick={(event) => this.setState({ edit: !this.state.edit })}>Edit</Button>
-                    </Col>
-                    <Col>
-                        <Button className="recipe-edit-buttons" onClick={(event) => this.onAddtoCard()}>Add to Groceries</Button>
-                    </Col>
-                </Row>
+                {isSignedIn() ? 
+                    <Row>
+                        <Col>
+                            <Button className="recipe-edit-buttons" onClick={(event) => this.setState({ edit: !this.state.edit })}>Edit</Button>
+                        </Col>
+                        <Col>
+                            <Button className="recipe-edit-buttons" onClick={(event) => this.onAddtoCard()}>Add to Groceries</Button>
+                        </Col>
+                    </Row>
+                    :
+                    <Row>
+
+                    </Row>
+                }
             </Col>;
     }
     onMigrate(): void {
@@ -944,7 +951,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     });
                 });
             } else {
-                this.setState({ error: true });
+                // alert("Could not save recipe!")
+                this.setState({ error: true, operationInProgress: false});
             }
         }
         ).then(() => {
