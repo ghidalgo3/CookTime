@@ -17,7 +17,7 @@ public abstract class USDANutritionData
 
     public abstract double CalculateDensity();
 
-    public abstract double CalculateUnitMass();
+    public abstract double? CalculateUnitMass();
 
     public abstract string GetCountModifier();
 }

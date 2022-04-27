@@ -32,6 +32,14 @@ public class Ingredient
     [JsonIgnore]
     public BrandedNutritionData? BrandedNutritionData { get; set; }
 
+    /// <summary>
+    /// Some ingredients in the USDA dataset (like shallots) do not have
+    /// enough information to compute a unit mass.
+    /// For such ingredients, we will simply track an expected unit mass.
+    /// </summary>
+    /// <value></value>
+    public double ExpectedUnitMass { get; set; } = 0.1;
+
     public override bool Equals(object obj)
     {
         return obj is Ingredient ingredient &&
@@ -112,15 +120,4 @@ public static class UnitExtension {
             Unit.Kilogram => 1.0,
         };
     }
-}
-
-public class Category
-{
-    [Required]
-    public string Name { get; set; }
-    public Guid Id { get; set; }
-    [Newtonsoft.Json.JsonIgnore]
-    public ICollection<Recipe>? Recipes { get; set; }
-    [JsonIgnore]
-    public ICollection<MultiPartRecipe>? MultiPartRecipes { get; set; }
 }

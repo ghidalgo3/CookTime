@@ -38,7 +38,8 @@ public class IngredientsViewModel : PageModel
         Guid ingredientId,
         int ndbNumber,
         string gtinUpc,
-        string countRegex)
+        string countRegex,
+        double expectedUnitMass)
     {
 
         var user = await this.Session.GetSignedInUserAsync(this.User);
@@ -65,6 +66,7 @@ public class IngredientsViewModel : PageModel
         {
             nutrition.CountRegex = countRegex;
         }
+        ingredient.ExpectedUnitMass = expectedUnitMass;
         await this._context.SaveChangesAsync();
         return this.RedirectToPage();
     }

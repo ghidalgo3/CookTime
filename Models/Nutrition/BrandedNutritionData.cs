@@ -22,7 +22,7 @@ public class BrandedNutritionData : USDANutritionData
 
     public override double CalculateDensity() => 1;
 
-    public override double CalculateUnitMass() {
+    public override double? CalculateUnitMass() {
         if (this.ServingSizeUnit.Equals("g"))
         {
             return this.ServingSize / 1000;

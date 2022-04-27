@@ -180,7 +180,8 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
         }
         else
         {
-            var kilogramsOfUnit = this.Ingredient.NormalNutritionData.CalculateUnitMass() * this.Quantity;
+            var mass = this.Ingredient.NormalNutritionData.CalculateUnitMass() ?? this.Ingredient.ExpectedUnitMass;
+            var kilogramsOfUnit = mass * this.Quantity;
             propertySetter.Invoke(kilogramsOfUnit * 10 * calorieData.Value<double>("amount"));
         }
     }

@@ -17,6 +17,7 @@
       <th scope="col">NDB Number</th>
       <th scope="col">GtinUpc</th>
       <th scope="col">Count RegEx</th>
+      <th scope="col">Unit mass (kg)</th>
       <th scope="col">Save/Delete</th>
     </tr>
   </thead>
@@ -34,6 +35,13 @@
         </td>
         <td>
           <input type="text" name="countRegex" value="@ingredient.NutritionData?.CountRegex">
+        </td>
+        <td>
+          <input
+            type="number"
+            name="expectedUnitMass"
+            step="0.001"
+            value="@ingredient.ExpectedUnitMass">
         </td>
         <td>
           <input type="hidden" name="ingredientId" value="@ingredient.Id">

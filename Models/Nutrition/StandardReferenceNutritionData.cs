@@ -54,7 +54,7 @@ public class StandardReferenceNutritionData : USDANutritionData
         return 1.0;
     }
 
-    public override double CalculateUnitMass()
+    public override double? CalculateUnitMass()
     {
         var foodPortions = JArray.Parse(this.FoodPortions.RootElement.GetRawText());
         foreach (var portion in foodPortions)
@@ -68,7 +68,7 @@ public class StandardReferenceNutritionData : USDANutritionData
             }
         }
 
-        return 1.0;
+        return null;
     }
 
     public override string GetCountModifier()
