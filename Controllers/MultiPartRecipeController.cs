@@ -67,7 +67,10 @@ namespace babe_algorithms.Controllers
                     ingredientDescriptors.Add(ingredientDescriptor);
                     return nutritionForIngredient;
                 });
-                body.Components.Add(result.Aggregate((a,b) => a + b));
+                if (result.Any())
+                {
+                    body.Components.Add(result.Aggregate((a,b) => a + b));
+                }
             }
             body.Recipe = body.Components.Aggregate((a, b) => a + b);
             body.Ingredients = ingredientDescriptors;
