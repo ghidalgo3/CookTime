@@ -79,7 +79,8 @@ public class SignInModel : PageModel
         }
     }
 
-    public async Task<IActionResult> OnPostAsync()
+    public async Task<IActionResult> OnPostAsync(
+        [FromQuery] string? redirectTo)
     {
         if (this.ModelState.IsValid)
         {
@@ -99,6 +100,13 @@ public class SignInModel : PageModel
                 if (user == null)
                 {
                     return this.Redirect("/Index");
+                }
+
+
+                if (redirectTo != null)
+                {
+                    redirectTo = System.Web.HttpUtility.UrlDecode(redirectTo);
+                    return this.Redirect(redirectTo);
                 }
 
                 return this.Redirect("/Index");

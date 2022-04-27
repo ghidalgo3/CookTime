@@ -23,6 +23,8 @@ public class NavBarViewComponent : ViewComponent
 
     public int UnseenEvents { get; set; }
 
+    public string CurrentPage { get; set; }
+
     public IEnumerable<Event> Events { get; set; }
 
     public async Task<IViewComponentResult> InvokeAsync()
