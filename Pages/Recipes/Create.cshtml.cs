@@ -43,6 +43,7 @@ public class CreateModel : PageModel
         {
             Name = this.Recipe.Name,
         });
+        this.Recipe.Owner = user;
 
         _context.MultiPartRecipes.Add(Recipe);
         await _context.SaveChangesAsync();

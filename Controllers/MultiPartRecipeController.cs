@@ -92,9 +92,15 @@ namespace babe_algorithms.Controllers
             var user = await this.Session.GetSignedInUserAsync(this.User);
             if (user == null)
             {
-                return this.Unauthorized();
+                return this.Unauthorized("You are not signed in.");
             }
+
             var existingRecipe = await _context.GetMultiPartRecipeAsync(id);
+            if (existingRecipe.Owner?.Id != payload.Owner?.Id)
+            {
+                return this.Unauthorized("You can only edit your own recipes.");
+            }
+
             _context.Entry(existingRecipe).CurrentValues.SetValues(payload);
             await MergeRecipeRelations(payload, existingRecipe);
             try
@@ -237,13 +243,18 @@ namespace babe_algorithms.Controllers
             var user = await this.Session.GetSignedInUserAsync(this.User);
             if (user == null)
             {
-                return this.Unauthorized();
+                return this.Unauthorized("You must be signed in to delete your recipes.");
             }
 
             var recipe = await _context.GetMultiPartRecipeAsync(id);
             if (recipe == null)
             {
                 return NotFound();
+            }
+
+            if (recipe.Owner?.Id != user.Id)
+            {
+                return this.Unauthorized("You can only delete recipes you own.");
             }
 
             _context.MultiPartRecipes.Remove(recipe);

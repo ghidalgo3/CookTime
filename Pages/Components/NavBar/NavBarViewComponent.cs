@@ -19,6 +19,8 @@ public class NavBarViewComponent : ViewComponent
 
     public string UserName { get; set; }
 
+    public string UserId { get; private set; }
+
     public List<Role> Roles { get; set; }
 
     public int UnseenEvents { get; set; }
@@ -41,6 +43,7 @@ public class NavBarViewComponent : ViewComponent
 
             var roles = this.UserManager.GetRoles(user);
             this.UserName = user.UserName;
+            this.UserId = user.Id;
             this.Roles = roles;
             this.Events = user.Events.Where(e => e.Type == EventType.Public).OrderByDescending(e => e.CreatedAt).Take(10);
             this.UnseenEvents = user.Events.Where(e => e.Type == EventType.Public).Count(e => !e.EventSeen);

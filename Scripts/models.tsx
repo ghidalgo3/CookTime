@@ -51,9 +51,15 @@ type Image = {
 }
 type Category = Autosuggestable
 
+type Owner = {
+    userName : string,
+    id: string
+}
+
 type MultiPartRecipe = {
     id : string,
     name : string,
+    owner: Owner | null,
     cooktimeMinutes : number | undefined,
     caloriesPerServing : number,
     servingsProduced : number,

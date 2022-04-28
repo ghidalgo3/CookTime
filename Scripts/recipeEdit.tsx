@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Alert, Button, Col, Form, FormControl, FormText, Row, Spinner } from 'react-bootstrap';
-import { isSignedIn } from './AuthState'
+import { getUserId, isSignedIn } from './AuthState'
 import { stringify, v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
 import { IngredientDisplay, IngredientInput } from './IngredientInput';
@@ -16,7 +16,7 @@ type RecipeEditProps = {
 }
 
 type RecipeEditState = {
-    recipe : Recipe | MultiPartRecipe,
+    recipe : MultiPartRecipe,
     newImage: Blob | undefined,
     newImageSrc : string | undefined,
     recipeImages: Image[],
@@ -47,10 +47,10 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 cooktimeMinutes: 5,
                 caloriesPerServing: 100,
                 servingsProduced: 2,
-                ingredients: [],
-                steps: [],
                 categories: [],
-                staticImage: ''
+                staticImage: '',
+                owner: null,
+                recipeComponents: [],
             },
             newServings: 1,
             operationInProgress: false,
@@ -98,9 +98,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 .then(response => response.json())
                 .then(
                     result => {
-                        let r = result as Recipe
+                        let r = result as MultiPartRecipe
                         let newServings = this.setServingsFromQueryParameters(r);
-                        r.ingredients?.sort((a,b) => a.position - b.position);
                         this.setState({
                             recipe: r,
                         })
@@ -169,45 +168,45 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         }
     }
 
-    appendNewIngredientRequiremendtRow(): void {
-        if (!this.props.multipart) {
-            var recipe = (this.state.recipe as Recipe)
-            var ir : IngredientRequirement = {
-                ingredient: {name: '', id: uuidv4(), isNew: false},
-                unit: 'Count',
-                quantity: 0,
-                id: uuidv4(),
-                position: recipe.ingredients?.length ?? 0
-            }
-            var newIrs = Array.from(recipe.ingredients ?? [])
-            newIrs.push(ir)
-            this.setState({
-                ...this.state,
-                recipe: {
-                    ...this.state.recipe,
-                    ingredients: newIrs
-                }
-            })
-        }
-    }
+    // appendNewIngredientRequiremendtRow(): void {
+    //     if (!this.props.multipart) {
+    //         var recipe = (this.state.recipe as Recipe)
+    //         var ir : IngredientRequirement = {
+    //             ingredient: {name: '', id: uuidv4(), isNew: false},
+    //             unit: 'Count',
+    //             quantity: 0,
+    //             id: uuidv4(),
+    //             position: recipe.ingredients?.length ?? 0
+    //         }
+    //         var newIrs = Array.from(recipe.ingredients ?? [])
+    //         newIrs.push(ir)
+    //         this.setState({
+    //             ...this.state,
+    //             recipe: {
+    //                 ...this.state.recipe,
+    //                 ingredients: newIrs
+    //             }
+    //         })
+    //     }
+    // }
 
 
-    deleteIngredientRequirement(ir: IngredientRequirement) {
-        if (!this.props.multipart) {
-            var recipe = (this.state.recipe as Recipe)
-            var newIrs = recipe.ingredients?.filter(i => i.id !== ir.id).map((e, i) => {
-                e.position = i;
-                return e;
-            })
+    // deleteIngredientRequirement(ir: IngredientRequirement) {
+    //     if (!this.props.multipart) {
+    //         var recipe = (this.state.recipe as Recipe)
+    //         var newIrs = recipe.ingredients?.filter(i => i.id !== ir.id).map((e, i) => {
+    //             e.position = i;
+    //             return e;
+    //         })
 
-            this.setState({
-                recipe: {
-                    ...this.state.recipe,
-                    ingredients: newIrs,
-                }
-            })
-        }
-    }
+    //         this.setState({
+    //             recipe: {
+    //                 ...this.state.recipe,
+    //                 ingredients: newIrs,
+    //             }
+    //         })
+    //     }
+    // }
 
     deleteIngredientRequirementForComponent(componentIndex : number, component : RecipeComponent, ir: IngredientRequirement) {
         if (this.props.multipart) {
@@ -228,22 +227,22 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         }
     }
 
-    updateIngredientRequirement(ir: IngredientRequirement, update : (ir : IngredientRequirement) => IngredientRequirement) {
-        if (!this.props.multipart) {
-            var recipe = (this.state.recipe as Recipe)
-            const idx = recipe.ingredients!.findIndex(i => i.ingredient.id == ir.ingredient.id);
-            const newIr = update(recipe.ingredients![idx])
-            let newIrs = Array.from(recipe.ingredients!)
-            newIrs[idx] = newIr
-            this.setState({
-                ...this.state,
-                recipe: {
-                    ...recipe,
-                    ingredients: newIrs
-                }
-            })
-        }
-    }
+    // updateIngredientRequirement(ir: IngredientRequirement, update : (ir : IngredientRequirement) => IngredientRequirement) {
+    //     if (!this.props.multipart) {
+    //         var recipe = (this.state.recipe as Recipe)
+    //         const idx = recipe.ingredients!.findIndex(i => i.ingredient.id == ir.ingredient.id);
+    //         const newIr = update(recipe.ingredients![idx])
+    //         let newIrs = Array.from(recipe.ingredients!)
+    //         newIrs[idx] = newIr
+    //         this.setState({
+    //             ...this.state,
+    //             recipe: {
+    //                 ...recipe,
+    //                 ingredients: newIrs
+    //             }
+    //         })
+    //     }
+    // }
 
     updateIngredientRequirementForComponent(
         componentIndex : number,
@@ -267,19 +266,19 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         }
     }
 
-    appendNewStep(): void {
-        if (!this.props.multipart) {
-            var recipe = (this.state.recipe as Recipe)
-            var newSteps = Array.from(recipe.steps ?? [])
-            newSteps.push({text: ''})
-            this.setState({
-                recipe: {
-                    ...this.state.recipe,
-                    steps : newSteps
-                }
-            })
-        }
-    }
+    // appendNewStep(): void {
+    //     if (!this.props.multipart) {
+    //         var recipe = (this.state.recipe as Recipe)
+    //         var newSteps = Array.from(recipe.steps ?? [])
+    //         newSteps.push({text: ''})
+    //         this.setState({
+    //             recipe: {
+    //                 ...this.state.recipe,
+    //                 steps : newSteps
+    //             }
+    //         })
+    //     }
+    // }
 
     appendNewStepForComponent(componentIndex : number, component : RecipeComponent): void {
         if (this.props.multipart) {
@@ -298,13 +297,13 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 
     deleteStep(idx : number, component? : RecipeComponent) {
         if (!this.props.multipart) {
-            let recipe = (this.state.recipe as Recipe)
-            this.setState({
-                recipe: {
-                    ...this.state.recipe,
-                    steps: recipe.steps?.filter((s, i) => i !== idx) ?? [],
-                }
-            })
+            // let recipe = (this.state.recipe as Recipe)
+            // this.setState({
+            //     recipe: {
+            //         ...this.state.recipe,
+            //         steps: recipe.steps?.filter((s, i) => i !== idx) ?? [],
+            //     }
+            // })
         } else {
             let mpRecipe = (this.state.recipe as MultiPartRecipe)
             let newComponents = Array.from(mpRecipe.recipeComponents);
@@ -331,6 +330,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 onChange={(e) => this.setState({recipe: {...this.state.recipe, name: e.target.value}})}
                                 value={this.state.recipe.name}></Form.Control> :
                                 <h1 className="margin-bottom-20">{this.state.recipe.name}</h1> }
+                        {this.state.recipe.owner?.userName}
                     </Col>
                     {this.editButtons()}
                 </Row>
@@ -644,7 +644,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         : null}
                 </div>);
         } else {
-            return this.EditBlock(this.state.recipe as Recipe)
+            return null;
         }
     }
 
@@ -756,7 +756,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                         ...this.state,
                                         recipe: {
                                             ...recipe,
-                                            steps: newSteps
+                                            // steps: newSteps // TODO WTF??
                                         }
                                     })
                                 }
@@ -769,55 +769,6 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         )
     }
 
-    private EditBlock(r : Recipe) {
-        return (
-            <div>
-                <Row className="padding-right-0 recipe-edit-row">
-                    <Col className="col-3 recipe-field-title">
-                        Ingredients
-                    </Col>
-                    <Col className="col d-flex align-items-center">
-                        <div className="ingredient-list">
-                            <IngredientRequirementList
-                                ingredientRequirements={r.ingredients ?? []}
-                                onDelete={(ir) => this.deleteIngredientRequirement(ir)}
-                                onNewIngredientRequirement={() => this.appendNewIngredientRequiremendtRow()}
-                                updateIngredientRequirement={(ir, u) => this.updateIngredientRequirement(ir, u)}
-                                units={this.state.units}
-                                edit={this.state.edit}
-                                multiplier={this.state.newServings / this.state.recipe.servingsProduced} />
-                        </div>
-                    </Col>
-                </Row>
-                <Row className="padding-right-0">
-                    <Col className="col-3 recipe-field-title">
-                        Steps
-                    </Col>
-                    <Col className="col d-flex align-items-center">
-                        <div className="step-list">
-                            <RecipeStepList
-                                multipart={this.props.multipart}
-                                recipe={r}
-                                newServings={this.state.newServings}
-                                edit={this.state.edit}
-                                onDeleteStep={(idx, _) => this.deleteStep(idx)}
-                                onChange={(newSteps) => {
-                                    this.setState({
-                                        ...this.state,
-                                        recipe: {
-                                            ...r,
-                                            steps: newSteps
-                                        }
-                                    })
-                                }
-                                }
-                                onNewStep={() => this.appendNewStep()} />
-                        </div>
-                    </Col>
-                </Row>
-            </div>)
-
-    }
     private image() {
         if (this.state.newImageSrc != null && this.state.newImageSrc != '') {
             return <img className="recipe-image" src={this.state.newImageSrc} />
@@ -835,6 +786,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 
     private editButtons(): string | number | boolean | {} | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactNodeArray | React.ReactPortal | null | undefined {
         let userSignedIn = isSignedIn();
+        let canEdit = userSignedIn && getUserId() === this.state.recipe.owner?.id;
         return this.state.edit ?
             <Col>
                 <Row>
@@ -870,7 +822,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     <Col>
                         <Button
                             className="recipe-edit-buttons"
-                            disabled={!userSignedIn}
+                            disabled={!userSignedIn || !canEdit}
                             onClick={(event) => this.setState({ edit: !this.state.edit })}>
                                 Edit
                         </Button>
@@ -934,10 +886,9 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
     onSave() {
         this.setState({ operationInProgress: true });
         if (!this.props.multipart) {
-            this.saveSimpleRecipe();
+            // this.saveSimpleRecipe();
         } else {
             this.saveMultiPartRecipe();
-            this.getNutritionData();
         }
     }
 
@@ -984,52 +935,6 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 let fd = new FormData();
                 fd.append("files", this.state.newImage as Blob);
                 fetch(`/api/MultiPartRecipe/${this.props.recipeId}/image`, {
-                    method: 'PUT',
-                    body: fd
-                });
-            }
-        });
-    }
-
-    private saveSimpleRecipe() {
-        var recipe = this.state.recipe as Recipe;
-        var filteredSteps = Array.from(recipe.steps ?? []).filter(step => step.text != null && step.text != '');
-        var filteredIngredients = Array.from(recipe.ingredients ?? []).filter(ingredient => ingredient.ingredient.name != null && ingredient.ingredient.name != '');
-        let newState = {
-            ...this.state,
-            recipe: {
-                ...this.state.recipe,
-                steps: filteredSteps,
-                ingredients: filteredIngredients
-            }
-        };
-
-
-        fetch(`/api/Recipe/${this.props.recipeId}`, {
-            method: 'PUT',
-            body: JSON.stringify(newState.recipe),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(response => {
-            if (response.ok) {
-                response.json().then(r => {
-                    this.setState({
-                        ...this.state,
-                        recipe: r as Recipe,
-                        edit: false,
-                        operationInProgress: false
-                    });
-                });
-            } else {
-                this.setState({ error: true });
-            }
-        }
-        ).then(() => {
-            if (this.state.newImage != null) {
-                let fd = new FormData();
-                fd.append("files", this.state.newImage as Blob);
-                fetch(`/api/Recipe/${this.props.recipeId}/image`, {
                     method: 'PUT',
                     body: fd
                 });

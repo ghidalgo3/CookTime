@@ -1,7 +1,5 @@
 namespace babe_algorithms.Models;
 
-#nullable enable
-
 public class RecipeComponent : IRecipeComponent<MultiPartRecipeStep, MultiPartIngredientRequirement>
 {
     public string Name { get; set; }

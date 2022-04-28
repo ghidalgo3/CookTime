@@ -3,9 +3,7 @@ using NpgsqlTypes;
 
 namespace babe_algorithms.Models;
 
-#nullable enable
-
-public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>
+public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOwned
 {
     public MultiPartRecipe() 
     {
@@ -50,6 +48,7 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>
 
     [JsonIgnore]
     public NpgsqlTsVector SearchVector { get; set; }
+    public ApplicationUser? Owner { get; set; }
 
     public bool Equals(MultiPartRecipe? other) => this.Id == other.Id;
 }

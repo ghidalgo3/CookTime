@@ -93,6 +93,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public async Task<MultiPartRecipe> GetMultiPartRecipeAsync(Guid id)
     {
         return await this.MultiPartRecipes
+            .Include(mpr => mpr.Owner)
             .Include(mpr => mpr.RecipeComponents)
                 .ThenInclude(component => component.Ingredients)
                     .ThenInclude(ingredient => ingredient.Ingredient)
