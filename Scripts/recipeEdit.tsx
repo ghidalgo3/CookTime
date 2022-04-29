@@ -330,7 +330,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 onChange={(e) => this.setState({recipe: {...this.state.recipe, name: e.target.value}})}
                                 value={this.state.recipe.name}></Form.Control> :
                                 <h1 className="margin-bottom-20">{this.state.recipe.name}</h1> }
-                        {this.state.recipe.owner?.userName}
+                        By {this.state.recipe.owner?.userName}
                     </Col>
                     {this.editButtons()}
                 </Row>
@@ -820,20 +820,42 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             <Col>
                 <Row>
                     <Col>
-                        <Button
-                            className="recipe-edit-buttons"
-                            disabled={!userSignedIn || !canEdit}
-                            onClick={(event) => this.setState({ edit: !this.state.edit })}>
-                                Edit
-                        </Button>
+                        {(!userSignedIn || !canEdit) ? 
+                            <div data-bs-toggle="tooltip" data-bs-placement="bottom" title="Sign in to modify your own recipes">
+                                <Button
+                                    className="recipe-edit-buttons"
+                                    disabled={!userSignedIn || !canEdit}
+                                    onClick={(event) => this.setState({ edit: !this.state.edit })}>
+                                        Edit
+                                </Button>
+                            </div>
+                            :
+                            <Button
+                                className="recipe-edit-buttons"
+                                disabled={!userSignedIn || !canEdit}
+                                onClick={(event) => this.setState({ edit: !this.state.edit })}>
+                                    Edit
+                            </Button>
+                        }
                     </Col>
                     <Col>
-                        <Button
-                            className="recipe-edit-buttons"
-                            disabled={!userSignedIn}
-                            onClick={(event) => this.onAddtoCard()}>
-                                Add to Groceries
-                        </Button>
+                        {!userSignedIn ? 
+                            <div data-bs-toggle="tooltip" data-bs-placement="bottom" title="Sign in to add recipes to your cart">
+                                <Button
+                                    className="recipe-edit-buttons"
+                                    disabled={!userSignedIn}
+                                    onClick={(event) => this.onAddtoCard()}>
+                                        Add to Groceries
+                                </Button>
+                            </div>
+                            :
+                            <Button
+                                className="recipe-edit-buttons"
+                                disabled={!userSignedIn}
+                                onClick={(event) => this.onAddtoCard()}>
+                                    Add to Groceries
+                            </Button>
+                        }
                     </Col>
                 </Row>
             </Col>;
