@@ -20,7 +20,7 @@ for details on configuring this project to bundle and minify static web assets. 
   --red-dirt-highlight: #c26950;
   --red-dirt-highlight-border: #a35844;
 
-/* These are the colors generated from the Microsoft theme builder tool. */
+/* These are the colors generated from the Microsoft theme builder tool https://fabricweb.z5.web.core.windows.net/pr-deploy-site/refs/heads/master/theming-designer/ */
 /* Primary color = #0cad85
 Text color = #323232
 Background color = #fafafa */
@@ -79,6 +79,13 @@ Background color = #fafafa */
     border-color: rgba(255,255,255,.1);
     background-color: var(--white);
   }
+  .btn-primary:disabled {
+    background-color: var(--neutralPrimaryAlt);
+    color: var(--neutralQuaternary);
+  }
+  .navbar-light .navbar-nav .nav-link.disabled {
+    color: var(--neutralPrimaryAlt);
+  }
 }
 
 @media (prefers-color-scheme: light) {
@@ -95,6 +102,10 @@ Background color = #fafafa */
     --btn-outline-primary-bg-color-hover: var(--neutralLighter);
     --a-text: var(--themeDark);
     --a-text-hover: var(--themeDarker);
+  }
+  .btn-primary:disabled {
+    background-color: var(--neutralLighter);
+    color: var(--neutralQuaternary);
   }
 }
 
