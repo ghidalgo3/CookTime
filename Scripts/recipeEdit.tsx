@@ -9,6 +9,7 @@ import { IngredientRequirementList } from './IngredientRequirementList';
 import { RecipeStepList } from './RecipeStepList';
 import { NutritionFacts } from './NutritionFacts';
 import { Tags } from './Tags';
+import { RecipeStructuredData } from './RecipeStructuredData';
 
 type RecipeEditProps = {
     recipeId : string,
@@ -322,6 +323,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
     render() {
         return (
             <div>
+                <RecipeStructuredData recipe={this.state.recipe} images={this.state.recipeImages} />
                 <Row>
                     <Col className="justify-content-md-left" xs={6}>
                         {this.state.edit ?
