@@ -78,6 +78,7 @@ Background color = #fafafa */
     color: rgba(255,255,255,.55);
     border-color: rgba(255,255,255,.1);
     background-color: var(--white);
+    height: 44px;
   }
   .btn-primary:disabled {
     background-color: var(--neutralPrimaryAlt);
@@ -554,6 +555,9 @@ body {
 
 .margin-top-5 {
   margin-top: 5px;
+}
+.margin-top-7 {
+  margin-top: 7px;
 }
 .margin-top-8 {
   margin-top: 8px;
