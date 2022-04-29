@@ -49,6 +49,7 @@ type Image = {
     name : string,
     id : string
 }
+
 type Category = Autosuggestable
 
 type Owner = {
