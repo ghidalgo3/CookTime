@@ -34,8 +34,8 @@ public class Startup
         }
         services.AddIdentity<ApplicationUser, IdentityRole>(options =>
         {
-            options.Password.RequiredLength = 10;
-            options.Password.RequiredUniqueChars = 2;
+            options.Password.RequiredLength = 6;
+            options.Password.RequiredUniqueChars = 1;
             options.Password.RequireNonAlphanumeric = false;
             options.Password.RequireDigit = false;
             options.Password.RequireLowercase = false;

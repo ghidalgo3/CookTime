@@ -1,0 +1,45 @@
+---
+layout: post
+title:  "Show HN"
+date:   2022-04-29 00:36:58 -0400
+categories: 
+---
+As seen here: https://news.ycombinator.com/item?id=31201528
+
+```
+Hi HN,
+
+COVID lockdowns made me and my wife cook a lot more at home, and we had a need to streamline our recipe management woes. These were some of the problems we identified:
+
+  - Most recipe websites are what I call "mommy blogs", and the principal problem is that the recipe ingredient list and instructions are buried in a SEO-laden essay that we don't care about. We were sharing links to our favorite recipes, but links don't allow you to skip past the unnecessary essay prefacing the recipe. We knew we wanted a way to have recipes uncompromised by unrelated essays.
+  - Popular recipe aggregating websites are run by publishing companies that do not want you, the reader, to contribute your own recipes. This is not true for all of them; Allrecipes.com does allow you to enter recipes but that UI leaves a lot to be desired. We knew we needed a way for us (and you) to write your own recipes.
+  - Most recipe websites do not allow you to scale recipe ingredients. We like to cook a lot at once, and we don't like to keep track of a 2x, or 3x multiplier in our heads while cooking. We knew we wanted a simple way of scaling ingredients.
+  - Most recipe websites do not contain adequate nutrition information about their recipes. When they do, they don't show their math, or their sources. We knew we needed an automatic nutrition calculation for recipes based on ingredients and their quantities.
+
+After a few months of nights and weekends, we are ready to share https://letscooktime.com . We solved all of the primary problems listed above, and more! Our features:
+
+  - Recipe creation: You can write your own recipes on CookTime, and share them with the world. 
+  - Ingredient highlights: CookTime will highlight ingredients by name in the recipe's instructions, and if you click or tap on them we will show you the quantity needed. This becomes important when you're following a recipe on a phone because it saves you having to scroll back and forth between ingredient manifests and recipe text. 
+  - Recipe components: Most recipes are simple enough to not need this feature, but some recipes are complex in a specific way: the same ingredient is used multiple times in different quantities. This seems to be more common in baking recipes; you may use flour or sugar in different components (like a pie crust vs. a filling) at different times with different quantities. 
+  - Automatic nutrition calculation: CookTime contains the full dataset of the USDA Legacy Standard Reference nutrition dataset and part of the Branded Foods dataset. We associate ingredients with their corresponding entry in the dataset, scale based on mass, volume, or quantity, and then use that to compute nutrition facts for a recipe. Some ingredients may not have an association, and in that case we can fix that by editing the database directly (work in progress to improve this :)) 
+  - Grocery lists: You can add recipes to a grocery list, and if they have overlapping ingredients CookTime will simply add them up and show you a unified view of the groceries you need to buy.
+  - Scaling recipes: Nothing much to say here, it works.
+  - Tagging: The tagging system internally is generic enough, but we are currently limiting the set of allowed tags. Needless to say, you can tag recipes.
+  - No blogging, just recipes! No bullshit essay to scroll through.
+
+We think the closest thing to CookTime is https://www.paprikaapp.com. Paprika is a paid native app, CookTime is a free mobile-ready website you can try _today_. I do not believe that recipe management really requires the performance, development cost, and App Store cost of a native app. 
+
+Without a CookTime account, you can:
+
+  - Browse recipes 
+  - Read their nutrition facts
+  - Scale ingredients temporarily
+  - Share links to recipes
+
+With a CookTime account, you can:
+
+  - Add your own recipes
+  - Add recipes to your personal groceries list
+
+Let me know what you think! Would you use it? What are you currently using to track your recipes? What missing feature is stopping you from using CookTime?
+```

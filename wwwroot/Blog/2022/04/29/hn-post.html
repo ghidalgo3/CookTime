@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Show HN | CookTime Blog</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Show HN" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="As seen here: https://news.ycombinator.com/item?id=31201528" />
+<meta property="og:description" content="As seen here: https://news.ycombinator.com/item?id=31201528" />
+<link rel="canonical" href="https://letscooktime.com/Blog/2022/04/29/hn-post.html" />
+<meta property="og:url" content="https://letscooktime.com/Blog/2022/04/29/hn-post.html" />
+<meta property="og:site_name" content="CookTime Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-04-29T00:36:58-04:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Show HN" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-04-29T00:36:58-04:00","datePublished":"2022-04-29T00:36:58-04:00","description":"As seen here: https://news.ycombinator.com/item?id=31201528","headline":"Show HN","mainEntityOfPage":{"@type":"WebPage","@id":"https://letscooktime.com/Blog/2022/04/29/hn-post.html"},"url":"https://letscooktime.com/Blog/2022/04/29/hn-post.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/Blog/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://letscooktime.com/Blog/feed.xml" title="CookTime Blog" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/Blog/">CookTime Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/Blog/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Show HN</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2022-04-29T00:36:58-04:00" itemprop="datePublished">Apr 29, 2022
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>As seen here: https://news.ycombinator.com/item?id=31201528</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hi HN,
+
+COVID lockdowns made me and my wife cook a lot more at home, and we had a need to streamline our recipe management woes. These were some of the problems we identified:
+
+  - Most recipe websites are what I call "mommy blogs", and the principal problem is that the recipe ingredient list and instructions are buried in a SEO-laden essay that we don't care about. We were sharing links to our favorite recipes, but links don't allow you to skip past the unnecessary essay prefacing the recipe. We knew we wanted a way to have recipes uncompromised by unrelated essays.
+  - Popular recipe aggregating websites are run by publishing companies that do not want you, the reader, to contribute your own recipes. This is not true for all of them; Allrecipes.com does allow you to enter recipes but that UI leaves a lot to be desired. We knew we needed a way for us (and you) to write your own recipes.
+  - Most recipe websites do not allow you to scale recipe ingredients. We like to cook a lot at once, and we don't like to keep track of a 2x, or 3x multiplier in our heads while cooking. We knew we wanted a simple way of scaling ingredients.
+  - Most recipe websites do not contain adequate nutrition information about their recipes. When they do, they don't show their math, or their sources. We knew we needed an automatic nutrition calculation for recipes based on ingredients and their quantities.
+
+After a few months of nights and weekends, we are ready to share https://letscooktime.com . We solved all of the primary problems listed above, and more! Our features:
+
+  - Recipe creation: You can write your own recipes on CookTime, and share them with the world. 
+  - Ingredient highlights: CookTime will highlight ingredients by name in the recipe's instructions, and if you click or tap on them we will show you the quantity needed. This becomes important when you're following a recipe on a phone because it saves you having to scroll back and forth between ingredient manifests and recipe text. 
+  - Recipe components: Most recipes are simple enough to not need this feature, but some recipes are complex in a specific way: the same ingredient is used multiple times in different quantities. This seems to be more common in baking recipes; you may use flour or sugar in different components (like a pie crust vs. a filling) at different times with different quantities. 
+  - Automatic nutrition calculation: CookTime contains the full dataset of the USDA Legacy Standard Reference nutrition dataset and part of the Branded Foods dataset. We associate ingredients with their corresponding entry in the dataset, scale based on mass, volume, or quantity, and then use that to compute nutrition facts for a recipe. Some ingredients may not have an association, and in that case we can fix that by editing the database directly (work in progress to improve this :)) 
+  - Grocery lists: You can add recipes to a grocery list, and if they have overlapping ingredients CookTime will simply add them up and show you a unified view of the groceries you need to buy.
+  - Scaling recipes: Nothing much to say here, it works.
+  - Tagging: The tagging system internally is generic enough, but we are currently limiting the set of allowed tags. Needless to say, you can tag recipes.
+  - No blogging, just recipes! No bullshit essay to scroll through.
+
+We think the closest thing to CookTime is https://www.paprikaapp.com. Paprika is a paid native app, CookTime is a free mobile-ready website you can try _today_. I do not believe that recipe management really requires the performance, development cost, and App Store cost of a native app. 
+
+Without a CookTime account, you can:
+
+  - Browse recipes 
+  - Read their nutrition facts
+  - Scale ingredients temporarily
+  - Share links to recipes
+
+With a CookTime account, you can:
+
+  - Add your own recipes
+  - Add recipes to your personal groceries list
+
+Let me know what you think! Would you use it? What are you currently using to track your recipes? What missing feature is stopping you from using CookTime?
+</code></pre></div></div>
+
+  </div><a class="u-url" href="/Blog/2022/04/29/hn-post.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/Blog/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">CookTime Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">CookTime Blog</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>CookTime Blog</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
