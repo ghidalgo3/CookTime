@@ -162,6 +162,7 @@ Background color = #fafafa */
 
 #my-navbar-brand {
   color: var(--a-text);
+  font-size: 1.5rem;
 }
 #my-navbar-brand:hover #my-navbar-brand:active {
   color: var(--a-text-hover);
