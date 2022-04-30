@@ -327,6 +327,10 @@ hr {
   height: 38px;
 }
 
+.font-weight-600 {
+  font-weight: 600;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {

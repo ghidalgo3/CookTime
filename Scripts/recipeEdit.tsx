@@ -809,7 +809,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             <Col>
                 <Row>
                     <Col>
-                        <Button className="recipe-edit-buttons" onClick={_ => this.onSave()}>
+                        <Button className="recipe-edit-buttons font-weight-600" onClick={_ => this.onSave()}>
                             {
                                 this.state.operationInProgress ?
                                     <Spinner
