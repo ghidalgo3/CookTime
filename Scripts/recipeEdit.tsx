@@ -327,11 +327,15 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 <Row>
                     <Col className="justify-content-md-left" xs={6}>
                         {this.state.edit ?
-                            <Form.Control
-                                type="text"
-                                onChange={(e) => this.setState({recipe: {...this.state.recipe, name: e.target.value}})}
-                                value={this.state.recipe.name}></Form.Control> :
-                                <h1 className="margin-bottom-20">{this.state.recipe.name}</h1> }
+                            <div className="recipe-name-input">
+                                <Form.Control
+                                    type="text"
+                                    onChange={(e) => this.setState({recipe: {...this.state.recipe, name: e.target.value}})}
+                                    value={this.state.recipe.name}></Form.Control> 
+                            </div>
+                            :
+                            <h1 className="recipe-name margin-bottom-20">{this.state.recipe.name}</h1> 
+                        }
                         By {this.state.recipe.owner?.userName}
                     </Col>
                     {this.editButtons()}
@@ -820,6 +824,9 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         </Button>
                     </Col>
                     <Col>
+                        <Button className="recipe-edit-buttons margin-bottom-15" onClick={_ => this.onCancel()}>Cancel</Button>
+                    </Col>
+                    <Col>
                         <Button variant="danger" className="recipe-edit-buttons margin-bottom-15" onClick={_ => this.onDelete()}>Delete</Button>
                     </Col>
                     {!this.props.multipart ?
@@ -893,6 +900,10 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 window.location.href = response.url
             }
         })
+    }
+
+    onCancel(): void {
+        location.reload();
     }
 
     onDelete(): void {

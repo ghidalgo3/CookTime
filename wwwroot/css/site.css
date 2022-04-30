@@ -267,6 +267,16 @@ a:hover, a:active {
   padding-bottom: 16px;
 }
 
+.recipe-name-input {
+  height: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.recipe-name {
+  line-height: 2.5rem;
+  font-size: 2.5rem;
+}
+
 a.navbar-brand {
   white-space: normal;
   text-align: center;
