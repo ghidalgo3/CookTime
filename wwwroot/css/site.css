@@ -264,6 +264,7 @@ a:hover, a:active {
 
 .navbar {
   background-color: var(--primary-background);
+  padding-bottom: 16px;
 }
 
 a.navbar-brand {

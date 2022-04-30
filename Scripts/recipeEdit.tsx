@@ -366,12 +366,24 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                         onClick={(_) => this.setState({newServings: this.state.newServings + 1})}>
                                         <i className="fas fa-solid fa-plus"></i>
                                     </Button>
-                                    <input className="form-control count" value={this.state.newServings}></input>
+                                    <Form.Control
+                                        onChange={(e) => {
+                                            if (e.target.value === '') {
+                                                this.setState({newServings: 0})
+                                            }
+                                            let newValue = parseFloat(e.target.value)
+                                            if (newValue !== NaN && newValue > 0) {
+                                                this.setState({newServings: newValue})
+                                            }
+                                        }}
+                                        className="form-control count"
+                                        value={this.state.newServings}/>
+                                    {/* <input className="form-control count" value={this.state.newServings}></input> */}
                                     <Button
                                         variant="danger"
                                         className="minus-counter-button"
                                         onClick={(_) => {
-                                            if (this.state.newServings > 1) {
+                                            if (this.state.newServings > 0) {
                                                 this.setState({newServings: this.state.newServings - 1})
                                             }
                                         }}>
@@ -421,7 +433,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                     type="text"
                                     onChange={(e) => this.setState({recipe: {...this.state.recipe, source: e.target.value}})}
                                     value={this.state.recipe.source}></Form.Control> :
-                                <div>{this.state.recipe.source}</div> }
+                                <a href={(this.state.recipe.source)}>{this.state.recipe.source}</a> }
                         </Col>
                     </Row>
                 }
