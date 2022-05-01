@@ -17,23 +17,24 @@
 <div class="row">
     @foreach (var item in Model.Recipes) {
         var cats = string.Join(", ", item.Categories);
+        var target = item.Id + "-rating-target";
         if (string.IsNullOrEmpty(cats))
         {
             cats = "Recipe";
         }
         <div class="col-sm-4">
             <a asp-page="./Recipes/Details" asp-route-id="@item.Id">
-                <div data-average-reviews="@item.AverageReviews" data-review-count="@item.ReviewCount" class="card margin-bottom-20 recipe-card">
+                <div data-recipe-id="@item.Id" data-average-reviews="@item.AverageReviews" data-review-count="@item.ReviewCount" class="card margin-bottom-20 recipe-card">
                     @{
                         var image = (item.ImageIds.Count == 0) ? "/placeholder.jpg" : $"/image/{item.ImageIds.FirstOrDefault()}?width=300";
                         <img class="card-img-top card-recipe-image" src="@image" alt="Food image">
                     }
-                    <div class="card-body ">
+                    <div class="card-body">
                         <p class="tag-style do-not-overflow-text margin-bottom-0">@cats</p>
                         <h5 class="margin-bottom-0 card-title do-not-overflow-text">@Html.DisplayFor(modelItem => item.Name)</h5>
                         @if (item.ReviewCount > 0)
                         {
-                            <div id="rating-target"></div>
+                            <div id="@target"></div>
                         @* <p>Average reviews: @item.AverageReviews</p>
                         <p>Total reviews: @item.ReviewCount</p> *@
                         }

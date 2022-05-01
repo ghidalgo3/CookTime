@@ -31,9 +31,11 @@ var recipeCards = document.querySelectorAll(".recipe-card")
 recipeCards.forEach(recipeCard => {
     let averageReviews = Number.parseFloat(recipeCard.getAttribute("data-average-reviews") as string)
     let reviewCount = Number.parseInt(recipeCard.getAttribute("data-review-count") as string)
-    var target = recipeCard.querySelector("#rating-target")
-    ReactDOM.render(
-        <CardReviewDisplay averageReviews={averageReviews} reviewCount={reviewCount} />,
-        target
-    )
+    let recipeId = recipeCard.getAttribute("data-recipe-id") as string
+    var target = recipeCard.querySelector(`#${recipeId}-rating-target`)
+    if (target !== null) {
+        ReactDOM.render(
+            <CardReviewDisplay averageReviews={averageReviews} reviewCount={reviewCount} />,
+            target)
+    }
 });
