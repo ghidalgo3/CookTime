@@ -351,7 +351,8 @@ namespace babe_algorithms.Controllers
             {
                 return this.Unauthorized("You can only delete recipes you own.");
             }
-
+            var reviews = await _context.GetReviewsAsync(recipe.Id);
+            _context.Reviews.RemoveRange(reviews);
             _context.MultiPartRecipes.Remove(recipe);
             foreach (var image in recipe.Images)
             {
