@@ -326,6 +326,9 @@ hr {
 .height-38 {
   height: 38px;
 }
+.height-32 {
+  height: 32px !important;
+}
 
 .font-weight-600 {
   font-weight: 600;

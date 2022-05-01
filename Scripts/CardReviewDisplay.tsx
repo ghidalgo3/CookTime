@@ -14,14 +14,14 @@ class CardReviewDisplay extends React.Component<CardReviewDisplayProps, {}> {
 
     render() {
         return (
-            <div>
+            <div className="margin-top-8">
                 <Rating
                     initialRating={this.props.averageReviews}
                     readonly
                     emptySymbol="far fa-star"
                     fullSymbol="fas fa-star"
                     fractions={2} />
-                ({this.props.reviewCount})
+                {"   "} ({this.props.reviewCount})
             </div>
         )
     }
