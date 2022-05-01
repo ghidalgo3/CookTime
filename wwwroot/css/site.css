@@ -162,6 +162,7 @@ Background color = #fafafa */
 
 #my-navbar-brand {
   color: var(--a-text);
+  font-size: 1.5rem;
 }
 #my-navbar-brand:hover #my-navbar-brand:active {
   color: var(--a-text-hover);
@@ -263,6 +264,17 @@ a:hover, a:active {
 
 .navbar {
   background-color: var(--primary-background);
+  margin-bottom: 0px !important;
+}
+
+.recipe-name-input {
+  height: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.recipe-name {
+  line-height: 2.5rem;
+  font-size: 2.5rem;
 }
 
 a.navbar-brand {
@@ -313,6 +325,10 @@ hr {
 
 .height-38 {
   height: 38px;
+}
+
+.font-weight-600 {
+  font-weight: 600;
 }
 
 /* Sticky footer styles
@@ -463,13 +479,13 @@ body {
 }
 
 .plus-counter-button {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
 .minus-counter-button {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .component-on-right {
@@ -547,6 +563,9 @@ body {
 }
 .margin-bottom-20 {
   margin-bottom: 20px;
+}
+.margin-bottom-30 {
+  margin-bottom: 30px;
 }
 
 .margin-right-10 {
