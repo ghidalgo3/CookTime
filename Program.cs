@@ -134,6 +134,7 @@ public class Program
     {
         var fileName = "FoodData_Central_branded_food_json_2021-10-28.json";
         // var fileName = "Small.json";
+        int i = 0;
         if (File.Exists(fileName) && !context.BrandedNutritionData.Any())
         {
             foreach (var line in File.ReadLines(fileName))
@@ -154,7 +155,12 @@ public class Program
                         LabelNutrients = JsonDocument.Parse(food["labelNutrients"].ToJsonString()),
                     };
                     context.BrandedNutritionData.Add(foodData);
-                    context.SaveChanges();
+                    i++;
+                    if (i >= 100)
+                    {
+                        context.SaveChanges();
+                        i = 0;
+                    }
                 }
                 catch
                 {
