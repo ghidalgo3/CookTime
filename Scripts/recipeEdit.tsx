@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Alert, Button, Col, Form, Row, Spinner } from 'react-bootstrap';
-import { getUserId, isSignedIn } from './AuthState'
+import { getUserId, isAdmin, isSignedIn } from './AuthState'
 import {  v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
 import { IngredientRequirementList } from './IngredientRequirementList';
@@ -836,7 +836,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 
     private editButtons(): string | number | boolean | {} | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactNodeArray | React.ReactPortal | null | undefined {
         let userSignedIn = isSignedIn();
-        let canEdit = userSignedIn && getUserId() === this.state.recipe.owner?.id;
+        let canEdit = userSignedIn && getUserId() === this.state.recipe.owner?.id || isAdmin();
         return this.state.edit ?
             <Col>
                 <Row>
