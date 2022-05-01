@@ -37,7 +37,5 @@ recipeCards.forEach(recipeCard => {
         ReactDOM.render(
             <CardReviewDisplay averageReviews={averageReviews} reviewCount={reviewCount} />,
             target)
-    } else {
-        console.log(recipeId)
     }
 });
