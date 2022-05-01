@@ -49,10 +49,15 @@ public class NavBarViewComponent : ViewComponent
             this.Events = user.Events.Where(e => e.Type == EventType.Public).OrderByDescending(e => e.CreatedAt).Take(10);
             this.UnseenEvents = user.Events.Where(e => e.Type == EventType.Public).Count(e => !e.EventSeen);
         }
-
-        this.RolesStr = string.Join(
-        ",",
-        this.Roles.Select(r => r.ToString()));
+        if (this.Roles == null)
+        {
+            this.RolesStr = string.Empty;
+        }
+        else
+        {
+            var x = this.Roles?.Select(r => r.ToString());
+            this.RolesStr = string.Join(",", x);
+        }
 
         return await Task.Run(() => this.View(this));
     }
