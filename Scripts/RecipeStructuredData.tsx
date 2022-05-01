@@ -40,6 +40,12 @@ export class RecipeStructuredData extends React.Component<RecipeStructuredDataPr
                     }
                 })
             }),
+            "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": recipe.averageReviews,
+                "ratingCount": recipe.reviewCount
+            },
+
         }
         return (
             <script type="application/ld+json">
