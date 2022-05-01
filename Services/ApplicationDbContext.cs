@@ -36,6 +36,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Category> Categories { get; set; }
     public DbSet<Cart> Carts { get; set; }
     public DbSet<Image> Images { get; set; }
+    public DbSet<Review> Reviews { get; set; }
     public DbSet<StandardReferenceNutritionData> SRNutritionData { get; set; }
     public DbSet<BrandedNutritionData> BrandedNutritionData { get; set; }
 
@@ -47,6 +48,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public IQueryable<MultiPartRecipe> SearchRecipesByTag(string search)
     {
         return this.MultiPartRecipes.Include(mpr => mpr.Categories).Where(r => r.Categories.Any(c => c.Name.ToUpper().Contains(search.ToUpper())));
+    }
+
+    public async Task<Review> GetReviewAsync(Guid recipeId, string userId)
+    {
+        return await this.Reviews
+            .Where(r => r.Owner.Id.Equals(userId) && r.Recipe.Id == recipeId)
+            .SingleOrDefaultAsync();
+    }
+
+    public async Task<List<Review>> GetReviewsAsync(Guid recipeId)
+    {
+        return await this.Reviews
+            .Include(r => r.Owner)
+            .Where(r => r.Recipe.Id == recipeId)
+            .ToListAsync();
     }
 
     public IQueryable<MultiPartRecipe> GetRecipesWithIngredient(string ingredient)

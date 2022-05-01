@@ -55,13 +55,15 @@ public class IndexModel : PageModel
                     {
                         Id = image.Id,
                         Name = image.Name,
-                    })
+                    }),
+                    r.AverageReviews,
+                    r.ReviewCount
                 })
                 .OrderBy(r => r.Name)
                 .ToListAsync();
         return recipes
             .Select(r =>
-                new RecipeView(r.Name, r.Id, r.Images.Select(image => image.Id).ToList(), r.Categories.ToList()))
+                new RecipeView(r.Name, r.Id, r.Images.Select(image => image.Id).ToList(), r.Categories.ToList(), r.AverageReviews, r.ReviewCount))
                 .ToList();
     }
 
@@ -90,7 +92,9 @@ public class IndexModel : PageModel
                 {
                     Id = image.Id,
                     Name = image.Name,
-                })
+                }),
+                r.AverageReviews,
+                r.ReviewCount
             })
             .OrderBy(r => r.Name)
             .ToListAsync();
@@ -108,7 +112,9 @@ public class IndexModel : PageModel
                 {
                     Id = image.Id,
                     Name = image.Name,
-                })
+                }),
+                AverageReviews = 0.0,
+                ReviewCount = 0,
             })
             .OrderBy(r => r.Name)
             .ToListAsync();
@@ -116,7 +122,7 @@ public class IndexModel : PageModel
         simpleQueryResults.AddRange(complexQueryResults);
         this.Recipes = simpleQueryResults
             .Select(r =>
-                new RecipeView(r.Name, r.Id, r.Images.Select(image => image.Id).ToList(), r.Categories.ToList()))
+                new RecipeView(r.Name, r.Id, r.Images.Select(image => image.Id).ToList(), r.Categories.ToList(), r.AverageReviews, r.ReviewCount))
                 .ToList();
     }
 
@@ -133,7 +139,7 @@ public class IndexModel : PageModel
     }
 }
 
-public record RecipeView(string Name, Guid Id, List<Guid> ImageIds, List<string> Categories) {}
+public record RecipeView(string Name, Guid Id, List<Guid> ImageIds, List<string> Categories, double AverageReviews, int ReviewCount) {}
 
 public class RecipeViewEqualityComparer : IEqualityComparer<RecipeView>
 {

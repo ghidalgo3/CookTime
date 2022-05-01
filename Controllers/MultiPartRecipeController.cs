@@ -31,6 +31,101 @@ namespace babe_algorithms.Controllers
             return await _context.MultiPartRecipes.ToListAsync();
         }
 
+        [HttpDelete("{id}/review")]
+        public async Task<ActionResult> DeleteReview(Guid id)
+        {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user == null)
+            {
+                return this.Unauthorized("You are not signed in.");
+            }
+
+            var existingRecipe = await _context.GetMultiPartRecipeAsync(id);
+            if (existingRecipe == null)
+            {
+                return this.NotFound();
+            }
+
+            var existingReviews = await this._context.GetReviewsAsync(existingRecipe.Id);
+            var existingReview = existingReviews.FirstOrDefault(r => r.Owner.Id == user.Id);
+            // var existingReview = await this._context.GetReviewAsync(existingRecipe.Id, user.Id);
+            if (existingReview == null)
+            {
+                return this.NotFound();
+            }
+            else
+            {
+                existingRecipe.ReviewCount--;
+            }
+            if (existingRecipe.ReviewCount > 0 )
+            {
+                existingRecipe.AverageReviews = existingReviews.Select(r => r.Rating).Sum() / (double)existingRecipe.ReviewCount;
+            }
+            else
+            {
+                existingRecipe.AverageReviews = 0;
+            }
+            this._context.Reviews.Remove(existingReview);
+            await this._context.SaveChangesAsync();
+            return this.Ok();
+        }
+
+        [HttpPut("{id}/review")]
+        public async Task<ActionResult> PutReview(
+            Guid id,
+            [FromBody] ReviewDTO review)
+        {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user == null)
+            {
+                return this.Unauthorized("You are not signed in.");
+            }
+
+            var existingRecipe = await _context.GetMultiPartRecipeAsync(id);
+            if (existingRecipe == null)
+            {
+                return this.NotFound();
+            }
+
+            // if (existingRecipe.Owner.Id == user.Id)
+            // {
+            //     return this.BadRequest("You cannot review your own recipes.");
+            // }
+            var existingReviews = await this._context.GetReviewsAsync(existingRecipe.Id);
+            var existingReview = existingReviews.FirstOrDefault(r => r.Owner.Id == user.Id);
+            // var existingReview = await this._context.GetReviewAsync(existingRecipe.Id, user.Id);
+            if (existingReview == null)
+            {
+                var newReview = new Review()
+                {
+                    CreatedAt = DateTimeOffset.UtcNow,
+                    LastModified = DateTimeOffset.UtcNow,
+                    Owner = user,
+                    Recipe = existingRecipe,
+                    Rating = Math.Max(Math.Min(review.Rating, 5), 1),
+                    Text = review.Text,
+                };
+                existingRecipe.ReviewCount += 1;
+                existingReviews.Add(newReview);
+                this._context.Reviews.Add(newReview);
+            }
+            else
+            {
+                existingReview.Rating = review.Rating;
+                existingReview.Text = review.Text;
+                existingReview.LastModified = DateTimeOffset.UtcNow;
+            }
+            existingRecipe.AverageReviews = existingReviews.Select(r => r.Rating).Sum() / (double)existingRecipe.ReviewCount;
+            await this._context.SaveChangesAsync();
+            return this.Ok();
+        }
+        
+        [HttpGet("{id}/reviews")]
+        public async Task<ActionResult> GetReviews(Guid id)
+        {
+            return this.Ok(await this._context.GetReviewsAsync(id));
+        }
+
         // GET: api/MultiPartRecipe/5
         [HttpGet("{id}")]
         public async Task<ActionResult<MultiPartRecipe>> GetMultiPartRecipe(Guid id)
@@ -349,5 +444,12 @@ namespace babe_algorithms.Controllers
         {
             return _context.MultiPartRecipes.Any(e => e.Id == id);
         }
+    }
+
+    public class ReviewDTO
+    {
+        public int Rating { get; set; }
+
+        public string Text { get; set; }
     }
 }

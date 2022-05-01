@@ -22,28 +22,31 @@
             cats = "Recipe";
         }
         <div class="col-sm-4">
-            <form method="POST">
-                <a asp-page="./Recipes/Details" asp-route-id="@item.Id">
-                    <div class="card margin-bottom-20 recipe-card">
-                        @{
-                            var image = (item.ImageIds.Count == 0) ? "/placeholder.jpg" : $"/image/{item.ImageIds.FirstOrDefault()}?width=300";
-                            <img class="card-img-top card-recipe-image" src="@image" alt="Food image">
+            <a asp-page="./Recipes/Details" asp-route-id="@item.Id">
+                <div class="card margin-bottom-20 recipe-card">
+                    @{
+                        var image = (item.ImageIds.Count == 0) ? "/placeholder.jpg" : $"/image/{item.ImageIds.FirstOrDefault()}?width=300";
+                        <img class="card-img-top card-recipe-image" src="@image" alt="Food image">
+                    }
+                    <div class="card-body ">
+                        <p class="tag-style do-not-overflow-text margin-bottom-0">@cats</p>
+                        <h5 class="margin-bottom-0 card-title do-not-overflow-text">@Html.DisplayFor(modelItem => item.Name)</h5>
+                        @if (item.ReviewCount > 0)
+                        {
+                        <p>Average reviews: @item.AverageReviews</p>
+                        <p>Total reviews: @item.ReviewCount</p>
                         }
-                        <div class="card-body ">
-                            <p class="tag-style do-not-overflow-text margin-bottom-0">@cats</p>
-                            <h5 class="margin-bottom-0 card-title do-not-overflow-text">@Html.DisplayFor(modelItem => item.Name)</h5>
-                            @* <input value="@item.Id" type="hidden" name="recipeId"/> *@
-                            @* <button
-                                data-bs-toggle="tooltip" 
-                                data-bs-placement="right" 
-                                title="Add recipe to grocery list"
-                                type="submit"
-                                asp-page-handler="AddToCart"
-                                class="btn btn-primary troubled-water-color width-100">Add to groceries</button> *@
-                        </div>
+                        @* <input value="@item.Id" type="hidden" name="recipeId"/> *@
+                        @* <button
+                            data-bs-toggle="tooltip" 
+                            data-bs-placement="right" 
+                            title="Add recipe to grocery list"
+                            type="submit"
+                            asp-page-handler="AddToCart"
+                            class="btn btn-primary troubled-water-color width-100">Add to groceries</button> *@
                     </div>
-                </a>
-            </form>
+                </div>
+            </a>
         </div>
     }
 </div>

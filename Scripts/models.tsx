@@ -4,6 +4,14 @@ type Autosuggestable = {
     isNew: boolean
 }
 
+type Review = {
+    id : string,
+    createdAt : string,
+    owner : Owner,
+    rating : number,
+    text : string
+}
+
 type MeasureUnit = {
    name: string,
    siType : string
@@ -68,6 +76,8 @@ type MultiPartRecipe = {
     categories : Category[],
     staticImage : string
     recipeComponents: RecipeComponent[],
+    reviewCount: number,
+    averageReviews: number
 }
 
 type RecipeComponent = {

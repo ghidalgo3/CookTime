@@ -1,15 +1,16 @@
 import * as React from 'react';
-import { Alert, Button, Col, Form, FormControl, FormText, Row, Spinner } from 'react-bootstrap';
+import { Alert, Button, Col, Form, Row, Spinner } from 'react-bootstrap';
 import { getUserId, isSignedIn } from './AuthState'
-import { stringify, v4 as uuidv4 } from 'uuid';
+import {  v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
-import { IngredientDisplay, IngredientInput } from './IngredientInput';
-import { Step } from './RecipeStep';
 import { IngredientRequirementList } from './IngredientRequirementList';
 import { RecipeStepList } from './RecipeStepList';
 import { NutritionFacts } from './NutritionFacts';
 import { Tags } from './Tags';
 import { RecipeStructuredData } from './RecipeStructuredData';
+import Rating from 'react-rating';
+import { RecipeReviewForm } from './RecipeReviewForm';
+import { RecipeReviews } from './RecipeReviews';
 
 type RecipeEditProps = {
     recipeId : string,
@@ -52,6 +53,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 staticImage: '',
                 owner: null,
                 recipeComponents: [],
+                reviewCount: 0,
+                averageReviews: 4.0
             },
             newServings: 1,
             operationInProgress: false,
@@ -332,6 +335,21 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 onChange={(e) => this.setState({recipe: {...this.state.recipe, name: e.target.value}})}
                                 value={this.state.recipe.name}></Form.Control> :
                                 <h1 className="margin-bottom-20">{this.state.recipe.name}</h1> }
+                        {this.state.recipe.reviewCount > 0 ?
+                            <div>
+                                <Rating
+                                    // emptySymbol="fas fa-star-o fa-2x"
+                                    // fullSymbol="fas fa-star fa-2x"
+                                    initialRating={this.state.recipe.averageReviews}
+                                    readonly
+                                    emptySymbol="far fa-star fa-2x"
+                                    fullSymbol="fas fa-star fa-2x"
+                                    fractions={2} />
+                                ({this.state.recipe.reviewCount})
+                            </div>
+                            :
+                            null
+                        }
                         By {this.state.recipe.owner?.userName}
                     </Col>
                     {this.editButtons()}
@@ -479,6 +497,25 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         </Col>
                     </Row>
                 </div>
+                <div className="border-top-1 margin-top-10">
+                    <Row>
+                        <Col>
+                            <RecipeReviews recipeId={this.props.recipeId} />
+                        </Col>
+                    </Row>
+                </div>
+                {
+                    isSignedIn() ?
+                    <div className="border-top-1 margin-top-10">
+                        <Row>
+                            <Col>
+                                <RecipeReviewForm recipe={this.state.recipe} />
+                            </Col>
+                        </Row>
+                    </div>
+                    :
+                    null
+                }
             </div>
         );
     }

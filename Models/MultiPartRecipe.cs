@@ -33,13 +33,25 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
 
     [Required]
     public string Name { get; set; }
+
     public string? StaticImage { get; set; }
+
     public double ServingsProduced { get; set; } = 1.0;
+
     public int CooktimeMinutes { get; set; }
+
     public double CaloriesPerServing { get; set; }
+
+    public double AverageReviews { get; set; }
+
+    public int ReviewCount { get; set; }
+
     public Guid Id { get; set; }
+
     public ISet<Category> Categories { get; set; }
+
     public List<Image> Images { get; set; }
+
     public List<RecipeComponent> RecipeComponents { get; set; } = new List<RecipeComponent>();
     /// <summary>
     /// The source where the recipe came from.
@@ -48,6 +60,7 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
 
     [JsonIgnore]
     public NpgsqlTsVector SearchVector { get; set; }
+
     public ApplicationUser? Owner { get; set; }
 
     public bool Equals(MultiPartRecipe? other) => this.Id == other.Id;
