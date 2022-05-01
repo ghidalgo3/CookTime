@@ -14,8 +14,7 @@
       <th scope="col">ID</th>
       <th scope="col">Ingredient</th>
       @* <th scope="col">Recipes Where Used</th> *@
-      <th scope="col">NDB Number</th>
-      <th scope="col">GtinUpc</th>
+      <th scope="col">NDB/GTIN/UPC Number</th>
       <th scope="col">Count RegEx</th>
       <th scope="col">Unit mass (kg)</th>
       <th scope="col">Save/Delete</th>
@@ -27,26 +26,24 @@
       <th scope="row">@ingredient.Id</th>
       <th >@ingredient.Name</th>
       <form method="POST">
-        <td>
-          <input type="number" name="ndbNumber" value="@ingredient.NutritionData?.NdbNumber">
-        </td>
-        <td>
-          <input type="text" name="gtinUpc" value="@ingredient.BrandedNutritionData?.GtinUpc">
-        </td>
-        <td>
+        <th>
+          <input type="number" name="ndbNumber" placeholder="NDB Number" value="@ingredient.NutritionData?.NdbNumber">
+          <input type="text" name="gtinUpc" placeholder="GTIN/UPC Number" value="@ingredient.BrandedNutritionData?.GtinUpc">
+        </th>
+        <th>
           <input type="text" name="countRegex" value="@ingredient.NutritionData?.CountRegex">
-        </td>
-        <td>
+        </th>
+        <th>
           <input
             type="number"
             name="expectedUnitMass"
             step="0.001"
             value="@ingredient.ExpectedUnitMass">
-        </td>
-        <td>
+        </th>
+        <th>
           <input type="hidden" name="ingredientId" value="@ingredient.Id">
           <button class="btn btn-outline-success width-100" type="submit" asp-page-handler="UpdateIngredientNdbNumber">Save</button>
-        </td>
+        </th>
       </form>
     </tr>
     }

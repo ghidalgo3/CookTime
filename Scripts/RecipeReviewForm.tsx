@@ -24,12 +24,12 @@ export class RecipeReviewForm extends React.Component<RecipeReviewFormProps, Rec
 
     render() {
         return (
-            <Form noValidate validated={this.state.validated} onSubmit={event => this.onSubmit(event)}>
+            <Form noValidate validated={this.state.validated} onSubmit={event => this.onSubmit(event)} className="margin-top-20">
                 <Form.Group>
                     <Rating
                         {...this.props}
-                        emptySymbol="far fa-star fa-2x"
-                        fullSymbol="fas fa-star fa-2x"
+                        emptySymbol="far fa-star"
+                        fullSymbol="fas fa-star"
                         initialRating={this.state.rating}
                         onClick={value => this.setState({ rating: value })}
                     />
@@ -43,7 +43,7 @@ export class RecipeReviewForm extends React.Component<RecipeReviewFormProps, Rec
                         required
                         as="textarea"
                         rows={4}
-                        className="margin-bottom-8"
+                        className="margin-bottom-8 margin-top-8"
                         type="text"
                         placeholder="Rate and write a review for this recipe"
                         value={this.state.text}
@@ -56,6 +56,7 @@ export class RecipeReviewForm extends React.Component<RecipeReviewFormProps, Rec
                     </Form.Control.Feedback>
                 </Form.Group>
                 <Button
+                    className="margin-bottom-20"
                     variant="outline-primary"
                     type="submit">
                         Submit

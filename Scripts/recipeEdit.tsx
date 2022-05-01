@@ -338,10 +338,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         </div>:
                                 <h1 className="margin-bottom-20">{this.state.recipe.name}</h1> }
                         {this.state.recipe.reviewCount > 0 ?
-                            <div>
+                            <div className="margin-bottom-8">
                                 <Rating
-                                    // emptySymbol="fas fa-star-o fa-2x"
-                                    // fullSymbol="fas fa-star fa-2x"
                                     initialRating={this.state.recipe.averageReviews}
                                     readonly
                                     emptySymbol="far fa-star fa-2x"
@@ -510,13 +508,6 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                         </Col>
                     </Row>
                 </div>
-                <div className="border-top-1 margin-top-10">
-                    <Row>
-                        <Col>
-                            <RecipeReviews recipeId={this.props.recipeId} />
-                        </Col>
-                    </Row>
-                </div>
                 {
                     isSignedIn() ?
                     <div className="border-top-1 margin-top-10">
@@ -529,6 +520,13 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     :
                     null
                 }
+                <div className="margin-top-10">
+                    <Row>
+                        <Col>
+                            <RecipeReviews recipeId={this.props.recipeId} />
+                        </Col>
+                    </Row>
+                </div>
             </div>
         );
     }

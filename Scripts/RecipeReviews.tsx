@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Card, Form, FormControl, ListGroup } from "react-bootstrap";
+import { Button, Card, Row, Col, Form, FormControl, ListGroup } from "react-bootstrap";
 import Rating from "react-rating";
 import { getUserId } from "./AuthState";
 
@@ -33,26 +33,32 @@ export class RecipeReviews extends React.Component<RecipeReviewsProps, {reviews:
                 <div>
                 {this.state.reviews?.map(r => {
                     return (
-                        <Card>
-                            <Card.Subtitle>
-                                By {r.owner.userName}
-                            </Card.Subtitle>
+                        <Card className="padding-16">
+                            <Row>
+                                <Col>
+                                    <Card.Link className="">
+                                        <Rating
+                                            initialRating={r.rating}
+                                            emptySymbol="far fa-star"
+                                            fullSymbol="fas fa-star"
+                                            readonly />
+                                        <span className="margin-left-10">{r.owner.userName}</span>
+                                    </Card.Link>
+                                </Col>
+                                <Col>
+                                    {r.owner.id === getUserId() ?
+                                        <Button
+                                            className="float-end"
+                                            variant="danger"
+                                            onClick={_ => this.deleteRecipe()}>
+                                            Delete
+                                        </Button>
+                                    : null}
+                                </Col>
+                            </Row>
                             <Card.Body>
                                 {r.text}
                             </Card.Body>
-                            <Card.Link>
-                                <Rating
-                                    initialRating={r.rating}
-                                    emptySymbol="far fa-star fa-2x"
-                                    fullSymbol="fas fa-star fa-2x"
-                                    readonly />
-                            </Card.Link>
-                            {r.owner.id === getUserId() ?
-                                <Button
-                                    onClick={_ => this.deleteRecipe()}>
-                                    Delete
-                                </Button>
-                            : null}
                         </Card>
                     )
                 })}
