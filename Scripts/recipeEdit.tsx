@@ -365,10 +365,14 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                     value={this.state.recipe.servingsProduced}></Form.Control> :
                                 <div className='serving-counter'>
                                     <Button
-                                        variant="success"
-                                        className="plus-counter-button"
-                                        onClick={(_) => this.setState({newServings: this.state.newServings + 1})}>
-                                        <i className="fas fa-solid fa-plus"></i>
+                                        variant="danger"
+                                        className="minus-counter-button"
+                                        onClick={(_) => {
+                                            if (this.state.newServings > 0) {
+                                                this.setState({newServings: this.state.newServings - 1})
+                                            }
+                                        }}>
+                                        <i className="fas fa-regular fa-minus"></i>
                                     </Button>
                                     <Form.Control
                                         onChange={(e) => {
@@ -382,16 +386,11 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                         }}
                                         className="form-control count"
                                         value={this.state.newServings}/>
-                                    {/* <input className="form-control count" value={this.state.newServings}></input> */}
                                     <Button
-                                        variant="danger"
-                                        className="minus-counter-button"
-                                        onClick={(_) => {
-                                            if (this.state.newServings > 0) {
-                                                this.setState({newServings: this.state.newServings - 1})
-                                            }
-                                        }}>
-                                        <i className="fas fa-regular fa-minus"></i>
+                                        variant="success"
+                                        className="plus-counter-button"
+                                        onClick={(_) => this.setState({newServings: this.state.newServings + 1})}>
+                                        <i className="fas fa-solid fa-plus"></i>
                                     </Button>
                                 </div> 
                             }

@@ -264,7 +264,7 @@ a:hover, a:active {
 
 .navbar {
   background-color: var(--primary-background);
-  padding-bottom: 16px;
+  margin-bottom: 0px !important;
 }
 
 .recipe-name-input {
@@ -479,13 +479,13 @@ body {
 }
 
 .plus-counter-button {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
 .minus-counter-button {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .component-on-right {
@@ -563,6 +563,9 @@ body {
 }
 .margin-bottom-20 {
   margin-bottom: 20px;
+}
+.margin-bottom-30 {
+  margin-bottom: 30px;
 }
 
 .margin-right-10 {

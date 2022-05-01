@@ -62,10 +62,15 @@ class ShoppingCart extends React.Component<{}, CartState> {
                     <Col className="col d-flex align-items-center">
                         <div className="serving-counter-in-cart">
                             <Button
-                                variant="success"
-                                className="plus-counter-button"
-                                onClick={(_) => this.addToRecipeRequirement(rIndex, 1)}>
-                                <i className="fas fa-solid fa-plus"></i>
+                                variant="danger"
+                                className="minus-counter-button"
+                                onClick={(_) => {
+                                    let qty = Array.from(this.state.cart.recipeRequirement)[rIndex].quantity;
+                                    if (qty > 0) {
+                                        this.addToRecipeRequirement(rIndex, -1)}
+                                    }
+                                }>
+                                <i className="fas fa-regular fa-minus"></i>
                             </Button>
                             <Form.Control
                                 onChange={(e) => {
@@ -81,15 +86,10 @@ class ShoppingCart extends React.Component<{}, CartState> {
                                 className="form-control count"
                                 value={Math.round(r.quantity * recipe.servingsProduced)} />
                             <Button
-                                variant="danger"
-                                className="minus-counter-button"
-                                onClick={(_) => {
-                                    let qty = Array.from(this.state.cart.recipeRequirement)[rIndex].quantity;
-                                    if (qty > 0) {
-                                        this.addToRecipeRequirement(rIndex, -1)}
-                                    }
-                                }>
-                                <i className="fas fa-regular fa-minus"></i>
+                                variant="success"
+                                className="plus-counter-button"
+                                onClick={(_) => this.addToRecipeRequirement(rIndex, 1)}>
+                                <i className="fas fa-solid fa-plus"></i>
                             </Button>
                         </div> 
                         <div id="cart-recipe-item" className="form-control input-field-style margin-left-20 margin-right-10 do-not-overflow-text" key={recipe.id}>
