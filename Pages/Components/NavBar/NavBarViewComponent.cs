@@ -29,6 +29,8 @@ public class NavBarViewComponent : ViewComponent
 
     public IEnumerable<Event> Events { get; set; }
 
+    public string RolesStr { get; private set; }
+
     public async Task<IViewComponentResult> InvokeAsync()
     {
         if (this.SignInManager.IsSignedIn(this.UserClaimsPrincipal))
@@ -40,7 +42,6 @@ public class NavBarViewComponent : ViewComponent
                 this.Events = new List<Event>();
                 return await Task.Run(() => this.View(this));
             }
-
             var roles = this.UserManager.GetRoles(user);
             this.UserName = user.UserName;
             this.UserId = user.Id;
@@ -48,6 +49,10 @@ public class NavBarViewComponent : ViewComponent
             this.Events = user.Events.Where(e => e.Type == EventType.Public).OrderByDescending(e => e.CreatedAt).Take(10);
             this.UnseenEvents = user.Events.Where(e => e.Type == EventType.Public).Count(e => !e.EventSeen);
         }
+
+        this.RolesStr = string.Join(
+        ",",
+        this.Roles.Select(r => r.ToString()));
 
         return await Task.Run(() => this.View(this));
     }

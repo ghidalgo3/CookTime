@@ -32,4 +32,9 @@ public class SessionManager : ISessionManager
             return null;
         }
     }
+
+    public bool IsInRole(ApplicationUser user, Role role)
+    {
+        return this.UserService.GetRoles(user).Contains(role);
+    }
 }

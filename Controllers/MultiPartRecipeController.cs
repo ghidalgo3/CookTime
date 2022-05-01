@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using babe_algorithms.Services;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using System.Globalization;
+using babe_algorithms.Models.Users;
 
 namespace babe_algorithms.Controllers
 {
@@ -191,7 +192,7 @@ namespace babe_algorithms.Controllers
             }
 
             var existingRecipe = await _context.GetMultiPartRecipeAsync(id);
-            if (existingRecipe.Owner?.Id != payload.Owner?.Id)
+            if (existingRecipe.Owner?.Id != payload.Owner?.Id && !this.Session.IsInRole(user, Role.Administrator))
             {
                 return this.Unauthorized("You can only edit your own recipes.");
             }
@@ -347,7 +348,7 @@ namespace babe_algorithms.Controllers
                 return NotFound();
             }
 
-            if (recipe.Owner?.Id != user.Id)
+            if (recipe.Owner?.Id != user.Id && !this.Session.IsInRole(user, Role.Administrator))
             {
                 return this.Unauthorized("You can only delete recipes you own.");
             }
