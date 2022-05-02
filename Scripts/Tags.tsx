@@ -78,10 +78,12 @@ export class Tags extends React.Component<TagsProps, TagsState> {
             id: uuidv4(),
             isNew: true,
         }
+        let newTags = [...this.state.tags, newTag]
         this.setState({
-            tags: [...this.state.tags, newTag],
+            tags: newTags,
             value: ''
         });
+        this.props.tagsChanged(newTags);
     }
 
     // Autosuggest will call this function every time you need to update suggestions.
