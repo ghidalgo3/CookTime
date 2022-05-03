@@ -25,13 +25,65 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
             id = idx.toString()
         }
         var massOptions = this.props.units.filter(u => u.siType === "Weight").map(unit => {
-            return <option key={unit.name} value={unit.name}>{unit.name}</option>
+            var printable = ""
+            switch (unit.name) {
+                case "Ounce":
+                    printable = "oz";
+                    break;
+                case "Pound":
+                    printable = "lb";
+                    break;
+                case "Milligram":
+                    printable = "mg";
+                    break;
+                case "Gram":
+                    printable = "g";
+                    break;
+                case "Kilogram":
+                    printable = "kg";
+                    break;
+            }
+            return <option key={unit.name} value={unit.name}>{printable}</option>
         })
         var volumeOptions = this.props.units.filter(u => u.siType === "Volume").map(unit => {
-            return <option key={unit.name} value={unit.name}>{unit.name}</option>
+            var printable = ""
+            switch (unit.name) {
+                case "Tablespoon":
+                    printable = "Tbps";
+                    break;
+                case "Teaspoon":
+                    printable = "tsp";
+                    break;
+                case "Milliliter":
+                    printable = "mL";
+                    break;
+                case "Cup":
+                    printable = "cup";
+                    break;
+                case "FluidOunce":
+                    printable = "fl oz";
+                    break;
+                case "Pint":
+                    printable = "pint";
+                    break;
+                case "Quart":
+                    printable = "quart";
+                    break;
+                case "Gallon":
+                    printable = "gallon";
+                    break;
+                case "Liter":
+                    printable = "L";
+                    break;
+            }
+            return <option key={unit.name} value={unit.name}>{printable}</option>
         })
         var countOptions = this.props.units.filter(u => u.siType === "Count").map(unit => {
-            return <option key={unit.name} value={unit.name}>{unit.name}</option>
+            var printable = "";
+            if (unit.name == "Count") {
+                printable = "unit";
+            } 
+            return <option key={unit.name} value={unit.name}>{printable}</option>
         })
         var innerSelect = ( [
             {group: "Count", options: countOptions},
@@ -42,7 +94,7 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
         }))
         return (
             <Row key={id} className="margin-bottom-8">
-                <Col key={`${id}quantity`} xs={2}>
+                <Col key={`${id}quantity`} xs={2} className="ingredient-col-left">
                     <Form.Control
                         type="number"
                         min="0"
@@ -50,14 +102,15 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
                         placeholder={"0"}
                         value={ir.quantity === 0.0 ? undefined : ir.quantity}></Form.Control>
                 </Col>
-                <Col key={`${id}unit`} xs={3}>
+                <Col key={`${id}unit`} xs={3} className="ingredient-col-middle">
                     <Form.Select
+                        className="border-0"
                         onChange={(e) => this.props.updateIngredientRequirement(ir, ir => {ir.unit = e.currentTarget.value; return ir; })}
                         value={ir.unit}>
                         { innerSelect }
                     </Form.Select>
                 </Col>
-                <Col className="get-smaller" key={`${id}name`} >
+                <Col key={`${id}name`} className="ingredient-col-right get-smaller">
                     <IngredientInput
                         isNew={ir.ingredient.isNew}
                         query={text => `/api/recipe/ingredients?name=${text}`}

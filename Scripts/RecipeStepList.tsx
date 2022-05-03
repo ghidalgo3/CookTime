@@ -21,7 +21,7 @@ export class RecipeStepList extends React.Component<RecipeStepListProps, {}> {
     stepEditRow(i: RecipeStep, idx: number): any {
         return (
             <Row>
-                <Col className="col d-flex align-items-center">
+                <Col className="col d-flex align-items-center get-smaller">
                     <FormControl
                         as="textarea" 
                         rows={4}

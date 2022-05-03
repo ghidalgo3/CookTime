@@ -730,7 +730,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         recipe : MultiPartRecipe,
         component : RecipeComponent) {
         return (
-            <div className="border-top-1">
+            <div className="border-top-1 margin-bottom-20">
                 {recipe.recipeComponents.length > 1 ? 
                 <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                     <Col className="col-3 recipe-field-title">

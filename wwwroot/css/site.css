@@ -351,6 +351,17 @@ html {
   margin-bottom: 0px;
 }
 
+.ingredient-col-left {
+  padding-right: 5px;
+}
+.ingredient-col-middle {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.ingredient-col-right {
+  padding-left: 5px;
+}
+
 .component-card {
   padding: 10px;
   background-color: var(--secondary-background);
@@ -358,6 +369,9 @@ html {
 
 .recipe-card {
   background-color: var(--secondary-background);
+}
+.review-card {
+  padding: 16px 16px 0 16px;
 }
 
 .recipe-edit-row {
@@ -411,7 +425,7 @@ html {
   }
 
   .get-smaller {
-    padding-right: 30px;
+    padding-right: 20px;
   }
 
   .recipe-edit-buttons {
@@ -680,13 +694,11 @@ body {
 /* From Bootstrap container, 576px happens to be our breakpoint where we can't have 2 column in the same row for Directions label and Steps text */
 @media all and (max-width: 576px) {
   .step-list {
-    padding-left: 4px;
     margin-top: 8px;
     width: 100%;
   }
 
   .ingredient-list {
-    padding-left: 4px;
     width: 100%;
     margin-bottom: 0;
   }

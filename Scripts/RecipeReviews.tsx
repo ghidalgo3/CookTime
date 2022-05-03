@@ -33,7 +33,7 @@ export class RecipeReviews extends React.Component<RecipeReviewsProps, {reviews:
                 <div>
                 {this.state.reviews?.map(r => {
                     return (
-                        <Card className="padding-16">
+                        <Card className="review-card">
                             <Row>
                                 <Col>
                                     <Card.Link className="">
