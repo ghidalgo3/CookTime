@@ -12,7 +12,7 @@ if (anchor != window.location.href) {
 ($ as any).validator.addMethod(
     'password',
     function (value, element, params) {
-        console.log(element)
+        // console.log(element)
         if (element.id === "passwordInput") {
             for (let index = 0; index < value.length - 1; index++) {
                 if (value.charAt(index) !== value.charAt(index + 1)) {

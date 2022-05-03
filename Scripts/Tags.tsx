@@ -142,7 +142,7 @@ export class Tags extends React.Component<TagsProps, TagsState> {
                     tags: newTags,
                     value: ''
                 });
-                console.log("ENTER KEY PRESSED: ")
+                // console.log("ENTER KEY PRESSED: ")
                 console.log(newTag)
                 this.props.tagsChanged(newTags);
             }

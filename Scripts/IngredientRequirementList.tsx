@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Col, Form, Row } from "react-bootstrap";
+import { Button, Col, Form, Row, ToggleButton, ToggleButtonGroup } from "react-bootstrap";
 import { stringify, v4 as uuidv4 } from 'uuid';
 import { IngredientDisplay } from "./IngredientDisplay";
 import { IngredientInput } from "./IngredientInput";
@@ -14,9 +14,16 @@ type IngredientRequirementListProps = {
     multiplier : number
 }
 
-export class IngredientRequirementList extends React.Component<IngredientRequirementListProps, {}> {
+type IngredientRequirementListState = {
+    unitPreference : null | "Imperial" | "Metric"
+}
+
+export class IngredientRequirementList extends React.Component<IngredientRequirementListProps, IngredientRequirementListState> {
     constructor(props : IngredientRequirementListProps) {
         super(props);
+        this.state = {
+            unitPreference: null
+        }
     }
 
     ingredientEditRow(ir : IngredientRequirement, idx : number) {
@@ -89,8 +96,8 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
 
     render() {
         if (!this.props.edit) {
-            return this.props.ingredientRequirements.map(ingredient => {
-                let newQuantity = ingredient.quantity * this.props.multiplier; //
+            let rows = this.props.ingredientRequirements.map(ingredient => {
+                let newQuantity = ingredient.quantity * this.props.multiplier;
                 return (
                     <Row className="ingredient-item">
                         <IngredientDisplay
@@ -100,6 +107,34 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
                     </Row>
                 )
             });
+            return rows;
+            // return (
+            //     <div>
+            //             <ToggleButtonGroup
+            //                 name="options"
+            //                 type="radio"
+            //                 value={this.state.unitPreference}
+            //                 onChange={e => {
+            //                     if (e[0] == "null") {
+            //                         this.setState({unitPreference: null})
+            //                     } else if (e[0] == "Imperial") {
+            //                         this.setState({unitPreference: "Imperial"})
+            //                     } else if (e[0] == "Metric") {
+            //                         this.setState({unitPreference: "Metric"})
+            //                     }
+            //                 }}>
+            //                 <ToggleButton id="tbg-btn-1" value={"Imperial"}>
+            //                     Imperial
+            //                 </ToggleButton>
+            //                 <ToggleButton id="tbg-btn-2" value={"null"}>
+            //                     As is
+            //                 </ToggleButton>
+            //                 <ToggleButton id="tbg-btn-3" value={"Metric"}>
+            //                     Metric
+            //                 </ToggleButton>
+            //             </ToggleButtonGroup>
+            //     </div>
+            // )
         } else {
             return (
                 <Form>

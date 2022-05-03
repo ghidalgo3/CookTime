@@ -43,16 +43,16 @@ export class Step extends React.Component<{
             console.log(segments);
             const element = ingredientRequirements![i];
             let ingredientName = element.ingredient.name
-            console.log(`Matching ingredient ${ingredientName}`);
+            // console.log(`Matching ingredient ${ingredientName}`);
             let ingredientRegex = new RegExp(`${ingredientName}`, 'i')
             let j = 0;
             while (j < segments.length) {
                 let currentSegment = segments[j];
-                console.log(`Current segment ${j} is '${currentSegment.text}' Segments length ${segments.length}`)
+                // console.log(`Current segment ${j} is '${currentSegment.text}' Segments length ${segments.length}`)
                 let match = currentSegment.text.match(ingredientRegex)
                 if (match != null)
                 {
-                    console.log(`Match for regex ${ingredientName} found at index ${match.index!} for current segment '${currentSegment.text}''`)
+                    // console.log(`Match for regex ${ingredientName} found at index ${match.index!} for current segment '${currentSegment.text}''`)
                     let trifurcation = this.trifurcate(currentSegment.text, match.index!, ingredientName.length);
                     if (match.index! == 0) {
                         // array size grows by 1
@@ -61,7 +61,7 @@ export class Step extends React.Component<{
                             1,
                             {text: trifurcation.inside, ingredient: element},
                             {text: trifurcation.after, ingredient: null})
-                        console.log(segments);
+                        // console.log(segments);
                         j++;
                     } else {
                         // array size grows by 2
@@ -71,7 +71,7 @@ export class Step extends React.Component<{
                             {text: trifurcation.before, ingredient: null},
                             {text: trifurcation.inside, ingredient: element},
                             {text: trifurcation.after, ingredient: null})
-                        console.log(segments);
+                        // console.log(segments);
                         j++;
                     }
                 }
