@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import * as ReactDOM from 'react-dom';
-import { IngredientDisplay } from './IngredientInput';
+import { IngredientDisplay } from './IngredientDisplay';
 import { parse, v4 as uuidv4 } from 'uuid';
 
 type CartState = {

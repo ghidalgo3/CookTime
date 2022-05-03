@@ -152,7 +152,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
     appendNewIngredientRequirementRowForComponent(componentIndex : number, component : RecipeComponent): void {
         if (this.props.multipart) {
             var ir : IngredientRequirement = {
-                ingredient: {name: '', id: uuidv4(), isNew: false},
+                ingredient: {name: '', id: uuidv4(), isNew: false, densityKgPerL: 1},
                 unit: 'Count',
                 quantity: 0,
                 id: uuidv4(),

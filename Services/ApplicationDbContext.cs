@@ -113,7 +113,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .Include(mpr => mpr.RecipeComponents)
                 .ThenInclude(component => component.Ingredients)
                     .ThenInclude(ingredient => ingredient.Ingredient)
-                        // .ThenInclude(ingredient => ingredient.NutritionData)
+                        .ThenInclude(ingredient => ingredient.NutritionData)
             .Include(mpr => mpr.RecipeComponents)
                 .ThenInclude(component => component.Steps)
             .Include(recipe => recipe.Categories)

@@ -1,7 +1,8 @@
 import React from "react";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { stringify, v4 as uuidv4 } from 'uuid';
-import { IngredientDisplay, IngredientInput } from "./IngredientInput";
+import { IngredientDisplay } from "./IngredientDisplay";
+import { IngredientInput } from "./IngredientInput";
 
 type IngredientRequirementListProps = {
     ingredientRequirements: IngredientRequirement[],
@@ -90,7 +91,14 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
         if (!this.props.edit) {
             return this.props.ingredientRequirements.map(ingredient => {
                 let newQuantity = ingredient.quantity * this.props.multiplier; //
-                return <Row className="ingredient-item"><IngredientDisplay ingredientRequirement={{...ingredient, quantity: newQuantity}} /></Row>
+                return (
+                    <Row className="ingredient-item">
+                        <IngredientDisplay
+                            showAlternatUnit={true}
+                            units={this.props.units}
+                            ingredientRequirement={{...ingredient, quantity: newQuantity}} />
+                    </Row>
+                )
             });
         } else {
             return (
