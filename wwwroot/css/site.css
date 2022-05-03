@@ -613,6 +613,9 @@ body {
 .margin-top-20 {
   margin-top: 20px;
 }
+.margin-top-30 {
+  margin-top: 30px;
+}
 
 .margin-left-4 {
   margin-left: 4px;
@@ -694,7 +697,7 @@ body {
 /* From Bootstrap container, 576px happens to be our breakpoint where we can't have 2 column in the same row for Directions label and Steps text */
 @media all and (max-width: 576px) {
   .step-list {
-    margin-top: 8px;
+    margin-bottom: 8px;
     width: 100%;
   }
 

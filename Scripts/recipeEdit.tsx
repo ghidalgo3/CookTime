@@ -490,27 +490,24 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     }
                     {this.RecipeOrComponents()}
                 </div>
-                <div className="border-top-1 margin-top-10">
-                    <Row>
-                        <Col xs={3} className="nft-row">
-                            { this.state.edit ? 
-                                null
-                                :
-                                this.nutritionFacts()
-                            }
-                        </Col>
-                        <Col>
-                            { this.state.edit ? 
-                                null
-                                :
-                                this.ingredientNutritionFacts() 
-                            }
-                        </Col>
-                    </Row>
-                </div>
+                { 
+                    !this.state.edit ? 
+                    <div className="border-top-1 margin-top-10">
+                        <Row>
+                            <Col xs={3} className="nft-row">
+                                {this.nutritionFacts()}
+                            </Col>
+                            <Col>
+                                {this.ingredientNutritionFacts()}
+                            </Col>
+                        </Row>
+                    </div>
+                    :
+                    null
+                }
                 {
                     (isSignedIn() && !this.state.edit) ?
-                    <div className="border-top-1 margin-top-10">
+                    <div className="border-top-1 margin-top-30">
                         <Row>
                             <Col>
                                 <RecipeReviewForm recipe={this.state.recipe} />
