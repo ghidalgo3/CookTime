@@ -40,6 +40,17 @@ public class Ingredient
     /// <value></value>
     public double ExpectedUnitMass { get; set; } = 0.1;
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <value></value>
+    public double? DensityKgPerL {
+        get
+        {
+            return this.NormalNutritionData?.CalculateDensity();
+        }
+    }
+
     public override bool Equals(object obj)
     {
         return obj is Ingredient ingredient &&

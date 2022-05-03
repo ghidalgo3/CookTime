@@ -41,7 +41,9 @@ type IngredientRequirement = {
     position : number
 }
 
-type Ingredient = Autosuggestable
+type Ingredient = Autosuggestable & {
+    densityKgPerL : number | undefined
+}
 
 type CartIngredient = {
     id: string,
