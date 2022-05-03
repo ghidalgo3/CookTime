@@ -509,7 +509,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     </Row>
                 </div>
                 {
-                    isSignedIn() ?
+                    (isSignedIn() && !this.state.edit) ?
                     <div className="border-top-1 margin-top-10">
                         <Row>
                             <Col>
@@ -520,13 +520,18 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     :
                     null
                 }
-                <div className="margin-top-10">
-                    <Row>
-                        <Col>
-                            <RecipeReviews recipeId={this.props.recipeId} />
-                        </Col>
-                    </Row>
-                </div>
+                {
+                    !this.state.edit ? 
+                    <div className="margin-top-10">
+                        <Row>
+                            <Col>
+                                <RecipeReviews recipeId={this.props.recipeId} />
+                            </Col>
+                        </Row>
+                    </div>
+                    :
+                    null
+                }
             </div>
         );
     }
