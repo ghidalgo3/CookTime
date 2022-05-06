@@ -35,8 +35,6 @@ public class FavoritesModel : PageModel
             return this.Redirect("/");
         }
 
-        this.Favorites = await this._context.GetFavoritesAsync(user);
-
         await LoadFavorites(user);
         return this.Page();
     }
@@ -74,7 +72,7 @@ public class FavoritesModel : PageModel
                     r.Categories.ToList(),
                     r.AverageReviews,
                     r.ReviewCount,
-                    this.Favorites?.ContainsRecipe(r.Id) ?? null
+                    true
                 ))
                 .ToList();
     }

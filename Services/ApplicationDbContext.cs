@@ -197,12 +197,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .Include(recipe => recipe.Owner);
     }
 
-    public IQueryable<Cart> GetActiveCartQuery(ApplicationUser user, string name)
+    public IQueryable<Cart> GetActiveCartQuery(
+        ApplicationUser user,
+        string name)
     {
         return this.Carts
                             .Where(c => c.Name.Equals(name))
                             .Where(c => c.Active)
                             .Where(c => c.Owner.Id == user.Id)
+                            .AsSplitQuery()
                             .Include(c => c.RecipeRequirement)
                                 .ThenInclude(rr => rr.MultiPartRecipe)
                                     .ThenInclude(mpRecipe => mpRecipe.RecipeComponents)
@@ -213,11 +216,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                                     .ThenInclude(mpRecipe => mpRecipe.Images)
                             .Include(c => c.RecipeRequirement)
                                 .ThenInclude(rr => rr.MultiPartRecipe)
-                                    .ThenInclude(mpRecipe => mpRecipe.Categories)
-                            .Include(c => c.RecipeRequirement)
-                                .ThenInclude(rr => rr.Recipe)
-                                    .ThenInclude(recipe => recipe.Ingredients)
-                                        .ThenInclude(i => i.Ingredient);
+                                    .ThenInclude(mpRecipe => mpRecipe.Categories);
     }
     
     public IQueryable<Cart> GetSimpleActiveCartQuery(ApplicationUser user, string name)
