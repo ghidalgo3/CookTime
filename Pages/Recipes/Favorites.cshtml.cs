@@ -41,7 +41,7 @@ public class FavoritesModel : PageModel
 
     private async Task LoadFavorites(ApplicationUser user)
     {
-        var cart = await this._context.GetActiveCartQuery(user, Cart.Favorites).SingleOrDefaultAsync();
+        var cart = await this._context.GetCartAsync(user, Cart.Favorites);
         var complexQueryResults = 
             cart.RecipeRequirement
             .Select(rr =>

@@ -163,7 +163,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         return await GetCartAsync(user, Cart.Favorites, simple: true);
     }
 
-    private async Task<Cart> GetCartAsync(ApplicationUser user, string name, bool simple = false)
+    public async Task<Cart> GetCartAsync(ApplicationUser user, string name, bool simple = false)
     {
         var activeCart = 
             simple ? 
