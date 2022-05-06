@@ -185,6 +185,15 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         }
     }
 
+    public IQueryable<MultiPartRecipe> GetRecipes(ApplicationUser user)
+    {
+        return this.MultiPartRecipes
+            .Where(recipe => recipe.Owner.Id == user.Id)
+            .Include(r => r.Images)
+            .Include(r => r.Categories)
+            .Include(recipe => recipe.Owner);
+    }
+
     public IQueryable<Cart> GetActiveCartQuery(ApplicationUser user, string name)
     {
         return this.Carts

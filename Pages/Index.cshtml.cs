@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using babe_algorithms.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -134,22 +133,4 @@ public class IndexModel : PageModel
                     this.Favorites?.ContainsRecipe(r.Id) ?? null))
                 .ToList();
     }
-}
-
-public record RecipeView(
-    string Name,
-    Guid Id,
-    List<Guid> ImageIds,
-    List<string> Categories,
-    double AverageReviews,
-    int ReviewCount,
-    bool? IsFavorite) {}
-
-public class RecipeViewEqualityComparer : IEqualityComparer<RecipeView>
-{
-    public bool Equals(RecipeView x, RecipeView y) =>
-        x.Id == y.Id;
-
-    public int GetHashCode([DisallowNull] RecipeView obj) => 
-        obj.Id.GetHashCode();
 }
