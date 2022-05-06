@@ -170,7 +170,7 @@ public class RecipeController : ControllerBase, IImageController
         {
             context.Images.Remove(image);
         }
-        var cart = await context.GetActiveCartAsync(user);
+        var cart = await context.GetGroceryListAsync(user);
         cart.RecipeRequirement = cart.RecipeRequirement.Where(rr => rr.Recipe.Id != id).ToList();
         await context.SaveChangesAsync();
 

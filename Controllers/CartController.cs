@@ -36,7 +36,7 @@ public class CartController : ControllerBase
 
         if (recipe != null)
         {
-            var cart = await _context.GetActiveCartAsync(user);
+            var cart = await _context.GetGroceryListAsync(user);
             var existingRecipe = cart.RecipeRequirement.FirstOrDefault(rr => rr.Recipe?.Id == recipeId);
             if (existingRecipe == null)
             {
@@ -54,7 +54,7 @@ public class CartController : ControllerBase
         }
         else
         {
-            var cart = await _context.GetActiveCartAsync(user);
+            var cart = await _context.GetGroceryListAsync(user);
             var existingRecipe = cart.RecipeRequirement.FirstOrDefault(rr => rr.MultiPartRecipe.Id == recipeId);
             if (existingRecipe == null)
             {
@@ -78,7 +78,7 @@ public class CartController : ControllerBase
     {
         if ((await this.Session.GetSignedInUserAsync(this.User)) is ApplicationUser user)
         {
-            return await _context.GetActiveCartAsync(user);
+            return await _context.GetGroceryListAsync(user);
         }
         else
         {
@@ -103,7 +103,7 @@ public class CartController : ControllerBase
             return this.Unauthorized();
         }
 
-        var cart = await this._context.GetActiveCartAsync(user);
+        var cart = await this._context.GetGroceryListAsync(user);
         _context.Entry(cart).CurrentValues.SetValues(cartPayload);
         cart.RecipeRequirement = cart.RecipeRequirement
             .Where(rr => cartPayload.RecipeRequirement.Contains(rr))
@@ -164,7 +164,7 @@ public class CartController : ControllerBase
             return this.Unauthorized();
         }
 
-        var cart = await _context.GetActiveCartAsync(user);
+        var cart = await _context.GetGroceryListAsync(user);
         if (cart == null)
         {
             return NotFound();

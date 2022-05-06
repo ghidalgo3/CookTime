@@ -153,19 +153,22 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         .Single(i => i.Id == id);
     }
 
-    public async Task<Cart> GetActiveCartAsync(ApplicationUser user)
+    public async Task<Cart> GetGroceryListAsync(ApplicationUser user)
     {
         return await GetCartAsync(user, Cart.DefaultName);
     }
 
     public async Task<Cart> GetFavoritesAsync(ApplicationUser user)
     {
-        return await GetCartAsync(user, Cart.Favorites);
+        return await GetCartAsync(user, Cart.Favorites, simple: true);
     }
 
-    private async Task<Cart> GetCartAsync(ApplicationUser user, string name)
+    private async Task<Cart> GetCartAsync(ApplicationUser user, string name, bool simple = false)
     {
-        var activeCart = await GetActiveCartQuery(user, name).FirstOrDefaultAsync();
+        var activeCart = 
+            simple ? 
+                await GetSimpleActiveCartQuery(user, name).FirstOrDefaultAsync() : 
+                await GetActiveCartQuery(user, name).FirstOrDefaultAsync();
         if (activeCart == null)
         {
             var cart = new Cart()
@@ -215,6 +218,16 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                                 .ThenInclude(rr => rr.Recipe)
                                     .ThenInclude(recipe => recipe.Ingredients)
                                         .ThenInclude(i => i.Ingredient);
+    }
+    
+    public IQueryable<Cart> GetSimpleActiveCartQuery(ApplicationUser user, string name)
+    {
+        return this.Carts
+                            .Where(c => c.Name.Equals(name))
+                            .Where(c => c.Active)
+                            .Where(c => c.Owner.Id == user.Id)
+                            .Include(c => c.RecipeRequirement)
+                                .ThenInclude(rr => rr.MultiPartRecipe);
     }
 
     public async Task<bool> AddRecipeToCart(

@@ -27,7 +27,7 @@ public class CartModel : PageModel
             return this.RedirectToPage("SignIn");
         }
 
-        ActiveCart = await _context.GetActiveCartAsync(user);
+        ActiveCart = await _context.GetGroceryListAsync(user);
         return this.Page();
     }
 }

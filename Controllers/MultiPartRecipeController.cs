@@ -406,7 +406,7 @@ namespace babe_algorithms.Controllers
             {
                 _context.Images.Remove(image);
             }
-            var cart = await _context.GetActiveCartAsync(user);
+            var cart = await _context.GetGroceryListAsync(user);
             cart.RecipeRequirement = cart.RecipeRequirement.Where(rr => rr.MultiPartRecipe.Id != id).ToList();
             await _context.SaveChangesAsync();
 
