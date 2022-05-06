@@ -490,27 +490,24 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     }
                     {this.RecipeOrComponents()}
                 </div>
-                <div className="border-top-1 margin-top-10">
-                    <Row>
-                        <Col xs={3} className="nft-row">
-                            { this.state.edit ? 
-                                null
-                                :
-                                this.nutritionFacts()
-                            }
-                        </Col>
-                        <Col>
-                            { this.state.edit ? 
-                                null
-                                :
-                                this.ingredientNutritionFacts() 
-                            }
-                        </Col>
-                    </Row>
-                </div>
-                {
-                    isSignedIn() ?
+                { 
+                    !this.state.edit ? 
                     <div className="border-top-1 margin-top-10">
+                        <Row>
+                            <Col xs={3} className="nft-row">
+                                {this.nutritionFacts()}
+                            </Col>
+                            <Col>
+                                {this.ingredientNutritionFacts()}
+                            </Col>
+                        </Row>
+                    </div>
+                    :
+                    null
+                }
+                {
+                    (isSignedIn() && !this.state.edit) ?
+                    <div className="border-top-1 margin-top-30">
                         <Row>
                             <Col>
                                 <RecipeReviewForm recipe={this.state.recipe} />
@@ -520,13 +517,18 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     :
                     null
                 }
-                <div className="margin-top-10">
-                    <Row>
-                        <Col>
-                            <RecipeReviews recipeId={this.props.recipeId} />
-                        </Col>
-                    </Row>
-                </div>
+                {
+                    !this.state.edit ? 
+                    <div className="margin-top-10">
+                        <Row>
+                            <Col>
+                                <RecipeReviews recipeId={this.props.recipeId} />
+                            </Col>
+                        </Row>
+                    </div>
+                    :
+                    null
+                }
             </div>
         );
     }
@@ -730,7 +732,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
         recipe : MultiPartRecipe,
         component : RecipeComponent) {
         return (
-            <div className="border-top-1">
+            <div className="border-top-1 margin-bottom-20">
                 {recipe.recipeComponents.length > 1 ? 
                 <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                     <Col className="col-3 recipe-field-title">
