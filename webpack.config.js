@@ -10,7 +10,7 @@ module.exports = {
         recipeEdit: './Scripts/recipeEdit.tsx',
         cart: './Scripts/Cart.tsx',
         ingredients: './Scripts/Ingredients.tsx',
-        cardReviewDisplay: './Scripts/CardReviewDisplay.tsx',
+        cardEnhancements: './Scripts/CardEnhancements.tsx',
         registration: './Scripts/Registration.ts',
         css: './wwwroot/css/site.css',
     },

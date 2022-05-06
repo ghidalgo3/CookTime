@@ -14,6 +14,7 @@ namespace babe_algorithms.Controllers
         private readonly ApplicationDbContext _context;
 
         public ISessionManager Session { get; }
+
         public TextInfo TextInfo { get; }
 
         public MultiPartRecipeController(
@@ -30,6 +31,67 @@ namespace babe_algorithms.Controllers
         public async Task<ActionResult<IEnumerable<MultiPartRecipe>>> GetMultiPartRecipes()
         {
             return await _context.MultiPartRecipes.ToListAsync();
+        }
+
+        [HttpDelete("{id}/favorite")]
+        public async Task<ActionResult> DeleteFromFavorites(Guid id)
+        {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user == null)
+            {
+                return this.Unauthorized("You are not signed in.");
+            }
+
+            var existingRecipe = await _context.GetMultiPartRecipeAsync(id);
+            if (existingRecipe == null)
+            {
+                return this.NotFound();
+            }
+
+            var favorites = await this._context.GetFavoritesAsync(user);
+            if (favorites.ContainsRecipe(existingRecipe))
+            {
+                var removalIndex = favorites.RecipeRequirement.FindIndex(rr => rr.MultiPartRecipe.Id == existingRecipe.Id);
+                favorites.RecipeRequirement.RemoveAt(removalIndex);
+            }
+            else
+            {
+                return this.Ok();
+            }
+            await this._context.SaveChangesAsync();
+            return this.Ok();
+        }
+
+        [HttpPut("{id}/favorite")]
+        public async Task<ActionResult> AddRecipeToFavorites(Guid id)
+        {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user == null)
+            {
+                return this.Unauthorized("You are not signed in.");
+            }
+
+            var existingRecipe = await _context.GetMultiPartRecipeAsync(id);
+            if (existingRecipe == null)
+            {
+                return this.NotFound();
+            }
+
+            var favorites = await this._context.GetFavoritesAsync(user);
+            if (favorites.ContainsRecipe(existingRecipe))
+            {
+                return this.Ok();
+            }
+            else
+            {
+                favorites.RecipeRequirement.Add(new RecipeRequirement()
+                {
+                    MultiPartRecipe = existingRecipe,
+                    Quantity = 1.0,
+                });
+            }
+            await this._context.SaveChangesAsync();
+            return this.Ok();
         }
 
         [HttpDelete("{id}/review")]

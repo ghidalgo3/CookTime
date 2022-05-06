@@ -155,19 +155,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public async Task<Cart> GetActiveCartAsync(ApplicationUser user)
     {
-        var activeCart = await this.Carts
-            .Where(c => c.Owner.Id == user.Id)
-            .Where(c => c.Active)
-            .Include(c => c.RecipeRequirement)
-                .ThenInclude(rr => rr.MultiPartRecipe)
-                    .ThenInclude(mpRecipe => mpRecipe.RecipeComponents)
-                        .ThenInclude(c => c.Ingredients)
-                            .ThenInclude(i => i.Ingredient)
-            .Include(c => c.RecipeRequirement)
-                .ThenInclude(rr => rr.Recipe)
-                    .ThenInclude(recipe => recipe.Ingredients)
-                        .ThenInclude(i => i.Ingredient)
-            .FirstOrDefaultAsync();
+        return await GetCartAsync(user, Cart.DefaultName);
+    }
+
+    public async Task<Cart> GetFavoritesAsync(ApplicationUser user)
+    {
+        return await GetCartAsync(user, Cart.Favorites);
+    }
+
+    private async Task<Cart> GetCartAsync(ApplicationUser user, string name)
+    {
+        var activeCart = await GetActiveCartQuery(user, name).FirstOrDefaultAsync();
         if (activeCart == null)
         {
             var cart = new Cart()
@@ -175,6 +173,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 CreateAt = DateTime.Now,
                 Active = true,
                 Owner = user,
+                Name = name,
                 RecipeRequirement = new List<RecipeRequirement>(),
             };
             this.Carts.Add(cart);
@@ -184,5 +183,28 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         {
             return activeCart;
         }
+    }
+
+    public IQueryable<Cart> GetActiveCartQuery(ApplicationUser user, string name)
+    {
+        return this.Carts
+                            .Where(c => c.Name.Equals(name))
+                            .Where(c => c.Active)
+                            .Where(c => c.Owner.Id == user.Id)
+                            .Include(c => c.RecipeRequirement)
+                                .ThenInclude(rr => rr.MultiPartRecipe)
+                                    .ThenInclude(mpRecipe => mpRecipe.RecipeComponents)
+                                        .ThenInclude(c => c.Ingredients)
+                                            .ThenInclude(i => i.Ingredient)
+                            .Include(c => c.RecipeRequirement)
+                                .ThenInclude(rr => rr.MultiPartRecipe)
+                                    .ThenInclude(mpRecipe => mpRecipe.Images)
+                            .Include(c => c.RecipeRequirement)
+                                .ThenInclude(rr => rr.MultiPartRecipe)
+                                    .ThenInclude(mpRecipe => mpRecipe.Categories)
+                            .Include(c => c.RecipeRequirement)
+                                .ThenInclude(rr => rr.Recipe)
+                                    .ThenInclude(recipe => recipe.Ingredients)
+                                        .ThenInclude(i => i.Ingredient);
     }
 }

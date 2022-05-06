@@ -1,44 +1,45 @@
 using babe_algorithms.Models.Users;
-using Microsoft.EntityFrameworkCore;
 
 namespace babe_algorithms.Models;
 
+/// <summary>
+/// Heavily overloaded type, this actually represents a list of recipes.
+/// Lists are used to represent 3 important scenarios:
+/// 1. Shopping carts
+/// 2. Favorites
+/// 3. Arbitrary lists
+/// </summary>
 public class Cart : IOwned
 {
+    public const string DefaultName = "Cart";
+    public const string Favorites = "Favorites";
+
     public Guid Id { get; set; }
+
+    public string Name { get; set; } = DefaultName;
+
+    public string Description { get; set; }
+
     public List<RecipeRequirement> RecipeRequirement { get; set; }
+
     public List<CartIngredient> IngredientState { get; set; }
+
     public DateTime CreateAt { get; set; }
+
     public bool Active { get; set; }
+
     [JsonIgnore]
     public ApplicationUser Owner { get ; set ; }
+
+    public bool ContainsRecipe(MultiPartRecipe recipe)
+    {
+        return this.RecipeRequirement.Any(rr => rr.MultiPartRecipe.Equals(recipe));
+    }
+
+    public bool ContainsRecipe(Guid recipeId)
+    {
+        return this.RecipeRequirement.Any(rr => rr.MultiPartRecipe.Id.Equals(recipeId));
+    }
 }
 
 
-[Owned]
-public class RecipeRequirement : IEquatable<RecipeRequirement>
-{
-    public Guid Id { get; set; }
-    public Recipe Recipe { get; set; }
-    public MultiPartRecipe MultiPartRecipe { get; set; }
-    public double Quantity { get; set; }
-
-    public bool Equals(RecipeRequirement other) => this.Id == other.Id;
-
-    public override int GetHashCode() => this.Id.GetHashCode();
-}
-
-/// <summary>
-/// Overrides to cart ingredients
-/// </summary>
-[Owned]
-public class CartIngredient : IEquatable<CartIngredient>
-{
-    public Guid Id { get; set; }
-    public Ingredient Ingredient { get; set; }
-    public bool Checked { get; set; }
-
-    public bool Equals(CartIngredient other) => this.Id == other.Id;
-
-    public override int GetHashCode() => this.Id.GetHashCode();
-}
