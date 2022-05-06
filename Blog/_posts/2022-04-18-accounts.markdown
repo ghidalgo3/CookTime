@@ -7,9 +7,9 @@ categories:
 
 We have finished implementing accounts on CookTime.
 Accounts will allow for some exciting new features like:
-1. Favorite recipes
+1. Favorite recipes ✅
 2. Private recipes
-3. Ratings
+3. Ratings ✅
 4. Comments
 5. Recipe lists
 6. Personal shopping lists ✅
