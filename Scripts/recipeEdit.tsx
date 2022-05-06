@@ -616,7 +616,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 // dietaryFiber={0}
                 sugars={Math.round(sugars / this.state.recipe.servingsProduced)}
                 proteins={Math.round(proteins / this.state.recipe.servingsProduced)}
-                servings={this.state.recipe.servingsProduced}
+                servings={this.state.newServings}
                 // vitaminA={0}
                 // vitaminC={0}
                 // calcium={0}

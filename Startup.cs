@@ -24,7 +24,7 @@ public class Startup
     {
         services.AddControllersWithViews().AddNewtonsoftJson(options => 
         {
-            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
         });
 
         var mvcBuilder = services.AddRazorPages();

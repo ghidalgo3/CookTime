@@ -4,6 +4,7 @@ using babe_algorithms.Services;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using System.Globalization;
 using babe_algorithms.Models.Users;
+using Microsoft.AspNetCore.Authorization;
 
 namespace babe_algorithms.Controllers
 {
@@ -47,18 +48,12 @@ namespace babe_algorithms.Controllers
             {
                 return this.NotFound();
             }
+            var modified = await this._context.RemoveRecipeFromCart(user, existingRecipe, Cart.Favorites);
+            if (modified)
+            {
+                await this._context.SaveChangesAsync();
+            }
 
-            var favorites = await this._context.GetFavoritesAsync(user);
-            if (favorites.ContainsRecipe(existingRecipe))
-            {
-                var removalIndex = favorites.RecipeRequirement.FindIndex(rr => rr.MultiPartRecipe.Id == existingRecipe.Id);
-                favorites.RecipeRequirement.RemoveAt(removalIndex);
-            }
-            else
-            {
-                return this.Ok();
-            }
-            await this._context.SaveChangesAsync();
             return this.Ok();
         }
 
@@ -76,21 +71,11 @@ namespace babe_algorithms.Controllers
             {
                 return this.NotFound();
             }
-
-            var favorites = await this._context.GetFavoritesAsync(user);
-            if (favorites.ContainsRecipe(existingRecipe))
+            var modified = await this._context.AddRecipeToCart(user, existingRecipe, Cart.Favorites);
+            if (modified)
             {
-                return this.Ok();
+                await this._context.SaveChangesAsync();
             }
-            else
-            {
-                favorites.RecipeRequirement.Add(new RecipeRequirement()
-                {
-                    MultiPartRecipe = existingRecipe,
-                    Quantity = 1.0,
-                });
-            }
-            await this._context.SaveChangesAsync();
             return this.Ok();
         }
 

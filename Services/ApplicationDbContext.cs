@@ -207,4 +207,41 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                                     .ThenInclude(recipe => recipe.Ingredients)
                                         .ThenInclude(i => i.Ingredient);
     }
+
+    public async Task<bool> AddRecipeToCart(
+        ApplicationUser user,
+        MultiPartRecipe recipe,
+        string cartName)
+    {
+        var cart = await this.GetCartAsync(user, cartName);
+        if (cart.ContainsRecipe(recipe))
+        {
+            return false;
+        }
+        else
+        {
+            cart.RecipeRequirement.Add(new RecipeRequirement()
+            {
+                MultiPartRecipe = recipe,
+                Quantity = 1.0,
+            });
+            return true;
+        }
+
+    }
+
+    public async Task<bool> RemoveRecipeFromCart(ApplicationUser user, MultiPartRecipe recipe, string cartName)
+    {
+        var cart = await this.GetCartAsync(user, cartName);
+        if (cart.ContainsRecipe(recipe))
+        {
+            var removalIndex = cart.RecipeRequirement.FindIndex(rr => rr.MultiPartRecipe.Id == recipe.Id);
+            cart.RecipeRequirement.RemoveAt(removalIndex);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
