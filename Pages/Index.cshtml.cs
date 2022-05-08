@@ -24,6 +24,9 @@ public class IndexModel : PageModel
     }
 
     public List<RecipeView> Recipes { get; set; }
+
+    public List<RecipeView> NewRecipes { get; set; } = new List<RecipeView>();
+
     public Cart Favorites { get; private set; }
 
     public async Task OnGetAsync(
@@ -116,12 +119,25 @@ public class IndexModel : PageModel
                     Name = image.Name,
                 }),
                 r.AverageReviews,
-                r.ReviewCount
+                r.ReviewCount,
+                r.CreationDate
             })
             .OrderBy(r => r.Name)
             .ToListAsync();
-
+        
         this.Recipes = complexQueryResults
+            .Select(r =>
+                new RecipeView(
+                    r.Name,
+                    r.Id,
+                    r.Images.Select(image => image.Id).ToList(),
+                    r.Categories.ToList(),
+                    r.AverageReviews,
+                    r.ReviewCount,
+                    this.Favorites?.ContainsRecipe(r.Id) ?? null))
+                .ToList();
+            
+        this.NewRecipes = complexQueryResults.Where(recipe => recipe.CreationDate > DateTimeOffset.UtcNow - TimeSpan.FromDays(7))
             .Select(r =>
                 new RecipeView(
                     r.Name,

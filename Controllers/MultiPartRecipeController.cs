@@ -246,6 +246,7 @@ namespace babe_algorithms.Controllers
 
             _context.Entry(existingRecipe).CurrentValues.SetValues(payload);
             await MergeRecipeRelations(payload, existingRecipe);
+            existingRecipe.LastModifiedDate = DateTimeOffset.UtcNow;
             try
             {
                 await _context.SaveChangesAsync();

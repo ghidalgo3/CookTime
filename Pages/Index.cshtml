@@ -5,12 +5,35 @@
     Layout = "_Layout";
 }
 
+@if (Model.NewRecipes.Count > 0)
+{
+    <div class="row" style="display: flex; align-items: center; justify-content: center;">
+            <div class="col-10">
+                <h1 class="margin-bottom-20">New Recipes!</h1>
+            </div>
+            <div class="margin-bottom-20 col-2 text-end"> 
+                <a
+                    asp-page="./Recipes/Create">
+                    <i class="fas fa-plus-circle themePrimary-color fa-2x"></i>
+                </a>
+            </div>
+    </div>
+
+    <div class="row">
+        @foreach (var item in Model.NewRecipes) {
+            @await Html.PartialAsync("_RecipeCard", item)
+        }
+    </div>
+}
+
 <div class="row" style="display: flex; align-items: center; justify-content: center;">
         <div class="col-10">
             <h1 class="margin-bottom-20">Recipes</h1>
         </div>
         <div class="margin-bottom-20 col-2 text-end"> 
-            <a asp-page="./Recipes/Create"><i class="fas fa-plus-circle themePrimary-color fa-2x"></i></a>
+            <a asp-page="./Recipes/Create">
+                <i class="fas fa-plus-circle themePrimary-color fa-2x"></i>
+            </a>
         </div>
 </div>
 

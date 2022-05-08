@@ -1,4 +1,5 @@
 using babe_algorithms.Models.Users;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NpgsqlTypes;
 
 namespace babe_algorithms.Models;
@@ -42,8 +43,10 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
 
     public double CaloriesPerServing { get; set; }
 
+    [BindNever]
     public double AverageReviews { get; set; }
 
+    [BindNever]
     public int ReviewCount { get; set; }
 
     public Guid Id { get; set; }
@@ -53,15 +56,23 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
     public List<Image> Images { get; set; }
 
     public List<RecipeComponent> RecipeComponents { get; set; } = new List<RecipeComponent>();
+
     /// <summary>
     /// The source where the recipe came from.
     /// </summary>
     public string? Source { get; set; }
 
     [JsonIgnore]
+    [BindNever]
     public NpgsqlTsVector SearchVector { get; set; }
 
     public ApplicationUser? Owner { get; set; }
+
+    [BindNever]
+    public DateTimeOffset CreationDate { get; set; }
+
+    [BindNever]
+    public DateTimeOffset LastModifiedDate { get; set; }
 
     public bool Equals(MultiPartRecipe? other) => this.Id == other.Id;
 }
