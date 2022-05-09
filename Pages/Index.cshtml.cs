@@ -1,4 +1,5 @@
 using babe_algorithms.Services;
+using babe_algorithms.ViewComponents;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,8 @@ namespace babe_algorithms.Pages.Recipes;
 
 public class IndexModel : PageModel
 {
+    const int RecipesPerPage = 15;
+
     public ISignInManager SigninManager { get; }
 
     public ISessionManager Session { get; }
@@ -23,15 +26,19 @@ public class IndexModel : PageModel
         _context = context;
     }
 
-    public List<RecipeView> Recipes { get; set; }
+    // public List<RecipeView> Recipes { get; set; }
 
     public List<RecipeView> NewRecipes { get; set; } = new List<RecipeView>();
 
     public Cart Favorites { get; private set; }
 
+    public PagedResult<object> PagedResult { get; private set; }
+
     public async Task OnGetAsync(
         [FromQuery]
-        string search)
+        int page = 1,
+        [FromQuery]
+        string search = null)
     {
         var user = await this.Session.GetSignedInUserAsync(this.User);
         if (user != null)
@@ -41,11 +48,11 @@ public class IndexModel : PageModel
 
         if (search != null)
         {
-            await this.Search(search);
+            await this.Search(search, page);
         }
         else
         {
-            await AllRecipes();
+            await AllRecipes(page);
         }
     }
 
@@ -86,7 +93,7 @@ public class IndexModel : PageModel
                 .ToList();
     }
 
-    private async Task Search(string search)
+    private async Task Search(string search, int page)
     {
         var byName = await GetRecipeViewsForQuery(
             this._context.SearchRecipesByName(search),
@@ -98,12 +105,13 @@ public class IndexModel : PageModel
             this._context.SearchRecipesByTag(search),
             this.Favorites));
         var x = new HashSet<RecipeView>(byName, new RecipeViewEqualityComparer());
-        this.Recipes = x.ToList();
+        this.PagedResult = x
+            .GetPaged(page, RecipesPerPage, p => $"/?page={p}&search={search}");
     }
 
-    private async Task AllRecipes()
+    private async Task AllRecipes(int page)
     {
-        var complexQueryResults = await _context
+        var allRecipesQuery = await _context
             .MultiPartRecipes
             .AsSplitQuery()
             .Include(r => r.Images)
@@ -124,8 +132,7 @@ public class IndexModel : PageModel
             })
             .OrderBy(r => r.Name)
             .ToListAsync();
-        
-        this.Recipes = complexQueryResults
+        this.PagedResult = allRecipesQuery
             .Select(r =>
                 new RecipeView(
                     r.Name,
@@ -135,18 +142,22 @@ public class IndexModel : PageModel
                     r.AverageReviews,
                     r.ReviewCount,
                     this.Favorites?.ContainsRecipe(r.Id) ?? null))
-                .ToList();
-            
-        this.NewRecipes = complexQueryResults.Where(recipe => recipe.CreationDate > DateTimeOffset.UtcNow - TimeSpan.FromDays(7))
-            .Select(r =>
-                new RecipeView(
-                    r.Name,
-                    r.Id,
-                    r.Images.Select(image => image.Id).ToList(),
-                    r.Categories.ToList(),
-                    r.AverageReviews,
-                    r.ReviewCount,
-                    this.Favorites?.ContainsRecipe(r.Id) ?? null))
-                .ToList();
+            .GetPaged(page, RecipesPerPage, p => $"/?page={p}");
+
+        if (page == 1) 
+        {
+            this.NewRecipes = allRecipesQuery
+                .Where(recipe => recipe.CreationDate > DateTimeOffset.UtcNow - TimeSpan.FromDays(7))
+                .Select(r =>
+                    new RecipeView(
+                        r.Name,
+                        r.Id,
+                        r.Images.Select(image => image.Id).ToList(),
+                        r.Categories.ToList(),
+                        r.AverageReviews,
+                        r.ReviewCount,
+                        this.Favorites?.ContainsRecipe(r.Id) ?? null))
+                    .ToList();
+        }
     }
 }

@@ -1,0 +1,37 @@
+@model babe_algorithms.ViewComponents.ListViewViewComponent
+
+<div class="row">
+@foreach (var item in Model.Data.Results)
+{
+    @await Html.PartialAsync(Model.PartialView, item);
+}
+</div>
+<div>
+    <nav aria-label="Project page index">
+    <ul class="pagination">
+        @if(Model.Data.CurrentPage > 1)
+        {
+            <li class="page-item">
+                <a class="page-link protabla-green" href="@(Model.Data.Link(Model.Data.CurrentPage - 1))">Previous</a>
+            </li>
+        }
+        @if (Model.Data.PageCount > 1)
+        {
+            @for (var i = 1; i <= Model.Data.PageCount; i++)
+            {
+                var active = i == Model.Data.CurrentPage ? "active" : "";
+                var lineItemClass = "page-item " + active;
+                <li class="@(lineItemClass)">
+                    <a class="page-link protabla-green" href="@(Model.Data.Link(i))">@(i)</a>
+                </li>
+            }
+        }
+        @if (Model.Data.CurrentPage < Model.Data.PageCount)
+        {
+            <li class="page-item">
+                <a class="page-link protabla-green" href="@(Model.Data.Link(Model.Data.CurrentPage + 1))">Next</a>
+            </li>
+        }
+    </ul>
+    </nav>
+</div>
