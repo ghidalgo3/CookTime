@@ -292,35 +292,7 @@ namespace babe_algorithms.Controllers
                 }
                 else
                 {
-                    var allowedCategories = new List<string>()
-                    {
-                        "Breakfast",
-                        "Lunch",
-                        "Dinner",
-                        "Snack",
-                        "Appetizer",
-                        "Side dish",
-                        "Main dish",
-                        "Dessert",
-                        "Drink",
-                        "Alcohol",
-                        "Brunch",
-                        "Plant-based",
-                        "Vegetarian",
-                        "Salad",
-                        "Soup",
-                        "Baked goods",
-                        "Holiday",
-                        "Brazilian",
-                        "Indian",
-                        "Venezuelan",
-                        "Korean",
-                        "French",
-                        "Sauce",
-                        "Seasoning"
-                    };
-
-                    if (allowedCategories.Select(c => c.ToUpperInvariant()).Contains(category.Name.Trim().ToUpperInvariant()))
+                    if (Category.DefaultCategories.Select(c => c.ToUpperInvariant()).Contains(category.Name.Trim().ToUpperInvariant()))
                     {
                         // entirely new category
                         category.Name = this.TextInfo.ToTitleCase(category.Name.Trim());
