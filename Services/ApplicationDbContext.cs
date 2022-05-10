@@ -70,7 +70,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         var initialQUery = await this.Ingredients
                         .AsNoTracking()
                         .AsSplitQuery()
-                        .Where(ingredient => EF.Functions.Like(ingredient.Name, name))
+                        .Where(ingredient =>
+                            ingredient.Name.ToUpper().Contains(name.ToUpper()))
+                            // EF.Functions.Like(ingredient.Name, name))
                         .ToListAsync();
         var x = initialQUery.SelectMany(ingredient =>
         {
