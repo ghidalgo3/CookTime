@@ -27,7 +27,7 @@ class CardImage extends React.Component<CardImageProps, CardImageState> {
             "/placeholder.jpg" :
             `/image/${this.props.images[0].id}?width=300`;
         return (
-            <div>
+            <div className="cr-image-parent">
                 <a href={`/Recipes/Details?id=${this.props.recipeId}`}>
                     <img
                         className="card-img-top card-recipe-image"
@@ -44,23 +44,23 @@ class CardImage extends React.Component<CardImageProps, CardImageState> {
         )
     }
     private button() {
-        var buttonText = "";
+        var heartClass = "";
         if (this.state.isFavorite) {
-            buttonText = "Remove from favorites"
+            heartClass = "fas fa-heart fa-2x"
         } else {
-            buttonText = "Add to favorites"
+            heartClass = "far fa-heart fa-2x"
         }
         return (
-        <Button className="recipe-edit-buttons" onClick={e => this.toggleFavorite()}>
+        <Button className="favorite-button" onClick={e => this.toggleFavorite()}>
                 {this.state.operationInProgress ?
                     <Spinner
                         as="span"
                         animation="border"
-                        size="sm"
+                        
                         role="status"
                         aria-hidden="true"
                     />
-                    : buttonText}
+                    : <i className={heartClass}></i>}
             </Button>
         )
     }

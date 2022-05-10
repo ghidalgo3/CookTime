@@ -396,11 +396,21 @@ html {
   font-variant: small-caps;
 }
 
-
+.cr-image-parent {
+  height: 180px;
+}
 .card-recipe-image {
   width: 100%;
   height: 180px;
   object-fit: cover;
+}
+.favorite-button {
+  position: relative;
+  top: -180px;
+  height: 60px;
+  width: 60px;
+  padding-left: 10px;
+  padding-bottom: 4px;
 }
 
 /* RULE OF THUMB IS TO PLAN TO DESIGN FOR 320PX AS THE SMALLEST SCREEN A USER WOULD HAVE*/
@@ -418,10 +428,21 @@ html {
   .nft-row {
     width: 100%;
   }
+  .cr-image-parent {
+    height: 140px;
+  }
   .card-recipe-image {
     width: 100%;
     height: 140px;
     object-fit: cover;
+  }
+  .favorite-button {
+    position: relative;
+    top: -140px;
+    height: 60px;
+    width: 60px;
+    padding-left: 10px;
+    padding-bottom: 4px;
   }
 
   .get-smaller {
