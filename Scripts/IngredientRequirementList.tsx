@@ -124,9 +124,11 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
                         query={text => `/api/recipe/ingredients?name=${text}`}
                         ingredient={ir.ingredient}
                         className=""
-                        onSelect={(i, isNew) => this.props.updateIngredientRequirement(ir, ir => {
+                        currentRequirements={this.props.ingredientRequirements}
+                        onSelect={(text, i, isNew) => this.props.updateIngredientRequirement(ir, ir => {
                             ir.ingredient = i
                             ir.ingredient.isNew = isNew
+                            ir.text = text
                             if (isNew) {
                                 ir.id = uuidv4()
                             }

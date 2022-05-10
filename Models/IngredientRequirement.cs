@@ -19,6 +19,8 @@ public class IngredientRequirement : IIngredientRequirement
     /// </summary>
     public int Position { get; set; }
 
+    public string Text { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
     public NutritionFactVector CalculateNutritionFacts()
     {
         throw new NotImplementedException();

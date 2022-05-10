@@ -33,6 +33,8 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
     /// </summary>
     public int Position { get; set; }
 
+    public string Text { get; set; }
+
     public IngredientNutritionDescription GetPartialIngredientDescription()
     {
         var description = new IngredientNutritionDescription
