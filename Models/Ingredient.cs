@@ -35,15 +35,11 @@ public class Ingredient
     /// <summary>
     /// Some ingredients in the USDA dataset (like shallots) do not have
     /// enough information to compute a unit mass.
-    /// For such ingredients, we will simply track an expected unit mass.
+    /// For such ingredients, we will simply manually track an expected unit mass.
     /// </summary>
     /// <value></value>
     public double ExpectedUnitMass { get; set; } = 0.1;
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <value></value>
     public double? DensityKgPerL {
         get
         {
