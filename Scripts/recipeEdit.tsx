@@ -1006,6 +1006,8 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     }).then(_ => {
                         location.reload();
                     });
+                } else {
+                    location.reload();
                 }
             } else {
                 this.setState({ error: true, operationInProgress: false});
