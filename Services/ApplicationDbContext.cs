@@ -67,11 +67,11 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public async Task<IEnumerable<Ingredient>> GetIngredientsForAutosuggest(string name)
     {
-        var initialQUery = (await this.Ingredients
+        var initialQUery = await this.Ingredients
                         .AsNoTracking()
                         .AsSplitQuery()
                         .Where(ingredient => EF.Functions.Like(ingredient.Name, name))
-                        .ToListAsync());
+                        .ToListAsync();
         var x = initialQUery.SelectMany(ingredient =>
         {
             return ingredient.Name.Split(";").Select(name =>
