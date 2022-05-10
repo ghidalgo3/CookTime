@@ -65,6 +65,28 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Ingredient>> GetIngredientsForAutosuggest(string name)
+    {
+        var initialQUery = (await this.Ingredients
+                        .AsNoTracking()
+                        .AsSplitQuery()
+                        .Where(ingredient => EF.Functions.Like(ingredient.Name, name))
+                        .ToListAsync());
+        var x = initialQUery.SelectMany(ingredient =>
+        {
+            return ingredient.Name.Split(";").Select(name =>
+            {
+                return new Ingredient()
+                {
+                    Id = ingredient.Id,
+                    Name = name,
+                    ExpectedUnitMass = ingredient.ExpectedUnitMass,
+                };
+            });
+        });
+        return x;
+    }
+
     public IQueryable<MultiPartRecipe> GetRecipesWithIngredient(string ingredient)
     {
         return this.MultiPartRecipes

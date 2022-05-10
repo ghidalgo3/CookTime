@@ -1,8 +1,7 @@
+#nullable enable
+namespace babe_algorithms.Models;
 using Newtonsoft.Json.Converters;
 
-#nullable enable
-
-namespace babe_algorithms.Models;
 public class Ingredient
 {
     public Guid Id { get; set; }
@@ -60,6 +59,7 @@ public class Ingredient
     {
         return HashCode.Combine(Name.Trim().ToUpper());
     }
+
 }
 
 [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
