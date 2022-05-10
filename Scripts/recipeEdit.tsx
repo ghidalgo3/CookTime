@@ -997,30 +997,20 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
             }
         }).then(response => {
             if (response.ok) {
-                location.reload();
-                // response.json().then(r => {
-                //     this.setState({
-                //         ...this.state,
-                //         recipe: r as MultiPartRecipe,
-                //         edit: false,
-                //         operationInProgress: false
-                //     });
-                // });
+                if (this.state.newImage != null) {
+                    let fd = new FormData();
+                    fd.append("files", this.state.newImage as Blob);
+                    fetch(`/api/MultiPartRecipe/${this.props.recipeId}/image`, {
+                        method: 'PUT',
+                        body: fd
+                    }).then(_ => {
+                        location.reload();
+                    });
+                }
             } else {
-                // alert("Could not save recipe!")
                 this.setState({ error: true, operationInProgress: false});
             }
-        }
-        ).then(() => {
-            if (this.state.newImage != null) {
-                let fd = new FormData();
-                fd.append("files", this.state.newImage as Blob);
-                fetch(`/api/MultiPartRecipe/${this.props.recipeId}/image`, {
-                    method: 'PUT',
-                    body: fd
-                });
-            }
-        });
+        })
     }
 }
 
