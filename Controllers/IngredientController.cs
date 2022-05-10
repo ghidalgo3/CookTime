@@ -25,7 +25,9 @@ public class IngredientController : ControllerBase
         }
         else
         {
-            return await _context.Ingredients.Where(ingredient => EF.Functions.Like(ingredient.Name, name)).ToListAsync();
+            return await _context.Ingredients
+                .Where(ingredient => EF.Functions.Like(ingredient.Name, name))
+                .ToListAsync();
         }
     }
 
