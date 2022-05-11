@@ -7,9 +7,11 @@ const theme = require('../wwwroot/css/site.css');
 export type IngredientInputProps = {
     query: (value : string) => string,
     ingredient : Ingredient | null,
+    text: string,
     isNew: boolean,
-    onSelect: (ingredient : Ingredient, isNew: boolean) => void,
+    onSelect: (text: string, ingredient : Ingredient, isNew: boolean) => void,
     className: string | null,
+    currentRequirements : IngredientRequirement[]
 }
 
 type IngredientInputState = {
@@ -30,12 +32,12 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
         // Suggestions also need to be provided to the Autosuggest,
         // and they are initially empty because the Autosuggest is closed.
         if (props.ingredient !== null) {
+            // console.log(props)
             this.state = {
-                value: props.ingredient.name,
+                value: props.text ?? props.ingredient.name,
                 suggestions: [],
                 selection: props.ingredient,
                 newIngredient: this.props.isNew
-                
             };
         } else {
             this.state = {
@@ -59,20 +61,19 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
     onChange = (event : any, { newValue, method }) => {
         switch (method) {
             case 'enter':
+                // console.log(`Enter ${newValue}`)
+                // TODO here
                 break;
             default:
-                // this.setState({
-                //     value: newValue,
-                // })
-
-                var possibleSuggestions = this.state.suggestions.filter(suggestion => suggestion.name.toUpperCase().includes(newValue));
+                // console.log(`Default ${newValue}`)
+                var possibleSuggestions = this.state.suggestions.filter(suggestion =>
+                    suggestion.name.toUpperCase().includes(newValue));
                 if (possibleSuggestions.length == 1) {
-                    // one ingredient matches
                     this.setState({
                         selection: possibleSuggestions[0],
                         value: newValue,
                     });
-                    this.props.onSelect(possibleSuggestions[0], false)
+                    this.props.onSelect(newValue, possibleSuggestions[0], false)
                 } else {
                     // whatever the user has typed may be a subset of an existing ingredient
                     // lol don't do that
@@ -86,7 +87,7 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
     };
 
     onSuggestionSelected = (event, {suggestion, suggestionValue}) => {
-        this.props.onSelect(suggestion as Ingredient, false);
+        this.props.onSelect(suggestionValue, suggestion as Ingredient, false);
         this.setState({
             selection: suggestion as Ingredient,
             value: suggestion.name
@@ -102,8 +103,16 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
             fetch(this.props.query(value as string))
                 .then(response => response.json())
                 .then(suggestions => {
+                    var ingredients = suggestions as Ingredient[];
+                    // Do not suggest ingredients used in some other ingredient requirement
+                    // for this recipe component
+                    if (this.props.currentRequirements.length > 0) {
+                        ingredients = ingredients.filter(ingredient  => {
+                            return !this.props.currentRequirements.some(ir => ir.ingredient.name === ingredient.name);
+                        })
+                    }
                     this.setState({
-                        suggestions: suggestions as Ingredient[]
+                        suggestions: ingredients
                     })
                 })
         }
@@ -137,17 +146,20 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
       };
 
     selectIngredient = () => {
+        console.log(`Selecting ingredient ${this.state.value}`)
         if (this.state.value === null || this.state.value === '') {
             return;
         }
 
-        var possibleSuggestions = this.state.suggestions.filter(suggestion => suggestion.name.toUpperCase() === this.state.value.toUpperCase());
+        var possibleSuggestions = this.state.suggestions.filter(suggestion =>
+            suggestion.name.toUpperCase() === this.state.value.toUpperCase());
         if (possibleSuggestions.length == 1) {
             // one ingredient matches
             this.setState({
                 selection: possibleSuggestions[0],
             });
-            this.props.onSelect(possibleSuggestions[0], false);
+            let s = possibleSuggestions[0];
+            this.props.onSelect(s.name, s, false);
         } else if (possibleSuggestions.length == 0) {
             this.onNewIngredient();
         } else {
@@ -161,7 +173,7 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
             selection: newIngredient,
             newIngredient: true
         });
-        this.props.onSelect(newIngredient, true);
+        this.props.onSelect(this.state.value, newIngredient, true);
     }
 
     render() {

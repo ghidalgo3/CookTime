@@ -98,17 +98,9 @@ public class Program
             var recipes = context.GetRecipesWithIngredient(duplicateIngredient.Name).ToList();
             foreach (var recipe in recipes)
             {
-                foreach (var component in recipe.RecipeComponents)
-                {
-                    foreach (var ingredientRequirement in component.Ingredients)
-                    {
-                        if (ingredientRequirement.Ingredient.Equals(duplicateIngredient)
-                            && ingredientRequirement.Ingredient.Id != duplicateIngredient.Id)
-                        {
-                            ingredientRequirement.Ingredient = duplicateIngredient;
-                        }
-                    }
-                }
+                recipe.ReplaceIngredient(
+                    i => i.Equals(duplicateIngredient) && i.Id != duplicateIngredient.Id,
+                    duplicateIngredient);
             }
         }
         context.SaveChanges();

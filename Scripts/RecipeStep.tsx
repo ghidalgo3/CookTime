@@ -38,23 +38,29 @@ export class Step extends React.Component<{
         } else {
             ingredientRequirements = (this.props.recipe as Recipe).ingredients ?? []
         }
-
-        for (let i = 0; i < ingredientRequirements.length ?? 0; i++) {
-            console.log(segments);
-            const element = ingredientRequirements![i];
-            let ingredientName = element.ingredient.name
+        let copyIr = Array.from(ingredientRequirements);
+        copyIr.sort((a,b) => 
+        {
+            return b.text.length - a.text.length;
+        })
+        for (let i = 0; i < copyIr.length ?? 0; i++) {
+            // console.log(segments);
+            const element = copyIr![i];
+            let ingredientName = element.ingredient.name.split(";").map(s => `(${s.trim()})`).join("|");
+            // let ingredientName = element.ingredient.name.split(";").map(s => s.trim()).join("|");
             // console.log(`Matching ingredient ${ingredientName}`);
             let ingredientRegex = new RegExp(`${ingredientName}`, 'i')
             let j = 0;
             while (j < segments.length) {
                 let currentSegment = segments[j];
                 // console.log(`Current segment ${j} is '${currentSegment.text}' Segments length ${segments.length}`)
-                let match = currentSegment.text.match(ingredientRegex)
-                if (match != null)
+                let matches = currentSegment.text.match(ingredientRegex)
+                if (matches != null)
                 {
-                    // console.log(`Match for regex ${ingredientName} found at index ${match.index!} for current segment '${currentSegment.text}''`)
-                    let trifurcation = this.trifurcate(currentSegment.text, match.index!, ingredientName.length);
-                    if (match.index! == 0) {
+                    // console.log(matches);
+                    // console.log(`Match for regex ${ingredientName} found at index ${matches.index!} for current segment '${currentSegment.text} and match length ${matches}`)
+                    let trifurcation = this.trifurcate(currentSegment.text, matches.index!, matches[0].length);
+                    if (matches.index! == 0) {
                         // array size grows by 1
                         segments.splice(
                             j,

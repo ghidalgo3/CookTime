@@ -12,13 +12,14 @@ export class Ingredients extends React.Component<{}, {}>
     }
 
     render() {
-        return <IngredientInput
-        isNew={false}
-        query={text => `/api/recipe/ingredients?name=${text}`}
-        ingredient={null}
-        onSelect={(i, isNew) => console.log(i)}
-        className=""
-        />
+        return null;
+        // <IngredientInput
+        // isNew={false}
+        // query={text => `/api/recipe/ingredients?name=${text}`}
+        // ingredient={null}
+        // onSelect={(i, isNew) => console.log(i)}
+        // className=""
+        // />
     }
 }
 

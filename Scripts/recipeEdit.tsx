@@ -156,6 +156,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 unit: 'Count',
                 quantity: 0,
                 id: uuidv4(),
+                text: "",
                 position: component.ingredients?.length ?? 0
             }
             var newIrs = Array.from(component.ingredients ?? [])

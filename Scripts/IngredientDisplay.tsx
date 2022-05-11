@@ -83,7 +83,8 @@ export class IngredientDisplay extends React.Component<IngredientDisplayProps, {
             quantity = <>{Math.round(this.props.ingredientRequirement.quantity)}</>
         }
 
-        var ingredientName = (ingredient.name).toLowerCase()
+        // Show IR text, but if that's not available then show the ingredient canonical name.
+        var ingredientName = (this.props.ingredientRequirement.text ?? ingredient.name.split(";").map(s => s.trim())[0]).toLowerCase()
         var text = <>{quantity} {unitName} {this.props.showAlternatUnit ? this.getAlternateUnit() : null} {ingredientName}
         </>
         if (this.props.strikethrough) {
