@@ -88,6 +88,10 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
                 if (replace.Invoke(ingredientRequirement.Ingredient))
                 {
                     ingredientRequirement.Ingredient = replaceWith;
+                    if (string.IsNullOrEmpty(ingredientRequirement.Text))
+                    {
+                        ingredientRequirement.Text = replaceWith.CanonicalName;
+                    }
                     modifiedRecipe = true;
                 }
             }
