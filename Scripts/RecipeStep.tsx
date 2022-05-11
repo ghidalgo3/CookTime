@@ -41,7 +41,11 @@ export class Step extends React.Component<{
         let copyIr = Array.from(ingredientRequirements);
         copyIr.sort((a,b) => 
         {
-            return b.text.length - a.text.length;
+            if (a.text != null && b.text != null) {
+                return b.text.length - a.text.length;
+            } else {
+                return b.ingredient.name.length - a.ingredient.name.length
+            }
         })
         for (let i = 0; i < copyIr.length ?? 0; i++) {
             // console.log(segments);
