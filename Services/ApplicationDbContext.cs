@@ -81,7 +81,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 return new Ingredient()
                 {
                     Id = ingredient.Id,
-                    Name = name,
+                    Name = name.Trim(),
                     ExpectedUnitMass = ingredient.ExpectedUnitMass,
                 };
             });
@@ -99,6 +99,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 mpRecipe.RecipeComponents.Any(rc =>
                     rc.Ingredients.Any(ir =>
                             ir.Ingredient.Name.Trim().ToUpper().Contains(ingredient.Trim().ToUpper()))));
+    }
+
+    public IQueryable<MultiPartRecipe> GetRecipesWithIngredient(Guid ingredientId)
+    {
+        return this.MultiPartRecipes
+            .Include(mpr => mpr.RecipeComponents)
+                .ThenInclude(component => component.Ingredients)
+                    .ThenInclude(ingredient => ingredient.Ingredient)
+            .Where(mpRecipe =>
+                mpRecipe.RecipeComponents.Any(rc =>
+                    rc.Ingredients.Any(ir =>
+                            ir.Ingredient.Id == ingredientId)));
     }
 
     public async Task<List<Ingredient>> GetIngredients()

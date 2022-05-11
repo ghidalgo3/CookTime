@@ -7,6 +7,7 @@ const theme = require('../wwwroot/css/site.css');
 export type IngredientInputProps = {
     query: (value : string) => string,
     ingredient : Ingredient | null,
+    text: string,
     isNew: boolean,
     onSelect: (text: string, ingredient : Ingredient, isNew: boolean) => void,
     className: string | null,
@@ -31,12 +32,12 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
         // Suggestions also need to be provided to the Autosuggest,
         // and they are initially empty because the Autosuggest is closed.
         if (props.ingredient !== null) {
+            // console.log(props)
             this.state = {
-                value: props.ingredient.name,
+                value: props.text ?? props.ingredient.name,
                 suggestions: [],
                 selection: props.ingredient,
                 newIngredient: this.props.isNew
-                
             };
         } else {
             this.state = {
@@ -60,8 +61,11 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
     onChange = (event : any, { newValue, method }) => {
         switch (method) {
             case 'enter':
+                // console.log(`Enter ${newValue}`)
+                // TODO here
                 break;
             default:
+                // console.log(`Default ${newValue}`)
                 var possibleSuggestions = this.state.suggestions.filter(suggestion =>
                     suggestion.name.toUpperCase().includes(newValue));
                 if (possibleSuggestions.length == 1) {
@@ -142,11 +146,13 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
       };
 
     selectIngredient = () => {
+        console.log(`Selecting ingredient ${this.state.value}`)
         if (this.state.value === null || this.state.value === '') {
             return;
         }
 
-        var possibleSuggestions = this.state.suggestions.filter(suggestion => suggestion.name.toUpperCase() === this.state.value.toUpperCase());
+        var possibleSuggestions = this.state.suggestions.filter(suggestion =>
+            suggestion.name.toUpperCase() === this.state.value.toUpperCase());
         if (possibleSuggestions.length == 1) {
             // one ingredient matches
             this.setState({
