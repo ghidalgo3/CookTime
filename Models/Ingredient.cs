@@ -9,6 +9,8 @@ public class Ingredient
     [Required]
     public string Name { get; set; }
 
+    public string CanonicalName => this.Name.Split(";").First();
+
     [JsonIgnore]
     public USDANutritionData? NormalNutritionData
     {
