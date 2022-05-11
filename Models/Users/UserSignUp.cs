@@ -7,6 +7,7 @@ public class UserSignUp
     [Required]
     [Display(Name = "UserName")]
     [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 3)]
+    [RegularExpression("[a-zA-Z]+", ErrorMessage = "Cannot contain spaces or numbers.")]
     public string UserName { get; set; }
 
     [Required]
