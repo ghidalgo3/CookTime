@@ -125,6 +125,10 @@ export class IngredientDisplay extends React.Component<IngredientDisplayProps, {
             else if (milliliters < 45) {
                 let millisPerTablespoon = 14.7868
                 return <>({this.Fraction(milliliters / millisPerTablespoon)} Tbsp)</>
+                // 3785 ml is about one gallon, don't measure 
+            } else if (milliliters < 3785) {
+                let millisPerCup = 236.588
+                return <>({this.Fraction(milliliters / millisPerCup)} cups)</>
             } else {
                 return `(${Math.round(milliliters)} mL)`
             }
