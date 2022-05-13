@@ -155,7 +155,7 @@ export class Tags extends React.Component<TagsProps, TagsState> {
 
         // Autosuggest will pass through all these props to the input.
         const inputProps = {
-            placeholder: 'Tags',
+            placeholder: 'Categories',
             value,
             onChange: this.onChange,
             onKeyDown: this.onKeyDown,
