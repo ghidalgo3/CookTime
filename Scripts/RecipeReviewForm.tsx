@@ -26,16 +26,16 @@ export class RecipeReviewForm extends React.Component<RecipeReviewFormProps, Rec
         return (
             <Form noValidate validated={this.state.validated} onSubmit={event => this.onSubmit(event)} className="margin-top-20">
                 <Form.Group>
-                    <Rating
-                        {...this.props}
-                        emptySymbol="far fa-star"
-                        fullSymbol="fas fa-star"
-                        initialRating={this.state.rating}
-                        onClick={value => this.setState({ rating: value })}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                        Please provide a rating.
-                    </Form.Control.Feedback>
+                        <Rating
+                            {...this.props}
+                            emptySymbol="far fa-star"
+                            fullSymbol="fas fa-star"
+                            initialRating={this.state.rating}
+                            onClick={value => this.setState({ rating: value })}
+                        />
+                        <Form.Control.Feedback type="invalid">
+                            Please provide a rating.
+                        </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group>
@@ -52,7 +52,7 @@ export class RecipeReviewForm extends React.Component<RecipeReviewFormProps, Rec
                         }}>
                     </Form.Control>
                     <Form.Control.Feedback type="invalid">
-                        Please provide a review.
+                        Please provide both a review and a rating.
                     </Form.Control.Feedback>
                 </Form.Group>
                 <Button
@@ -67,9 +67,10 @@ export class RecipeReviewForm extends React.Component<RecipeReviewFormProps, Rec
 
     private onSubmit(event) {
         const form = event.currentTarget;
-        event.preventDefault();
-        event.stopPropagation();
         if (form.checkValidity() === false || this.state.rating === 0) {
+            event.preventDefault();
+            event.stopPropagation();
+            this.setState({validated: true})
             return;
         }
 
