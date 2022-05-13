@@ -85,9 +85,11 @@ public class SignInModel : PageModel
         if (this.ModelState.IsValid)
         {
             this.Logger.LogInformation("Model state is valid, attempting login");
-            var user = await this.UserManager.FindUserByUserName(this.SignInData.UserName);
+            var user = this.SignInData.UserNameOrEmail.Contains('@') ? 
+                await this.UserManager.FindUserByEmail(this.SignInData.UserNameOrEmail) :
+                await this.UserManager.FindUserByUserName(this.SignInData.UserNameOrEmail);
             var result = await this.SignInManager.SignInWithUserName(
-                userName: this.SignInData.UserName,
+                userName: user.UserName,
                 password: this.SignInData.Password,
                 isPersistent: this.SignInData.RememberMe,
                 lockoutOnFailure: false);
@@ -151,7 +153,7 @@ public class SignIn
     [EmailAddress]
     public string Email { get; set; }
 
-    public string UserName { get; set; }
+    public string UserNameOrEmail { get; set; }
 
     [Required]
     [DataType(DataType.Password)]
