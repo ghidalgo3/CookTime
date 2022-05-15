@@ -8,11 +8,11 @@
 </div>
 <div>
     <nav aria-label="Project page index">
-    <ul class="pagination">
+    <ul class="pagination justify-content-center">
         @if(Model.Data.CurrentPage > 1)
         {
             <li class="page-item">
-                <a class="page-link protabla-green" href="@(Model.Data.Link(Model.Data.CurrentPage - 1))">Previous</a>
+                <a class="page-link btn-outline-primary" href="@(Model.Data.Link(Model.Data.CurrentPage - 1))">Previous</a>
             </li>
         }
         @if (Model.Data.PageCount > 1)
@@ -22,14 +22,14 @@
                 var active = i == Model.Data.CurrentPage ? "active" : "";
                 var lineItemClass = "page-item " + active;
                 <li class="@(lineItemClass)">
-                    <a class="page-link protabla-green" href="@(Model.Data.Link(i))">@(i)</a>
+                    <a class="page-link btn-outline-primary" href="@(Model.Data.Link(i))">@(i)</a>
                 </li>
             }
         }
         @if (Model.Data.CurrentPage < Model.Data.PageCount)
         {
             <li class="page-item">
-                <a class="page-link protabla-green" href="@(Model.Data.Link(Model.Data.CurrentPage + 1))">Next</a>
+                <a class="page-link btn-outline-primary" href="@(Model.Data.Link(Model.Data.CurrentPage + 1))">Next</a>
             </li>
         }
     </ul>
