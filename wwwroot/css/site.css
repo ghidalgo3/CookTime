@@ -555,6 +555,28 @@ body {
   border: 0;
 }
 
+.mypaginationactive {
+  background-color: var(--btn-primary-bg-color) !important;
+  border-top: 0;
+  border-bottom: 0;
+  border-color: var(--primary-background) !important;
+}
+.mypagination {
+  background-color: #fff !important;
+  border-top: 0;
+  border-bottom: 0;
+  color:#212529;
+  border-color: var(--primary-background);
+}
+.mypagination:active, .mypagination:focus, .mypagination:hover {
+  background-color: #fff !important;
+  border-top: 0;
+  border-bottom: 0;
+  color:#212529;
+  border-color: var(--primary-background);
+}
+
+
 .pl-button {
   margin-top: 30px;
   display: block;
