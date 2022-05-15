@@ -82,69 +82,77 @@ public class SignInModel : PageModel
     public async Task<IActionResult> OnPostAsync(
         [FromQuery] string? redirectTo)
     {
-        if (this.ModelState.IsValid)
+        try
         {
-            this.Logger.LogInformation("Model state is valid, attempting login");
-            var user = this.SignInData.UserNameOrEmail.Contains('@') ? 
-                await this.UserManager.FindUserByEmail(this.SignInData.UserNameOrEmail) :
-                await this.UserManager.FindUserByUserName(this.SignInData.UserNameOrEmail);
-            var result = await this.SignInManager.SignInWithUserName(
-                userName: user.UserName,
-                password: this.SignInData.Password,
-                isPersistent: this.SignInData.RememberMe,
-                lockoutOnFailure: false);
-
-            if (result.Succeeded)
+            if (this.ModelState.IsValid)
             {
-                this.Logger.LogInformation("User {Email} logged in", this.SignInData.Email);
+                this.Logger.LogInformation("Model state is valid, attempting login");
+                var user = this.SignInData.UserNameOrEmail.Contains('@') ?
+                    await this.UserManager.FindUserByEmail(this.SignInData.UserNameOrEmail) :
+                    await this.UserManager.FindUserByUserName(this.SignInData.UserNameOrEmail);
+                var result = await this.SignInManager.SignInWithUserName(
+                    userName: user.UserName,
+                    password: this.SignInData.Password,
+                    isPersistent: this.SignInData.RememberMe,
+                    lockoutOnFailure: false);
 
-                // User does not have an identity yet at this time, and user is null...
-                if (user == null)
+                if (result.Succeeded)
                 {
+                    this.Logger.LogInformation("User {Email} logged in", this.SignInData.Email);
+
+                    // User does not have an identity yet at this time, and user is null...
+                    if (user == null)
+                    {
+                        return this.Redirect("/Index");
+                    }
+
+
+                    if (redirectTo != null)
+                    {
+                        redirectTo = System.Web.HttpUtility.UrlDecode(redirectTo);
+                        return this.Redirect(redirectTo);
+                    }
+
                     return this.Redirect("/Index");
-                }
-
-
-                if (redirectTo != null)
-                {
-                    redirectTo = System.Web.HttpUtility.UrlDecode(redirectTo);
-                    return this.Redirect(redirectTo);
-                }
-
-                return this.Redirect("/Index");
-            }
-            else
-            {
-                string reason = null;
-                if (user == null)
-                {
-                    reason = "user does not exist";
-                    this.TempData[this.signInFailureTempData] = SignInFailure.IncorrectUsernameOrPassword.ToString();
-                }
-                else if (!user.EmailConfirmed)
-                {
-                    reason = "email is not confirmed";
-                    this.TempData[this.signInFailureTempData] = SignInFailure.UnconfirmedEmail.ToString();
-                }
-                else if (string.IsNullOrEmpty(user.PasswordHash))
-                {
-                    reason = "user does not have a password";
-                    this.TempData[this.signInFailureTempData] = SignInFailure.NoPassword.ToString();
                 }
                 else
                 {
-                    this.TempData[this.signInFailureTempData] = SignInFailure.IncorrectUsernameOrPassword.ToString();
+                    string reason = null;
+                    if (user == null)
+                    {
+                        reason = "user does not exist";
+                        this.TempData[this.signInFailureTempData] = SignInFailure.IncorrectUsernameOrPassword.ToString();
+                    }
+                    else if (!user.EmailConfirmed)
+                    {
+                        reason = "email is not confirmed";
+                        this.TempData[this.signInFailureTempData] = SignInFailure.UnconfirmedEmail.ToString();
+                    }
+                    else if (string.IsNullOrEmpty(user.PasswordHash))
+                    {
+                        reason = "user does not have a password";
+                        this.TempData[this.signInFailureTempData] = SignInFailure.NoPassword.ToString();
+                    }
+                    else
+                    {
+                        this.TempData[this.signInFailureTempData] = SignInFailure.IncorrectUsernameOrPassword.ToString();
+                    }
+
+                    this.Logger.LogInformation("{Email} failed to log in because {Reason}", this.SignInData.Email, reason);
+
+                    return this.RedirectToPage();
                 }
-
-                this.Logger.LogInformation("{Email} failed to log in because {Reason}", this.SignInData.Email, reason);
-
-                return this.RedirectToPage();
+            }
+            else
+            {
+                return this.Page();
             }
         }
-        else
+        catch
         {
-            return this.Page();
+            this.TempData[this.signInFailureTempData] = SignInFailure.IncorrectUsernameOrPassword.ToString();
         }
+        return this.Page();
     }
 }
 

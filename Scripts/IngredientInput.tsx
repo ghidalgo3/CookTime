@@ -97,25 +97,21 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
     // Autosuggest will call this function every time you need to update suggestions.
     // You already implemented this logic above, so just use it.
     onSuggestionsFetchRequested = ({ value }) => {
-        // primitive primitive rate limiting, should do this server side too
-        this.fetchRequestCount = (this.fetchRequestCount + 1) % 2; 
-        if (this.fetchRequestCount === 0) {
-            fetch(this.props.query(value as string))
-                .then(response => response.json())
-                .then(suggestions => {
-                    var ingredients = suggestions as Ingredient[];
-                    // Do not suggest ingredients used in some other ingredient requirement
-                    // for this recipe component
-                    if (this.props.currentRequirements.length > 0) {
-                        ingredients = ingredients.filter(ingredient  => {
-                            return !this.props.currentRequirements.some(ir => ir.ingredient.name === ingredient.name);
-                        })
-                    }
-                    this.setState({
-                        suggestions: ingredients
+        fetch(this.props.query(value as string))
+            .then(response => response.json())
+            .then(suggestions => {
+                var ingredients = suggestions as Ingredient[];
+                // Do not suggest ingredients used in some other ingredient requirement
+                // for this recipe component
+                if (this.props.currentRequirements.length > 0) {
+                    ingredients = ingredients.filter(ingredient  => {
+                        return !this.props.currentRequirements.some(ir => ir.ingredient.name === ingredient.name);
                     })
+                }
+                this.setState({
+                    suggestions: ingredients
                 })
-        }
+            })
     };
 
     // Autosuggest will call this function every time you need to clear suggestions.

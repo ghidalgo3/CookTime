@@ -77,15 +77,17 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                         .ToListAsync();
         var x = initialQUery.SelectMany(ingredient =>
         {
-            return ingredient.Name.Split(";").Select(name =>
-            {
-                return new Ingredient()
+            return ingredient.Name.Split(";")
+                .Where(i => i.Contains(name, StringComparison.InvariantCultureIgnoreCase))
+                .Select(name =>
                 {
-                    Id = ingredient.Id,
-                    Name = name.Trim(),
-                    ExpectedUnitMass = ingredient.ExpectedUnitMass,
-                };
-            });
+                    return new Ingredient()
+                    {
+                        Id = ingredient.Id,
+                        Name = name.Trim(),
+                        ExpectedUnitMass = ingredient.ExpectedUnitMass,
+                    };
+                });
         });
         return x;
     }
