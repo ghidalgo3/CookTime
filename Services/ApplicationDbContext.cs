@@ -147,10 +147,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         var allRecipesQuery = await this.MultiPartRecipes
             .AsSplitQuery()
-            .AsNoTracking()
             .Include(r => r.Images)
             .Include(r => r.Categories)
-            .Where(r => r.Images.Any())
             .Select(r => new
             {
                 Id = r.Id,
@@ -165,6 +163,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 r.ReviewCount,
                 r.CreationDate
             })
+            // .Where(r => r.Images.Any())
             .OrderBy(r => Guid.NewGuid())
             .Take(count)
             .ToListAsync();

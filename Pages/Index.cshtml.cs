@@ -161,7 +161,20 @@ public class IndexModel : PageModel
                         this.Favorites?.ContainsRecipe(r.Id) ?? null))
                     .ToList();
 
-            this.FeaturedRecipes = await this._context.GetFeaturedRecipeViewAsync(this.Favorites);
+            this.FeaturedRecipes = allRecipesQuery
+                .Where(r => r.Images.Any())
+                .OrderBy(a => Guid.NewGuid())
+                .Take(3)
+                .Select(r =>
+                    new RecipeView(
+                        r.Name,
+                        r.Id,
+                        r.Images.Select(image => image.Id).ToList(),
+                        r.Categories.ToList(),
+                        r.AverageReviews,
+                        r.ReviewCount,
+                        this.Favorites?.ContainsRecipe(r.Id) ?? null))
+                .ToList();
         }
     }
 }
