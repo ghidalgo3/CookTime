@@ -153,7 +153,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .Include(mpr => mpr.RecipeComponents)
                 .ThenInclude(component => component.Steps)
             .Include(recipe => recipe.Categories)
-            .Include(recipe => recipe.Images)
+            // .Include(recipe => recipe.Images)
             .SingleOrDefaultAsync(recipe => recipe.Id == id);
     }
 
