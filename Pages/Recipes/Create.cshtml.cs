@@ -17,8 +17,13 @@ public class CreateModel : PageModel
         this.Session = sessionManager;
     }
 
-    public IActionResult OnGet()
+    public async Task<IActionResult> OnGet()
     {
+        var user = await this.Session.GetSignedInUserAsync(this.User);
+        if (user == null)
+        {
+            return this.RedirectToPage("/SignIn");
+        }
         return Page();
     }
 
