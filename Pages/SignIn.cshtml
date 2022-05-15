@@ -39,8 +39,8 @@
                 </div>
             } 
             <form class="form-signin" method="POST">
-                <label for="inputUserName" class="sr-only">Username</label>
-                <input asp-for="SignInData.UserName" asp-validation-for="SignInData.UserName" id="inputUserName" class="form-control bg-light margin-bottom-8" placeholder="Username" required="" autofocus="">
+                <label for="inputUserName" class="sr-only">Username or email</label>
+                <input asp-for="SignInData.UserNameOrEmail" asp-validation-for="SignInData.UserNameOrEmail" id="inputUserName" class="form-control bg-light margin-bottom-8" placeholder="Username or email" required="" autofocus="">
                 <label for="inputPassword" class="sr-only">Password</label>
                 <input asp-for="SignInData.Password" type="password" id="inputPassword" class="form-control bg-light margin-bottom-8" placeholder="Password" required="">
                 <span asp-validation-for="SignInData.Password" class="text-danger"></span>

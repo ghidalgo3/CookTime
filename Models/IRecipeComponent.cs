@@ -17,6 +17,13 @@ public interface IRecipeStep
 public interface IIngredientRequirement
 {
     Guid Id { get; set; }
+
+    /// <summary>
+    /// Different from Ingredient.Name, this is what the user typed to 
+    /// choose their ingredient.
+    /// </summary>
+    string Text { get; set; }
+
     Ingredient Ingredient { get; set; }
     double Quantity { get; set; }
     Unit Unit { get; set; }

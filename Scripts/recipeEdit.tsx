@@ -156,6 +156,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 unit: 'Count',
                 quantity: 0,
                 id: uuidv4(),
+                text: "",
                 position: component.ingredients?.length ?? 0
             }
             var newIrs = Array.from(component.ingredients ?? [])
@@ -414,7 +415,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     {!this.state.edit && (this.state.recipe.categories.length === 0) ? null : 
                         <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
                             <Col className="col-3 recipe-field-title">
-                                Tags
+                                Categories
                             </Col>
                             <Col className="col d-flex align-items-center">
                                 { this.tagsComponent() }

@@ -37,6 +37,7 @@ public class IngredientsViewModel : PageModel
     public async Task<ActionResult> OnPostUpdateIngredientNdbNumber(
         Guid ingredientId,
         int ndbNumber,
+        string ingredientNames,
         string gtinUpc,
         string countRegex,
         double expectedUnitMass)
@@ -62,6 +63,7 @@ public class IngredientsViewModel : PageModel
         }
         ingredient.NutritionData = nutrition;
         ingredient.BrandedNutritionData = brandedNutrition;
+        ingredient.Name = ingredientNames;
         if (nutrition != null)
         {
             nutrition.CountRegex = countRegex;

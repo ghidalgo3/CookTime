@@ -98,8 +98,12 @@ public class RecipeController : ControllerBase, IImageController
             // is this an existing ingredient requirement?
             if (matching == null)
             {
-                var existingIngredient = await context.Ingredients
-                    .FirstOrDefaultAsync(ingredient => EF.Functions.Like(ingredientRequirement.Ingredient.Name.Trim(), ingredient.Name.Trim()));
+                var existingIngredient = await context.Ingredients.FindAsync(ingredientRequirement.Ingredient.Id);
+                if (existingIngredient == null)
+                {
+                    existingIngredient = await context.Ingredients
+                        .FirstOrDefaultAsync(ingredient => EF.Functions.Like(ingredientRequirement.Ingredient.Name.Trim(), ingredient.Name.Trim()));
+                }
                 if (existingIngredient == null)
                 {
                     // new ingredient
@@ -109,6 +113,7 @@ public class RecipeController : ControllerBase, IImageController
                 }
                 else
                 {
+                    // existing ingredient
                     ingredientRequirement.Ingredient = existingIngredient;
                 }
                 // new ingredient requirement
@@ -140,13 +145,13 @@ public class RecipeController : ControllerBase, IImageController
     }
 
     [HttpGet("ingredients")]
-    public ActionResult<IEnumerable<Ingredient>> GetIngredients(
+    public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients(
         [FromQuery(Name = "name")]
-        string query)
+        string name)
     {
         // god shield me from this
-        var ingredients = context.Ingredients.Where(i => i.Name.ToUpper().Contains(query.ToUpper())).ToList();
-        return this.Ok(ingredients);
+        // var initialQuery = await context.Ingredients.Where(i => i.Name.ToUpper().Contains(name.ToUpper())).ToListAsync();
+        return this.Ok(await this.context.GetIngredientsForAutosuggest(name));
     }
 
     // DELETE: api/Recipe/5

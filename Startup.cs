@@ -49,8 +49,7 @@ public class Startup
         {
             // Cookie settings
             options.Cookie.HttpOnly = true;
-            options.ExpireTimeSpan = TimeSpan.FromDays(1);
-
+            options.ExpireTimeSpan = TimeSpan.FromDays(7);
             options.LoginPath = "/SignIn";
             options.AccessDeniedPath = "/SignIn";
             options.SlidingExpiration = true;

@@ -379,7 +379,8 @@ namespace babe_algorithms.Controllers
             {
                 _context.Images.Remove(image);
             }
-            var cart = await _context.GetGroceryListAsync(user);
+            var recipeOwner = recipe.Owner?.Id == user.Id ? user : recipe.Owner;
+            var cart = await _context.GetGroceryListAsync(recipeOwner);
             cart.RecipeRequirement = cart.RecipeRequirement.Where(rr => rr.MultiPartRecipe.Id != id).ToList();
             await _context.SaveChangesAsync();
 

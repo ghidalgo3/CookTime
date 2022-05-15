@@ -25,9 +25,10 @@ public class IngredientController : ControllerBase
         }
         else
         {
-            return await _context.Ingredients.Where(ingredient => EF.Functions.Like(ingredient.Name, name)).ToListAsync();
+            return this.Ok(await this._context.GetIngredientsForAutosuggest(name));
         }
     }
+
 
     // GET: api/Ingredient/5
     [HttpGet("{id}")]

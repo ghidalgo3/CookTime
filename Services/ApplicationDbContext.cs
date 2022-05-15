@@ -65,6 +65,30 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Ingredient>> GetIngredientsForAutosuggest(string name)
+    {
+        var initialQUery = await this.Ingredients
+                        .AsNoTracking()
+                        .AsSplitQuery()
+                        .Where(ingredient =>
+                            ingredient.Name.ToUpper().Contains(name.ToUpper()))
+                            // EF.Functions.Like(ingredient.Name, name))
+                        .ToListAsync();
+        var x = initialQUery.SelectMany(ingredient =>
+        {
+            return ingredient.Name.Split(";").Select(name =>
+            {
+                return new Ingredient()
+                {
+                    Id = ingredient.Id,
+                    Name = name.Trim(),
+                    ExpectedUnitMass = ingredient.ExpectedUnitMass,
+                };
+            });
+        });
+        return x;
+    }
+
     public IQueryable<MultiPartRecipe> GetRecipesWithIngredient(string ingredient)
     {
         return this.MultiPartRecipes
@@ -75,6 +99,18 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 mpRecipe.RecipeComponents.Any(rc =>
                     rc.Ingredients.Any(ir =>
                             ir.Ingredient.Name.Trim().ToUpper().Contains(ingredient.Trim().ToUpper()))));
+    }
+
+    public IQueryable<MultiPartRecipe> GetRecipesWithIngredient(Guid ingredientId)
+    {
+        return this.MultiPartRecipes
+            .Include(mpr => mpr.RecipeComponents)
+                .ThenInclude(component => component.Ingredients)
+                    .ThenInclude(ingredient => ingredient.Ingredient)
+            .Where(mpRecipe =>
+                mpRecipe.RecipeComponents.Any(rc =>
+                    rc.Ingredients.Any(ir =>
+                            ir.Ingredient.Id == ingredientId)));
     }
 
     public async Task<List<Ingredient>> GetIngredients()

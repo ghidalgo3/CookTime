@@ -75,6 +75,29 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
     public DateTimeOffset LastModifiedDate { get; set; }
 
     public bool Equals(MultiPartRecipe? other) => this.Id == other.Id;
+    
+    public bool ReplaceIngredient(
+        Predicate<Ingredient> replace,
+        Ingredient replaceWith)
+    {
+        bool modifiedRecipe = false;
+        foreach (var component in this.RecipeComponents)
+        {
+            foreach (var ingredientRequirement in component.Ingredients)
+            {
+                if (replace.Invoke(ingredientRequirement.Ingredient))
+                {
+                    ingredientRequirement.Ingredient = replaceWith;
+                    if (string.IsNullOrEmpty(ingredientRequirement.Text))
+                    {
+                        ingredientRequirement.Text = replaceWith.CanonicalName;
+                    }
+                    modifiedRecipe = true;
+                }
+            }
+        }
+        return modifiedRecipe;
+    }
 }
 
 

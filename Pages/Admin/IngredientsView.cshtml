@@ -12,7 +12,7 @@
   <thead>
     <tr>
       <th scope="col">ID</th>
-      <th scope="col">Ingredient</th>
+      <th scope="col">Ingredient names</th>
       @* <th scope="col">Recipes Where Used</th> *@
       <th scope="col">NDB/GTIN/UPC Number</th>
       <th scope="col">Count RegEx</th>
@@ -24,11 +24,25 @@
     @foreach (var ingredient in Model.Ingredients) {
     <tr>
       <th scope="row">@ingredient.Id</th>
-      <th >@ingredient.Name</th>
       <form method="POST">
+      <th>
+          <input
+            type="text"
+            name="ingredientNames"
+            placeholder="Ingredient names (semi-colon separated)"
+            value="@ingredient.Name">
+        </th>
         <th>
-          <input type="number" name="ndbNumber" placeholder="NDB Number" value="@ingredient.NutritionData?.NdbNumber">
-          <input type="text" name="gtinUpc" placeholder="GTIN/UPC Number" value="@ingredient.BrandedNutritionData?.GtinUpc">
+          <input
+            type="number"
+            name="ndbNumber"
+            placeholder="NDB Number"
+            value="@ingredient.NutritionData?.NdbNumber">
+          <input
+            type="text"
+            name="gtinUpc"
+            placeholder="GTIN/UPC Number"
+            value="@ingredient.BrandedNutritionData?.GtinUpc">
         </th>
         <th>
           <input type="text" name="countRegex" value="@ingredient.NutritionData?.CountRegex">
