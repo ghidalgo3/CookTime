@@ -1,4 +1,64 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://letscooktime.com/Blog/feed.xml" rel="self" type="application/atom+xml" /><link href="https://letscooktime.com/Blog/" rel="alternate" type="text/html" /><updated>2022-05-05T23:31:14-04:00</updated><id>https://letscooktime.com/Blog/feed.xml</id><title type="html">CookTime Blog</title><subtitle>CookTime Blog</subtitle><entry><title type="html">Favorites and mine</title><link href="https://letscooktime.com/Blog/2022/05/05/favorites-and-mine.html" rel="alternate" type="text/html" title="Favorites and mine" /><published>2022-05-05T00:36:58-04:00</published><updated>2022-05-05T00:36:58-04:00</updated><id>https://letscooktime.com/Blog/2022/05/05/favorites-and-mine</id><content type="html" xml:base="https://letscooktime.com/Blog/2022/05/05/favorites-and-mine.html"><![CDATA[<p>You can now favorite recipes, and view just the recipes you own.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://letscooktime.com/Blog/feed.xml" rel="self" type="application/atom+xml" /><link href="https://letscooktime.com/Blog/" rel="alternate" type="text/html" /><updated>2022-05-15T11:39:17-04:00</updated><id>https://letscooktime.com/Blog/feed.xml</id><title type="html">CookTime Blog</title><subtitle>CookTime Blog</subtitle><entry><title type="html">Cumulative update</title><link href="https://letscooktime.com/Blog/2022/05/15/cumulative-update.html" rel="alternate" type="text/html" title="Cumulative update" /><published>2022-05-15T00:36:58-04:00</published><updated>2022-05-15T00:36:58-04:00</updated><id>https://letscooktime.com/Blog/2022/05/15/cumulative-update</id><content type="html" xml:base="https://letscooktime.com/Blog/2022/05/15/cumulative-update.html"><![CDATA[<p>Almost 2 weeks without a blog post, lots of things have gotten done.
+Get ready!</p>
+
+<h1 id="new-recipes">New recipes</h1>
+<p>Any recipe created in the last week will be shown in the <code class="language-plaintext highlighter-rouge">New Recipes</code> list of the home page.
+Usually these recipes are “in-development” so showing them first makes the author’s job easier.</p>
+
+<h1 id="feature-recipes">Feature recipes</h1>
+<p>For the featured recipes lists, we query our recipe database for recipes with photos, take <code class="language-plaintext highlighter-rouge">N</code> of them, and then display them on the page.
+It is preferable to ask the database to randomly sort and take the top <code class="language-plaintext highlighter-rouge">N</code> recipes after sorting, otherwise we have to load all the recipes client-side, randomize, and take <code class="language-plaintext highlighter-rouge">N</code> of them.
+This can take an unnacceptable amount of time if the number of recipes is large.
+CookTime uses PostgreSQL as its database, Entity Framework as the ORM, and the npsql as the bridge between LINQ queries and PostgreSQL statements. 
+PostgreSQL can certainl do what we want, I found a stack overflow question asking for exactly this: https://stackoverflow.com/questions/654906/linq-to-entities-random-order</p>
+
+<p>The only missing piece was to enable an extension on the database to allow it to generate UUIDs on-demand to create random sort orders. The query-command is this:</p>
+
+<p><code class="language-plaintext highlighter-rouge">CREATE EXTENSION IF NOT EXISTS "uuid-ossp";</code></p>
+
+<p>With all that database infrastructure in place, we now show featured recipes on the home page :).</p>
+
+<h1 id="pagination">Pagination</h1>
+<p>The home page and query results are now paginated.
+This should reduce the amount of scrolling needed on mobile devices to view recipes.
+We observed that users get lost if the page is too long to scroll through; pages should address this issue.</p>
+
+<h1 id="ratings-and-reviews">Ratings and Reviews</h1>
+<p>If you have a CookTime account, you can now rate and review recipes.
+Your ratings will be aggregated and averaged.
+Over time, we will come to find which recipes are the best recipes :)</p>
+
+<h1 id="authentication-improvements">Authentication improvements</h1>
+<p>You can now use your email OR your username to sign in to CookTime.
+We now also display validation errors during the sign up process.
+We have simplified the password requirements, basically you need atleast 2 unique characters and a minimum length of 6 total characters.</p>
+
+<h1 id="categories-in-the-navigation-bar">Categories in the navigation bar</h1>
+<p>During user testing, we found that users wanted to know what were all of the categories of reicpes that CookTime had recipes for.
+We did not have a way to view the list of categories, but now we do!
+You can click on <code class="language-plaintext highlighter-rouge">Categories</code> in the navigation bar and then click on a category you’re interested in to view all recieps for that category.</p>
+
+<h1 id="ingredient-aliases">Ingredient aliases</h1>
+<p>This feature is not user-facing but it did involve a big change in our backend so I’d like to describe it.</p>
+
+<p>Early in CookTime’s development we identified a need for ingredient aliases.
+For example, “milk” and “whole milk” are practically the same ingredient, so for the purposes of auto-completion and building a correct recipe database we should treat them as the same ingredient.
+Initially this was <em>not</em> the case, recipes with “milk” and “whole milk” would be referencing unique ingredients and this would create several kinds of problems for us.</p>
+
+<p>We could not associate different variants of an ingredient name with unique nutrition facts.</p>
+
+<p>We could not properly highlight ingredient names in the recipe text if the user used one name in the ingredients list but another name in the text.
+This is extremely common: for example you might say a recipe need 6 galic cloves but then in the text of the recipe you will write “peel the garlic.”
+Since you did not write exactly “garlic clove”, we would not highlight the ingredient and thats not a good user experience.</p>
+
+<p>Another problem was that we have a power user that creates recipes in portuguese so we had to associate the portuguese words for milk if we wanted nutrition facts and all the other features to work.</p>
+
+<p>To implement aliases, we basically store a list of names for an ingredient along with a single “canonical” name.
+In the case of milk, this looks like:
+<code class="language-plaintext highlighter-rouge">Milk; Leite; Whole Milk</code>
+Where <code class="language-plaintext highlighter-rouge">Milk</code> is the canonical name, and <code class="language-plaintext highlighter-rouge">Leite</code> (milk in portugues) and <code class="language-plaintext highlighter-rouge">Whole Milk</code> are aliases for this ingredient.</p>
+
+<p>The bulk of the work of this change was to hide from the user the fact that an ingredient’s name is now a semi-colon separated list of possible aliases.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Almost 2 weeks without a blog post, lots of things have gotten done. Get ready!]]></summary></entry><entry><title type="html">Favorites and mine</title><link href="https://letscooktime.com/Blog/2022/05/05/favorites-and-mine.html" rel="alternate" type="text/html" title="Favorites and mine" /><published>2022-05-05T00:36:58-04:00</published><updated>2022-05-05T00:36:58-04:00</updated><id>https://letscooktime.com/Blog/2022/05/05/favorites-and-mine</id><content type="html" xml:base="https://letscooktime.com/Blog/2022/05/05/favorites-and-mine.html"><![CDATA[<p>You can now favorite recipes, and view just the recipes you own.</p>
 
 <p>Favoriting is done by a clicking on a button in a recipe card.</p>
 

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Npgsql;
 using babe_algorithms.Models.Users;
+using babe_algorithms.Pages;
 
 namespace babe_algorithms.Services;
 
@@ -140,6 +141,44 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .Include(recipe => recipe.Categories)
             .SingleAsync(recipe => recipe.Id == recipeId);
         return recipe.Categories.Any(c => c.Id == categoryId);
+    }
+
+    public async Task<List<RecipeView>> GetFeaturedRecipeViewAsync(Cart? favorites, int count = 3)
+    {
+        var allRecipesQuery = await this.MultiPartRecipes
+            .AsSplitQuery()
+            .AsNoTracking()
+            .Include(r => r.Images)
+            .Include(r => r.Categories)
+            .Where(r => r.Images.Any())
+            .Select(r => new
+            {
+                Id = r.Id,
+                Name = r.Name,
+                Categories = r.Categories.Select(c => c.Name),
+                Images = r.Images.Select(image => new
+                {
+                    Id = image.Id,
+                    Name = image.Name,
+                }),
+                r.AverageReviews,
+                r.ReviewCount,
+                r.CreationDate
+            })
+            .OrderBy(r => Guid.NewGuid())
+            .Take(count)
+            .ToListAsync();
+        return allRecipesQuery
+            .Select(r =>
+                new RecipeView(
+                    r.Name,
+                    r.Id,
+                    r.Images.Select(image => image.Id).ToList(),
+                    r.Categories.ToList(),
+                    r.AverageReviews,
+                    r.ReviewCount,
+                    favorites?.ContainsRecipe(r.Id) ?? null))
+            .ToList();
     }
 
     public async Task<MultiPartRecipe> GetMultiPartRecipeAsync(Guid id)

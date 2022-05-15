@@ -30,6 +30,8 @@ public class IndexModel : PageModel
 
     public List<RecipeView> NewRecipes { get; set; } = new List<RecipeView>();
 
+    public List<RecipeView> FeaturedRecipes { get; set; } = new List<RecipeView>();
+
     public Cart Favorites { get; private set; }
 
     public PagedResult<object> PagedResult { get; private set; }
@@ -158,6 +160,8 @@ public class IndexModel : PageModel
                         r.ReviewCount,
                         this.Favorites?.ContainsRecipe(r.Id) ?? null))
                     .ToList();
+
+            this.FeaturedRecipes = await this._context.GetFeaturedRecipeViewAsync(this.Favorites);
         }
     }
 }
