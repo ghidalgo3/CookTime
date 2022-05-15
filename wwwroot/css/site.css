@@ -126,6 +126,10 @@ Background color = #fafafa */
   color: var(--themePrimary);
 }
 
+.active .page-link {
+  background-color: var(--btn-primary-bg-color);
+}
+
 #userButton {
   color: var(--primary-text);
 }
