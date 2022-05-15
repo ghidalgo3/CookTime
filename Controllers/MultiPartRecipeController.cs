@@ -362,7 +362,7 @@ namespace babe_algorithms.Controllers
                 return this.Unauthorized("You must be signed in to delete your recipes.");
             }
 
-            var recipe = await _context.GetMultiPartRecipeAsync(id);
+            var recipe = await _context.GetMultiPartRecipeWithImagesAsync(id);
             if (recipe == null)
             {
                 return NotFound();

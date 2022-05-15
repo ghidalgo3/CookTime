@@ -196,6 +196,21 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             // .Include(recipe => recipe.Images)
             .SingleOrDefaultAsync(recipe => recipe.Id == id);
     }
+    
+    public async Task<MultiPartRecipe> GetMultiPartRecipeWithImagesAsync(Guid id)
+    {
+        return await this.MultiPartRecipes
+            .Include(mpr => mpr.Owner)
+            .Include(mpr => mpr.RecipeComponents)
+                .ThenInclude(component => component.Ingredients)
+                    .ThenInclude(ingredient => ingredient.Ingredient)
+                        .ThenInclude(ingredient => ingredient.NutritionData)
+            .Include(mpr => mpr.RecipeComponents)
+                .ThenInclude(component => component.Steps)
+            .Include(recipe => recipe.Categories)
+            .Include(recipe => recipe.Images)
+            .SingleOrDefaultAsync(recipe => recipe.Id == id);
+    }
 
     public async Task<MultiPartRecipe> GetMultiPartRecipeNutritionDataAsync(Guid id)
     {

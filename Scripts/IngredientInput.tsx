@@ -148,7 +148,8 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
         }
 
         var possibleSuggestions = this.state.suggestions.filter(suggestion =>
-            suggestion.name.toUpperCase() === this.state.value.toUpperCase());
+            suggestion.name.toUpperCase() === this.state.value.trim().toUpperCase());
+        console.log(possibleSuggestions);
         if (possibleSuggestions.length == 1) {
             // one ingredient matches
             this.setState({
