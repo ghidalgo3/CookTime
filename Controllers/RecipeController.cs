@@ -125,6 +125,7 @@ public class RecipeController : ControllerBase, IImageController
                 matching.Quantity = ingredientRequirement.Quantity;
                 matching.Unit = ingredientRequirement.Unit;
                 matching.Position = ingredientRequirement.Position;
+                matching.Text = ingredientRequirement.Text;
                 var ingredient = await context.Ingredients.FindAsync(ingredientRequirement.Ingredient.Id);
                 if (ingredient == null)
                 {
