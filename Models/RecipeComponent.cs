@@ -5,7 +5,6 @@ public class RecipeComponent : IRecipeComponent<MultiPartRecipeStep, MultiPartIn
     public string Name { get; set; }
     public Guid Id { get; set; }
     public int Position { get; set; }
-    // public Guid MultiPartRecipeId { get; set; }
     public List<MultiPartIngredientRequirement> Ingredients { get; set; } = new List<MultiPartIngredientRequirement>();
     public List<MultiPartRecipeStep> Steps { get; set; } = new List<MultiPartRecipeStep>();
 
