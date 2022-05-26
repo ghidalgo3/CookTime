@@ -118,6 +118,7 @@ public class RecipeController : ControllerBase, IImageController
                 }
                 // new ingredient requirement
                 existingComponent.Ingredients.Add(ingredientRequirement);
+                context.MultiPartIngredientRequirement.Add(ingredientRequirement as MultiPartIngredientRequirement);
             }
             else
             {
@@ -134,12 +135,14 @@ public class RecipeController : ControllerBase, IImageController
                     ingredientRequirement.Id = Guid.NewGuid();
                     ingredientRequirement.Ingredient.Name = ingredientRequirement.Ingredient.Name.Trim();
                     matching.Ingredient = ingredientRequirement.Ingredient;
+                    context.MultiPartIngredientRequirement.Add(ingredientRequirement as MultiPartIngredientRequirement);
                 }
                 else if (!currentIngredients.Any(i => i.Ingredient.Id == ingredient.Id))
                 {
                     // reassignment of existing ingredient
                     matching.Ingredient = ingredient;
                 }
+                context.MultiPartIngredientRequirement.Update(matching as MultiPartIngredientRequirement);
                 // Are you actually changing the ingredient being referenced?
                 existingComponent.Ingredients.Add(matching);
             }
