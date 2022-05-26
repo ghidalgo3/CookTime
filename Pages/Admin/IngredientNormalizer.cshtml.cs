@@ -73,6 +73,11 @@ public class IngredientNormalizerModel : PageModel
         var recipesToModify = this._context.GetRecipesWithIngredient(ingredientId).Count();
         if (recipesToModify == 0)
         {
+            var mpirs = await this._context.MultiPartIngredientRequirement
+                .Include(mpir => mpir.Ingredient)
+                .Where(mpir => mpir.Ingredient.Id == ingredient.Id)
+                .ToListAsync();
+            this._context.MultiPartIngredientRequirement.RemoveRange(mpirs);
             this._context.Ingredients.Remove(ingredient);
         }
 

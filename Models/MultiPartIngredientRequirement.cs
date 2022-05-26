@@ -4,7 +4,6 @@ using Newtonsoft.Json.Linq;
 
 namespace babe_algorithms.Models;
 
-[Owned]
 public class MultiPartIngredientRequirement : IIngredientRequirement
 {
     public MultiPartIngredientRequirement()

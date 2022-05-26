@@ -33,6 +33,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<Recipe> Recipes { get; set; }
     public DbSet<MultiPartRecipe> MultiPartRecipes { get; set; }
+    public DbSet<MultiPartIngredientRequirement> MultiPartIngredientRequirement { get; set; }
     public DbSet<Ingredient> Ingredients { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Cart> Carts { get; set; }
