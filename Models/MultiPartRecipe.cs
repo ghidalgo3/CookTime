@@ -75,7 +75,29 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
     public DateTimeOffset LastModifiedDate { get; set; }
 
     public bool Equals(MultiPartRecipe? other) => this.Id == other.Id;
-    
+
+    public List<string> ApplicableDefaultCategories 
+    {
+        get
+        {
+            var applicableCategories = new List<string>();
+            var ingredients = this.RecipeComponents
+                .SelectMany(ir => ir.Ingredients)
+                .Select(ir => ir.Ingredient)
+                .ToHashSet();
+            if (ArePlantBased(ingredients))
+            {
+                applicableCategories.Add("Plant-Based");
+            }
+            return applicableCategories;
+        }
+    }
+
+    private bool ArePlantBased(HashSet<Ingredient> ingredients)
+    {
+        return ingredients.All(i => i.IsPlantBased);
+    }
+
     public bool ReplaceIngredient(
         Predicate<Ingredient> replace,
         Ingredient replaceWith)

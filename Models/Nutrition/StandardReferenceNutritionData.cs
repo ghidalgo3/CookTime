@@ -7,6 +7,24 @@ namespace babe_algorithms.Models;
 
 public class StandardReferenceNutritionData : USDANutritionData
 {
+    public static readonly List<string> PlantBasedCategories = new()
+    {
+        "Beverages",
+        "Baked Products",
+        "Cereal Grains and Pasta",
+        "Fruits and Fruit Juices",
+        "Vegetables and Vegetable Products",
+        "Fats and Oils",
+        "Sweets",
+        "Breakfast Cereals",
+        "Soups, Sauces, and Gravies",
+        "American Indian/Alaska Native Foods",
+        "Spices and Herbs",
+        "Nut and Seed Products",
+        "Baby Foods",
+        "Legumes and Legume Products",
+    };
+
     [Key]
     public int NdbNumber { get; set; }
 

@@ -270,6 +270,24 @@ namespace babe_algorithms.Controllers
         {
             await MergeCategories(payload, existingRecipe);
             await MergeComponents(payload, existingRecipe);
+            await ApplyDefaultCategories(payload, existingRecipe);
+        }
+
+        private async Task ApplyDefaultCategories(MultiPartRecipe payload, MultiPartRecipe existingRecipe)
+        {
+            var applicableCategories = existingRecipe.ApplicableDefaultCategories.ToHashSet();
+            var currentCategories = existingRecipe.Categories.Select(cat => cat.Name).ToHashSet();
+            if (!applicableCategories.IsSubsetOf(currentCategories))
+            {
+                foreach (var ac in applicableCategories)
+                {
+                    var toAdd = await this._context.GetCategoryAsync(ac);
+                    if (toAdd != null && !existingRecipe.Categories.Contains(toAdd))
+                    {
+                        existingRecipe.Categories.Add(toAdd);
+                    }
+                }
+            }
         }
 
         private async Task MergeCategories(MultiPartRecipe payload, MultiPartRecipe existingRecipe)

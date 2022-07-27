@@ -1,6 +1,7 @@
 #nullable enable
 namespace babe_algorithms.Models;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 
 public class Ingredient
 {
@@ -10,7 +11,7 @@ public class Ingredient
     public string Name { get; set; }
 
     public string CanonicalName => this.Name.Split(";").First();
-
+    
     [JsonIgnore]
     public USDANutritionData? NormalNutritionData
     {
@@ -41,6 +42,23 @@ public class Ingredient
     /// <value></value>
     public double ExpectedUnitMass { get; set; } = 0.1;
 
+    public bool IsPlantBased 
+    {
+        get
+        {
+            if (this.NutritionData != null)
+            {
+                var nutritionData = JToken.Parse(
+                    this.NutritionData.FoodCategory.RootElement.GetRawText());
+                string foodCategoryDescription = nutritionData!["description"]!.ToString();
+                return StandardReferenceNutritionData.PlantBasedCategories.Any(cat => 
+                {
+                    return string.Equals(cat, foodCategoryDescription, StringComparison.InvariantCultureIgnoreCase);
+                });
+            }
+            return false;
+        }
+    }
     public double? DensityKgPerL {
         get
         {

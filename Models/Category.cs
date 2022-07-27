@@ -20,7 +20,7 @@ public class Category
                         "Korean",
                         "Lunch",
                         "Main dish",
-                        "Plant-based",
+                        "Plant-Based",
                         "Salad",
                         "Sauce",
                         "Seasoning",
