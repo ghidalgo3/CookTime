@@ -11,6 +11,7 @@ import { RecipeStructuredData } from './RecipeStructuredData';
 import Rating from 'react-rating';
 import { RecipeReviewForm } from './RecipeReviewForm';
 import { RecipeReviews } from './RecipeReviews';
+import { TodaysTenDisplay } from './todaysTenDisplay';
 
 type RecipeEditProps = {
     recipeId : string,
@@ -507,6 +508,9 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     null
                 }
                 {
+                    this.todaysTen()
+                }
+                {
                     (isSignedIn() && !this.state.edit) ?
                     <div className="border-top-1 margin-top-30">
                         <Row>
@@ -532,6 +536,15 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 }
             </div>
         );
+    }
+
+    private todaysTen() {
+        let todaysTen = this.state.nutritionFacts?.dietDetails.find(dd => dd.name === "TodaysTen")!
+        if (!this.state.edit && todaysTen != null && isAdmin()) {
+            return <TodaysTenDisplay todaysTen={todaysTen} />
+        } else {
+            return null;
+        }
     }
 
     tagsComponent() {
