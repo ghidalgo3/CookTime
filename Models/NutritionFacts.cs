@@ -1,5 +1,3 @@
-
-using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 
 namespace babe_algorithms.Models;
@@ -53,38 +51,6 @@ public class DietDetail
     /// </summary>
     /// <value></value>
     public object Details { get; set; }
-}
-
-public class TodaysTenDetails 
-{
-    public bool HasFruits { get; set; }
-    public bool HasVegetables { get; set; }
-    public bool HasBeans { get; set; }
-    public bool HasHerbsAndSpices { get; set; }
-    public bool HasNutsAndSeeds { get; set; }
-    public bool HasGrains { get; set; }
-    public bool HasFlaxseeds { get; set; }
-    public bool HasBerries { get; set; }
-    public bool HasGreens { get; set; }
-    public bool HasCruciferousVegetables { get; set; }
-
-    private static Regex Greens = new(
-        "arugula|greens|beet greens|mustard greens|kale|spring mix|salad|mesclun|collard|sorrel|spinach|swiss chard|turnip greens",
-        RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
-
-    private static Regex Crucifers = new(
-        "arugula|bok choy|broccoli|brussels sprouts|cabbage|cauliflower|collard greens|horseradish|kale|kohlrabi|mustard greens|radish|turnip greens|watercress",
-        RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
-
-    public static bool IsGreen(Ingredient ingredient)
-    {
-        return Greens.IsMatch(ingredient.Name);
-    }
-
-    public static bool IsCruciferousVegetable(Ingredient ingredient)
-    {
-        return Crucifers.IsMatch(ingredient.Name);
-    }
 }
 
 public class IngredientNutritionDescription

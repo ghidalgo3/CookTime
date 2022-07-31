@@ -224,22 +224,15 @@ namespace babe_algorithms.Controllers
             // Bean
             var hasBeans = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.LegumeAndLegumeProducts));
             // Spices
-            var hasSpices = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.SpicesAndHerbs));
-            // Nuts
-            var hasNuts = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.NutAndSeedProducts));
+            var hasSpices = allIngredients.Any(TodaysTenDetails.IsSpicesAndHerbs);
             // Grain
             var hasGrain = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.CerealGrainsAndPasta));
+            // Nuts
+            var hasNuts = allIngredients.Any(TodaysTenDetails.IsNutsAndSeeds);
             // Flaxseed
-            var hasFlaxseed = allIngredients.Any(ingredient => ingredient.Name.Contains("flaxseed", StringComparison.InvariantCultureIgnoreCase));
+            var hasFlaxseed = allIngredients.Any(TodaysTenDetails.IsFlaxseed);
             // Berry
-            var hasBerry = allIngredients.Any(ingredient =>
-            {
-                // BIG FAIL PLZ COME BACK TO ME ONE DAY
-                // TODO
-                return
-                    ingredient.Name.Contains("berries", StringComparison.InvariantCultureIgnoreCase)
-                    || ingredient.Name.Contains("berry", StringComparison.InvariantCultureIgnoreCase);
-            });
+            var hasBerry = allIngredients.Any(TodaysTenDetails.IsBerry);
             // Greens
             var hasGreens = allIngredients.Any(TodaysTenDetails.IsGreen);
             // Crucifers
