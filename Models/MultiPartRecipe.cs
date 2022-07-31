@@ -76,15 +76,18 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
 
     public bool Equals(MultiPartRecipe? other) => this.Id == other.Id;
 
+    public ISet<Ingredient> GetAllIngredients() =>
+            this.RecipeComponents
+                .SelectMany(ir => ir.Ingredients)
+                .Select(ir => ir.Ingredient)
+                .ToHashSet();
+
     public List<string> ApplicableDefaultCategories 
     {
         get
         {
             var applicableCategories = new List<string>();
-            var ingredients = this.RecipeComponents
-                .SelectMany(ir => ir.Ingredients)
-                .Select(ir => ir.Ingredient)
-                .ToHashSet();
+            var ingredients = this.GetAllIngredients();
             if (ArePlantBased(ingredients))
             {
                 applicableCategories.Add("Plant-Based");
@@ -93,7 +96,7 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
         }
     }
 
-    private bool ArePlantBased(HashSet<Ingredient> ingredients)
+    private bool ArePlantBased(ISet<Ingredient> ingredients)
     {
         return ingredients.All(i => i.IsPlantBased);
     }

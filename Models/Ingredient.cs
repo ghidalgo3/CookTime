@@ -1,7 +1,6 @@
 #nullable enable
 namespace babe_algorithms.Models;
 using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
 
 public class Ingredient
 {
@@ -48,9 +47,7 @@ public class Ingredient
         {
             if (this.NutritionData != null)
             {
-                var nutritionData = JToken.Parse(
-                    this.NutritionData.FoodCategory.RootElement.GetRawText());
-                string foodCategoryDescription = nutritionData!["description"]!.ToString();
+                string foodCategoryDescription = this.NutritionData.GetFoodCategoryDescription();
                 return StandardReferenceNutritionData.PlantBasedCategories.Any(cat => 
                 {
                     return string.Equals(cat, foodCategoryDescription, StringComparison.InvariantCultureIgnoreCase);

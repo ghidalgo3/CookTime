@@ -1,15 +1,90 @@
 
+using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
+
 namespace babe_algorithms.Models;
+
+/// <summary>
+/// DTO for presenting nutrition information
+/// about a recipe.
+/// </summary>
 public class RecipeNutritionFacts
 {
     public RecipeNutritionFacts()
     {
         Components = new List<NutritionFactVector>();
+        DietDetails = new List<DietDetail>();
     }
 
     public NutritionFactVector Recipe { get; set; }
     public List<NutritionFactVector> Components { get; set; }
+    public List<DietDetail> DietDetails { get; set; }
     public List<IngredientNutritionDescription> Ingredients { get; set; }
+}
+
+public enum DietOpinion
+{
+    Recommended,
+    Allowed,
+    Neutral,
+    Discouraged,
+    Forbidden,
+}
+
+// examples:
+// Keto
+// Low-carb
+// Paleo
+// Daily ten
+public class DietDetail
+{
+    /// <summary>
+    /// The name of the diet this diet detail describes.
+    /// For example, TodaysTen is a valid value here.
+    /// </summary>
+    /// <value></value>
+    public string Name { get; set; }
+
+    public DietOpinion Opinion { get; set; } = DietOpinion.Neutral;
+
+    /// <summary>
+    /// Since every recipe is a unique snowflake, just dump whatever you want in here
+    /// and make sure it's JSON serializable.
+    /// </summary>
+    /// <value></value>
+    public object Details { get; set; }
+}
+
+public class TodaysTenDetails 
+{
+    public bool HasFruits { get; set; }
+    public bool HasVegetables { get; set; }
+    public bool HasBeans { get; set; }
+    public bool HasHerbsAndSpices { get; set; }
+    public bool HasNutsAndSeeds { get; set; }
+    public bool HasGrains { get; set; }
+    public bool HasFlaxseeds { get; set; }
+    public bool HasBerries { get; set; }
+    public bool HasGreens { get; set; }
+    public bool HasCruciferousVegetables { get; set; }
+
+    private static Regex Greens = new(
+        "arugula|greens|beet greens|mustard greens|kale|spring mix|salad|mesclun|collard|sorrel|spinach|swiss chard|turnip greens",
+        RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+
+    private static Regex Crucifers = new(
+        "arugula|bok choy|broccoli|brussels sprouts|cabbage|cauliflower|collard greens|horseradish|kale|kohlrabi|mustard greens|radish|turnip greens|watercress",
+        RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+
+    public static bool IsGreen(Ingredient ingredient)
+    {
+        return Greens.IsMatch(ingredient.Name);
+    }
+
+    public static bool IsCruciferousVegetable(Ingredient ingredient)
+    {
+        return Crucifers.IsMatch(ingredient.Name);
+    }
 }
 
 public class IngredientNutritionDescription

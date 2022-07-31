@@ -7,22 +7,28 @@ namespace babe_algorithms.Models;
 
 public class StandardReferenceNutritionData : USDANutritionData
 {
+    public const string FruitsAndFruitJuices = "Fruits and Fruit Juices";
+    public const string VegetableAndVegetableProducts = "Vegetables and Vegetable Products";
+    public const string LegumeAndLegumeProducts = "Legumes and Legume Products";
+    public const string SpicesAndHerbs = "Spices and Herbs";
+    public const string NutAndSeedProducts = "Nut and Seed Products";
+    public const string CerealGrainsAndPasta = "Cereal Grains and Pasta";
     public static readonly List<string> PlantBasedCategories = new()
     {
         "Beverages",
         "Baked Products",
-        "Cereal Grains and Pasta",
-        "Fruits and Fruit Juices",
-        "Vegetables and Vegetable Products",
+        CerealGrainsAndPasta,
+        FruitsAndFruitJuices,
+        VegetableAndVegetableProducts,
         "Fats and Oils",
         "Sweets",
         "Breakfast Cereals",
         "Soups, Sauces, and Gravies",
         "American Indian/Alaska Native Foods",
-        "Spices and Herbs",
-        "Nut and Seed Products",
+        SpicesAndHerbs,
+        NutAndSeedProducts,
         "Baby Foods",
-        "Legumes and Legume Products",
+        LegumeAndLegumeProducts,
     };
 
     [Key]
@@ -39,6 +45,12 @@ public class StandardReferenceNutritionData : USDANutritionData
 
     public string CountRegex { get; set; }
 
+    public string GetFoodCategoryDescription()
+    {
+        var nutritionData = JToken.Parse(
+            this.FoodCategory.RootElement.GetRawText());
+        return nutritionData!["description"]!.ToString();
+    }
     /// <summary>
     /// Calculates the density of an ingredient in kilograms per liter.
     /// </summary>

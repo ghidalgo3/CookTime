@@ -198,12 +198,99 @@ namespace babe_algorithms.Controllers
                 return NotFound();
             }
             var body = new RecipeNutritionFacts();
+            SetNutritionFacts(multiPartRecipe, body);
+            SetDietDetails(multiPartRecipe, body);
+            return this.Ok(body);
+        }
+
+        private void SetDietDetails(
+            MultiPartRecipe multiPartRecipe,
+            RecipeNutritionFacts body)
+        {
+            TestTodaysTen(multiPartRecipe, body);
+            TestKeto(body);
+        }
+
+        private void TestTodaysTen(MultiPartRecipe multiPartRecipe, RecipeNutritionFacts body)
+        {
+            var allIngredients = multiPartRecipe.GetAllIngredients();
+            Func<string, string, bool> strcmp = (a, b) => string.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
+            Func<Ingredient, string, bool> IsTodaysTen = (ingredient, name) =>
+                allIngredients.Any(ingredient => strcmp(ingredient.NutritionData?.GetFoodCategoryDescription(), name));
+            // Fruit
+            var hasFruit = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.FruitsAndFruitJuices));
+            // Vegetable
+            var hasVegetable = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.VegetableAndVegetableProducts));
+            // Bean
+            var hasBeans = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.LegumeAndLegumeProducts));
+            // Spices
+            var hasSpices = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.SpicesAndHerbs));
+            // Nuts
+            var hasNuts = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.NutAndSeedProducts));
+            // Grain
+            var hasGrain = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.CerealGrainsAndPasta));
+            // Flaxseed
+            var hasFlaxseed = allIngredients.Any(ingredient => ingredient.Name.Contains("flaxseed", StringComparison.InvariantCultureIgnoreCase));
+            // Berry
+            var hasBerry = allIngredients.Any(ingredient =>
+            {
+                // BIG FAIL PLZ COME BACK TO ME ONE DAY
+                // TODO
+                return
+                    ingredient.Name.Contains("berries", StringComparison.InvariantCultureIgnoreCase)
+                    || ingredient.Name.Contains("berry", StringComparison.InvariantCultureIgnoreCase);
+            });
+            // Greens
+            var hasGreens = allIngredients.Any(TodaysTenDetails.IsGreen);
+            // Crucifers
+            var hasCruciferousVegetables = allIngredients.Any(TodaysTenDetails.IsCruciferousVegetable);
+            
+            body.DietDetails.Add(new DietDetail()
+            {
+                Name = "TodaysTen",
+                Opinion = DietOpinion.Neutral, // TODO
+                Details = new TodaysTenDetails()
+                {
+                    HasFruits = hasFruit,
+                    HasVegetables = hasVegetable,
+                    HasBeans = hasBeans,
+                    HasHerbsAndSpices = hasSpices,
+                    HasNutsAndSeeds = hasNuts,
+                    HasGrains = hasGrain,
+                    HasFlaxseeds = hasFlaxseed,
+                    HasBerries = hasBerry,
+                    HasGreens = hasGreens,
+                    HasCruciferousVegetables = hasCruciferousVegetables
+                }
+            });
+        }
+
+        private static void TestKeto(RecipeNutritionFacts body)
+        {
+            // start easy... keto means 5% of calories are from carbs?
+            var totalCalories = body.Recipe.Calories;
+            var totalCarbs = body.Recipe.Carbohydrates;
+            var carbCalories = totalCarbs * 4;
+            if (carbCalories / totalCalories < 0.05)
+            {
+                body.DietDetails.Add(
+                    new DietDetail()
+                    {
+                        Opinion = DietOpinion.Recommended,
+                        Name = "Keto"
+                    });
+            }
+        }
+
+        private static void SetNutritionFacts(MultiPartRecipe multiPartRecipe, RecipeNutritionFacts body)
+        {
             var ingredientDescriptors = new List<IngredientNutritionDescription>();
             foreach (var component in multiPartRecipe.RecipeComponents)
             {
                 var allIngredientRequirements = component.Ingredients;
                 // irs.Sort((first, second) => first.Position.CompareTo(second.Position));
-                var result = allIngredientRequirements.Select(ir => {
+                var result = allIngredientRequirements.Select(ir =>
+                {
                     var nutritionForIngredient = ir.CalculateNutritionFacts();
                     var ingredientDescriptor = ir.GetPartialIngredientDescription();
                     ingredientDescriptor.CaloriesPerServing = nutritionForIngredient.Calories / multiPartRecipe.ServingsProduced;
@@ -212,12 +299,11 @@ namespace babe_algorithms.Controllers
                 });
                 if (result.Any())
                 {
-                    body.Components.Add(result.Aggregate((a,b) => a + b));
+                    body.Components.Add(result.Aggregate((a, b) => a + b));
                 }
             }
             body.Recipe = body.Components.Aggregate((a, b) => a + b);
             body.Ingredients = ingredientDescriptors;
-            return this.Ok(body);
         }
 
         // PUT: api/MultiPartRecipe/5

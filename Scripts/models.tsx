@@ -4,6 +4,25 @@ type Autosuggestable = {
     isNew: boolean
 }
 
+type DietDetail = {
+    name : string,
+    opinion: string
+    details : TodaysTenDetails | any
+}
+
+type TodaysTenDetails = {
+    hasFruits : boolean,
+    hasVegetables: boolean,
+    hasCruciferousVegetables: boolean,
+    hasBeans: boolean,
+    hasHerbsAndSpices: boolean,
+    hasNutsAndSeeds: boolean,
+    hasGrains: boolean,
+    hasFlaxseeds: boolean,
+    hasBerries: boolean,
+    hasGreens: boolean,
+}
+
 type Review = {
     id : string,
     createdAt : string,
@@ -119,6 +138,7 @@ type RecipeNutritionFacts = {
     recipe : NutritionFactVector,
     components : NutritionFactVector[]
     ingredients: IngredientNutritionDescription[]
+    dietDetails : DietDetail[]
 }
 
 type IngredientNutritionDescription = {
