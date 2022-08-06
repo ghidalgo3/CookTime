@@ -74,6 +74,10 @@ public class NutritionFactVector
     public double TransFats { get; set; }
     public double Proteins { get; set; }
     public double Sugars { get; set; }
+    public double Iron { get; set; }
+    public double VitaminD { get; set; }
+    public double Potassium { get; set; }
+    public double Calcium { get; set; }
 
     public NutritionFactVector Combine(NutritionFactVector nf) =>
         new()
@@ -86,6 +90,10 @@ public class NutritionFactVector
             TransFats = this.TransFats + nf.TransFats,
             Proteins = this.Proteins + nf.Proteins,
             Sugars = this.Sugars + nf.Sugars,
+            Iron = this.Iron + nf.Iron,
+            VitaminD = this.VitaminD + nf.VitaminD,
+            Calcium = this.Calcium + nf.Calcium,
+            Potassium = this.Potassium + nf.Potassium
         };
     
     public static NutritionFactVector operator +(

@@ -80,6 +80,10 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
         this.ComputeNutritionValue(nutritionData, "Fatty acids, total saturated",       "g", n => nutritionFacts.SaturatedFats = n);
         this.ComputeNutritionValue(nutritionData, "Fatty acids, total trans",           "g", n => nutritionFacts.TransFats = n);
         this.ComputeNutritionValue(nutritionData, "Sugars, total including NLEA",       "g", n => nutritionFacts.Sugars = n);
+        this.ComputeNutritionValue(nutritionData, "Iron, Fe",                           "mg", n => nutritionFacts.Iron = n);
+        this.ComputeNutritionValue(nutritionData, "Vitamin D (D2 + D3)",                "µg", n => nutritionFacts.VitaminD = n);
+        this.ComputeNutritionValue(nutritionData, "Calcium, Ca",                        "mg", n => nutritionFacts.Calcium = n);
+        this.ComputeNutritionValue(nutritionData, "Potassium, K",                       "mg", n => nutritionFacts.Potassium = n);
         return nutritionFacts;
     }
 

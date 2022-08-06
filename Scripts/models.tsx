@@ -132,7 +132,11 @@ type NutritionFactVector = {
     monoUnsaturatedFats : number,
     polyUnsaturatedFats : number,
     proteins : number,
-    sugars : number
+    sugars : number,
+    iron : number,
+    vitaminD : number,
+    calcium : number,
+    potassium : number,
 }
 
 type RecipeNutritionFacts = {

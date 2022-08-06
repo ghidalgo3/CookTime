@@ -19,7 +19,11 @@ export class NutritionFacts extends React.Component<NutritionFactsProps, {}>
             saturatedFats,
             sugars,
             transFats,
-            servings
+            servings,
+            iron,
+            vitaminD,
+            calcium,
+            potassium
         } = this.props;
         return (
             <div className="nf-body performance-facts">
@@ -138,30 +142,42 @@ export class NutritionFacts extends React.Component<NutritionFactsProps, {}>
                     </tbody>
                 </table>
 
-                {/* <table className="performance-facts__table performance-facts__table__grid">
+                <table className="performance-facts__table performance-facts__table__grid">
                     <tbody>
                         <tr>
-                            <td colSpan={2}>
-                                Vitamin A 
-                                10%
-                            </td>
-                            <td className="nf-td-lastchild" style={{textAlign: "left"}}>
-                                Vitamin C 
-                                0%
+                            <th colSpan={2}>
+                                Vitamin D {vitaminD}mcg
+                            </th>
+                            <td>
+                                {Math.round(100 * vitaminD / 20)}%
                             </td>
                         </tr>
-                        <tr className="thin-end">
-                            <td colSpan={2}>
-                                Calcium 
-                                10%
+                        <tr>
+                            <th colSpan={2}>
+                                Calcium {calcium}mg
+                            </th>
+                            <td>
+                                {Math.round(100 * calcium / 1300)}%
                             </td>
-                            <td className="nf-td-lastchild" style={{textAlign: "left"}}>
-                                Iron 
-                                6%
+                        </tr>
+                        <tr>
+                            <th colSpan={2}>
+                                Iron {iron}mg
+                            </th>
+                            <td>
+                                {Math.round(100 * iron / 18)}%
+                            </td>
+                        </tr>
+                        <tr>
+                            <th colSpan={2}>
+                                Potassium {potassium}mg
+                            </th>
+                            <td>
+                                {Math.round(100 * potassium / 4700)}%
                             </td>
                         </tr>
                     </tbody>
-                </table> */}
+                </table>
 
                 <p className="nf-p padding-top-2 small-info">* Percent Daily Values are based on a 2,000 calorie diet. Your daily values may be higher or lower depending on your calorie needs:</p>
 

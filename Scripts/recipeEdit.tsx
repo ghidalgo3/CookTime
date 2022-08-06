@@ -613,6 +613,10 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 saturatedFats,
                 sugars,
                 transFats,
+                iron,
+                vitaminD,
+                calcium,
+                potassium
             } = this.state.nutritionFacts!.recipe;
             return (
             <NutritionFacts
@@ -631,10 +635,10 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 sugars={Math.round(sugars / this.state.recipe.servingsProduced)}
                 proteins={Math.round(proteins / this.state.recipe.servingsProduced)}
                 servings={this.state.newServings}
-                // vitaminA={0}
-                // vitaminC={0}
-                // calcium={0}
-                // iron={0}
+                potassium={Math.round(potassium / this.state.recipe.servingsProduced)}
+                vitaminD={Math.round(vitaminD / this.state.recipe.servingsProduced)}
+                calcium={Math.round(calcium / this.state.recipe.servingsProduced)}
+                iron={Math.round(iron / this.state.recipe.servingsProduced)}
             />)
         } else {
             return null;
