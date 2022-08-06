@@ -17,11 +17,11 @@ export class TodaysTenDisplay extends React.Component<TodaysTenDisplayProps, {}>
         let d = this.details!
         return (
             <div className="todays-tens-container">
-                {this.topTenImage("beans", d.hasBeans)}
                 {this.topTenImage("whole-grains", d.hasGrains)}
                 {this.topTenImage("greens", d.hasGreens)}
                 {this.topTenImage("cruciferous", d.hasCruciferousVegetables)}
                 {this.topTenImage("other-vegetables", d.hasVegetables)}
+                {this.topTenImage("beans", d.hasBeans)}
                 {this.topTenImage("nuts", d.hasNutsAndSeeds)}
                 {this.topTenImage("berries", d.hasBerries)}
                 {this.topTenImage("other-fruit", d.hasFruits)}
