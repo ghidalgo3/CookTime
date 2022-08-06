@@ -218,7 +218,7 @@ namespace babe_algorithms.Controllers
             Func<Ingredient, string, bool> IsTodaysTen = (ingredient, name) =>
                 allIngredients.Any(ingredient => strcmp(ingredient.NutritionData?.GetFoodCategoryDescription(), name));
             // Fruit
-            var hasFruit = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.FruitsAndFruitJuices));
+            var hasFruit = allIngredients.Any(TodaysTenDetails.IsFruit);
             // Vegetable
             var hasVegetable = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.VegetableAndVegetableProducts));
             // Bean
