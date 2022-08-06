@@ -207,55 +207,8 @@ namespace babe_algorithms.Controllers
             MultiPartRecipe multiPartRecipe,
             RecipeNutritionFacts body)
         {
-            TestTodaysTen(multiPartRecipe, body);
+            body.DietDetails.Add(TodaysTenDetails.GetTodaysTenDietDetail(multiPartRecipe.GetAllIngredients()));
             TestKeto(body);
-        }
-
-        private void TestTodaysTen(MultiPartRecipe multiPartRecipe, RecipeNutritionFacts body)
-        {
-            var allIngredients = multiPartRecipe.GetAllIngredients();
-            Func<string, string, bool> strcmp = (a, b) => string.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
-            Func<Ingredient, string, bool> IsTodaysTen = (ingredient, name) =>
-                allIngredients.Any(ingredient => strcmp(ingredient.NutritionData?.GetFoodCategoryDescription(), name));
-            // Fruit
-            var hasFruit = allIngredients.Any(TodaysTenDetails.IsFruit);
-            // Vegetable
-            var hasVegetable = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.VegetableAndVegetableProducts));
-            // Bean
-            var hasBeans = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.LegumeAndLegumeProducts));
-            // Spices
-            var hasSpices = allIngredients.Any(TodaysTenDetails.IsSpicesAndHerbs);
-            // Grain
-            var hasGrain = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.CerealGrainsAndPasta));
-            // Nuts
-            var hasNuts = allIngredients.Any(TodaysTenDetails.IsNutsAndSeeds);
-            // Flaxseed
-            var hasFlaxseed = allIngredients.Any(TodaysTenDetails.IsFlaxseed);
-            // Berry
-            var hasBerry = allIngredients.Any(TodaysTenDetails.IsBerry);
-            // Greens
-            var hasGreens = allIngredients.Any(TodaysTenDetails.IsGreen);
-            // Crucifers
-            var hasCruciferousVegetables = allIngredients.Any(TodaysTenDetails.IsCruciferousVegetable);
-            
-            body.DietDetails.Add(new DietDetail()
-            {
-                Name = "TodaysTen",
-                Opinion = DietOpinion.Neutral, // TODO
-                Details = new TodaysTenDetails()
-                {
-                    HasFruits = hasFruit,
-                    HasVegetables = hasVegetable,
-                    HasBeans = hasBeans,
-                    HasHerbsAndSpices = hasSpices,
-                    HasNutsAndSeeds = hasNuts,
-                    HasGrains = hasGrain,
-                    HasFlaxseeds = hasFlaxseed,
-                    HasBerries = hasBerry,
-                    HasGreens = hasGreens,
-                    HasCruciferousVegetables = hasCruciferousVegetables
-                }
-            });
         }
 
         private static void TestKeto(RecipeNutritionFacts body)

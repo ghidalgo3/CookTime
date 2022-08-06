@@ -3,6 +3,7 @@ import { Button, Col, Form, Row } from 'react-bootstrap';
 import * as ReactDOM from 'react-dom';
 import { IngredientDisplay } from './IngredientDisplay';
 import { parse, v4 as uuidv4 } from 'uuid';
+import { TodaysTenDisplay } from './todaysTenDisplay';
 
 type CartState = {
     cart : Cart
@@ -16,8 +17,18 @@ class ShoppingCart extends React.Component<{}, CartState> {
                 CreateAt: '',
                 recipeRequirement: [],
                 active: true,
-                ingredientState: []
+                ingredientState: [],
+                dietDetails: []
             },
+        }
+    }
+
+    private todaysTen() {
+        let todaysTen = this.state.cart.dietDetails.find(dd => dd.name === "TodaysTen")!
+        if (todaysTen != null) {
+            return <TodaysTenDisplay todaysTen={todaysTen} />
+        } else {
+            return null;
         }
     }
 
@@ -116,6 +127,9 @@ class ShoppingCart extends React.Component<{}, CartState> {
                         <Button variant="danger" className="float-end" onClick={_ => this.onClear()}>Clear Cart</Button>
                     </Col>
                 </Row>
+                {
+                    this.todaysTen()
+                }
                 <div className="cart-header">
                     Servings
                 </div>

@@ -303,6 +303,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                                     .ThenInclude(mpRecipe => mpRecipe.RecipeComponents)
                                         .ThenInclude(c => c.Ingredients)
                                             .ThenInclude(i => i.Ingredient)
+                                                .ThenInclude(ingredient => ingredient.NutritionData)
                             .Include(c => c.RecipeRequirement)
                                 .ThenInclude(rr => rr.MultiPartRecipe)
                                     .ThenInclude(mpRecipe => mpRecipe.Images)

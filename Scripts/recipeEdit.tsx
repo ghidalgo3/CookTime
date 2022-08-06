@@ -540,7 +540,7 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
 
     private todaysTen() {
         let todaysTen = this.state.nutritionFacts?.dietDetails.find(dd => dd.name === "TodaysTen")!
-        if (!this.state.edit && todaysTen != null && isAdmin()) {
+        if (!this.state.edit && todaysTen != null) {
             return <TodaysTenDisplay todaysTen={todaysTen} />
         } else {
             return null;

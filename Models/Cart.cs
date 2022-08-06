@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using babe_algorithms.Models.Users;
 
 namespace babe_algorithms.Models;
@@ -40,6 +41,15 @@ public class Cart : IOwned
     {
         return this.RecipeRequirement.Any(rr => rr.MultiPartRecipe.Id.Equals(recipeId));
     }
+
+    [NotMapped]
+    public List<DietDetail> DietDetails { get; set; } = new List<DietDetail>();
+
+    public ISet<Ingredient> GetAllIngredients() 
+    {
+        return this.RecipeRequirement.SelectMany(rr => rr.MultiPartRecipe.GetAllIngredients()).ToHashSet();
+    }
+
 }
 
 

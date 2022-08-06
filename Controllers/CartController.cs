@@ -78,12 +78,20 @@ public class CartController : ControllerBase
     {
         if ((await this.Session.GetSignedInUserAsync(this.User)) is ApplicationUser user)
         {
-            return await _context.GetGroceryListAsync(user);
+            var grocerylist = await _context.GetGroceryListAsync(user);
+            SetDietDetails(grocerylist);
+            return grocerylist;
         }
         else
         {
             return this.Unauthorized();
         }
+    }
+
+    private static void SetDietDetails(Cart grocerylist)
+    {
+        var dietDetail = TodaysTenDetails.GetTodaysTenDietDetail(grocerylist.GetAllIngredients());
+        grocerylist.DietDetails.Add(dietDetail);
     }
 
     // PUT: api/Cart/5

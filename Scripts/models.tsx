@@ -38,11 +38,12 @@ type MeasureUnit = {
 }
 
 type Cart = {
-    id: string,
+    id : string,
     recipeRequirement: RecipeRequirement[],
-    CreateAt: string,
+    CreateAt : string,
     active : boolean
-    ingredientState : CartIngredient[]
+    ingredientState : CartIngredient[],
+    dietDetails : DietDetail[]
 }
 
 type RecipeRequirement = {
