@@ -338,14 +338,14 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 onChange={(e) => this.setState({recipe: {...this.state.recipe, name: e.target.value}})}
                                 value={this.state.recipe.name}></Form.Control>
                         </div>:
-                                <h1 className="margin-bottom-20">{this.state.recipe.name}</h1> }
+                                <h1>{this.state.recipe.name}</h1> }
                         {this.state.recipe.reviewCount > 0 ?
                             <div className="margin-bottom-8">
                                 <Rating
                                     initialRating={this.state.recipe.averageReviews}
                                     readonly
-                                    emptySymbol="far fa-star fa-2x"
-                                    fullSymbol="fas fa-star fa-2x"
+                                    emptySymbol="far fa-star"
+                                    fullSymbol="fas fa-star"
                                     fractions={2} />
                                 ({this.state.recipe.reviewCount})
                             </div>
@@ -366,6 +366,9 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                 :
                 null}
                 { this.image() }
+                {
+                    this.todaysTen()
+                }
                 <div>
                     { this.caloriesPerServingComponent() }
                     <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
@@ -506,9 +509,6 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                     </div>
                     :
                     null
-                }
-                {
-                    this.todaysTen()
                 }
                 {
                     (isSignedIn() && !this.state.edit) ?

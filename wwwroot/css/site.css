@@ -232,6 +232,22 @@ a:hover, a:active {
   background-color: var(--red-dirt-highlight);
 }
 
+.todays-tens-container {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: nowrap;
+  margin-bottom: 10px;
+}
+
+.todays-tens-symbols {
+  height: 35px;
+}
+
+.todays-tens-symbols.absent {
+  height: 20px;
+  filter: grayscale(100%);
+}
+
 .recipe-edit-buttons {
   min-width: 132px;
   width: 100%;
