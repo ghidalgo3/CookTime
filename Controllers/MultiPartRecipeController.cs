@@ -135,13 +135,8 @@ namespace babe_algorithms.Controllers
                 return this.NotFound();
             }
 
-            // if (existingRecipe.Owner.Id == user.Id)
-            // {
-            //     return this.BadRequest("You cannot review your own recipes.");
-            // }
             var existingReviews = await this._context.GetReviewsAsync(existingRecipe.Id);
             var existingReview = existingReviews.FirstOrDefault(r => r.Owner.Id == user.Id);
-            // var existingReview = await this._context.GetReviewAsync(existingRecipe.Id, user.Id);
             if (existingReview == null)
             {
                 var newReview = new Review()
