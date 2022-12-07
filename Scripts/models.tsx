@@ -73,7 +73,8 @@ type CartIngredient = {
 }
 
 type RecipeStep = {
-    text : string
+    text : string,
+    id: string
 }
 
 type Image = {

@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, Col, Form, FormControl, Row } from "react-bootstrap";
 import { Step } from "./RecipeStep";
+import { ReactSortable } from "react-sortablejs";
 
 type RecipeStepListProps = {
     recipe : Recipe | MultiPartRecipe,
@@ -22,6 +23,7 @@ export class RecipeStepList extends React.Component<RecipeStepListProps, {}> {
         return (
             <Row>
                 <Col className="col d-flex align-items-center get-smaller">
+                    <i className="margin-right-10 drag-handle fas fa-solid fa-grip-vertical"></i>
                     <FormControl
                         as="textarea" 
                         rows={4}
@@ -55,9 +57,19 @@ export class RecipeStepList extends React.Component<RecipeStepListProps, {}> {
     stepEdit(): React.ReactNode {
         return (
             <Form>
-                { this.props.multipart ? 
-                    this.props.component!.steps?.map((i, idx) => this.stepEditRow(i, idx)) :
-                    (this.props.recipe as Recipe).steps?.map((i, idx) => this.stepEditRow(i, idx)) }
+
+            <ReactSortable
+              list={this.props.component!.steps!}
+              setList={newSteps => {
+                this.props.onChange(newSteps);
+                // this.props.component!.steps! = newSteps
+              }}
+              handle=".drag-handle"
+              >
+              {this.props.multipart ?
+                this.props.component!.steps?.map((i, idx) => this.stepEditRow(i, idx)) :
+                (this.props.recipe as Recipe).steps?.map((i, idx) => this.stepEditRow(i, idx))}
+            </ReactSortable>
                 <Col xs={12}>
                     <Button
                         variant="outline-primary"
@@ -87,21 +99,21 @@ export class RecipeStepList extends React.Component<RecipeStepListProps, {}> {
                 )
             });
         } else {
-            return this.props.component?.steps?.map((step, index) => {
+            return (this.props.component?.steps?.map((step, index) => {
                 return (
-                    <Row>
-                        <Col className="step-number">{index + 1}</Col>
-                        <Col className="margin-bottom-12" key={step.text}>
-                            <Step
-                                multipart={this.props.multipart}
-                                recipe={this.props.recipe}
-                                recipeStep={step}
-                                component={this.props.component}
-                                newServings={this.props.newServings} />
-                        </Col>
-                    </Row>
+                  <Row>
+                    <Col className="step-number">{index + 1}</Col>
+                    <Col className="margin-bottom-12" key={step.text}>
+                      <Step
+                        multipart={this.props.multipart}
+                        recipe={this.props.recipe}
+                        recipeStep={step}
+                        component={this.props.component}
+                        newServings={this.props.newServings} />
+                    </Col>
+                  </Row>
                 )
-            });
-        }
+              }));
+            }
     }
 }

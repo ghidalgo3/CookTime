@@ -24,6 +24,7 @@
     "@types/react": "^17.0.19",
     "@types/react-autosuggest": "^10.1.5",
     "@types/react-dom": "^17.0.9",
+    "@types/sortablejs": "^1.15.0",
     "@types/uuid": "^8.3.1",
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.3.0",
@@ -45,6 +46,8 @@
     "react-bootstrap": "^2.0.0-beta.6",
     "react-dom": "^17.0.2",
     "react-rating": "^2.0.5",
+    "react-sortablejs": "^6.1.4",
+    "sortablejs": "^1.15.0",
     "uuid": "^8.3.2"
   }
 }

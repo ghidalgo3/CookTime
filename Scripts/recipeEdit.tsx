@@ -289,7 +289,22 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
     appendNewStepForComponent(componentIndex : number, component : RecipeComponent): void {
         if (this.props.multipart) {
             var newSteps = Array.from(component.steps ?? [])
-            newSteps.push({text: ''})
+            newSteps.push({text: '', id: uuidv4()})
+            component.steps = newSteps;
+            let newComponents = Array.from((this.state.recipe as MultiPartRecipe).recipeComponents);
+            this.setState({
+                recipe: {
+                    ...this.state.recipe,
+                    recipeComponents: newComponents
+                }
+            })
+        }
+    }
+
+    changeOrReorder(componentIndex : number, component : RecipeComponent, newSteps : RecipeStep[]): void {
+        if (this.props.multipart) {
+            // var newSteps = Array.from(component.steps ?? [])
+            // newSteps.push({text: '', id: uuidv4()})
             component.steps = newSteps;
             let newComponents = Array.from((this.state.recipe as MultiPartRecipe).recipeComponents);
             this.setState({
@@ -822,13 +837,16 @@ class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
                                 edit={this.state.edit}
                                 onDeleteStep={(idx) => this.deleteStep(idx, component)}
                                 onChange={(newSteps) => {
-                                    this.setState({
-                                        ...this.state,
-                                        recipe: {
-                                            ...recipe,
-                                            // steps: newSteps // TODO WTF??
-                                        }
-                                    })
+                                    console.log(newSteps);
+                                    this.changeOrReorder(componentIndex, component, newSteps);
+                                    // this.setState({
+                                    //     ...this.state,
+                                    //     recipe: {
+                                    //         ...recipe,
+
+                                    //         // todo TODO wtf?
+                                    //     }
+                                    // })
                                 }
                                 }
                                 onNewStep={() => this.appendNewStepForComponent(componentIndex, component)} />
