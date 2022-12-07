@@ -67,9 +67,9 @@ export class RecipeReviewForm extends React.Component<RecipeReviewFormProps, Rec
 
     private onSubmit(event) {
         const form = event.currentTarget;
+        event.preventDefault();
+        event.stopPropagation();
         if (form.checkValidity() === false || this.state.rating === 0) {
-            event.preventDefault();
-            event.stopPropagation();
             this.setState({validated: true})
             return;
         }
