@@ -79,6 +79,8 @@ public class Program
             app.UseHsts();
         }
         app.UseHttpsRedirection();
+        app.UseImageSharp();
+        app.UseDefaultFiles();
         app.UseStaticFiles();
         app.UseCookiePolicy();
         app.UseRouting();
@@ -86,7 +88,7 @@ public class Program
         app.UseAuthorization();
         app.MapControllerRoute(
             name: "default",
-            pattern:"{controller}/{action=Index}/{id?}");
+            pattern:"{controller=Home}/{action=Index}/{id?}");
         app.MapRazorPages();
         app.MapFallbackToFile("index.html");
 
