@@ -89,14 +89,6 @@ public class Startup
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
-            app.Map(
-                "/js", ctx =>
-                {
-                    ctx.UseSpa(spa =>
-                    {
-                        spa.UseProxyToSpaDevelopmentServer("http://localhost:8080/js");
-                    });
-                });
         }
         else
         {
