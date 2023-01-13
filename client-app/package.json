@@ -21,6 +21,7 @@
     "react-rating": "^2.0.5",
     "react-sortablejs": "^6.1.4",
     "sortablejs": "^1.15.0",
+    "http-proxy-middleware": "^0.19.1",
     "uuid": "^8.3.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
