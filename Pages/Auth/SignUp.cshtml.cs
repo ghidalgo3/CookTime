@@ -44,33 +44,33 @@ public class SignUpModel : PageModel
             if (result.Succeeded)
             {
                 await SendVerificationEmailAsync(foundUser);
-                return this.Redirect("/SignUp#success");
+                return this.Redirect("/Auth/SignUp#success");
             }
             else
             {
-                return this.Redirect("/SignUp#tryagain");
+                return this.Redirect("/Auth/SignUp#tryagain");
             }
         }
         else if (this.Resend)
         {
             await SendVerificationEmailAsync(user);
-            return this.Redirect("/SignUp#success");
+            return this.Redirect("/Auth/SignUp#success");
         }
         else if (!user.EmailConfirmed)
         {
-            return this.Redirect("/SignUp#resendemail");
+            return this.Redirect("/Auth/SignUp#resendemail");
         }
         else if (user.EmailConfirmed && user.PasswordHash != null)
         {
-            return this.Redirect("/SignUp#resendemail");
+            return this.Redirect("/Auth/SignUp#resendemail");
         }
         else if (user.EmailConfirmed && user.PasswordHash == null)
         {
-            return this.Redirect("/SignUp#resendemail");
+            return this.Redirect("/Auth/SignUp#resendemail");
         }
         else
         {
-            return this.Redirect("/SignUp#resendemail");
+            return this.Redirect("/Auth/SignUp#resendemail");
         }
     }
 
