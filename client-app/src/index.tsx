@@ -10,6 +10,7 @@ import './assets/css/all.css';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+// This is the file that contains all the global state
 root.render(
   <React.StrictMode>
     <App />

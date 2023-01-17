@@ -16,7 +16,7 @@ I've resolved to reimplement the CookTime UI as a React single page application 
 This post will be a development diary of all the changes necessary to accomplish this goal.
 Let's dive in!
 
-# Day 1: Getting something running.
+# Day 1: Getting something running
 I'm going to use [create-react-app](https://create-react-app.dev) to scaffold the initial state of the client app.
 I did this by running `npx create-react-app client-app --template typescript` at the root of the repo, which gets a React SPA set up in the `client-app` directory.
 
@@ -51,6 +51,46 @@ So we replace `Microsoft.AspNetCore.SpaServices.Extensions` with `Microsoft.AspN
 The full documentation for the new NuGet is [here](https://github.com/dotnet/AspNetCore.Docs/issues/26373) and that page does a better job than me.
 
 With all that done, the standard `create-react-app` page loads with the spinning Rutherfordian atom.
+
 Success!
+![Create react app template](assets/react-day1.png)
 
 # Day 2: Authentication and Authorization
+
+Before we get to the fun parts of re-writing the Razor pages as React components, we have to deal with the un-fun features of signing in and authorizing users.
+Addressing this led me down a rabbit-hole of authentication acronymns and open-ended questioning whether or not you should be able to use your Google account to sign in.
+In the end, I decided that CookTime will
+1. *Continue* to be its own authentication and authorization provider.
+1. *Continue* to use ASP.NET Identity cookies to identify users.
+
+The _alternative_ of course would have been to 
+1. Delegate to an authentication provider (like Google, Facebook, Apple, Microsoft, etc...) and implement the correct [OIDC](https://openid.net/connect/) flow
+1. Configure _each_ authentication provider and map claims appropriately so CookTime doesn't care who provided the JWT.
+
+I simply do not have the patience or desire to setup OAuth authentication for CookTime and if this costs us users then so be it.
+The whole process is mind-meltingly boring.
+
+Having decided that, I need to reimplement the Identity flows using React components instead of `forms` for
+1. Registration
+1. Sign in
+1. Sign out
+1. Password reset
+1. Email verification
+
+## Registration
+The registration form is "simple" (Ha! Nothing with authentication is simple!).
+A user providers the following information (taken from the current sign up form).
+
+![Alt text](assets/react-day2-1.png)
+
+Then in the backend, we take this and check to see if a user with the same `username` _or_ `email` has previously been registered.
+Assuming not, we try to create the user and if their password passes the complexity checks then they get a database entry in the `AspNetUsers` table.
+We also fire off an email to the email provided to validate that this is a real email!
+It should be simple enough to:
+1. Make a React form that accepts these 4 inputs
+1. POST the information to the server
+1. Create the user if needed
+
+## References
+1. https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
+1. https://jcbaey.com/authentication-in-spa-reactjs-and-vuejs-the-right-way/?utm_source=medium&utm_campaign=spa-authentication

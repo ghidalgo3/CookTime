@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace babe_algorithms.Models.Users;
 
+/// <summary>
+/// DTO for data required at user sign up.
+/// </summary>
 public class UserSignUp
 {
     [Required]
