@@ -40,10 +40,9 @@
 "export interface ${1:$TM_FILENAME_BASE}Props {",
 "}",
 "",
-"function $1(props: ${1}Props) {",
-"    return (<>$0</>);",
+"export function $1(props: ${1}Props) {",
+"  return (<>$0</>);",
 "}",
-"export default $1;",
 		],
 		"description": "New functional component with hooks"
 	}

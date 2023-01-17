@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 
-function CookTimeBanner() {
+export function CookTimeBanner() {
   return (
   <section className="py-5 text-center container margin-bottom-10">
     <div className="row py-lg-5">
@@ -9,4 +9,3 @@ function CookTimeBanner() {
     </div>
   </section>);
 }
-export default CookTimeBanner;

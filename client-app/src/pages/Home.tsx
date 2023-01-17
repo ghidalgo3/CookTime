@@ -1,6 +1,10 @@
+// import {
+//   CookTimeBanner,
+//   NavigationBar,
+//   SignUp
+// } from "@components";
+import { CookTimeBanner, NavigationBar, SignUp } from "@components/index";
 import React, {useEffect, useState} from"react"
-import CookTimeBanner from "../components/CookTimeBanner";
-import NavigationBar from "../components/NavigationBar/NavigationBar";
 
 export interface HomeProps {
 }
@@ -10,6 +14,7 @@ function Home(props: HomeProps) {
       <>
       <NavigationBar />
       <CookTimeBanner />
+      <SignUp />
       </>
     );
 }

@@ -47,16 +47,6 @@ public class AccountController : ControllerBase
         }
     }
 
-    // [ValidateAntiForgeryToken]
-    // public void CompleteTutorial()
-    // {
-    //     var user = this.userManager.GetUser(this.User);
-    //     if (user != null)
-    //     {
-    //         this.appDbContext.SaveChanges();
-    //     }
-    // }
-
     [HttpGet("signout")]
     public async Task<IActionResult> Signout()
     {
@@ -98,20 +88,4 @@ public class AccountController : ControllerBase
             }
         }
     }
-
-    // private async Task CreateStandardUser(ApplicationUser user)
-    // {
-    //     var company = new StandardUser()
-    //     {
-    //         Name = user.Name,
-    //         Email = user.Email,
-    //         User = user,
-    //         SignUp = DateTimeOffset.UtcNow,
-    //     };
-    //     user.StandardUser = company;
-    //     this.appDbContext.StandardUsers.Add(company);
-    //     await this.appDbContext.SaveChangesAsync();
-    //     await this.userManager.UpdateAsync(user);
-    //     this.logger.LogInformation("Created company {CompanyName}", company.Name);
-    // }
 }

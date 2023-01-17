@@ -7,7 +7,7 @@ import "./NavigationBar.css"
 export interface NavigationBarProps {
 }
 
-function NavigationBar(props: NavigationBarProps | null) {
+export function NavigationBar(props: NavigationBarProps | null) {
     return (
       <Navbar expand="lg">
         <Container>
@@ -64,4 +64,3 @@ function NavigationBar(props: NavigationBarProps | null) {
         </Container>
       </Navbar>);
 }
-export default NavigationBar;
