@@ -7,7 +7,7 @@ interface UserData {
 
 type SignInResult = "Success" | "Failure"
 
-interface IAuthenticationProvider {
+export interface IAuthenticationProvider {
   user : UserData | null,
 
   signIn(

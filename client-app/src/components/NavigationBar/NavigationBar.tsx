@@ -4,11 +4,14 @@ import { isMainThread } from "worker_threads";
 import { Link } from "react-router-dom";
 import imgs from "../../assets";
 import "./NavigationBar.css"
+import { useContext } from "react";
+import { AuthContext } from "src";
 
 export interface NavigationBarProps {
 }
 
 export function NavigationBar(props: NavigationBarProps | null) {
+  const auth = useContext(AuthContext)
     return (
       <Navbar expand="lg">
         <Container>
@@ -38,9 +41,14 @@ export function NavigationBar(props: NavigationBarProps | null) {
               </NavDropdown>
               <Nav.Link href="#home">Groceries List</Nav.Link>
               <Nav.Link>
-                <Link to="/signin">
-                  Sign in
-                </Link>
+                {
+                  auth.user ?
+                  `Hello ${auth.user.name}`
+                  : 
+                  <Link to="/signin">
+                    Sign in
+                  </Link>
+                }
               </Nav.Link>
               <Nav.Link href="#home">Blog</Nav.Link>
               <NavDropdown title="Admin" id="basic-nav-dropdown">
