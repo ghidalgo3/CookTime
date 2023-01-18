@@ -15,4 +15,6 @@ public interface ISignInManager
         string password,
         bool isPersistent,
         bool lockoutOnFailure);
+    
+    Task SignOutAsync();
 }

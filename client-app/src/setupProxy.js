@@ -9,7 +9,8 @@ const context =  [
   "/js/**",
   "/lib/**",
   "/css/**",
-  "/webfonts/**"
+  "/webfonts/**",
+  "/api/**",
 ];
 
 module.exports = function(app) {

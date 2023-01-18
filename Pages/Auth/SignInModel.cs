@@ -156,6 +156,7 @@ public class SignInModel : PageModel
     }
 }
 
+// TODO move to own file
 public class SignIn
 {
     [EmailAddress]
