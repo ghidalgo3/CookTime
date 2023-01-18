@@ -91,6 +91,8 @@ It should be simple enough to:
 1. POST the information to the server
 1. Create the user if needed
 
+### React-router next
+
 ## References
 1. https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
 1. https://jcbaey.com/authentication-in-spa-reactjs-and-vuejs-the-right-way/?utm_source=medium&utm_campaign=spa-authentication

@@ -3,8 +3,9 @@
 //   NavigationBar,
 //   SignUp
 // } from "@components";
-import { CookTimeBanner, NavigationBar, SignUp } from "@components/index";
+// import { CookTimeBanner, NavigationBar, SignUp } from "@components/index";
 import React, {useEffect, useState} from"react"
+import { CookTimeBanner, NavigationBar, SignUp } from "src/components";
 
 export interface HomeProps {
 }

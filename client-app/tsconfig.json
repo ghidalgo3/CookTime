@@ -21,7 +21,8 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@components/*": [ "src/components/*" ],
+      "@components": [ "src/components/index.ts" ],
+      // "@components/*": [ "src/components/*" ],
       // "*": ["src/*"],
     }
   },
