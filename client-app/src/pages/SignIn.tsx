@@ -1,5 +1,5 @@
-import { SignUp } from "@components";
 import React, {useEffect, useState} from"react"
+import { SignUp } from "src/components";
 
 export interface SignInProps {
 }

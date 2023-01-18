@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from"react"
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { isMainThread } from "worker_threads";
+import { Link } from "react-router-dom";
 import imgs from "../../assets";
 import "./NavigationBar.css"
 
@@ -36,6 +37,11 @@ export function NavigationBar(props: NavigationBarProps | null) {
                 </NavDropdown.Item>
               </NavDropdown>
               <Nav.Link href="#home">Groceries List</Nav.Link>
+              <Nav.Link>
+                <Link to="/signin">
+                  Sign in
+                </Link>
+              </Nav.Link>
               <Nav.Link href="#home">Blog</Nav.Link>
               <NavDropdown title="Admin" id="basic-nav-dropdown">
                 <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
