@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from"react"
 import { Button, Form } from "react-bootstrap";
+import { Form as RouterForm } from "react-router-dom";
 
 export interface SignUpProps {
 }
 
 export function SignUp(props: SignUpProps) {
   return (
-    <Form>
-
+    <RouterForm method="post">
       <Form.Group className="mb-3" controlId="formBasicEmail">
         <Form.Label>Email address</Form.Label>
         <Form.Control type="email" placeholder="Enter email" />
@@ -28,7 +28,6 @@ export function SignUp(props: SignUpProps) {
       <Button variant="primary" type="submit">
         Submit
       </Button>
-
-    </Form>
+    </RouterForm>
   );
 }

@@ -79,13 +79,10 @@ public class AccountController : ControllerBase
                 {
                     this.logger.LogInformation("User {Email} logged in", signinRequest.Email);
 
-                    // User does not have an identity yet at this time, and user is null...
-                    if (user == null)
-                    {
-                        return this.Ok("/Index");
-                    }
-
-                    return this.Ok("/Index");
+                    return this.Ok(new {
+                        name = user.UserName,
+                        roles = userManager.GetRoles(user).Select(r => r.ToString()),
+                    });
                 }
                 else
                 {
