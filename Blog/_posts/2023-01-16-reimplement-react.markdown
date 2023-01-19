@@ -77,6 +77,49 @@ Having decided that, I need to reimplement the Identity flows using React compon
 1. Password reset
 1. Email verification
 
+## Hoes does ASP.NET authentication actually work?
+If you use [cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies) authentication, the signin process just involves the server setting a cookie in a response.
+![Cookie signin evidence](assets/react-day2-2.png)
+
+Here's what happened:
+1. The client POSTs a signin form with the username and password
+1. The server responds with an OK _and_ the `.AspNetCore.Identity.Application` cookie.
+1. The browser stores the cookie and sends it to the server in all subsequent requests in the `Cookie` header.
+
+So how does the server authenticate the user and set the cookie? Something like this:
+```csharp
+    [HttpPost("signin")]
+    public async Task<IActionResult> SignIn(
+        [FromForm] SignIn signinRequest)
+    {
+        this.logger.LogInformation("Model state is valid, attempting login");
+        var user = signinRequest.UserNameOrEmail.Contains('@') ?
+            await this.userManager.FindUserByEmail(signinRequest.UserNameOrEmail) :
+            await this.userManager.FindUserByUserName(signinRequest.UserNameOrEmail);
+        // This is the line that sets the cookie in the response!!!
+        var result = await this.signInManager.SignInWithUserName(
+            userName: user.UserName,
+            password: signinRequest.Password,
+            isPersistent: signinRequest.RememberMe,
+            lockoutOnFailure: true);
+
+        if (result.Succeeded)
+        {
+            this.logger.LogInformation("User {Email} logged in", signinRequest.Email);
+
+            return this.Ok();
+        }
+        else
+        {
+            return this.BadRequest();
+        }
+    }
+```
+
+An interesting feature of this particular cookie is that it has the `HttpOnly` flag set, which means that JavaScript code cannot access this cookie. Even if the client side code could access the cookie, it is encrypted by the server and it wouldn't be feasible to decrypt it without leaking keys. Without access to a decrypted cookie, our client-side code does not have any actual information about the user. We don't know their name, what roles they have, any other claims they may have, among others. 
+
+To solve this, we need an *authenticated* request to a route like `/profile` that basically exchanges a valid authentication cookie with a JWT-like object that contains important claims like the username, roles, claims, etc... So that's what we will do.
+
 ## Registration
 The registration form is "simple" (Ha! Nothing with authentication is simple!).
 A user providers the following information (taken from the current sign up form).
