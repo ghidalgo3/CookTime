@@ -8,6 +8,7 @@ using babe_algorithms.Models.Users;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using GustavoTech.Implementation;
 using SixLabors.ImageSharp.Web.DependencyInjection;
+using Microsoft.AspNetCore.Mvc;
 
 namespace babe_algorithms;
 
@@ -16,7 +17,13 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-        builder.Services.AddControllersWithViews().AddNewtonsoftJson(options =>
+        builder.Services
+        .AddControllersWithViews(options =>
+        {
+            // TODO enable this.
+            // options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+        })
+        .AddNewtonsoftJson(options =>
         {
             options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
         });

@@ -43,7 +43,7 @@ public class SignUpModel : PageModel
             var (result, foundUser) = await this.UserService.CreateUser(this.SignUp);
             if (result.Succeeded)
             {
-                await SendVerificationEmailAsync(foundUser);
+                // await SendVerificationEmailAsync(foundUser);
                 return this.Redirect("/Auth/SignUp#success");
             }
             else
@@ -53,7 +53,7 @@ public class SignUpModel : PageModel
         }
         else if (this.Resend)
         {
-            await SendVerificationEmailAsync(user);
+            // await SendVerificationEmailAsync(user);
             return this.Redirect("/Auth/SignUp#success");
         }
         else if (!user.EmailConfirmed)
@@ -74,22 +74,4 @@ public class SignUpModel : PageModel
         }
     }
 
-    private async Task SendVerificationEmailAsync(ApplicationUser foundUser)
-    {
-        await this.UserService.SendEmailVerificationEmailAsync(
-                            foundUser,
-                            token =>
-                            {
-                                // https://localhost:5001/api/Account?userId=a66db18b-de85-40de-a487-e0263c0afad9&confirmationToken=CfDJ8BMwxxpsGSxOkVoQyt82jhbbTgxUrc6QZc83ee0UZnYcNbJSMmaIoqXPiN8ig0r4OhhR2c%2Fv8QA%2BEClAst%2F%2BV%2BBY4bCERfVjFjN2k0LhM4qRJOLbbayhE0HcvX6yPjC%2BzCu4kB2jhWVRPX3A85hbgplDJQ8F9log%2FMff0ggRjzmhmYXtPhTVrICvzzPIchbgPLv6inCw8AYethyGas7Xv7CevR4UbNLCdz4IfAkpv%2BtQxZdxSEBpztmiBsOzx7QE8Q%3D%3D
-                                return this.Url.Action(
-                                    action: "ConfirmEmail",
-                                    controller: "Account",
-                                    values: new
-                                    {
-                                        userId = foundUser.Id,
-                                        confirmationToken = token,
-                                    },
-                                    protocol: this.Request.Scheme);
-                            });
-    }
 }

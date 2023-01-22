@@ -4,26 +4,10 @@ import { Form as RouterForm, ActionFunctionArgs, redirect} from "react-router-do
 import { AuthenticationProvider } from "src/shared/AuthenticationProvider";
 import { resolveTypeReferenceDirective } from "typescript";
 
-export async function action({ request } : ActionFunctionArgs) {
-  const formData = await request.formData()
-  const result = await AuthenticationProvider.signIn(
-    formData.get("usernameOrEmail")!.toString(),
-    formData.get("password")!.toString(),
-    true); 
 
-  if (result === "Success") {
-    return redirect("/");
-  } else {
-    return { errors: "Fail" };
-  }
-}
-
-export interface SignUpProps {
-}
-
-export function SignUp(props: SignUpProps) {
+export function SignUp() {
   return (
-    <RouterForm method="post" >
+    <RouterForm method="post" action="/signin">
       <Form.Group className="mb-3" controlId="formBasicEmail">
         <Form.Label>Email address</Form.Label>
         <Form.Control type="email" placeholder="Enter email" name="usernameOrEmail" />
@@ -46,4 +30,18 @@ export function SignUp(props: SignUpProps) {
       </Button>
     </RouterForm>
   );
+}
+
+export async function action({ request } : ActionFunctionArgs) {
+  const formData = await request.formData()
+  const result = await AuthenticationProvider.signIn(
+    formData.get("usernameOrEmail")!.toString(),
+    formData.get("password")!.toString(),
+    true); 
+
+  if (result === "Success") {
+    return redirect("/");
+  } else {
+    return { errors: "Fail" };
+  }
 }

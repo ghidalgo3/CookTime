@@ -2,6 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {
   createBrowserRouter,
+  createRoutesFromElements,
+  Navigate,
+  Route,
   RouterProvider,
 } from "react-router-dom";
 import './index.css';
@@ -13,35 +16,36 @@ import App from './App';
 import { SignIn } from './pages/SignIn';
 import { action as signinAction } from "./components/Authentication/SignUp"
 import { AuthenticationProvider, IAuthenticationProvider } from './shared/AuthenticationProvider';
+import { AuthenticationContext } from './components/Authentication/AuthenticationContext';
+import DefaultLayout from './pages/DefaultLayout';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-  },
-  {
-    path: "/signin",
-    action: signinAction,
-    element: <SignIn />,
-  },
-]);
+const router = createBrowserRouter(createRoutesFromElements(
+  <>
+    {/* Top level route defines layout */}
+    <Route path="/" element={<DefaultLayout />}>
+      <Route path="Recipes/Details" element={<h1>We now at the recipe</h1>}>
+      </Route>
+    </Route>
 
-export let AuthContext = React.createContext<IAuthenticationProvider>(null!);
+    {/* Distinct signup, signin routes */}
+    <Route path="/signin" element={<SignIn />} action={signinAction} />
 
-function AuthProvider({ children }: { children: React.ReactNode }) {
-  let value = AuthenticationProvider;
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+    <Route
+      path="*"
+      element={<Navigate to="/" replace />} />
+  </>
+));
+
 // This is the file that contains all the global state
 root.render(
   <React.StrictMode>
-    <AuthProvider>
+    <AuthenticationContext>
       <RouterProvider router={router} />
-    </AuthProvider>
+    </AuthenticationContext>
   </React.StrictMode>
 );
 

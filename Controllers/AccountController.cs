@@ -1,13 +1,11 @@
 namespace babe_algorithms.Controllers;
 
-using System;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using babe_algorithms.Models.Users;
 using babe_algorithms.Pages;
 using babe_algorithms.Services;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -19,17 +17,20 @@ public class AccountController : ControllerBase
     private readonly IUserService userManager;
     private readonly ISignInManager signInManager;
     private readonly ILogger<AccountController> logger;
+    private readonly IAntiforgery antiForgery;
 
     public AccountController(
         IUserService userManager,
         ISignInManager signInManager,
         ILogger<AccountController> logger,
-        ApplicationDbContext appDbContext)
+        ApplicationDbContext appDbContext,
+        IAntiforgery antiForgery)
     {
         this.appDbContext = appDbContext;
         this.userManager = userManager;
         this.signInManager = signInManager;
         this.logger = logger;
+        this.antiForgery = antiForgery;
     }
 
     [ValidateAntiForgeryToken]
@@ -57,6 +58,49 @@ public class AccountController : ControllerBase
         return this.Redirect("/Index");
     }
 
+    [HttpPost("signup")]
+    public async Task<IActionResult> SignUp(
+        [FromForm] UserSignUp signUpRequest)
+    {
+        var user = await this.userManager.FindUserByEmail(signUpRequest.Email);
+
+        if (user == null)
+        {
+            var (result, foundUser) = await this.userManager.CreateUser(signUpRequest);
+            if (result.Succeeded)
+            {
+                await SendVerificationEmailAsync(foundUser);
+                return this.Ok("Email verification needed");
+            }
+            else
+            {
+                return this.BadRequest("User could not be created.");
+            }
+        } else {
+            return this.BadRequest("User already exists");
+        }
+    }
+
+    private async Task SendVerificationEmailAsync(ApplicationUser foundUser)
+    {
+        await this.userManager
+            .SendEmailVerificationEmailAsync(
+                foundUser,
+                token =>
+                {
+                    // https://localhost:5001/api/Account?userId=a66db18b-de85-40de-a487-e0263c0afad9&confirmationToken=CfDJ8BMwxxpsGSxOkVoQyt82jhbbTgxUrc6QZc83ee0UZnYcNbJSMmaIoqXPiN8ig0r4OhhR2c%2Fv8QA%2BEClAst%2F%2BV%2BBY4bCERfVjFjN2k0LhM4qRJOLbbayhE0HcvX6yPjC%2BzCu4kB2jhWVRPX3A85hbgplDJQ8F9log%2FMff0ggRjzmhmYXtPhTVrICvzzPIchbgPLv6inCw8AYethyGas7Xv7CevR4UbNLCdz4IfAkpv%2BtQxZdxSEBpztmiBsOzx7QE8Q%3D%3D
+                    return this.Url.Action(
+                        action: "ConfirmEmail",
+                        controller: "Account",
+                        values: new
+                        {
+                            userId = foundUser.Id,
+                            confirmationToken = token,
+                        },
+                        protocol: this.Request.Scheme);
+                });
+    }
+
     [HttpPost("signin")]
     public async Task<IActionResult> SignIn(
         [FromForm] SignIn signinRequest)
@@ -82,6 +126,7 @@ public class AccountController : ControllerBase
                     return this.Ok(new {
                         name = user.UserName,
                         roles = userManager.GetRoles(user).Select(r => r.ToString()),
+                        csrfToken = this.antiForgery.GetTokens(this.HttpContext).RequestToken
                     });
                 }
                 else
