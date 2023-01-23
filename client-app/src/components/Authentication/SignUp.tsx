@@ -39,7 +39,7 @@ export async function action({ request } : ActionFunctionArgs) {
     formData.get("password")!.toString(),
     true); 
 
-  if (result === "Success") {
+  if (result !== "Failure") {
     return redirect("/");
   } else {
     return { errors: "Fail" };

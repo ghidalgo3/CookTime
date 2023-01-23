@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using babe_algorithms.Models.Users;
+using GustavoTech.Implementation;
 using Microsoft.AspNetCore.Identity;
 
 namespace GustavoTech;
@@ -69,4 +70,6 @@ public interface IUserService
     Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal claimsPrincipal);
 
     Task<IdentityResult> UpdateAsync(ApplicationUser user);
+
+    Task<UserDetails> GetUserDetails(ApplicationUser user);
 }

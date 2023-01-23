@@ -49,6 +49,21 @@ public class AccountController : ControllerBase
         }
     }
 
+
+    [HttpGet("profile")]
+    public async Task<IActionResult> Profile()
+    {
+        var user = this.userManager.GetUser(this.User);
+        if (user != null)
+        {
+            return this.Ok(await this.userManager.GetUserDetails(user));
+        }
+        else
+        {
+            return this.Unauthorized();
+        }
+    }
+
     [HttpGet("signout")]
     public async Task<IActionResult> Signout()
     {
@@ -122,12 +137,7 @@ public class AccountController : ControllerBase
                 if (result.Succeeded)
                 {
                     this.logger.LogInformation("User {Email} logged in", signinRequest.Email);
-
-                    return this.Ok(new {
-                        name = user.UserName,
-                        roles = userManager.GetRoles(user).Select(r => r.ToString()),
-                        csrfToken = this.antiForgery.GetTokens(this.HttpContext).RequestToken
-                    });
+                    return this.Ok(await this.userManager.GetUserDetails(user));
                 }
                 else
                 {

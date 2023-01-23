@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react"
 import { useContext } from "react";
-import { useLocation, Navigate } from "react-router-dom";
-import { AuthenticationProvider, IAuthenticationProvider, Role } from "src/shared/AuthenticationProvider";
+// import { useLocation, Navigate, useSearchParams } from "react-router-dom";
+import { AuthenticationProvider, IAuthenticationProvider, Role, UserDetails } from "src/shared/AuthenticationProvider";
 
 export let AuthContext = React.createContext<IAuthenticationProvider>(AuthenticationProvider);
 
@@ -10,9 +10,22 @@ export function useAuthentication() {
 }
 
 export function AuthenticationContext({ children } : { children : React.ReactNode }) {
-  const auth = useAuthentication();
+  const { signUp, signIn, signOut, getUserDetails } = useAuthentication();
+  const [user, setUser] = useState<UserDetails | null>(null);
+  useEffect(() => {
+    getUserDetails().then(value => {
+      console.log(user)
+      setUser(value)
+    })
+  }, [])
   return (
-    <AuthContext.Provider value={auth}>
+    <AuthContext.Provider value={{
+      user,
+      signIn,
+      signOut,
+      signUp,
+      getUserDetails
+    }}>
       {children}
     </AuthContext.Provider>
   );
