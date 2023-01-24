@@ -22,7 +22,13 @@ export function AuthenticationContext({ children } : { children : React.ReactNod
     <AuthContext.Provider value={{
       user,
       signIn,
-      signOut,
+      signOut: async () => {
+        const didSignOut = await signOut();
+        if (didSignOut) {
+          setUser(null);
+        }
+        return didSignOut;
+      },
       signUp,
       getUserDetails
     }}>
@@ -42,7 +48,7 @@ export function RequireAuth({ children, roles }: { roles: Role[], children: JSX.
   if (
     !auth.user
     // if the user doesn't have the right role, navigate them away
-    || auth.user && auth.user.roles.find(role => roles.find(r => r === role))) {
+    || (auth.user && !auth.user.roles.find(role => roles.find(r => r === role)))) {
 
     // Redirect them to the /login page, but save the current location they were
     // trying to go to when they were redirected. This allows us to send them

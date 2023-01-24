@@ -23,7 +23,7 @@ export interface IAuthenticationProvider {
     password : string,
     rememberMe: boolean) : Promise<UserDetails | "Failure">,
 
-  signOut() : Promise<void>,
+  signOut() : Promise<boolean>,
 
   getUserDetails() : Promise<UserDetails | null>,
 }
@@ -47,11 +47,9 @@ export const AuthenticationProvider : IAuthenticationProvider = {
   },
 
 
-  signOut: function (): Promise<void> {
-    // TODO call server signout
-    // TODO set current user to null
-    // TODO notify subscribers auth state has changed.
-    throw new Error("Function not implemented.");
+  signOut: async function (): Promise<boolean> {
+    const response = await fetch("/api/account/signout")
+    return response.ok;
   },
 
   signUp: async function (userName: string, email: string, password: string, confirmPassword: string): Promise<UserDetails | "Failure"> {

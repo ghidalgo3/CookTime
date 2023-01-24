@@ -70,7 +70,7 @@ public class AccountController : ControllerBase
         var user = this.userManager.GetUser(this.User);
         await this.signInManager.SignOutAsync();
         this.logger.LogInformation("User {UserId} ({UserName}) signed out", user?.Id, user?.UserName);
-        return this.Redirect("/Index");
+        return this.Redirect("/");
     }
 
     [HttpPost("signup")]
