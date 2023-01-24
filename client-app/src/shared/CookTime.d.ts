@@ -1,16 +1,16 @@
-type Autosuggestable = {
+export type Autosuggestable = {
     name: string,
     id: string,
     isNew: boolean
 }
 
-type DietDetail = {
+export type DietDetail = {
     name : string,
     opinion: string
     details : TodaysTenDetails | any
 }
 
-type TodaysTenDetails = {
+export type TodaysTenDetails = {
     hasFruits : boolean,
     hasVegetables: boolean,
     hasCruciferousVegetables: boolean,
@@ -23,7 +23,7 @@ type TodaysTenDetails = {
     hasGreens: boolean,
 }
 
-type Review = {
+export type Review = {
     id : string,
     createdAt : string,
     owner : Owner,
@@ -31,13 +31,13 @@ type Review = {
     text : string
 }
 
-type MeasureUnit = {
+export type MeasureUnit = {
    name: string,
    siType : string
    siValue: number
 }
 
-type Cart = {
+export type Cart = {
     id : string,
     recipeRequirement: RecipeRequirement[],
     CreateAt : string,
@@ -46,14 +46,14 @@ type Cart = {
     dietDetails : DietDetail[]
 }
 
-type RecipeRequirement = {
+export type RecipeRequirement = {
     recipe : Recipe,
     multiPartRecipe : MultiPartRecipe,
     quantity : number,
     id: string
 }
 
-type IngredientRequirement = {
+export type IngredientRequirement = {
     ingredient : Ingredient,
     text : string,
     unit : string,
@@ -62,34 +62,34 @@ type IngredientRequirement = {
     position : number
 }
 
-type Ingredient = Autosuggestable & {
+export type Ingredient = Autosuggestable & {
     densityKgPerL : number | undefined
 }
 
-type CartIngredient = {
+export type CartIngredient = {
     id: string,
     ingredient: Ingredient,
     checked: boolean
 }
 
-type RecipeStep = {
+export type RecipeStep = {
     text : string,
     id: string
 }
 
-type Image = {
+export type Image = {
     name : string,
     id : string
 }
 
-type Category = Autosuggestable
+export type Category = Autosuggestable
 
-type Owner = {
+export type Owner = {
     userName : string,
     id: string
 }
 
-type MultiPartRecipe = {
+export type MultiPartRecipe = {
     id : string,
     name : string,
     owner: Owner | null,
@@ -104,7 +104,7 @@ type MultiPartRecipe = {
     averageReviews: number
 }
 
-type RecipeComponent = {
+export type RecipeComponent = {
     id : string,
     name : string,
     ingredients : IngredientRequirement[] | undefined,
@@ -112,7 +112,7 @@ type RecipeComponent = {
     position : number
 }
 
-type Recipe = {
+export type Recipe = {
     id : string,
     name : string,
     cooktimeMinutes : number | undefined,
@@ -125,7 +125,7 @@ type Recipe = {
     staticImage : string
 }
 
-type NutritionFactVector = {
+export type NutritionFactVector = {
     calories : number,
     carbohydrates : number,
     saturatedFats : number,
@@ -140,14 +140,14 @@ type NutritionFactVector = {
     potassium : number,
 }
 
-type RecipeNutritionFacts = {
+export type RecipeNutritionFacts = {
     recipe : NutritionFactVector,
     components : NutritionFactVector[]
     ingredients: IngredientNutritionDescription[]
     dietDetails : DietDetail[]
 }
 
-type IngredientNutritionDescription = {
+export type IngredientNutritionDescription = {
     nutritionDatabaseId : string,
     nutritionDatabaseDescriptor : string,
     name : string,

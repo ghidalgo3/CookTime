@@ -12,12 +12,12 @@ import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/css/site.css';
 import './assets/css/all.css';
-import App from './App';
 import { SignIn } from './pages/SignIn';
 import { action as signinAction } from "./components/Authentication/SignUp"
 import { AuthenticationProvider, IAuthenticationProvider } from './shared/AuthenticationProvider';
 import { AuthenticationContext } from './components/Authentication/AuthenticationContext';
 import DefaultLayout from './pages/DefaultLayout';
+import { getCategories } from './shared/CookTime.service';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -26,7 +26,20 @@ const root = ReactDOM.createRoot(
 const router = createBrowserRouter(createRoutesFromElements(
   <>
     {/* Top level route defines layout */}
-    <Route path="/" element={<DefaultLayout />}>
+    <Route
+      path="/"
+      element={<DefaultLayout />}
+      // loader={() => {
+      //   const data = { some: "thing" };
+      //   return new Response(JSON.stringify(data), {
+      //     status: 200,
+      //     headers: {
+      //       "Content-Type": "application/json; utf-8",
+      //     },
+      //   });
+      // }}
+      loader={() => getCategories()}
+      >
       <Route path="Recipes/Details" element={<h1>We now at the recipe</h1>}>
       </Route>
     </Route>

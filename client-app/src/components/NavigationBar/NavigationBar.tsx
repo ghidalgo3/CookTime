@@ -7,13 +7,11 @@ import "./NavigationBar.css"
 import { useContext } from "react";
 import { RequireAuth, useAuthentication } from "../Authentication/AuthenticationContext";
 import { UserDetails } from "src/shared/AuthenticationProvider";
+import { getCategories } from "src/shared/CookTime.service";
+import { Category } from "src/shared/CookTime";
 
-export interface NavigationBarProps {
-}
-
-export function NavigationBar(props: NavigationBarProps | null) {
+export function NavigationBar({categories} : {categories: string[]}) {
   const { user, signOut } = useAuthentication();
-
   function UserDropdown(user? : UserDetails | null) {
     if(user) {
       return (
@@ -63,18 +61,14 @@ export function NavigationBar(props: NavigationBarProps | null) {
           <Nav className="me-auto">
             <Nav.Link href="#home">Recipes</Nav.Link>
             <NavDropdown title="Categories" id="basic-nav-dropdown">
-              {/* <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.2">
-                Another action
-              </NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item href="#action/3.4">
-                Separated link
-              </NavDropdown.Item> */}
+              {
+                categories?.map(category => 
+                  <NavDropdown.Item as={Link} to={`/?search=${category}`}>{`${category}`}</NavDropdown.Item>
+                )
+              }
             </NavDropdown>
-            <Nav.Link href="/cart">Groceries List</Nav.Link>
-            <Nav.Link href="/Blog">Blog</Nav.Link>
+            <Nav.Link href="#home">Groceries List</Nav.Link>
+            <Nav.Link href="#home">Blog</Nav.Link>
             <AdminNavBarSection />
             {UserDropdown(user)}
           </Nav>
