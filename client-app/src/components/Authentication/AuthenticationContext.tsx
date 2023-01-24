@@ -47,15 +47,9 @@ export function RequireAuth({ children, roles }: { roles: Role[], children: JSX.
 
   if (
     !auth.user
-    // if the user doesn't have the right role, navigate them away
+    // if the user doesn't have the right role, don't render anything
     || (auth.user && !auth.user.roles.find(role => roles.find(r => r === role)))) {
-
-    // Redirect them to the /login page, but save the current location they were
-    // trying to go to when they were redirected. This allows us to send them
-    // along to that page after they login, which is a nicer user experience
-    // than dropping them off on the home page.
     return <></>
-    // return <Navigate to="/signin" state={{ from: location }} replace />;
   }
 
   return children;

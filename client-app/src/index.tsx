@@ -29,15 +29,6 @@ const router = createBrowserRouter(createRoutesFromElements(
     <Route
       path="/"
       element={<DefaultLayout />}
-      // loader={() => {
-      //   const data = { some: "thing" };
-      //   return new Response(JSON.stringify(data), {
-      //     status: 200,
-      //     headers: {
-      //       "Content-Type": "application/json; utf-8",
-      //     },
-      //   });
-      // }}
       loader={() => getCategories()}
       >
       <Route path="Recipes/Details" element={<h1>We now at the recipe</h1>}>

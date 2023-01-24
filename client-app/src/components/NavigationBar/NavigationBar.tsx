@@ -62,8 +62,13 @@ export function NavigationBar({categories} : {categories: string[]}) {
             <Nav.Link href="#home">Recipes</Nav.Link>
             <NavDropdown title="Categories" id="basic-nav-dropdown">
               {
-                categories?.map(category => 
-                  <NavDropdown.Item as={Link} to={`/?search=${category}`}>{`${category}`}</NavDropdown.Item>
+                categories?.map((category, idx) => 
+                  <NavDropdown.Item
+                    key={idx}
+                    as={Link}
+                    to={`/?search=${category}`}>
+                      {`${category}`}
+                  </NavDropdown.Item>
                 )
               }
             </NavDropdown>
