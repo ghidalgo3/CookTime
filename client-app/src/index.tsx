@@ -18,6 +18,7 @@ import { AuthenticationProvider, IAuthenticationProvider } from './shared/Authen
 import { AuthenticationContext } from './components/Authentication/AuthenticationContext';
 import DefaultLayout from './pages/DefaultLayout';
 import { getCategories } from './shared/CookTime.service';
+import '@smastrom/react-rating/style.css'
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
