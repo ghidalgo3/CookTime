@@ -14,7 +14,9 @@ export function RecipeCard({
   averageReviews,
   reviewCount,
   imageIds}: RecipeView) {
+
   const [favorite, setFavorite] = useState(isFavorite);
+
   function button() {
         var heartClass = "";
         if (favorite) {

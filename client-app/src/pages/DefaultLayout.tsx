@@ -22,21 +22,25 @@ export default function DefaultLayout() {
   return (
     <>
     <NavigationBar categories={categories as string[]}/>
-    {/* TODO don't render this always  */}
-    {/* How to render the banner only at the home page */}
-    {location.pathname === "/" && <CookTimeBanner />}
-    <Outlet />
-    <Row>
 
-    { recipes?.map((recipe, idx) => 
-      <Col key={idx} sm={4}>
-        <RecipeCard
-          key={idx}
-          {...recipe}
-        />
-      </Col>
-      ) }
-    </Row>
+    <main role="main" className="pb-3">
+      <div className="container margin-top-30">
+          {/* TODO don't render this always  */}
+          {/* How to render the banner only at the home page */}
+          {location.pathname === "/" && <CookTimeBanner />}
+          <Outlet />
+          <Row>
+            {recipes?.map((recipe, idx) =>
+              <Col key={idx} sm={4}>
+                <RecipeCard
+                  key={idx}
+                  {...recipe}
+                />
+              </Col>
+            )}
+          </Row>
+      </div>
+    </main>
     <Footer />
     </>
   );
