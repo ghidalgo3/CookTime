@@ -7,8 +7,7 @@ import "./NavigationBar.css"
 import { useContext } from "react";
 import { RequireAuth, useAuthentication } from "../Authentication/AuthenticationContext";
 import { UserDetails } from "src/shared/AuthenticationProvider";
-import { getCategories } from "src/shared/CookTime.service";
-import { Category } from "src/shared/CookTime";
+import { Category } from "src/shared/CookTime/CookTime.types";
 
 export function NavigationBar({categories} : {categories: string[]}) {
   const { user, signOut } = useAuthentication();

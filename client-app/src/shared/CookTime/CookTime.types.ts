@@ -1,3 +1,5 @@
+// export as namespace CookTime;
+
 export type Autosuggestable = {
     name: string,
     id: string,

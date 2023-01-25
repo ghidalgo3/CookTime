@@ -17,7 +17,7 @@ import { action as signinAction } from "./components/Authentication/SignUp"
 import { AuthenticationProvider, IAuthenticationProvider } from './shared/AuthenticationProvider';
 import { AuthenticationContext } from './components/Authentication/AuthenticationContext';
 import DefaultLayout from './pages/DefaultLayout';
-import { getCategories } from './shared/CookTime.service';
+import { getCategories } from './shared/CookTime';
 import '@smastrom/react-rating/style.css'
 
 const root = ReactDOM.createRoot(
