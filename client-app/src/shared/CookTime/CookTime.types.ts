@@ -158,3 +158,13 @@ export type IngredientNutritionDescription = {
     quantity : number,
     caloriesPerServing : number,
 }
+
+export type RecipeView = {
+  name : string,
+  id: string,
+  imageIds: string[],
+  categories: string[],
+  averageReviews: number,
+  reviewCount: number,
+  isFavorite: boolean | undefined
+}

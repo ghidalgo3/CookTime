@@ -5,6 +5,8 @@ using SixLabors.ImageSharp.Formats.Jpeg;
 using System.Globalization;
 using babe_algorithms.Models.Users;
 using Microsoft.AspNetCore.Authorization;
+using babe_algorithms.Pages;
+using babe_algorithms.ViewComponents;
 
 namespace babe_algorithms.Controllers
 {
@@ -12,11 +14,17 @@ namespace babe_algorithms.Controllers
     [ApiController]
     public class MultiPartRecipeController : ControllerBase, IImageController
     {
+        const int RecipesPerPage = 15;
+
         private readonly ApplicationDbContext _context;
 
         public ISessionManager Session { get; }
 
         public TextInfo TextInfo { get; }
+
+        public Cart Favorites { get; private set; }
+
+        public PagedResult<object> PagedResult { get; private set; }
 
         public MultiPartRecipeController(
             ApplicationDbContext context,
@@ -29,9 +37,26 @@ namespace babe_algorithms.Controllers
 
         // GET: api/MultiPartRecipe
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MultiPartRecipe>>> GetMultiPartRecipes()
+        public async Task<ActionResult<IEnumerable<RecipeView>>> GetMultiPartRecipes(
+            [FromQuery]
+            int page = 1,
+            [FromQuery]
+            string search = null
+        )
         {
-            return await _context.MultiPartRecipes.ToListAsync();
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user != null)
+            {
+                this.Favorites = await this._context.GetFavoritesAsync(user);
+            }
+            if (search != null)
+            {
+                return this.Ok(await this.Search(search, page));
+            }
+            else
+            {
+                return this.Ok(await AllRecipes(page));
+            }
         }
 
         [HttpDelete("{id}/favorite")]
@@ -511,6 +536,96 @@ namespace babe_algorithms.Controllers
         private bool MultiPartRecipeExists(Guid id)
         {
             return _context.MultiPartRecipes.Any(e => e.Id == id);
+        }
+
+        public static async Task<List<RecipeView>> GetRecipeViewsForQuery(
+            IQueryable<MultiPartRecipe> query,
+            Cart? favorites)
+        {
+            var recipes =
+                await query
+                    .AsSplitQuery()
+                    .Include(r => r.Images)
+                    .Include(r => r.Categories)
+                    .Select(r => new
+                    {
+                        Id = r.Id,
+                        Name = r.Name,
+                        Categories = r.Categories.Select(c => c.Name),
+                        Images = r.Images.Select(image => new
+                        {
+                            Id = image.Id,
+                            Name = image.Name,
+                        }),
+                        r.AverageReviews,
+                        r.ReviewCount
+                    })
+                    .OrderBy(r => r.Name)
+                    .ToListAsync();
+            return recipes
+                .Select(r =>
+                    new RecipeView(
+                        r.Name,
+                        r.Id,
+                        r.Images.Select(image => image.Id).ToList(),
+                        r.Categories.ToList(),
+                        r.AverageReviews,
+                        r.ReviewCount,
+                        favorites?.ContainsRecipe(r.Id) ?? null))
+                    .ToList();
+        }
+
+        private async Task<ICollection<RecipeView>> Search(string search, int page)
+        {
+            var byName = await GetRecipeViewsForQuery(
+                this._context.SearchRecipesByName(search),
+                this.Favorites);
+            byName.AddRange(await GetRecipeViewsForQuery(
+                this._context.GetRecipesWithIngredient(search),
+                this.Favorites));
+            byName.AddRange(await GetRecipeViewsForQuery(
+                this._context.SearchRecipesByTag(search),
+                this.Favorites));
+            var x = new HashSet<RecipeView>(byName, new RecipeViewEqualityComparer());
+            return x;
+        }
+
+        private async Task<ICollection<RecipeView>> AllRecipes(int page)
+        {
+            var allRecipesQuery = await _context
+                .MultiPartRecipes
+                .AsSplitQuery()
+                .Include(r => r.Images)
+                .Include(r => r.Categories)
+                .Select(r => new
+                {
+                    Id = r.Id,
+                    Name = r.Name,
+                    Categories = r.Categories.Select(c => c.Name),
+                    Images = r.Images.Select(image => new
+                    {
+                        Id = image.Id,
+                        Name = image.Name,
+                    }),
+                    r.AverageReviews,
+                    r.ReviewCount,
+                    r.CreationDate
+                })
+                .OrderBy(r => r.Name)
+                .ToListAsync();
+            return await GetRecipeViewsForQuery(this._context.MultiPartRecipes, this.Favorites);
+            // this.PagedResult = allRecipesQuery
+            //     .Select(r =>
+            //         new RecipeView(
+            //             r.Name,
+            //             r.Id,
+            //             r.Images.Select(image => image.Id).ToList(),
+            //             r.Categories.ToList(),
+            //             r.AverageReviews,
+            //             r.ReviewCount,
+            //             this.Favorites?.ContainsRecipe(r.Id) ?? null))
+            //     .GetPaged(page, RecipesPerPage, p => $"/?page={p}");
+            // return PagedResult;
         }
     }
 

@@ -16,7 +16,7 @@ import { SignIn } from './pages/SignIn';
 import { action as signinAction } from "./components/Authentication/SignUp"
 import { AuthenticationProvider, IAuthenticationProvider } from './shared/AuthenticationProvider';
 import { AuthenticationContext } from './components/Authentication/AuthenticationContext';
-import DefaultLayout from './pages/DefaultLayout';
+import DefaultLayout, {loader as recipeLoader} from './pages/DefaultLayout';
 import { getCategories } from './shared/CookTime';
 import '@smastrom/react-rating/style.css'
 
@@ -30,7 +30,7 @@ const router = createBrowserRouter(createRoutesFromElements(
     <Route
       path="/"
       element={<DefaultLayout />}
-      loader={() => getCategories()}
+      loader={recipeLoader}
       >
       <Route path="Recipes/Details" element={<h1>We now at the recipe</h1>}>
       </Route>

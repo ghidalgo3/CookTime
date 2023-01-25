@@ -36,8 +36,9 @@ public class MineModel : PageModel
         }
 
         this.Favorites = await this._context.GetFavoritesAsync(user);
-        this.Recipes = await IndexModel.GetRecipeViewsForQuery(
-            this._context.MultiPartRecipes.Where(recipe => recipe.Owner.Id == user.Id), this.Favorites);
+        this.Recipes = null;
+        // await IndexModel.GetRecipeViewsForQuery(
+        //     this._context.MultiPartRecipes.Where(recipe => recipe.Owner.Id == user.Id), this.Favorites);
         return this.Page();
     }
 }

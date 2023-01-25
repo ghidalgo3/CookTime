@@ -4,28 +4,16 @@ import { Rating } from "@smastrom/react-rating";
 import { Link } from "react-router-dom";
 import { Fa6RegularStar, Fa6SolidStar } from "../SVG";
 import "./RecipeCard.css"
-import { Image } from "src/shared/CookTime"
-
-export interface RecipeCardProps {
-  recipeId : string,
-  recipeName : string,
-  averageReviews: number,
-  images: Image[],
-  reviewCount: number,
-  isFavorite: boolean | undefined,
-  operationInProgress?: boolean | undefined,
-  categories: string[]
-}
+import { Image, RecipeView } from "src/shared/CookTime"
 
 export function RecipeCard({
-  operationInProgress, 
   categories,
   isFavorite,
-  recipeId,
-  recipeName,
+  id,
+  name,
   averageReviews,
   reviewCount,
-  images}: RecipeCardProps) {
+  imageIds}: RecipeView) {
   const [favorite, setFavorite] = useState(isFavorite);
   function button() {
         var heartClass = "";
@@ -36,7 +24,7 @@ export function RecipeCard({
         }
         return (
         <Button className="favorite-button" >
-                {operationInProgress ?
+                {true ?
                     <Spinner
                         as="span"
                         animation="border"
@@ -49,12 +37,12 @@ export function RecipeCard({
         )
     }
   function CardImage() {
-    let image = (images.length == 0 || images[0].id == null || images[0].id == "null") ?
+    let image = (imageIds.length == 0 || imageIds[0] === "null") ?
       "/placeholder.jpg" :
-      `/image/${images[0].id}?width=300`;
+      `/image/${imageIds[0]}?width=300`;
     return (
       <div className="cr-image-parent">
-        <a href={`/Recipes/Details?id=${recipeId}`}>
+        <a href={`/Recipes/Details?id=${id}`}>
           <img
             className="card-img-top card-recipe-image"
             src={image}
@@ -90,7 +78,7 @@ export function RecipeCard({
     <Card.Body>
         <p
           className="tag-style do-not-overflow-text margin-bottom-0">{categories.join(", ")}</p>
-        <Link to="/recipes/details">{recipeName}</Link>
+        <Link to="/recipes/details">{name}</Link>
         {reviewCount > 0  && <ReviewDisplay />}
     </Card.Body>
   </Card>
