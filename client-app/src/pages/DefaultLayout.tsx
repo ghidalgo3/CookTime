@@ -29,7 +29,7 @@ export default function DefaultLayout() {
     <Row>
 
     { recipes?.map((recipe, idx) => 
-      <Col sm={4}>
+      <Col key={idx} sm={4}>
         <RecipeCard
           key={idx}
           {...recipe}
