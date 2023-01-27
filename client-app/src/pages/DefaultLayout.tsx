@@ -4,11 +4,11 @@ import { Outlet, useLoaderData, useLocation } from "react-router-dom";
 import { CookTimeBanner, NavigationBar, SignUp } from "src/components";
 import Footer from "src/components/Footer";
 import { RecipeCard } from "src/components/RecipeCard/RecipeCard";
-import { getCategories, getRecipeCards } from "src/shared/CookTime";
+import { getCategories, getRecipeViews } from "src/shared/CookTime";
 
 export async function loader({request } : {request : Request}) {
   const categories = await getCategories();
-  const recipes = await getRecipeCards({
+  const recipes = await getRecipeViews({
     search: "",
     page: 1
   })
@@ -26,19 +26,9 @@ export default function DefaultLayout() {
     <main role="main" className="pb-3">
       <div className="container margin-top-30">
           {/* TODO don't render this always  */}
-          {/* How to render the banner only at the home page */}
-          {location.pathname === "/" && <CookTimeBanner />}
+          {location.pathname === "/" && location.search === "" && 
+            <CookTimeBanner />}
           <Outlet />
-          <Row>
-            {recipes?.map((recipe, idx) =>
-              <Col key={idx} sm={4}>
-                <RecipeCard
-                  key={idx}
-                  {...recipe}
-                />
-              </Col>
-            )}
-          </Row>
       </div>
     </main>
     <Footer />

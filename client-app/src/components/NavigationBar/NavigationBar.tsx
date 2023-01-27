@@ -1,13 +1,16 @@
 import React, {useEffect, useState} from"react"
-import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { Container, Form, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { isMainThread } from "worker_threads";
-import { Link, NavLink } from "react-router-dom";
+import { Form as RouterForm, Link, NavLink } from "react-router-dom";
 import imgs from "../../assets";
 import "./NavigationBar.css"
 import { useContext } from "react";
 import { RequireAuth, useAuthentication } from "../Authentication/AuthenticationContext";
 import { UserDetails } from "src/shared/AuthenticationProvider";
 import { Category } from "src/shared/CookTime/CookTime.types";
+
+export function action() {
+}
 
 export function NavigationBar({categories} : {categories: string[]}) {
   const { user, signOut } = useAuthentication();
@@ -44,40 +47,54 @@ export function NavigationBar({categories} : {categories: string[]}) {
   }
 
   return (
-    <Navbar expand="lg">
-      <Container>
-        <Navbar.Brand id="my-navbar-brand" href="#home">
-          <img
-            alt=""
-            src={imgs.logo}
-            height="30"
-            className="d-inline-block align-middle"
-          />{' '}
-          CookTime
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link href="#home">Recipes</Nav.Link>
-            <NavDropdown title="Categories" id="basic-nav-dropdown">
-              {
-                categories?.map((category, idx) => 
-                  <NavDropdown.Item
-                    key={idx}
-                    as={Link}
-                    to={`/?search=${category}`}>
+    <header>
+      <Navbar expand="lg">
+        <Container>
+          <Link to="/">
+            <Navbar.Brand id="my-navbar-brand">
+              <img
+                alt=""
+                src={imgs.logo}
+                height="30"
+                className="d-inline-block align-middle"
+              />{' '}
+              CookTime
+            </Navbar.Brand>
+          </Link>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="me-auto">
+              <Nav.Link href="#home">Recipes</Nav.Link>
+              <NavDropdown title="Categories" id="basic-nav-dropdown">
+                {
+                  categories?.map((category, idx) =>
+                    <NavDropdown.Item
+                      key={idx}
+                      as={Link}
+                      to={`/?search=${category}`}>
                       {`${category}`}
-                  </NavDropdown.Item>
-                )
-              }
-            </NavDropdown>
-            <Nav.Link href="#home">Groceries List</Nav.Link>
-            <Nav.Link href="#home">Blog</Nav.Link>
-            <AdminNavBarSection />
-            {UserDropdown(user)}
-          </Nav>
-        </Navbar.Collapse>
+                    </NavDropdown.Item>
+                  )
+                }
+              </NavDropdown>
+              <Nav.Link href="#home">Groceries List</Nav.Link>
+              <Nav.Link href="#home">Blog</Nav.Link>
+              <AdminNavBarSection />
+              {UserDropdown(user)}
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+      <Container fluid>
+        <RouterForm>
+          <Form.Control
+            name="search"
+            id="search-bar"
+            className=""
+            type="search"
+            placeholder="Search" />
+        </RouterForm>
       </Container>
-    </Navbar>);
+    </header>);
 }
 

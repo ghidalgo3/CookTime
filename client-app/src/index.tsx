@@ -19,6 +19,7 @@ import { AuthenticationContext } from './components/Authentication/Authenticatio
 import DefaultLayout, {loader as recipeLoader} from './pages/DefaultLayout';
 import { getCategories } from './shared/CookTime';
 import '@smastrom/react-rating/style.css'
+import RecipeList, {loader as recipeListLoader } from './components/RecipeList/RecipeList';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -28,10 +29,15 @@ const router = createBrowserRouter(createRoutesFromElements(
   <>
     {/* Top level route defines layout */}
     <Route
-      path="/"
+      // path="/"
       element={<DefaultLayout />}
       loader={recipeLoader}
       >
+      <Route
+        index
+        loader={recipeListLoader}
+        element={<RecipeList />} />
+
       <Route path="Recipes/Details" element={<h1>We now at the recipe</h1>}>
       </Route>
     </Route>
