@@ -1,5 +1,6 @@
 import React from "react";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
+import { IngredientRequirement, MultiPartRecipe, Recipe, RecipeComponent, RecipeStep } from "src/shared/CookTime";
 type Segment = {
     ingredient : IngredientRequirement | null,
     text : string
@@ -11,7 +12,7 @@ export class Step extends React.Component<{
     component? : RecipeComponent,
     newServings: number}, {}>
 {
-    constructor(props) {
+    constructor(props: any) {
         super(props);
     }
 
@@ -88,7 +89,7 @@ export class Step extends React.Component<{
                 j++;
             }
         }
-        const Link = ({ id, children, title }) => (
+        const Link = ({ id , children , title }: {id: any, children: any, title: any}) => (
             <OverlayTrigger overlay={<Tooltip id={id}>{title}</Tooltip>}>
               <a className="tooltip-style" href="javascript:void(0);">{children}</a>
             </OverlayTrigger>

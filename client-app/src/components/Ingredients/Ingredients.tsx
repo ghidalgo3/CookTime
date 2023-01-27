@@ -7,23 +7,23 @@ import { IngredientInput } from './IngredientInput';
 
 export class Ingredients extends React.Component<{}, {}>
 {
-    constructor(props) {
-        super(props);
-    }
+  constructor(props: {}) {
+    super(props);
+  }
 
-    render() {
-        return null;
-        // <IngredientInput
-        // isNew={false}
-        // query={text => `/api/recipe/ingredients?name=${text}`}
-        // ingredient={null}
-        // onSelect={(i, isNew) => console.log(i)}
-        // className=""
-        // />
-    }
+  render() {
+    return null;
+    // <IngredientInput
+    // isNew={false}
+    // query={text => `/api/recipe/ingredients?name=${text}`}
+    // ingredient={null}
+    // onSelect={(i, isNew) => console.log(i)}
+    // className=""
+    // />
+  }
 }
 
 const recipeContainer = document.querySelector('#ingredients');
 ReactDOM.render(
-    <Ingredients />,
-    recipeContainer);
+  <Ingredients />,
+  recipeContainer);

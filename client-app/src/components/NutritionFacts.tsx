@@ -1,4 +1,5 @@
 import React from "react";
+import { NutritionFactVector } from "src/shared/CookTime";
 interface NutritionFactsAdditional {
     servings : number
 }

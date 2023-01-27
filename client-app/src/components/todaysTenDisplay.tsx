@@ -1,4 +1,5 @@
 import React from "react"
+import { DietDetail, TodaysTenDetails } from "src/shared/CookTime";
 
 type TodaysTenDisplayProps = {
     todaysTen : DietDetail

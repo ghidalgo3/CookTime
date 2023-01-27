@@ -87,7 +87,7 @@ export function RecipeCard({
           className="tag-style do-not-overflow-text margin-bottom-0">
           {categories.length ? categories.join(", ") : "Recipe"}
         </p>
-        <Link to="/recipes/details">{name}</Link>
+        <Link to={`/recipes/details?id=${id}`}>{name}</Link>
         <ReviewDisplay />
       </Card.Body>
     </Card>

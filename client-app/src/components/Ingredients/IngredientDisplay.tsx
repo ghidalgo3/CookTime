@@ -1,4 +1,5 @@
 import React from "react";
+import { IngredientRequirement, MeasureUnit } from "src/shared/CookTime";
 
 type IngredientDisplayProps = {
     ingredientRequirement: IngredientRequirement
@@ -7,7 +8,7 @@ type IngredientDisplayProps = {
     units? : MeasureUnit[]
 }
 export class IngredientDisplay extends React.Component<IngredientDisplayProps, {}> {
-    constructor(props) {
+    constructor(props: IngredientDisplayProps) {
         super(props);
     }
 

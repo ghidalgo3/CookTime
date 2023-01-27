@@ -2,6 +2,7 @@ import React from "react";
 import { Button, Col, Form, FormControl, Row } from "react-bootstrap";
 import { Step } from "./RecipeStep";
 import { ReactSortable } from "react-sortablejs";
+import { MultiPartRecipe, Recipe, RecipeComponent, RecipeStep } from "src/shared/CookTime";
 
 type RecipeStepListProps = {
     recipe : Recipe | MultiPartRecipe,

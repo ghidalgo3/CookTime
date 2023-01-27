@@ -20,6 +20,7 @@ import DefaultLayout, {loader as recipeLoader} from './pages/DefaultLayout';
 import { getCategories } from './shared/CookTime';
 import '@smastrom/react-rating/style.css'
 import RecipeList, {loader as recipeListLoader } from './components/RecipeList/RecipeList';
+import Recipe from './pages/Recipe';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -38,7 +39,7 @@ const router = createBrowserRouter(createRoutesFromElements(
         loader={recipeListLoader}
         element={<RecipeList />} />
 
-      <Route path="Recipes/Details" element={<h1>We now at the recipe</h1>}>
+      <Route path="Recipes/Details" element={<Recipe /> }>
       </Route>
     </Route>
 
