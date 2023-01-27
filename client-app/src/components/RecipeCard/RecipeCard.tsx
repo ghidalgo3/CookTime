@@ -18,26 +18,27 @@ export function RecipeCard({
   const [favorite, setFavorite] = useState(isFavorite);
 
   function button() {
-        var heartClass = "";
-        if (favorite) {
-            heartClass = "fas fa-heart fa-2x"
-        } else {
-            heartClass = "far fa-heart fa-2x"
-        }
-        return (
-        <Button className="favorite-button" >
-                {true ?
-                    <Spinner
-                        as="span"
-                        animation="border"
-                        
-                        role="status"
-                        aria-hidden="true"
-                    />
-                    : <i className={heartClass}></i>}
-            </Button>
-        )
+    var heartClass = "";
+    if (favorite) {
+      heartClass = "fas fa-heart fa-2x"
+    } else {
+      heartClass = "far fa-heart fa-2x"
     }
+    return (
+      <Button className="favorite-button" >
+        {true ?
+          <Spinner
+            as="span"
+            animation="border"
+
+            role="status"
+            aria-hidden="true"
+          />
+          : <i className={heartClass}></i>}
+      </Button>
+    )
+  }
+  
   function CardImage() {
     let image = (imageIds.length == 0 || imageIds[0] === "null") ?
       "/placeholder.jpg" :
@@ -63,26 +64,32 @@ export function RecipeCard({
   function ReviewDisplay() {
     return (
       <div className="margin-top-8">
-      <Stack direction="horizontal">
-        <Rating
-          value={averageReviews}
-          className={"card-ratings"}
-          readOnly
-          /> {"   "} ({reviewCount})
-      </Stack>
+        {reviewCount > 0 ?
+          <Stack direction="horizontal">
+            <Rating
+              value={averageReviews}
+              className={"card-ratings"}
+              readOnly
+            /> {"   "} ({reviewCount})
+          </Stack>
+          :
+          <div className="card-ratings"></div>
+        }
       </div>
     )
   }
 
   return (<>
-  <Card className="recipe-card">
-    <div data-image-id="@imageId" id="@imageTarget"></div>
-    <Card.Body>
+    <Card className="recipe-card">
+      <div data-image-id="@imageId" id="@imageTarget"></div>
+      <Card.Body>
         <p
-          className="tag-style do-not-overflow-text margin-bottom-0">{categories.join(", ")}</p>
+          className="tag-style do-not-overflow-text margin-bottom-0">
+          {categories.length ? categories.join(", ") : "Recipe"}
+        </p>
         <Link to="/recipes/details">{name}</Link>
-        {reviewCount > 0  && <ReviewDisplay />}
-    </Card.Body>
-  </Card>
+        <ReviewDisplay />
+      </Card.Body>
+    </Card>
   </>);
 }

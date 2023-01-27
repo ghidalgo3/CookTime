@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from"react"
+import React, {useEffect, useState} from "react"
 import { Col, Row } from "react-bootstrap";
 import { Outlet, useLoaderData, useLocation } from "react-router-dom";
 import { CookTimeBanner, NavigationBar, SignUp } from "src/components";
