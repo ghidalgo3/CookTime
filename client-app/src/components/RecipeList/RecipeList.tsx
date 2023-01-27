@@ -21,6 +21,9 @@ export default function RecipeList() {
     <>
       {query && <p>Searching for '{query}'</p>}
       <Row>
+        <div className="col-10">
+          <h1 className="margin-bottom-20">Recipes</h1>
+        </div>
         {recipes?.map((recipe, idx) =>
           <Col key={idx} sm={4}>
             <RecipeCard
