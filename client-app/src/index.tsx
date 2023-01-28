@@ -21,6 +21,7 @@ import { getCategories } from './shared/CookTime';
 import '@smastrom/react-rating/style.css'
 import RecipeList, {loader as recipeListLoader } from './components/RecipeList/RecipeList';
 import Recipe from './pages/Recipe';
+import GroceriesList from './pages/GroceriesList';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -39,8 +40,8 @@ const router = createBrowserRouter(createRoutesFromElements(
         loader={recipeListLoader}
         element={<RecipeList />} />
 
-      <Route path="Recipes/Details" element={<Recipe /> }>
-      </Route>
+      <Route path="Recipes/Details" element={<Recipe /> } />
+      <Route path="Cart" element={<GroceriesList /> } />
     </Route>
 
     {/* Distinct signup, signin routes */}

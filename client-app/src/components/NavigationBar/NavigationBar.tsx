@@ -64,7 +64,7 @@ export function NavigationBar({categories} : {categories: string[]}) {
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link href="#home">Recipes</Nav.Link>
+              <Nav.Link as={Link} to="/">Recipes</Nav.Link>
               <NavDropdown title="Categories" id="basic-nav-dropdown">
                 {
                   categories?.map((category, idx) =>
@@ -77,7 +77,7 @@ export function NavigationBar({categories} : {categories: string[]}) {
                   )
                 }
               </NavDropdown>
-              <Nav.Link href="#home">Groceries List</Nav.Link>
+              <Nav.Link as={Link} to="/cart">Groceries List</Nav.Link>
               <Nav.Link href="#home">Blog</Nav.Link>
               <AdminNavBarSection />
               {UserDropdown(user)}
