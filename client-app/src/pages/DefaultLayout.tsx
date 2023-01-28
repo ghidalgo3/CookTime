@@ -1,9 +1,7 @@
 import React, {useEffect, useState} from "react"
-import { Col, Row } from "react-bootstrap";
 import { Outlet, useLoaderData, useLocation } from "react-router-dom";
-import { CookTimeBanner, NavigationBar, SignUp } from "src/components";
+import { CookTimeBanner, NavigationBar } from "src/components";
 import Footer from "src/components/Footer";
-import { RecipeCard } from "src/components/RecipeCard/RecipeCard";
 import { getCategories, getRecipeViews } from "src/shared/CookTime";
 
 export async function loader({request } : {request : Request}) {

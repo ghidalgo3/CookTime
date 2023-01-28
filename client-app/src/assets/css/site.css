@@ -108,6 +108,9 @@ Background color = #fafafa */
     background-color: var(--neutralLighter);
     color: var(--neutralQuaternary);
   }
+  #my-nav-link-disabled {
+    color: var(--neutralSecondary);
+  }
 }
 
 .my-card {

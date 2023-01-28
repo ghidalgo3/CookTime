@@ -13,7 +13,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/css/site.css';
 import './assets/css/all.css';
 import { SignIn } from './pages/SignIn';
-import { action as signinAction } from "./components/Authentication/SignUp"
+import { action as signinAction } from "./components/Authentication/SignInForm"
 import { AuthenticationProvider, IAuthenticationProvider } from './shared/AuthenticationProvider';
 import { AuthenticationContext } from './components/Authentication/AuthenticationContext';
 import DefaultLayout, {loader as recipeLoader} from './pages/DefaultLayout';
@@ -22,6 +22,7 @@ import '@smastrom/react-rating/style.css'
 import RecipeList, {loader as recipeListLoader } from './components/RecipeList/RecipeList';
 import Recipe from './pages/Recipe';
 import GroceriesList from './pages/GroceriesList';
+import PlainLayout from './pages/PlainLayout/PlainLayout';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -45,7 +46,13 @@ const router = createBrowserRouter(createRoutesFromElements(
     </Route>
 
     {/* Distinct signup, signin routes */}
-    <Route path="/signin" element={<SignIn />} action={signinAction} />
+    <Route
+      element={<PlainLayout />}>
+        <Route
+          path="/signin"
+          action={signinAction}
+          element={<SignIn />}></Route>
+    </Route>
 
     <Route
       path="*"

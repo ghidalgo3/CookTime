@@ -1,11 +1,15 @@
 import React, {useEffect, useState} from"react"
-import { Container } from "react-bootstrap";
-import { SignUp } from "src/components";
+import { Col, Container, Row } from "react-bootstrap";
+import { SignInForm } from "src/components";
 
 export function SignIn() {
   return (
     <Container>
-      <SignUp />
+      <Row className="justify-content-md-center">
+        <Col style={{maxWidth: "540px", marginTop: "1rem"}}>
+          <SignInForm />
+        </Col>
+      </Row>
     </Container>
   );
 }

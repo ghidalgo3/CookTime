@@ -2,3 +2,6 @@
   color: var(--a-text);
   font-size: 1.5rem;
 }
+.disabled-nav-link {
+  color: var(--neutralSecondary);
+}

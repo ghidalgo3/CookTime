@@ -76,7 +76,8 @@ export function NavigationBar({ categories }: { categories: string[] }) {
                 }
               </NavDropdown>
               <Nav.Link
-                className={!user ? "disabled" : ""}
+                id={!user ? "my-nav-link-disabled" : ""}
+                // className={!user ? "my-nav-link-disabled" : ""}
                 disabled={!user}
                 as={Link}
                 to="/cart">
