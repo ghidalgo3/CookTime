@@ -1,6 +1,30 @@
 import React, {useEffect, useState} from"react"
 import { Col, Container, Row } from "react-bootstrap";
+import { ActionFunction, ActionFunctionArgs, redirect, useActionData } from "react-router-dom";
 import { SignInForm } from "src/components";
+import { IAuthenticationProvider } from "src/shared/AuthenticationProvider";
+
+export function action2(
+  { signIn }: IAuthenticationProvider) : ActionFunction {
+  return async (args: ActionFunctionArgs) => {
+    console.log("Someone called me!");
+    const { request } = args;
+    const formData = await request.formData()
+    const result = await signIn(
+      formData.get("usernameOrEmail")!.toString(),
+      formData.get("password")!.toString(),
+      true);
+
+    if (result !== "Failure") {
+      return new Response(null, {
+        status: 302,
+        headers: { Location: "/" },
+      });
+    } else {
+      return { errors: "Fail" };
+    }
+  }
+}
 
 export function SignIn() {
   return (

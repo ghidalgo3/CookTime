@@ -12,10 +12,9 @@ import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/css/site.css';
 import './assets/css/all.css';
-import { SignIn } from './pages/SignIn';
-import { action as signinAction } from "./components/Authentication/SignInForm"
+import { action2 as signInAction, SignIn } from './pages/SignIn';
 import { AuthenticationProvider, IAuthenticationProvider } from './shared/AuthenticationProvider';
-import { AuthenticationContext } from './components/Authentication/AuthenticationContext';
+import { AuthenticationContext, useAuthentication } from './components/Authentication/AuthenticationContext';
 import DefaultLayout, {loader as recipeLoader} from './pages/DefaultLayout';
 import { getCategories } from './shared/CookTime';
 import '@smastrom/react-rating/style.css'
@@ -27,47 +26,53 @@ import PlainLayout from './pages/PlainLayout/PlainLayout';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
-
-const router = createBrowserRouter(createRoutesFromElements(
-  <>
-    {/* Top level route defines layout */}
-    <Route
-      // path="/"
-      element={<DefaultLayout />}
-      loader={recipeLoader}
-      >
+function App() {
+  const authProvider = useAuthentication();
+  const router = createBrowserRouter(createRoutesFromElements(
+    <>
+      {/* Top level route defines layout */}
       <Route
-        index
-        loader={recipeListLoader}
-        element={<RecipeList />} />
+        element={<DefaultLayout />}
+        loader={recipeLoader}
+      >
+        <Route
+          index
+          path="/"
+          loader={recipeListLoader}
+          element={<RecipeList />} />
 
-      <Route path="Recipes/Details" element={<Recipe /> } />
-      <Route path="Cart" element={<GroceriesList /> } />
-    </Route>
+        <Route path="Recipes/Details" element={<Recipe />} />
+        <Route path="Cart" element={<GroceriesList />} />
+      </Route>
 
-    {/* Distinct signup, signin routes */}
-    <Route
-      element={<PlainLayout />}>
+      {/* Distinct signup, signin routes */}
+      <Route
+        element={<PlainLayout />}>
         <Route
           path="/signin"
-          action={signinAction}
+          action={async (actionArgs) => {
+            return await (signInAction(authProvider)(actionArgs));
+          }}
           element={<SignIn />}></Route>
-    </Route>
+      </Route>
 
-    <Route
-      path="*"
-      element={<Navigate to="/" replace />} />
-  </>
-));
+      <Route
+        path="*"
+        element={<Navigate to="/" replace />} />
+    </>
+  ));
+  return (
+    <React.StrictMode>
+      <RouterProvider router={router} />
+    </React.StrictMode>
+  )
+}
 
 // This is the file that contains all the global state
 root.render(
-  <React.StrictMode>
-    <AuthenticationContext>
-      <RouterProvider router={router} />
-    </AuthenticationContext>
-  </React.StrictMode>
-);
+<AuthenticationContext>
+  <App />
+</AuthenticationContext>);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

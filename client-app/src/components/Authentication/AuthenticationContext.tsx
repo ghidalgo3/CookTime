@@ -13,15 +13,24 @@ export function AuthenticationContext({ children } : { children : React.ReactNod
   const { signUp, signIn, signOut, getUserDetails } = useAuthentication();
   const [user, setUser] = useState<UserDetails | null>(null);
   useEffect(() => {
-    getUserDetails().then(value => {
-      console.log(user)
-      setUser(value)
-    })
-  }, [])
+    if (user == null) {
+      getUserDetails().then(value => {
+        console.log(user)
+        setUser(value)
+      })
+    }
+  }, [user])
   return (
     <AuthContext.Provider value={{
       user,
-      signIn,
+      signIn:
+        async (usernameOrEmail, password, rememberMe) => {
+          const userDetails = await signIn(usernameOrEmail, password, rememberMe);
+          if (userDetails != "Failure") {
+            setUser(userDetails);
+          }
+          return userDetails;
+        },
       signOut: async () => {
         const didSignOut = await signOut();
         if (didSignOut) {
