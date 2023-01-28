@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from "react"
 import { Button, Card, Spinner, Stack } from "react-bootstrap";
 import { Rating } from "@smastrom/react-rating";
-import { Link } from "react-router-dom";
+import { Link, ActionFunctionArgs, useFetcher} from "react-router-dom";
 import { Fa6RegularStar, Fa6SolidStar } from "../SVG";
 import "./RecipeCard.css"
-import { Image, RecipeView } from "src/shared/CookTime"
+import { addToFavorites, Image, RecipeView, removeFromFavorites } from "src/shared/CookTime"
 import imgs from "src/assets";
+import { useAuthentication } from "../Authentication/AuthenticationContext";
 
 export function RecipeCard({
   categories,
@@ -17,26 +18,45 @@ export function RecipeCard({
   imageIds}: RecipeView) {
 
   const [favorite, setFavorite] = useState(isFavorite);
+  const { user } = useAuthentication();
 
-  function button() {
+  function FavoriteToggle() {
+    const [submitting, setSubmitting] = useState<boolean>(false);
     var heartClass = "";
     if (favorite) {
       heartClass = "fas fa-heart fa-2x"
     } else {
       heartClass = "far fa-heart fa-2x"
     }
+    const toggleFavoriteState = async () => {
+      setSubmitting(true);
+      if (favorite) {
+        await removeFromFavorites(id);
+        setFavorite(false);
+      } else {
+        await addToFavorites(id);
+        setFavorite(true);
+      }
+      setSubmitting(false);
+    }
     return (
-      <Button className="favorite-button" >
-        {true ?
-          <Spinner
-            as="span"
-            animation="border"
+      <>
+        <Button
+          disabled={submitting}
+          onClick={toggleFavoriteState}
+          type="submit"
+          className="favorite-button" >
+          {submitting ?
+            <Spinner
+              as="span"
+              animation="border"
 
-            role="status"
-            aria-hidden="true"
-          />
-          : <i className={heartClass}></i>}
-      </Button>
+              role="status"
+              aria-hidden="true"
+            />
+            : <i className={heartClass}></i>}
+        </Button>
+      </>
     )
   }
   
@@ -53,11 +73,7 @@ export function RecipeCard({
             alt="Food">
           </img>
         </Link>
-        {
-          isFavorite ?
-            button() :
-            null
-        }
+        {user && <FavoriteToggle />}
       </div>
     )
   }

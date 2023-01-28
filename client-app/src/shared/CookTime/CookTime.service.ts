@@ -21,3 +21,19 @@ export async function getRecipeViews(args?: {search?: string, page?: number}) : 
   const response = await fetch("/api/multipartrecipe" + query)
   return (await response.json()) as RecipeView[];
 }
+
+export async function addToFavorites(recipeId: string) : Promise<void> {
+  const response = await fetch(`/api/multipartrecipe/${recipeId}/favorite`,
+    {
+      method: "put"
+    }
+  );
+}
+
+export async function removeFromFavorites(recipeId: string) : Promise<void> {
+  const response = await fetch(`/api/multipartrecipe/${recipeId}/favorite`,
+    {
+      method: "delete"
+    }
+  );
+}
