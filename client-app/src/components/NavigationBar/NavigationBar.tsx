@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from"react"
+import React, { useEffect, useState } from "react"
 import { Container, Form, Nav, Navbar, NavDropdown } from "react-bootstrap";
 import { isMainThread } from "worker_threads";
 import { Form as RouterForm, Link, NavLink } from "react-router-dom";
@@ -12,10 +12,10 @@ import { Category } from "src/shared/CookTime/CookTime.types";
 export function action() {
 }
 
-export function NavigationBar({categories} : {categories: string[]}) {
+export function NavigationBar({ categories }: { categories: string[] }) {
   const { user, signOut } = useAuthentication();
-  function UserDropdown(user? : UserDetails | null) {
-    if(user) {
+  function UserDropdown(user?: UserDetails | null) {
+    if (user) {
       return (
         <NavDropdown title={user.name} id="basic-nav-dropdown">
           <NavDropdown.Item as={Link} to="/recipes/mine">
@@ -37,12 +37,10 @@ export function NavigationBar({categories} : {categories: string[]}) {
 
   function AdminNavBarSection() {
     return (
-      <RequireAuth roles={["Administrator"]}>
-        <NavDropdown title="Admin" id="basic-nav-dropdown">
-          <NavDropdown.Item as={Link} to="#action/3.1">All ingredients</NavDropdown.Item>
-          <NavDropdown.Item as={Link} to="#action/3.2">Ingredient normalizer</NavDropdown.Item>
-        </NavDropdown>
-      </RequireAuth>
+      <NavDropdown title="Admin" id="basic-nav-dropdown">
+        <NavDropdown.Item as={Link} to="#action/3.1">All ingredients</NavDropdown.Item>
+        <NavDropdown.Item as={Link} to="#action/3.2">Ingredient normalizer</NavDropdown.Item>
+      </NavDropdown>
     );
   }
 
@@ -77,9 +75,17 @@ export function NavigationBar({categories} : {categories: string[]}) {
                   )
                 }
               </NavDropdown>
-              <Nav.Link as={Link} to="/cart">Groceries List</Nav.Link>
+              <Nav.Link
+                className={!user ? "disabled" : ""}
+                disabled={!user}
+                as={Link}
+                to="/cart">
+                  Groceries List
+              </Nav.Link>
               <Nav.Link href="#home">Blog</Nav.Link>
-              <AdminNavBarSection />
+              <RequireAuth roles={["Administrator"]}>
+                <AdminNavBarSection />
+              </RequireAuth>
               {UserDropdown(user)}
             </Nav>
           </Navbar.Collapse>

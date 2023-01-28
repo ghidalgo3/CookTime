@@ -98,8 +98,8 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
       { group: "Count", options: countOptions },
       { group: "Weight", options: massOptions },
       { group: "Volume", options: volumeOptions }
-    ].map(x => {
-      return (<optgroup label={x.group}>{x.options}</optgroup>)
+    ].map((x, idx) => {
+      return (<optgroup key={idx} label={x.group}>{x.options}</optgroup>)
     }))
     return (
       <Row key={id} className="margin-bottom-8">
@@ -153,11 +153,12 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
 
   render() {
     if (!this.props.edit) {
-      let rows = this.props.ingredientRequirements.map(ingredient => {
+      let rows = this.props.ingredientRequirements.map((ingredient, idx) => {
         let newQuantity = ingredient.quantity * this.props.multiplier;
         return (
-          <Row className="ingredient-item">
+          <Row key={idx} className="ingredient-item">
             <IngredientDisplay
+              key={idx}
               showAlternatUnit={true}
               units={this.props.units}
               ingredientRequirement={{ ...ingredient, quantity: newQuantity }} />

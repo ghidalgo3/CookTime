@@ -31,9 +31,9 @@ export class RecipeReviews extends React.Component<RecipeReviewsProps, { reviews
   render() {
     return (
       <div>
-        {this.state.reviews?.map(r => {
+        {this.state.reviews?.map((r, idx) => {
           return (
-            <Card className="review-card">
+            <Card key={idx} className="review-card">
               <Row>
                 <Col>
                   <Card.Link className="">
