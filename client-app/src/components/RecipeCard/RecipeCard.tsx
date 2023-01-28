@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Fa6RegularStar, Fa6SolidStar } from "../SVG";
 import "./RecipeCard.css"
 import { Image, RecipeView } from "src/shared/CookTime"
+import imgs from "src/assets";
 
 export function RecipeCard({
   categories,
@@ -40,18 +41,18 @@ export function RecipeCard({
   }
   
   function CardImage() {
-    let image = (imageIds.length == 0 || imageIds[0] === "null") ?
-      "/placeholder.jpg" :
+    let image = (imageIds.length === 0 || imageIds[0] === "null") ?
+      imgs.placeholder :
       `/image/${imageIds[0]}?width=300`;
     return (
       <div className="cr-image-parent">
-        <a href={`/Recipes/Details?id=${id}`}>
+        <Link to={`/Recipes/Details?id=${id}`}>
           <img
             className="card-img-top card-recipe-image"
             src={image}
-            alt="Food image">
+            alt="Food">
           </img>
-        </a>
+        </Link>
         {
           isFavorite ?
             button() :
@@ -80,8 +81,8 @@ export function RecipeCard({
   }
 
   return (<>
-    <Card className="recipe-card">
-      <div data-image-id="@imageId" id="@imageTarget"></div>
+    <Card className="recipe-card margin-bottom-20">
+      <CardImage />
       <Card.Body>
         <p
           className="tag-style do-not-overflow-text margin-bottom-0">

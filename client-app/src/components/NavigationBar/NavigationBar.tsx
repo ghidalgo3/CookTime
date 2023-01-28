@@ -92,7 +92,7 @@ export function NavigationBar({categories} : {categories: string[]}) {
             id="search-bar"
             className=""
             type="search"
-            placeholder="Search" />
+            placeholder="Search by recipe name or ingredients" />
         </RouterForm>
       </Container>
     </header>);
