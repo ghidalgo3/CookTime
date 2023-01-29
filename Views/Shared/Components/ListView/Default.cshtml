@@ -12,7 +12,7 @@
         @if(Model.Data.CurrentPage > 1)
         {
             <li class="page-item">
-                <a class="page-link btn-outline-primary mypagination" href="@(Model.Data.Link(Model.Data.CurrentPage - 1))">Previous</a>
+                @* <a class="page-link btn-outline-primary mypagination" href="@(Model.Data.Link(Model.Data.CurrentPage - 1))">Previous</a> *@
             </li>
         }
         @if (Model.Data.PageCount > 1)
@@ -23,14 +23,14 @@
                 var lineItemClass = "page-item " + active;
                 var aClass = "mypagination" + active;
                 <li class="@(lineItemClass)">
-                    <a class="page-link btn-outline-primary @(aClass)" href="@(Model.Data.Link(i))">@(i)</a>
+                    @* <a class="page-link btn-outline-primary @(aClass)" href="@(Model.Data.Link(i))">@(i)</a> *@
                 </li>
             }
         }
         @if (Model.Data.CurrentPage < Model.Data.PageCount)
         {
             <li class="page-item">
-                <a class="page-link btn-outline-primary mypagination" href="@(Model.Data.Link(Model.Data.CurrentPage + 1))">Next</a>
+                @* <a class="page-link btn-outline-primary mypagination" href="@(Model.Data.Link(Model.Data.CurrentPage + 1))">Next</a> *@
             </li>
         }
     </ul>

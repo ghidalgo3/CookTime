@@ -6,16 +6,12 @@ import { getCategories, getRecipeViews } from "src/shared/CookTime";
 
 export async function loader({request } : {request : Request}) {
   const categories = await getCategories();
-  const recipes = await getRecipeViews({
-    search: "",
-    page: 1
-  })
-  return {categories, recipes}
+  return {categories}
 }
 
 export default function DefaultLayout() {
   const location = useLocation();
-  let {categories, recipes} = useLoaderData() as {recipes : any[], categories: string[]};
+  let {categories} = useLoaderData() as {categories: string[]};
 
   return (
     <>

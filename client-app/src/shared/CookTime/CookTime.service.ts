@@ -1,11 +1,11 @@
-import { RecipeView } from "./CookTime.types";
+import { PagedResult, RecipeView } from "./CookTime.types";
 
 export async function getCategories() : Promise<string[]> {
   const response = await fetch("/api/category/list")
   return await response.json()
 }
 
-export async function getRecipeViews(args?: {search?: string, page?: number}) : Promise<RecipeView[]>{
+export async function getRecipeViews(args?: {search?: string, page?: number}) : Promise<PagedResult<RecipeView>>{
   let query = "?"
   if (args) {
     const {search, page} = args;
@@ -19,7 +19,7 @@ export async function getRecipeViews(args?: {search?: string, page?: number}) : 
     query += queryParams.join("&")
   }
   const response = await fetch("/api/multipartrecipe" + query)
-  return (await response.json()) as RecipeView[];
+  return (await response.json()) as PagedResult<RecipeView>;
 }
 
 export async function addToFavorites(recipeId: string) : Promise<void> {

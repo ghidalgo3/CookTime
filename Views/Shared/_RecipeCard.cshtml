@@ -18,12 +18,12 @@
             data-is-favorite="@Model.IsFavorite"
             class="card margin-bottom-20 recipe-card">
             @{
-                var imageId = Model.ImageIds.FirstOrDefault().ToString();
+                @* var imageId = Model.ImageIds.FirstOrDefault().ToString();
                 if (imageId == Guid.Empty.ToString())
                 {
                     imageId = "null";
                 }
-                <div data-image-id="@imageId" id="@imageTarget"></div>
+                <div data-image-id="@imageId" id="@imageTarget"></div> *@
             }
             <div class="card-body">
                 <p class="tag-style do-not-overflow-text margin-bottom-0">@cats</p>

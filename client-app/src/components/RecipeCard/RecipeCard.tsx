@@ -15,7 +15,7 @@ export function RecipeCard({
   name,
   averageReviews,
   reviewCount,
-  imageIds}: RecipeView) {
+  images}: RecipeView) {
 
   const [favorite, setFavorite] = useState(isFavorite);
   const { user } = useAuthentication();
@@ -61,9 +61,9 @@ export function RecipeCard({
   }
   
   function CardImage() {
-    let image = (imageIds.length === 0 || imageIds[0] === "null") ?
+    let image = (images.length === 0 || images[0].id === "null") ?
       imgs.placeholder :
-      `/image/${imageIds[0]}?width=300`;
+      `/image/${images[0].id}?width=300`;
     return (
       <div className="cr-image-parent">
         <Link to={`/Recipes/Details?id=${id}`}>

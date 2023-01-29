@@ -162,9 +162,19 @@ export type IngredientNutritionDescription = {
 export type RecipeView = {
   name : string,
   id: string,
-  imageIds: string[],
+  images: Image[],
   categories: string[],
   averageReviews: number,
   reviewCount: number,
   isFavorite: boolean | undefined
+}
+
+export type PagedResult<T> = {
+  results : T[],
+  currentPage: number,
+  pageCount: number,
+  pageSize: number,
+  rowCount: number,
+  firstRowOnPage: number,
+  lastRowOnPage: number
 }

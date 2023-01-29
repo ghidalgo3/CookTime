@@ -146,40 +146,47 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         return recipe.Categories.Any(c => c.Id == categoryId);
     }
 
-    public async Task<List<RecipeView>> GetFeaturedRecipeViewAsync(Cart? favorites, int count = 3)
+    public async Task<List<PartialRecipeView>> PartialRecipeViewQueryAsync(IQueryable<MultiPartRecipe> startingQuery = null)
     {
-        var allRecipesQuery = await this.MultiPartRecipes
-            .AsSplitQuery()
+        var baseQuery = startingQuery ?? this.MultiPartRecipes.AsSplitQuery();
+        var intermediate = await baseQuery
             .Include(r => r.Images)
             .Include(r => r.Categories)
-            .Select(r => new
-            {
-                Id = r.Id,
-                Name = r.Name,
+            // EFCore dumb dumb can't translate this query in one go ORMs suck
+            .Select(r => new {
+                r.Name,
+                r.Id,
+                Images = r.Images.Select(image => new ImageReference(
+                    image.Id,
+                    image.Name
+                )),
                 Categories = r.Categories.Select(c => c.Name),
-                Images = r.Images.Select(image => new
-                {
-                    Id = image.Id,
-                    Name = image.Name,
-                }),
                 r.AverageReviews,
                 r.ReviewCount,
                 r.CreationDate
             })
-            // .Where(r => r.Images.Any())
-            .OrderBy(r => Guid.NewGuid())
-            .Take(count)
             .ToListAsync();
+
+        return intermediate.Select(r => new PartialRecipeView(
+                r.Name,
+                r.Id,
+                r.Images,
+                r.Categories,
+                r.AverageReviews,
+                r.ReviewCount,
+                r.CreationDate
+            ))
+            .ToList();
+    }
+
+    public async Task<List<RecipeView>> GetFeaturedRecipeViewAsync(Cart? favorites, int count = 3)
+    {
+        var allRecipesQuery = (await PartialRecipeViewQueryAsync())
+            .Where(r => r.Images.Any())
+            .OrderBy(r => Guid.NewGuid())
+            .Take(count);
         return allRecipesQuery
-            .Select(r =>
-                new RecipeView(
-                    r.Name,
-                    r.Id,
-                    r.Images.Select(image => image.Id).ToList(),
-                    r.Categories.ToList(),
-                    r.AverageReviews,
-                    r.ReviewCount,
-                    favorites?.ContainsRecipe(r.Id) ?? null))
+            .Select(r => RecipeView.From(r, favorites))
             .ToList();
     }
 

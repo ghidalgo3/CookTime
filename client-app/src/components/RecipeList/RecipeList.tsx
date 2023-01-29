@@ -2,8 +2,9 @@ import React, {useEffect, useState} from "react"
 import { Col, Row } from "react-bootstrap";
 import ReactPaginate from 'react-paginate';
 import { RecipeCard } from "../RecipeCard/RecipeCard";
-import { getRecipeViews, Image, RecipeView } from "src/shared/CookTime"
+import { getRecipeViews, Image, PagedResult, RecipeView } from "src/shared/CookTime"
 import { LoaderFunctionArgs, useLoaderData, useLocation, useSearchParams } from "react-router-dom";
+import PaginatedList from "../PaginatedList/PaginatedList";
 
 export async function loader(load : LoaderFunctionArgs) {
   const {request, params} = load;
@@ -14,17 +15,21 @@ export async function loader(load : LoaderFunctionArgs) {
 }
 
 export default function RecipeList() {
-  const recipes = useLoaderData() as RecipeView[];
+  const recipes = useLoaderData() as PagedResult<RecipeView>;
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("search");
   return (
     <>
-      {query && <p>Searching for '{query}'</p>}
+    <PaginatedList
+      element={(recipe : RecipeView) => <RecipeCard {...recipe}/>}
+      items={recipes}
+      />
+      {/* {query && <p>Searching for '{query}'</p>}
       <Row>
         <div className="col-10">
           <h1 className="margin-bottom-20">Recipes</h1>
         </div>
-        {recipes?.map((recipe, idx) =>
+        {recipes?.results.map((recipe, idx) =>
           <Col key={idx} sm={4}>
             <RecipeCard
               key={idx}
@@ -32,6 +37,6 @@ export default function RecipeList() {
             />
           </Col>
         )}
-      </Row>
+      </Row> */}
     </>);
 }
