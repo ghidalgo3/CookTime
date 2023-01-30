@@ -16,7 +16,10 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
       <Row>
         {
           items.results.map((item, idx) =>
-            <Col className={colClassName} key={idx}>
+            <Col
+              sm="4"
+              className={colClassName}
+              key={idx}>
               {element(item)}
             </Col>)
         }
@@ -25,11 +28,12 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
         <Pagination className="justify-content-center">
           {Array.from({ length: items.pageCount }, (x, i) =>
             <Pagination.Item
+              key={i}
               active={(i + 1) === activePage}
               onClick={() => {
-              const urlParams = new URLSearchParams(window.location.search);
-              urlParams.set("page", (i + 1) === 0 ? "" : encodeURIComponent(i + 1));
-              setSearchParams(urlParams);
+                const urlParams = new URLSearchParams(window.location.search);
+                urlParams.set("page", (i + 1) === 0 ? "" : encodeURIComponent(i + 1));
+                setSearchParams(urlParams);
             }}>{i + 1}</Pagination.Item>
           )}
         </Pagination>

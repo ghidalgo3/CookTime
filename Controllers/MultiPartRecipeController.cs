@@ -15,7 +15,7 @@ namespace babe_algorithms.Controllers
     [ApiController]
     public class MultiPartRecipeController : ControllerBase, IImageController
     {
-        const int RecipesPerPage = 3;
+        const int RecipesPerPage = 15;
 
         private readonly ApplicationDbContext _context;
 

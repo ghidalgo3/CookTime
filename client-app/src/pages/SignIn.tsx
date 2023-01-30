@@ -7,7 +7,6 @@ import { IAuthenticationProvider } from "src/shared/AuthenticationProvider";
 export function action2(
   { signIn }: IAuthenticationProvider) : ActionFunction {
   return async (args: ActionFunctionArgs) => {
-    console.log("Someone called me!");
     const { request } = args;
     const formData = await request.formData()
     const result = await signIn(
