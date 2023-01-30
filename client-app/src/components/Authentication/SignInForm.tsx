@@ -1,15 +1,23 @@
-import React, {useEffect, useState} from"react"
+import React, {useEffect } from"react"
 import { Button, Form } from "react-bootstrap";
-import { Form as RouterForm, ActionFunctionArgs, redirect, Link, ActionFunction, Navigate} from "react-router-dom";
-import { AuthenticationProvider, IAuthenticationProvider } from "src/shared/AuthenticationProvider";
+import { Form as RouterForm, Link, useNavigate} from "react-router-dom";
 import { useAuthentication } from "./AuthenticationContext";
 
 
 export function SignInForm() {
   const {user, signIn } = useAuthentication();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (user) {
+      if (window.history.length <= 2) {
+        navigate("/", {replace: true});
+      } else {
+        navigate(-1);
+      }
+    }
+  }, [user]);
   return (
     <>
-      {user && <Navigate to="/" /> }
       <h1>Sign in to CookTime</h1>
       <RouterForm method="post" action="/signin">
         <Form.Group className="mb-3" controlId="formBasicEmail">
