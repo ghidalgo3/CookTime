@@ -46,7 +46,7 @@ export function NavigationBar({ categories }: { categories: string[] }) {
 
   return (
     <header>
-      <Navbar expand="lg">
+      <Navbar expand="sm">
         <Container fluid>
           <Link to="/">
             <Navbar.Brand id="my-navbar-brand">
