@@ -74,7 +74,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost("signup")]
-    public async Task<IActionResult> SignUp(
+    public async Task<ActionResult<SignUpResult>> SignUp(
         [FromForm] UserSignUp signUpRequest)
     {
         var user = await this.userManager.FindUserByEmail(signUpRequest.Email);
@@ -85,14 +85,26 @@ public class AccountController : ControllerBase
             if (result.Succeeded)
             {
                 await SendVerificationEmailAsync(foundUser);
-                return this.Ok("Email verification needed");
+                return this.Ok(new SignUpResult() 
+                {
+                    Success = true,
+                    Message = "Email verification needed",
+                });
             }
             else
             {
-                return this.BadRequest("User could not be created.");
+                return this.BadRequest(new SignUpResult()
+                {
+                    Success = false,
+                    Message = "User could not be created.",
+                });
             }
         } else {
-            return this.BadRequest("User already exists");
+            return this.BadRequest(new SignUpResult()
+            {
+                Success = false,
+                Message = "User already exists",
+            });
         }
     }
 

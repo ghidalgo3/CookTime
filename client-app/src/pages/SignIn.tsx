@@ -4,7 +4,7 @@ import { ActionFunction, ActionFunctionArgs, redirect, useActionData } from "rea
 import { SignInForm } from "src/components";
 import { IAuthenticationProvider } from "src/shared/AuthenticationProvider";
 
-export function action2(
+export function action(
   { signIn }: IAuthenticationProvider) : ActionFunction {
   return async (args: ActionFunctionArgs) => {
     const { request } = args;

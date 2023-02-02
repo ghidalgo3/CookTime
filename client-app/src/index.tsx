@@ -12,7 +12,7 @@ import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './assets/css/site.css';
 import './assets/css/all.css';
-import { action2 as signInAction, SignIn } from './pages/SignIn';
+import { action as signInAction, SignIn } from './pages/SignIn';
 import { AuthenticationProvider, IAuthenticationProvider } from './shared/AuthenticationProvider';
 import { AuthenticationContext, useAuthentication } from './components/Authentication/AuthenticationContext';
 import DefaultLayout, {loader as recipeLoader} from './pages/DefaultLayout';
@@ -22,6 +22,7 @@ import RecipeList, {loader as recipeListLoader } from './components/RecipeList/R
 import Recipe from './pages/Recipe';
 import GroceriesList from './pages/GroceriesList';
 import PlainLayout from './pages/PlainLayout/PlainLayout';
+import SignUp, { action as signUpAction } from './pages/SignUp';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -54,6 +55,13 @@ function App() {
             return await (signInAction(authProvider)(actionArgs));
           }}
           element={<SignIn />}></Route>
+
+        <Route
+          path="/signup"
+          action={async (actionArgs) => {
+            return await (signUpAction(authProvider)(actionArgs));
+          }}
+          element={<SignUp />}></Route>
       </Route>
 
       <Route

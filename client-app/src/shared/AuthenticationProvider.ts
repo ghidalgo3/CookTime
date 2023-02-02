@@ -7,6 +7,11 @@ export interface UserDetails {
   roles: Role[],
 }
 
+export interface SignUpResult {
+  success: boolean,
+  message: string
+}
+
 export type AuthResult = "Success" | "Failure"
 
 export interface IAuthenticationProvider {
@@ -16,7 +21,7 @@ export interface IAuthenticationProvider {
     userName : string,
     email: string,
     password: string,
-    confirmPassword: string) : Promise<UserDetails | "Failure">,
+    confirmPassword: string) : Promise<SignUpResult>,
   
   signIn(
     usernameOrEmail : string,
@@ -52,9 +57,25 @@ export const AuthenticationProvider : IAuthenticationProvider = {
     return response.ok;
   },
 
-  signUp: async function (userName: string, email: string, password: string, confirmPassword: string): Promise<UserDetails | "Failure"> {
-    return "Failure";
-    // throw new Error("Function not implemented.");
+  signUp: async function (userName: string, email: string, password: string, confirmPassword: string): Promise<SignUpResult> {
+    let formData = new FormData();
+    formData.append('username', userName);
+    formData.append('email', email);
+    formData.append('password', password);
+    formData.append('confirmPassword', confirmPassword);
+    const response = await fetch("/api/account/signup", {
+      method: "post",
+      body: formData
+    });
+    if (response.ok) {
+      return await response.json() as SignUpResult;
+    } else {
+      const error = await response.json() 
+      return {
+        success: false,
+        message: "Username and email must be unique in CookTime. Password must be between 6 and 100 characters long."
+      }
+    }
   },
 
   getUserDetails: async function (): Promise<UserDetails | null> {

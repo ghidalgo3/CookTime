@@ -1,6 +1,7 @@
 import React from "react"
 import imgs from "src/assets";
 import { DietDetail } from "src/shared/CookTime";
+
 const imageNameToAsset = new Map<string, string>();
 imageNameToAsset.set("whole-grains", imgs.wholeGrains);
 imageNameToAsset.set("greens", imgs.greens);
@@ -13,6 +14,7 @@ imageNameToAsset.set("whole-grains", imgs.wholeGrains);
 imageNameToAsset.set("other-fruit", imgs.otherFruit);
 imageNameToAsset.set("flaxseed", imgs.flaxseed);
 imageNameToAsset.set("spices", imgs.spices);
+
 export function TodaysTenDisplay({todaysTen} : {todaysTen: DietDetail}) {
   const { d } = todaysTen.details;
   function TopTenImage({ imageName, present} : {imageName : string, present: boolean}) {
