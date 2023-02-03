@@ -12,6 +12,8 @@ export async function action(args : ActionFunctionArgs) {
     if (result.ok) {
       var recipe = await result.json() as MultiPartRecipe;
       return redirect(Path(recipe.id))
+    } else {
+      return { errors: "Something went wrong" }
     }
   } else {
     return {errors: "Name is required"}

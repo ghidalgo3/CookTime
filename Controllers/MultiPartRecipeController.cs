@@ -36,6 +36,31 @@ namespace babe_algorithms.Controllers
             this.TextInfo = new CultureInfo("en-US",false).TextInfo;
         }
 
+        [HttpPost("create")]
+        public async Task<IActionResult> Create([FromForm] string name) 
+        {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user == null)
+            {
+                return this.Unauthorized("You must be signed in to create recipes.");
+            }
+            var recipe = new MultiPartRecipe
+            {
+                Name = name,
+                Owner = user,
+                CreationDate = DateTimeOffset.UtcNow,
+                LastModifiedDate = DateTimeOffset.UtcNow,
+            };
+            recipe.RecipeComponents.Add(new RecipeComponent()
+            {
+                Name = name,
+            });
+            _context.MultiPartRecipes.Add(recipe);
+            await _context.SaveChangesAsync();
+            await _context.Entry(recipe).ReloadAsync();
+            return this.Ok(recipe);
+        }
+
         // GET: api/MultiPartRecipe
         [HttpGet]
         public async Task<ActionResult<PagedResult<RecipeView>>> GetMultiPartRecipes(
