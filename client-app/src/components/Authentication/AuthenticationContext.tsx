@@ -3,7 +3,7 @@ import { useContext } from "react";
 // import { useLocation, Navigate, useSearchParams } from "react-router-dom";
 import { AuthenticationProvider, IAuthenticationProvider, Role, UserDetails } from "src/shared/AuthenticationProvider";
 
-export let AuthContext = React.createContext<IAuthenticationProvider>(AuthenticationProvider);
+export const AuthContext = React.createContext<IAuthenticationProvider>(AuthenticationProvider);
 
 export function useAuthentication() {
   return useContext(AuthContext);

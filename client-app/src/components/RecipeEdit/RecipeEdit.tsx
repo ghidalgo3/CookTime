@@ -13,6 +13,8 @@ import { RecipeReviewForm } from './RecipeReviewForm';
 import { RecipeReviews } from './RecipeReviews';
 import { TodaysTenDisplay } from '../todaysTenDisplay';
 import { Tags } from '../Tags/Tags';
+import { AuthContext, AuthenticationContext } from '../Authentication/AuthenticationContext';
+import { UserDetails } from 'src/shared/AuthenticationProvider';
 
 type RecipeEditProps = {
   recipeId: string,
@@ -368,7 +370,9 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
               }
               By {this.state.recipe.owner?.userName}
             </Col>
-            {this.editButtons()}
+            <AuthContext.Consumer>
+              {({user}) => this.editButtons(user)}
+            </AuthContext.Consumer>
           </>
         </Row>
 
@@ -870,9 +874,9 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
     }
   }
 
-  private editButtons(): string | number | boolean | {} | React.ReactElement<any, string | React.JSXElementConstructor<any>> | React.ReactNodeArray | React.ReactPortal | null | undefined {
-    let userSignedIn = false; /*isSignedIn();*/
-    let canEdit = false; // userSignedIn && getUserId() === this.state.recipe.owner?.id || isAdmin();
+  private editButtons(user? : UserDetails | null) {
+    let userSignedIn = user !== null; /*isSignedIn();*/
+    let canEdit = userSignedIn && user!.id === this.state.recipe.owner?.id || user?.roles.includes("Administrator");
     return this.state.edit ?
       <Col>
         <Row>
@@ -949,6 +953,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
         </Row>
       </Col>;
   }
+
   onMigrate(): void {
     fetch(`/api/Recipe/${this.props.recipeId}/migrate`, {
       method: 'POST',
