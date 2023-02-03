@@ -21,7 +21,7 @@ export default function DefaultLayout() {
       <div className="container margin-top-30">
           {/* TODO don't render this always  */}
           {location.pathname === "/" && location.search === "" && 
-            <CookTimeBanner />}
+            <CookTimeBanner /> }
           <Outlet />
       </div>
     </main>

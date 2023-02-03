@@ -23,6 +23,7 @@ import Recipe from './pages/Recipe';
 import GroceriesList from './pages/GroceriesList';
 import PlainLayout from './pages/PlainLayout/PlainLayout';
 import SignUp, { action as signUpAction } from './pages/SignUp';
+import RecipeCreation, {action as createRecipe} from './pages/RecipeCreation';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -43,6 +44,10 @@ function App() {
           element={<RecipeList />} />
 
         <Route path="Recipes/Details" element={<Recipe />} />
+        <Route
+          path="Recipes/Create"
+          element={<RecipeCreation />}
+          action={createRecipe} />
         <Route path="Cart" element={<GroceriesList />} />
       </Route>
 

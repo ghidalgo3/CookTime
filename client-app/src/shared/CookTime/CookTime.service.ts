@@ -1,5 +1,13 @@
 import { PagedResult, RecipeView } from "./CookTime.types";
-
+export async function createRecipe(recipeCreationArgs : string) {
+  const form = new FormData();
+  form.set("name", recipeCreationArgs);
+  const response = await fetch("/api/multipartrecipe/create", {
+    method: "post",
+    body: form
+  });
+  return response;
+}
 export async function getCategories() : Promise<string[]> {
   const response = await fetch("/api/category/list")
   return await response.json()

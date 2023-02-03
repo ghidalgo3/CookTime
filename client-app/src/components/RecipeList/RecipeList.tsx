@@ -3,8 +3,9 @@ import { Col, Row } from "react-bootstrap";
 import ReactPaginate from 'react-paginate';
 import { RecipeCard } from "../RecipeCard/RecipeCard";
 import { getRecipeViews, Image, PagedResult, RecipeView } from "src/shared/CookTime"
-import { LoaderFunctionArgs, useLoaderData, useLocation, useSearchParams } from "react-router-dom";
+import { Link, LoaderFunctionArgs, useLoaderData, useLocation, useSearchParams } from "react-router-dom";
 import PaginatedList from "../PaginatedList/PaginatedList";
+import { useAuthentication } from "../Authentication/AuthenticationContext";
 
 export async function loader(load : LoaderFunctionArgs) {
   const {request, params} = load;
@@ -18,8 +19,22 @@ export default function RecipeList() {
   const recipes = useLoaderData() as PagedResult<RecipeView>;
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("search");
+  const { user } = useAuthentication();
   return (
     <>
+    <Row>
+      <Col xs={10}>
+        <h1>Recipes</h1>
+      </Col>
+      {
+        user &&
+        <Col xs={2}>
+          <Link to="/Recipes/Create">
+            <i className="fas fa-plus-circle themePrimary-color fa-2x"></i>
+          </Link>
+        </Col>
+      }
+    </Row> 
     <PaginatedList
       element={(recipe : RecipeView) => <RecipeCard {...recipe}/>}
       items={recipes}
