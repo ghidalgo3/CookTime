@@ -15,7 +15,7 @@ export async function loader(load : LoaderFunctionArgs) {
   return await getRecipeViews({search, page});
 }
 
-export default function RecipeList() {
+export default function RecipeList({title} : {title : string}) {
   const recipes = useLoaderData() as PagedResult<RecipeView>;
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("search");
@@ -24,7 +24,7 @@ export default function RecipeList() {
     <>
     <Row>
       <Col xs={10}>
-        <h1>Recipes</h1>
+        <h1>{title}</h1>
       </Col>
       {
         user &&

@@ -18,12 +18,13 @@ import { AuthenticationContext, useAuthentication } from './components/Authentic
 import DefaultLayout, {loader as recipeLoader} from './pages/DefaultLayout';
 import { getCategories } from './shared/CookTime';
 import '@smastrom/react-rating/style.css'
-import RecipeList, {loader as recipeListLoader } from './components/RecipeList/RecipeList';
+// import RecipeList, {loader as recipeListLoader } from './components/RecipeList/RecipeList';
 import Recipe from './pages/Recipe';
 import GroceriesList from './pages/GroceriesList';
 import PlainLayout from './pages/PlainLayout/PlainLayout';
 import SignUp, { action as signUpAction } from './pages/SignUp';
 import RecipeCreation, {action as createRecipe} from './pages/RecipeCreation';
+import Home, {loader as recipeListLoader } from './pages/Home';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -41,7 +42,7 @@ function App() {
           index
           path="/"
           loader={recipeListLoader}
-          element={<RecipeList />} />
+          element={<Home />} />
 
         <Route path="Recipes/Details" element={<Recipe />} />
         <Route
