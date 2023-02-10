@@ -582,10 +582,14 @@ namespace babe_algorithms.Controllers
                         this._context.GetRecipesWithIngredient,
                         this._context.SearchRecipesByTag,
             };
-            var queriesInFlight = queries.Select(async query => {
-                return await this._context.PartialRecipeViewQueryAsync(query(search));
-            }).ToArray();
-            var results = (await Task.WhenAll(queriesInFlight)).SelectMany(partials => partials.Select(p => RecipeView.From(p, this.Favorites)));
+            // Must be run sequentially!
+            // https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/#asynchronous-operation-pitfalls 
+            var partials = new List<PartialRecipeView>();
+            foreach (var query in queries)
+            {
+                partials.AddRange(await this._context.PartialRecipeViewQueryAsync(query(search)));
+            }
+            var results = partials.Select(p => RecipeView.From(p, this.Favorites));
             var uniques = new HashSet<RecipeView>(results, new RecipeViewEqualityComparer());
             return uniques.ToList().GetPaged(page, RecipesPerPage);
         }
