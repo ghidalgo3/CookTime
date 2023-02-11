@@ -208,6 +208,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         return await GetCartAsync(user, Cart.Favorites, simple: true);
     }
 
+    public async Task<List<RecipeView>> GetOwnedRecipesAsync(ApplicationUser user)
+    {
+        var init = await PartialRecipeViewQueryAsync(this.MultiPartRecipes.Where(r => r.Owner == user));
+        var favorites = await this.GetFavoritesAsync(user);
+        return init.Select(r => RecipeView.From(r, favorites)).ToList();
+    }
+
     public async Task<List<RecipeView>> GetNewRecipeViewAsync(Cart? favorites, int count = 3)
     {
         var allRecipesQuery = (await PartialRecipeViewQueryAsync())

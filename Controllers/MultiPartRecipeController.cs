@@ -120,6 +120,18 @@ namespace babe_algorithms.Controllers
             return this.Ok(favorites);
         }
 
+        [HttpGet("mine")]
+        public async Task<ActionResult<List<RecipeView>>> GetMyRecipesAsync()
+        {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user == null)
+            {
+                return this.Unauthorized("You must be signed in to see your recipes");
+            }
+            var myRecipes = await this._context.GetOwnedRecipesAsync(user);
+            return this.Ok(myRecipes);
+        }
+
         [HttpDelete("{id}/favorite")]
         public async Task<ActionResult> DeleteFromFavorites(Guid id)
         {

@@ -45,6 +45,11 @@ export async function getFavoriteRecipeViews() {
   return (await response.json()) as RecipeView[];
 }
 
+export async function getMyRecipes() {
+  const response = await fetch("/api/multipartrecipe/mine")
+  return (await response.json()) as RecipeView[];
+}
+
 export async function addToFavorites(recipeId: string) : Promise<void> {
   const response = await fetch(`/api/multipartrecipe/${recipeId}/favorite`,
     {

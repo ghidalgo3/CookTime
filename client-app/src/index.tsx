@@ -26,6 +26,7 @@ import SignUp, { action as signUpAction } from './pages/SignUp';
 import RecipeCreation, {action as createRecipe} from './pages/RecipeCreation';
 import Home, {loader as recipeListLoader } from './pages/Home';
 import Favorites from './pages/Favorites';
+import MyRecipes from './pages/MyRecipes';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -47,6 +48,7 @@ function App() {
 
         <Route path="Recipes/Details" element={<Recipe />} />
         <Route path="Recipes/Favorites" element={<Favorites />} />
+        <Route path="Recipes/Mine" element={<MyRecipes />} />
         <Route
           path="Recipes/Create"
           element={<RecipeCreation />}

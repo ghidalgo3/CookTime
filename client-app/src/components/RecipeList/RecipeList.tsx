@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react"
 import { Col, Row } from "react-bootstrap";
 import ReactPaginate from 'react-paginate';
 import { RecipeCard } from "../RecipeCard/RecipeCard";
-import { getFavoriteRecipeViews, getFeaturedRecipeViews, getNewRecipeViews, getRecipeViews, Image, PagedResult, RecipeView, toPagedResult } from "src/shared/CookTime"
+import { getFavoriteRecipeViews, getFeaturedRecipeViews, getMyRecipes, getNewRecipeViews, getRecipeViews, Image, PagedResult, RecipeView, toPagedResult } from "src/shared/CookTime"
 import { Link, LoaderFunctionArgs, useLoaderData, useLocation, useSearchParams } from "react-router-dom";
 import PaginatedList from "../PaginatedList/PaginatedList";
 import { useAuthentication } from "../Authentication/AuthenticationContext";
@@ -31,6 +31,9 @@ export default function RecipeList({title, query, type, hideIfEmpty} : RecipeLis
         setRecipes(result);
       } else if (type === "Favorites") {
         const result = await getFavoriteRecipeViews();
+        setRecipes(toPagedResult(result));
+      } else if (type === "Mine") {
+        const result = await getMyRecipes();
         setRecipes(toPagedResult(result));
       }
     }
