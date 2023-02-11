@@ -16,7 +16,7 @@ imageNameToAsset.set("flaxseed", imgs.flaxseed);
 imageNameToAsset.set("spices", imgs.spices);
 
 export function TodaysTenDisplay({todaysTen} : {todaysTen: DietDetail}) {
-  const { d } = todaysTen.details;
+  const d = todaysTen.details;
   function TopTenImage({ imageName, present} : {imageName : string, present: boolean}) {
     return <img
       className={`todays-tens-symbols ${present ? "" : "absent"}`}

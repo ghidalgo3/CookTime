@@ -13,6 +13,7 @@ export default function PlainLayout() {
             to="/" >
             <img
               height={30}
+              style={{marginRight: 8}}
               className="d-inline-block align-top"
               src={imgs.logo}></img>
               CookTime

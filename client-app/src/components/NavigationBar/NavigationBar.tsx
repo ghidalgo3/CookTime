@@ -47,7 +47,7 @@ export function NavigationBar({ categories }: { categories: string[] }) {
   return (
     <header>
       <Navbar expand="sm">
-        <Container fluid>
+        <Container fluid style={{lineHeight: "30px", justifyContent: "space-between", display: "flex"}}>
           <Link to="/">
             <Navbar.Brand id="my-navbar-brand">
               <img
@@ -56,7 +56,7 @@ export function NavigationBar({ categories }: { categories: string[] }) {
                 height="30"
                 className="d-inline-block align-middle"
               />{' '}
-              CookTime
+              <div className="d-inline-block align-middle">CookTime</div>
             </Navbar.Brand>
           </Link>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -83,7 +83,7 @@ export function NavigationBar({ categories }: { categories: string[] }) {
                 to="/cart">
                   Groceries List
               </Nav.Link>
-              <Nav.Link href="#home">Blog</Nav.Link>
+              <Nav.Link href="/Blog/index.html">Blog</Nav.Link>
               <RequireAuth roles={["Administrator"]}>
                 <AdminNavBarSection />
               </RequireAuth>
@@ -97,7 +97,7 @@ export function NavigationBar({ categories }: { categories: string[] }) {
           <Form.Control
             name="search"
             id="search-bar"
-            className=""
+            className="me-2 input-field-style"
             type="search"
             placeholder="Search by recipe name or ingredients" />
         </RouterForm>

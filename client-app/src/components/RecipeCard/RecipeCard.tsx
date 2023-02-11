@@ -80,7 +80,7 @@ export function RecipeCard({
 
   function ReviewDisplay() {
     return (
-      <div className="margin-top-8">
+      <div className="height-32 margin-top-8">
         {reviewCount > 0 ?
           <Stack direction="horizontal">
             <Rating
@@ -104,7 +104,9 @@ export function RecipeCard({
           className="tag-style do-not-overflow-text margin-bottom-0">
           {categories.length ? categories.join(", ") : "Recipe"}
         </p>
-        <Link to={`/recipes/details?id=${id}`}>{name}</Link>
+        <Card.Title className="do-not-overflow-text">
+          <Link to={`/recipes/details?id=${id}`}>{name}</Link>
+        </Card.Title>
         <ReviewDisplay />
       </Card.Body>
     </Card>

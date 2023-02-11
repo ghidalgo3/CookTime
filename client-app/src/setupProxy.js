@@ -11,7 +11,8 @@ const context =  [
   "/css/**",
   "/webfonts/**",
   "/api/**",
-  "/image/**"
+  "/image/**",
+  "/Blog/**"
 ];
 
 module.exports = function(app) {
