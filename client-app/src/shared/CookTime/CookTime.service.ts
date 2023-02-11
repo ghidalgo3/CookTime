@@ -1,4 +1,4 @@
-import { PagedResult, RecipeView, Review } from "./CookTime.types";
+import { IngredientInternalUpdate, PagedResult, RecipeView, Review } from "./CookTime.types";
 export async function createRecipe(recipeCreationArgs : string) {
   const form = new FormData();
   form.set("name", recipeCreationArgs);
@@ -81,4 +81,9 @@ export function toPagedResult<T>(values : T[]) : PagedResult<T> {
 export async function getReviews(recipeId : string) {
   const response = await fetch(`/api/multipartrecipe/${recipeId}/reviews`)
   return (await response.json()) as Review[];
+}
+
+export async function getInternalIngredientUpdates() {
+  const response = await fetch(`/api/ingredient/internalUpdate`)
+  return (await response.json()) as IngredientInternalUpdate[];
 }

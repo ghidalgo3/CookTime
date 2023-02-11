@@ -4,7 +4,6 @@ using babe_algorithms.Services;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using System.Globalization;
 using babe_algorithms.Models.Users;
-using Microsoft.AspNetCore.Authorization;
 using babe_algorithms.Pages;
 using babe_algorithms.ViewComponents;
 using GustavoTech.Implementation;

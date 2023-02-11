@@ -178,3 +178,12 @@ export type PagedResult<T> = {
   firstRowOnPage: number,
   lastRowOnPage: number
 }
+
+export type IngredientInternalUpdate = {
+  ingredientId: string,
+  ndbNumber: number,
+  ingredientNames: string,
+  gtinUpc: string,
+  countRegex: string,
+  expectedUnitMass: number
+}

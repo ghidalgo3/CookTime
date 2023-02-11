@@ -530,7 +530,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
         {
           <AuthContext.Consumer>
             {({ user }) => {
-              return user && this.state.edit &&
+              return user && !this.state.edit &&
                 <div className="border-top-1 margin-top-30">
                   <Row>
                     <Col>

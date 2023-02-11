@@ -117,12 +117,23 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                             ir.Ingredient.Id == ingredientId)));
     }
 
-    public async Task<List<Ingredient>> GetIngredients()
+    public async Task<List<Ingredient>> GetIngredients(string? name = null)
     {
-        return await this.Ingredients
-            .Include(ingredient => ingredient.NutritionData)
-            .Include(ingredient => ingredient.BrandedNutritionData)
-            .ToListAsync();
+        if (!string.IsNullOrEmpty(name))
+        {
+            return await this.Ingredients
+                .Where(i => i.Name.ToUpper().Contains(name.ToUpperInvariant()))
+                .Include(ingredient => ingredient.NutritionData)
+                .Include(ingredient => ingredient.BrandedNutritionData)
+                .ToListAsync();
+        }
+        else
+        {
+            return await this.Ingredients
+                .Include(ingredient => ingredient.NutritionData)
+                .Include(ingredient => ingredient.BrandedNutritionData)
+                .ToListAsync();
+        }
     }
 
     public async Task<Category> GetCategory(Guid id)

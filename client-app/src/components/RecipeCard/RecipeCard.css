@@ -1,10 +1,7 @@
 .recipe-card {
     background-color: var(--secondary-background);
-    max-width: 400px;
 }
 
 .card-ratings {
-    /* height: 32px; */
     max-width: 120px;
-    /* width: 54%; */
 }
