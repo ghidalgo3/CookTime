@@ -187,3 +187,10 @@ export type IngredientInternalUpdate = {
   countRegex: string,
   expectedUnitMass: number
 }
+
+export type IngredientReplacementRequest = {
+  replacedId: string,
+  name: string,
+  usage: number,
+  keptId: string,
+}

@@ -1,4 +1,7 @@
 import { IngredientInternalUpdate, PagedResult, RecipeView, Review } from "./CookTime.types";
+
+export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
+
 export async function createRecipe(recipeCreationArgs : string) {
   const form = new FormData();
   form.set("name", recipeCreationArgs);

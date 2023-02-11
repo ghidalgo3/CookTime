@@ -12,7 +12,7 @@ public class IngredientNormalizerModel : PageModel
 
     public IUserService UserService { get; }
 
-    public Dictionary<Ingredient, int> Frequency = new Dictionary<Ingredient, int>();
+    public Dictionary<Ingredient, int> Frequency = new();
 
     public IngredientNormalizerModel(
         Services.ApplicationDbContext context,
