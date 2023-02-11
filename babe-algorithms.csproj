@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>babe_algorithms</RootNamespace>
     <UserSecretsId>a46b162c-e9f9-48e7-934a-5b91ebe338b0</UserSecretsId>
     <ImplicitUsings>enable</ImplicitUsings>

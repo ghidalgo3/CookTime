@@ -8,7 +8,6 @@ using babe_algorithms.Models.Users;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using GustavoTech.Implementation;
 using SixLabors.ImageSharp.Web.DependencyInjection;
-using Microsoft.AspNetCore.Mvc;
 
 namespace babe_algorithms;
 
