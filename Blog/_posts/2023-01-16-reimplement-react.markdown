@@ -134,7 +134,29 @@ It should be simple enough to:
 1. POST the information to the server
 1. Create the user if needed
 
-### React-router next
+... A few days later ...
+Indeed I did that and spent a few days in the refactoring jungles so now I will summarize some of the largest changes:
+
+# Introducing react-router
+Now that we have a SPA, we have to be able to navigate between pages.
+The most popular library for React to do this seems to be Remix's [react-router](https://reactrouter.com/en/main) so I've chosen to use it.
+The library works like this:
+1. You define a `router` object that maps URLs to React component. Previously we relied on Razor page file organization conventions to match URL to Razor pages but now this is done explicitly by the router configuration.
+1. For each route you want to match, you define a React component that gets rendered at that route. These are the site "pages" different from reusable components.
+1. Replace all `href`s with a combination of `To` and `Link` elements from `react-router`. Normally, `href`s make the browser navigate which is _verboten_ for react-router. If you navigate, you are no longer a single-page application!
+
+Having understood react-router, the challenge here was actually rewriting every Razor page as a React page.
+The UI side of this was really easy, the problem was that we were running a lot of Entity Framework queries in the backend that were never exposed as REST APIs.
+For most of the pages I had to do something like this:
+1. Write the react components
+1. Expose a REST call equivalent to the DB query we were previously performing to render the Razor page
+1. Make the frontend call the query.
+
+Simple work but it was very laborious.
+
+# TODO performance differences?
+## Render time
+## Network load
 
 ## References
 1. https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies
