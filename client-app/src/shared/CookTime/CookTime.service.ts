@@ -30,6 +30,21 @@ export async function getRecipeViews(args?: {search?: string, page?: number}) : 
   return (await response.json()) as PagedResult<RecipeView>;
 }
 
+export async function getFeaturedRecipeViews() {
+  const response = await fetch("/api/multipartrecipe/featured")
+  return (await response.json()) as RecipeView[];
+}
+
+export async function getNewRecipeViews() {
+  const response = await fetch("/api/multipartrecipe/new")
+  return (await response.json()) as RecipeView[];
+}
+
+export async function getFavoriteRecipeViews() {
+  const response = await fetch("/api/multipartrecipe/favorites")
+  return (await response.json()) as RecipeView[];
+}
+
 export async function addToFavorites(recipeId: string) : Promise<void> {
   const response = await fetch(`/api/multipartrecipe/${recipeId}/favorite`,
     {
@@ -44,4 +59,16 @@ export async function removeFromFavorites(recipeId: string) : Promise<void> {
       method: "delete"
     }
   );
+}
+
+export function toPagedResult<T>(values : T[]) : PagedResult<T> {
+  return {
+    results: values,
+    currentPage: 1,
+    pageCount: 1, 
+    pageSize: values.length,
+    rowCount: values.length,
+    firstRowOnPage: 0,
+    lastRowOnPage: values.length - 1
+  }
 }

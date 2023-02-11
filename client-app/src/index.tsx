@@ -25,6 +25,7 @@ import PlainLayout from './pages/PlainLayout/PlainLayout';
 import SignUp, { action as signUpAction } from './pages/SignUp';
 import RecipeCreation, {action as createRecipe} from './pages/RecipeCreation';
 import Home, {loader as recipeListLoader } from './pages/Home';
+import Favorites from './pages/Favorites';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -45,6 +46,7 @@ function App() {
           element={<Home />} />
 
         <Route path="Recipes/Details" element={<Recipe />} />
+        <Route path="Recipes/Favorites" element={<Favorites />} />
         <Route
           path="Recipes/Create"
           element={<RecipeCreation />}

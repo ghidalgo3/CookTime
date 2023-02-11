@@ -179,11 +179,40 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .ToList();
     }
 
+    public async Task<List<RecipeView>> GetFavoriteRecipeViewAsync(ApplicationUser user)
+    {
+        var favorites = await this.GetFavoritesAsync(user);
+        var initialQuery = this.GetSimpleActiveCartQuery(user, Cart.Favorites);
+        var allRecipesQuery = await PartialRecipeViewQueryAsync(
+            initialQuery.SelectMany(f =>
+                f.RecipeRequirement.Select(rr =>
+                    rr.MultiPartRecipe)));
+        return allRecipesQuery
+            .Select(r => RecipeView.From(r, favorites))
+            .ToList();
+    }
+
     public async Task<List<RecipeView>> GetFeaturedRecipeViewAsync(Cart? favorites, int count = 3)
     {
         var allRecipesQuery = (await PartialRecipeViewQueryAsync())
             .Where(r => r.Images.Any())
             .OrderBy(r => Guid.NewGuid())
+            .Take(count);
+        return allRecipesQuery
+            .Select(r => RecipeView.From(r, favorites))
+            .ToList();
+    }
+
+    public async Task<Cart> GetFavoritesView(ApplicationUser user)
+    {
+        return await GetCartAsync(user, Cart.Favorites, simple: true);
+    }
+
+    public async Task<List<RecipeView>> GetNewRecipeViewAsync(Cart? favorites, int count = 3)
+    {
+        var allRecipesQuery = (await PartialRecipeViewQueryAsync())
+            .Where(recipe => recipe.CreationDate > DateTimeOffset.UtcNow - TimeSpan.FromDays(7))
+            .Where(r => r.Images.Any())
             .Take(count);
         return allRecipesQuery
             .Select(r => RecipeView.From(r, favorites))

@@ -82,6 +82,44 @@ namespace babe_algorithms.Controllers
             return this.Ok(recipes);
         }
 
+        [HttpGet("featured")]
+        public async Task<ActionResult<List<RecipeView>>> GetFeaturedRecipesAsync()
+        {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user != null)
+            {
+                this.Favorites = await this._context.GetFavoritesAsync(user);
+            }
+
+            var results = await this._context.GetFeaturedRecipeViewAsync(this.Favorites, 3);
+            return this.Ok(results);
+        }
+
+        [HttpGet("new")]
+        public async Task<ActionResult<List<RecipeView>>> GetNewRecipesAsync()
+        {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user != null)
+            {
+                this.Favorites = await this._context.GetFavoritesAsync(user);
+            }
+
+            var results = await this._context.GetNewRecipeViewAsync(this.Favorites, 3);
+            return this.Ok(results);
+        }
+        
+        [HttpGet("favorites")]
+        public async Task<ActionResult<List<RecipeView>>> GetFavoriteRecipesAsync()
+        {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user == null)
+            {
+                return this.Unauthorized("You must be signed in to see favorites");
+            }
+            var favorites = await this._context.GetFavoriteRecipeViewAsync(user);
+            return this.Ok(favorites);
+        }
+
         [HttpDelete("{id}/favorite")]
         public async Task<ActionResult> DeleteFromFavorites(Guid id)
         {
@@ -596,40 +634,7 @@ namespace babe_algorithms.Controllers
 
         private async Task<PagedResult<RecipeView>> AllRecipes(int page)
         {
-            // var allRecipesQuery = await _context
-            //     .MultiPartRecipes
-            //     .AsSplitQuery()
-            //     .Include(r => r.Images)
-            //     .Include(r => r.Categories)
-            //     .Select(r => new
-            //     {
-            //         r.Id,
-            //         r.Name,
-            //         Categories = r.Categories.Select(c => c.Name),
-            //         Images = r.Images.Select(image => new
-            //         {
-            //             image.Id,
-            //             image.Name,
-            //         }),
-            //         r.AverageReviews,
-            //         r.ReviewCount,
-            //         r.CreationDate
-            //     })
-            //     .OrderBy(r => r.Name)
-            //     .ToListAsync();
             return await GetPagedRecipeViewsForQuery(this._context.MultiPartRecipes, this.Favorites, page);
-            // this.PagedResult = allRecipesQuery
-            //     .Select(r =>
-            //         new RecipeView(
-            //             r.Name,
-            //             r.Id,
-            //             r.Images.Select(image => image.Id).ToList(),
-            //             r.Categories.ToList(),
-            //             r.AverageReviews,
-            //             r.ReviewCount,
-            //             this.Favorites?.ContainsRecipe(r.Id) ?? null))
-            //     .GetPaged(page, RecipesPerPage, p => $"/?page={p}");
-            // return PagedResult;
         }
     }
 

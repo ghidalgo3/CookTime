@@ -2,24 +2,46 @@ import React, {useEffect, useState} from "react"
 import { Col, Row } from "react-bootstrap";
 import ReactPaginate from 'react-paginate';
 import { RecipeCard } from "../RecipeCard/RecipeCard";
-import { getRecipeViews, Image, PagedResult, RecipeView } from "src/shared/CookTime"
+import { getFavoriteRecipeViews, getFeaturedRecipeViews, getNewRecipeViews, getRecipeViews, Image, PagedResult, RecipeView, toPagedResult } from "src/shared/CookTime"
 import { Link, LoaderFunctionArgs, useLoaderData, useLocation, useSearchParams } from "react-router-dom";
 import PaginatedList from "../PaginatedList/PaginatedList";
 import { useAuthentication } from "../Authentication/AuthenticationContext";
 
-export async function loader(load : LoaderFunctionArgs) {
-  const {request, params} = load;
-  const url = new URL(request.url);
-  const search = url.searchParams.get("search") ?? "";
-  const page = Number.parseInt(url.searchParams.get("page") ?? "1");
-  return await getRecipeViews({search, page});
+interface RecipeListProps {
+  title: string
+  type: "Featured" | "New" | "Query" | "Mine" | "Favorites"
+  query?: URLSearchParams
+  hideIfEmpty?: boolean
 }
 
-export default function RecipeList({title} : {title : string}) {
-  const recipes = useLoaderData() as PagedResult<RecipeView>;
-  const [searchParams, setSearchParams] = useSearchParams();
-  const query = searchParams.get("search");
+export default function RecipeList({title, query, type, hideIfEmpty} : RecipeListProps) {
+  const [recipes, setRecipes] = useState<PagedResult<RecipeView>>(toPagedResult([]));
+  useEffect(() => {
+    async function loadData() {
+      if (type === "Featured") {
+        const featured = await getFeaturedRecipeViews();
+        setRecipes(toPagedResult(featured));
+      } else if (type === "New") {
+        const news = await getNewRecipeViews();
+        setRecipes(toPagedResult(news));
+      } else if (type === "Query") {
+        const page = query?.get("page") ?? "";
+        const search = query?.get("search") ?? "";
+        const result = await getRecipeViews({search, page: Number.parseInt(page)})
+        setRecipes(result);
+      } else if (type === "Favorites") {
+        const result = await getFavoriteRecipeViews();
+        setRecipes(toPagedResult(result));
+      }
+    }
+    loadData();
+  }, [query, type])
   const { user } = useAuthentication();
+
+  if (hideIfEmpty && (recipes === null || recipes.results.length === 0)) {
+    return null;
+  }
+
   return (
     <>
     <Row>
@@ -34,7 +56,7 @@ export default function RecipeList({title} : {title : string}) {
           </Link>
         </Col>
       }
-    </Row> 
+    </Row>
     <PaginatedList
       element={(recipe : RecipeView) => <RecipeCard {...recipe}/>}
       items={recipes}
