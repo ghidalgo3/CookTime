@@ -42,6 +42,7 @@ export function RecipeReviews({recipeId} : RecipeReviewsProps) {
                 <Col>
                   <Card.Link className="">
                     <Rating
+                      style={{maxWidth: 100}}
                       value={r.rating}
                       readOnly />
                     <span className="margin-left-10">{r.owner.userName}</span>

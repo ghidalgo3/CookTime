@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 import * as React from 'react';
-import { Alert, Button, Col, Form, Row, Spinner } from 'react-bootstrap';
+import { Alert, Button, Col, Form, Row, Spinner, Stack } from 'react-bootstrap';
 import { v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
 import { IngredientRequirementList } from './IngredientRequirementList';
@@ -359,12 +359,12 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
                 </div> :
                 <h1>{this.state.recipe.name}</h1>}
               {this.state.recipe.reviewCount > 0 ?
-                <div className="margin-bottom-8">
+                <Stack direction="horizontal" className="margin-bottom-8">
                   <Rating
+                    style={{maxWidth: 150}}
                     value={this.state.recipe.averageReviews}
-                    readOnly />
-                  ({this.state.recipe.reviewCount})
-                </div>
+                    readOnly />{" "}({this.state.recipe.reviewCount})
+                </Stack>
                 :
                 null
               }
@@ -528,16 +528,18 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
             null
         }
         {
-          (/*isSignedIn() && */ !this.state.edit) ?
-            <div className="border-top-1 margin-top-30">
-              <Row>
-                <Col>
-                  <RecipeReviewForm recipe={this.state.recipe} />
-                </Col>
-              </Row>
-            </div>
-            :
-            null
+          <AuthContext.Consumer>
+            {({ user }) => {
+              return user && this.state.edit &&
+                <div className="border-top-1 margin-top-30">
+                  <Row>
+                    <Col>
+                      <RecipeReviewForm recipe={this.state.recipe} />
+                    </Col>
+                  </Row>
+                </div>
+            }}
+          </AuthContext.Consumer>
         }
         {
           !this.state.edit ?
@@ -875,7 +877,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
   }
 
   private editButtons(user? : UserDetails | null) {
-    let userSignedIn = user !== null; /*isSignedIn();*/
+    let userSignedIn = user !== null;
     let canEdit = userSignedIn && user!.id === this.state.recipe.owner?.id || user?.roles.includes("Administrator");
     return this.state.edit ?
       <Col>
