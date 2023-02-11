@@ -1,4 +1,4 @@
-import { PagedResult, RecipeView } from "./CookTime.types";
+import { PagedResult, RecipeView, Review } from "./CookTime.types";
 export async function createRecipe(recipeCreationArgs : string) {
   const form = new FormData();
   form.set("name", recipeCreationArgs);
@@ -76,4 +76,9 @@ export function toPagedResult<T>(values : T[]) : PagedResult<T> {
     firstRowOnPage: 0,
     lastRowOnPage: values.length - 1
   }
+}
+
+export async function getReviews(recipeId : string) {
+  const response = await fetch(`/api/multipartrecipe/${recipeId}/reviews`)
+  return (await response.json()) as Review[];
 }

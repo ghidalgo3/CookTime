@@ -1,59 +1,61 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Card, Row, Col, Form, FormControl, ListGroup } from "react-bootstrap";
-import Rating from "react-rating";
-import { Review } from "src/shared/CookTime";
+import { Rating } from "@smastrom/react-rating";
+import { getReviews, MultiPartRecipe, Review } from "src/shared/CookTime";
+import { useAuthentication } from "../Authentication/AuthenticationContext";
 
 type RecipeReviewsProps = {
   recipeId: string
 }
 
-export class RecipeReviews extends React.Component<RecipeReviewsProps, { reviews: Review[] }> {
-  constructor(props: RecipeReviewsProps) {
-    super(props);
-    this.state = {
-      reviews: []
+export function RecipeReviews({recipeId} : RecipeReviewsProps) {
+  const [reviews, setReviews] = useState<Review[]>([])
+  const { user } = useAuthentication();
+  useEffect(() => {
+    async function loadReviews() {
+      setReviews(await getReviews(recipeId));
     }
+    loadReviews();
+  }, [recipeId]);
+
+  function deleteReview() {
+    fetch(`/api/MultiPartRecipe/${recipeId}/review`, {
+      method: "DELETE",
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(response => {
+      if (response.ok) {
+        // TODO this cannot be a location.reload()
+        // eslint-disable-next-line no-restricted-globals
+        location.reload();
+      }
+    });
   }
 
-  componentDidMount() {
-    fetch(`/api/MultiPartRecipe/${this.props.recipeId}/reviews`)
-      .then(response => response.json())
-      .then(
-        result => {
-          let r = result as Review[]
-          this.setState({
-            reviews: r,
-          })
-        }
-      )
-  }
-
-  render() {
-    return (
+  return (
       <div>
-        {this.state.reviews?.map((r, idx) => {
+        {reviews?.map((r, idx) => {
           return (
             <Card key={idx} className="review-card">
               <Row>
                 <Col>
                   <Card.Link className="">
-                    {/* <Rating
-                      initialRating={r.rating}
-                      emptySymbol="far fa-star"
-                      fullSymbol="fas fa-star"
-                      readonly /> */}
+                    <Rating
+                      value={r.rating}
+                      readOnly />
                     <span className="margin-left-10">{r.owner.userName}</span>
                   </Card.Link>
                 </Col>
                 <Col>
-                  {/* {r.owner.id === getUserId() ?
+                  {r.owner.id === user?.id ?
                     <Button
                       className="float-end"
                       variant="danger"
-                      onClick={_ => this.deleteRecipe()}>
+                      onClick={_ => deleteReview()}>
                       Delete
                     </Button>
-                    : null} */}
+                    : null}
                 </Col>
               </Row>
               <Card.Body>
@@ -63,20 +65,5 @@ export class RecipeReviews extends React.Component<RecipeReviewsProps, { reviews
           )
         })}
       </div>
-    )
-  }
-
-  deleteRecipe() {
-    fetch(`/api/MultiPartRecipe/${this.props.recipeId}/review`, {
-      method: "DELETE",
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }).then(response => {
-      if (response.ok) {
-        // eslint-disable-next-line no-restricted-globals
-        location.reload();
-      }
-    });
-  }
+  );
 }
