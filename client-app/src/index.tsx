@@ -27,6 +27,8 @@ import RecipeCreation, {action as createRecipe} from './pages/RecipeCreation';
 import Home, {loader as recipeListLoader } from './pages/Home';
 import Favorites from './pages/Favorites';
 import MyRecipes from './pages/MyRecipes';
+import IngredientsView from './pages/IngredientsView';
+import IngredientNormalizer from './pages/IngredientNormalizer';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -54,6 +56,8 @@ function App() {
           element={<RecipeCreation />}
           action={createRecipe} />
         <Route path="Cart" element={<GroceriesList />} />
+        <Route path="Admin/IngredientsView" element={<IngredientsView />} />
+        <Route path="Admin/IngredientNormalizer" element={<IngredientNormalizer />} />
       </Route>
 
       {/* Distinct signup, signin routes */}
