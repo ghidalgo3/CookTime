@@ -4,6 +4,7 @@
 }
 
 .card-ratings {
-    height: 32px;
+    /* height: 32px; */
+    max-width: 120px;
     /* width: 54%; */
 }
