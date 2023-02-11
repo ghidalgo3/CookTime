@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react"
 import { Col, Row } from "react-bootstrap";
-import ReactPaginate from 'react-paginate';
 import { RecipeCard } from "../RecipeCard/RecipeCard";
 import { getFavoriteRecipeViews, getFeaturedRecipeViews, getMyRecipes, getNewRecipeViews, getRecipeViews, Image, PagedResult, RecipeView, toPagedResult } from "src/shared/CookTime"
 import { Link, LoaderFunctionArgs, useLoaderData, useLocation, useSearchParams } from "react-router-dom";
