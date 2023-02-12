@@ -108,6 +108,19 @@ public class AccountController : ControllerBase
         }
     }
 
+    [HttpPost("resetPassword")]
+    public async Task<ActionResult> SendPasswordResetEmailAsync(
+        [FromBody] PasswordResetRequest request)
+    {
+        var user = await this.userManager.FindUserByEmail(request.Email);
+        if (user == null)
+        {
+            return this.NotFound();
+        }
+        await SendVerificationEmailAsync(user);
+        return this.Ok();
+    }
+
     private async Task SendVerificationEmailAsync(ApplicationUser foundUser)
     {
         await this.userManager

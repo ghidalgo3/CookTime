@@ -31,6 +31,8 @@ export interface IAuthenticationProvider {
   signOut() : Promise<boolean>,
 
   getUserDetails() : Promise<UserDetails | null>,
+
+  sendPasswordResetEmail(email: string) : Promise<Response>
 }
 
 export const AuthenticationProvider : IAuthenticationProvider = {
@@ -53,7 +55,7 @@ export const AuthenticationProvider : IAuthenticationProvider = {
 
 
   signOut: async function (): Promise<boolean> {
-    const response = await fetch("/api/account/signout")
+    const response = await fetch("/api/account/signout");
     return response.ok;
   },
 
@@ -70,20 +72,32 @@ export const AuthenticationProvider : IAuthenticationProvider = {
     if (response.ok) {
       return await response.json() as SignUpResult;
     } else {
-      const error = await response.json() 
+      const error = await response.json();
       return {
         success: false,
         message: "Username and email must be unique in CookTime. Password must be between 6 and 100 characters long."
-      }
+      };
     }
   },
 
   getUserDetails: async function (): Promise<UserDetails | null> {
-    const response = await fetch("/api/account/profile")
+    const response = await fetch("/api/account/profile");
     if (response.ok) {
       return await response.json();
     } else {
       return null;
     }
+  },
+
+  sendPasswordResetEmail: async function (email: string): Promise<Response> {
+    return await fetch("/api/account/resetPassword", {
+      method: "post",
+      body: JSON.stringify({
+        email
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
   }
 }

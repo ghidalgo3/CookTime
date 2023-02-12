@@ -13,6 +13,13 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
   const { items, element, colClassName} = props;
   const [searchParams, setSearchParams] = useSearchParams();
   const activePage = Number.parseInt(searchParams.get("page") ?? "1");
+
+  function navigateToPage(i: number) {
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set("page", i === 0 ? "" : encodeURIComponent(i));
+    setSearchParams(urlParams);
+  }
+
   return (
     <>
       <Row>
@@ -42,10 +49,4 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
         </Pagination>
       }
     </>);
-
-  function navigateToPage(i: number) {
-    const urlParams = new URLSearchParams(window.location.search);
-    urlParams.set("page", i === 0 ? "" : encodeURIComponent(i));
-    setSearchParams(urlParams);
-  }
 }

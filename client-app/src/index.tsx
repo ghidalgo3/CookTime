@@ -29,6 +29,7 @@ import Favorites from './pages/Favorites';
 import MyRecipes from './pages/MyRecipes';
 import IngredientsView from './pages/IngredientsView';
 import IngredientNormalizer from './pages/IngredientNormalizer';
+import ResetPassword, {action as sendPasswordResetEmail} from './pages/ResetPassword';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -76,6 +77,13 @@ function App() {
             return await (signUpAction(authProvider)(actionArgs));
           }}
           element={<SignUp />}></Route>
+
+        <Route
+          path="/resetPassword"
+          action={async (actionArgs) => {
+            return await (sendPasswordResetEmail(authProvider)(actionArgs))
+          }}
+          element={<ResetPassword />}></Route>
       </Route>
 
       <Route
