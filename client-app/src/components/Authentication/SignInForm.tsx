@@ -10,7 +10,7 @@ export function SignInForm() {
   const { state } = useLocation();
   useEffect(() => {
     if (user) {
-      if (state.redirectTo) {
+      if (state?.redirectTo) {
         navigate(state.redirectTo, { replace: true } );
       } else  if (window.history.length <= 2) {
         navigate("/", {replace: true});
