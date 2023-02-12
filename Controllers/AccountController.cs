@@ -1,12 +1,12 @@
 namespace babe_algorithms.Controllers;
 
-using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using babe_algorithms.Models.Users;
+using babe_algorithms.Pages;
 using babe_algorithms.Services;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -16,19 +16,22 @@ public class AccountController : ControllerBase
 {
     private readonly ApplicationDbContext appDbContext;
     private readonly IUserService userManager;
-    private readonly SignInManager<ApplicationUser> signInManager;
+    private readonly ISignInManager signInManager;
     private readonly ILogger<AccountController> logger;
+    private readonly IAntiforgery antiForgery;
 
     public AccountController(
         IUserService userManager,
-        SignInManager<ApplicationUser> signInManager,
+        ISignInManager signInManager,
         ILogger<AccountController> logger,
-        ApplicationDbContext appDbContext)
+        ApplicationDbContext appDbContext,
+        IAntiforgery antiForgery)
     {
         this.appDbContext = appDbContext;
         this.userManager = userManager;
         this.signInManager = signInManager;
         this.logger = logger;
+        this.antiForgery = antiForgery;
     }
 
     [ValidateAntiForgeryToken]
@@ -47,15 +50,20 @@ public class AccountController : ControllerBase
         }
     }
 
-    // [ValidateAntiForgeryToken]
-    // public void CompleteTutorial()
-    // {
-    //     var user = this.userManager.GetUser(this.User);
-    //     if (user != null)
-    //     {
-    //         this.appDbContext.SaveChanges();
-    //     }
-    // }
+
+    [HttpGet("profile")]
+    public async Task<IActionResult> Profile()
+    {
+        var user = this.userManager.GetUser(this.User);
+        if (user != null)
+        {
+            return this.Ok(await this.userManager.GetUserDetails(user));
+        }
+        else
+        {
+            return this.Unauthorized();
+        }
+    }
 
     [HttpGet("signout")]
     public async Task<IActionResult> Signout()
@@ -63,7 +71,165 @@ public class AccountController : ControllerBase
         var user = this.userManager.GetUser(this.User);
         await this.signInManager.SignOutAsync();
         this.logger.LogInformation("User {UserId} ({UserName}) signed out", user?.Id, user?.UserName);
-        return this.Redirect("/Index");
+        return this.Redirect("/");
+    }
+
+    [HttpPost("signup")]
+    public async Task<ActionResult<SignUpResult>> SignUp(
+        [FromForm] UserSignUp signUpRequest)
+    {
+        var user = await this.userManager.FindUserByEmail(signUpRequest.Email);
+
+        if (user == null)
+        {
+            var (result, foundUser) = await this.userManager.CreateUser(signUpRequest);
+            if (result.Succeeded)
+            {
+                await SendVerificationEmailAsync(foundUser);
+                return this.Ok(new SignUpResult() 
+                {
+                    Success = true,
+                    Message = "Email verification needed",
+                });
+            }
+            else
+            {
+                return this.BadRequest(new SignUpResult()
+                {
+                    Success = false,
+                    Message = "User could not be created.",
+                });
+            }
+        } else {
+            return this.BadRequest(new SignUpResult()
+            {
+                Success = false,
+                Message = "User already exists",
+            });
+        }
+    }
+
+    [HttpPost("changePassword")]
+    public async Task<ActionResult> ChangePassword(PasswordChangeRequest request)
+    {
+        var user = await this.userManager.FindByIdAsync(request.UserId.ToString());
+        if (user == null)
+        {
+            return this.NotFound("User not found");
+        }
+        if (!string.Equals(request.Password, request.ConfirmPassword))
+        {
+            return this.BadRequest("Passwords do not match");
+        }
+        var result = await this.userManager.ResetPasswordAsync(user, request.Token, request.Password);
+        if (result.Succeeded)
+        {
+            return this.Ok();
+        }
+        else
+        {
+            logger.LogWarning("Change password request for user '{userId}' failed because '{errors}'", request.UserId, string.Join(", ", result.Errors.Select(e => e.Description)));
+            return this.BadRequest("Could not change password");
+        }
+    }
+
+    [HttpPost("resetPassword")]
+    public async Task<ActionResult> SendPasswordResetEmailAsync(
+        [FromBody] PasswordResetRequest request)
+    {
+        var user = await this.userManager.FindUserByEmail(request.Email);
+        if (user == null)
+        {
+            return this.NotFound();
+        }
+        await this.userManager.SendPasswordResetEmailAsync(user, token =>
+        {
+            return $"{this.Request.Scheme}://{this.Request.Host.ToUriComponent()}/ResetPassword?token={WebUtility.UrlEncode(token)}&userId={user.Id}";
+        });
+        return this.Ok();
+    }
+
+    private async Task SendVerificationEmailAsync(ApplicationUser foundUser)
+    {
+        await this.userManager
+            .SendEmailVerificationEmailAsync(
+                foundUser,
+                token =>
+                {
+                    // https://localhost:5001/api/Account?userId=a66db18b-de85-40de-a487-e0263c0afad9&confirmationToken=CfDJ8BMwxxpsGSxOkVoQyt82jhbbTgxUrc6QZc83ee0UZnYcNbJSMmaIoqXPiN8ig0r4OhhR2c%2Fv8QA%2BEClAst%2F%2BV%2BBY4bCERfVjFjN2k0LhM4qRJOLbbayhE0HcvX6yPjC%2BzCu4kB2jhWVRPX3A85hbgplDJQ8F9log%2FMff0ggRjzmhmYXtPhTVrICvzzPIchbgPLv6inCw8AYethyGas7Xv7CevR4UbNLCdz4IfAkpv%2BtQxZdxSEBpztmiBsOzx7QE8Q%3D%3D
+                    return this.Url.Action(
+                        action: "ConfirmEmail",
+                        controller: "Account",
+                        values: new
+                        {
+                            userId = foundUser.Id,
+                            confirmationToken = token,
+                        },
+                        protocol: this.Request.Scheme);
+                });
+    }
+
+    [HttpPost("signin")]
+    public async Task<IActionResult> SignIn(
+        [FromForm] SignIn signinRequest)
+    {
+        try
+        {
+            if (this.ModelState.IsValid)
+            {
+                this.logger.LogInformation("Model state is valid, attempting login");
+                var user = signinRequest.UserNameOrEmail.Contains('@') ?
+                    await this.userManager.FindUserByEmail(signinRequest.UserNameOrEmail) :
+                    await this.userManager.FindUserByUserName(signinRequest.UserNameOrEmail);
+                var result = await this.signInManager.SignInWithUserName(
+                    userName: user.UserName,
+                    password: signinRequest.Password,
+                    isPersistent: signinRequest.RememberMe,
+                    lockoutOnFailure: false);
+
+                if (result.Succeeded)
+                {
+                    this.logger.LogInformation("User {Email} logged in", signinRequest.Email);
+                    return this.Ok(await this.userManager.GetUserDetails(user));
+                }
+                else
+                {
+                    // string reason = null;
+                    // if (user == null)
+                    // {
+                    //     reason = "user does not exist";
+                    //     this.TempData[this.signInFailureTempData] = SignInFailure.IncorrectUsernameOrPassword.ToString();
+                    // }
+                    // else if (!user.EmailConfirmed)
+                    // {
+                    //     reason = "email is not confirmed";
+                    //     this.TempData[this.signInFailureTempData] = SignInFailure.UnconfirmedEmail.ToString();
+                    // }
+                    // else if (string.IsNullOrEmpty(user.PasswordHash))
+                    // {
+                    //     reason = "user does not have a password";
+                    //     this.TempData[this.signInFailureTempData] = SignInFailure.NoPassword.ToString();
+                    // }
+                    // else
+                    // {
+                    //     this.TempData[this.signInFailureTempData] = SignInFailure.IncorrectUsernameOrPassword.ToString();
+                    // }
+
+                    // this.Logger.LogInformation("{Email} failed to log in because {Reason}", signInRequest.Email, reason);
+
+                    // return this.RedirectToPage();
+                }
+            }
+            else
+            {
+                return this.BadRequest();
+            }
+        }
+        catch
+        {
+            // this.TempData[this.signInFailureTempData] = SignInFailure.IncorrectUsernameOrPassword.ToString();
+        }
+        return StatusCode(StatusCodes.Status500InternalServerError);
     }
 
     // GET api/account/confirmEmail
@@ -98,20 +264,4 @@ public class AccountController : ControllerBase
             }
         }
     }
-
-    // private async Task CreateStandardUser(ApplicationUser user)
-    // {
-    //     var company = new StandardUser()
-    //     {
-    //         Name = user.Name,
-    //         Email = user.Email,
-    //         User = user,
-    //         SignUp = DateTimeOffset.UtcNow,
-    //     };
-    //     user.StandardUser = company;
-    //     this.appDbContext.StandardUsers.Add(company);
-    //     await this.appDbContext.SaveChangesAsync();
-    //     await this.userManager.UpdateAsync(user);
-    //     this.logger.LogInformation("Created company {CompanyName}", company.Name);
-    // }
 }

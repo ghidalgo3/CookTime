@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using babe_algorithms.Models.Users;
+using GustavoTech.Implementation;
 using Microsoft.AspNetCore.Identity;
 
 namespace GustavoTech;
@@ -7,9 +8,11 @@ namespace GustavoTech;
 #nullable enable
 
 /// <summary>
-/// A Microsoft.AspNetCore.Identity.UserMaager<TUser> the framework-provided
+/// Microsoft.AspNetCore.Identity.UserManager<TUser> is the framework-provided
 /// user management abstration, but it does not implement an interface
 /// and so it is difficult to test. 
+/// 
+/// This interface wraps the calls we make against UserManager for testability purposes.
 /// </summary>
 public interface IUserService
 {
@@ -67,4 +70,6 @@ public interface IUserService
     Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal claimsPrincipal);
 
     Task<IdentityResult> UpdateAsync(ApplicationUser user);
+
+    Task<UserDetails> GetUserDetails(ApplicationUser user);
 }

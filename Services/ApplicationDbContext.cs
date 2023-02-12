@@ -117,12 +117,23 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                             ir.Ingredient.Id == ingredientId)));
     }
 
-    public async Task<List<Ingredient>> GetIngredients()
+    public async Task<List<Ingredient>> GetIngredients(string? name = null)
     {
-        return await this.Ingredients
-            .Include(ingredient => ingredient.NutritionData)
-            .Include(ingredient => ingredient.BrandedNutritionData)
-            .ToListAsync();
+        if (!string.IsNullOrEmpty(name))
+        {
+            return await this.Ingredients
+                .Where(i => i.Name.ToUpper().Contains(name.ToUpperInvariant()))
+                .Include(ingredient => ingredient.NutritionData)
+                .Include(ingredient => ingredient.BrandedNutritionData)
+                .ToListAsync();
+        }
+        else
+        {
+            return await this.Ingredients
+                .Include(ingredient => ingredient.NutritionData)
+                .Include(ingredient => ingredient.BrandedNutritionData)
+                .ToListAsync();
+        }
     }
 
     public async Task<Category> GetCategory(Guid id)
@@ -146,40 +157,83 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         return recipe.Categories.Any(c => c.Id == categoryId);
     }
 
-    public async Task<List<RecipeView>> GetFeaturedRecipeViewAsync(Cart? favorites, int count = 3)
+    public async Task<List<PartialRecipeView>> PartialRecipeViewQueryAsync(IQueryable<MultiPartRecipe> startingQuery = null)
     {
-        var allRecipesQuery = await this.MultiPartRecipes
-            .AsSplitQuery()
+        var baseQuery = startingQuery ?? this.MultiPartRecipes.AsSplitQuery();
+        var intermediate = await baseQuery
             .Include(r => r.Images)
             .Include(r => r.Categories)
-            .Select(r => new
-            {
-                Id = r.Id,
-                Name = r.Name,
+            // EFCore dumb dumb can't translate this query in one go ORMs suck
+            .Select(r => new {
+                r.Name,
+                r.Id,
+                Images = r.Images.Select(image => new ImageReference(
+                    image.Id,
+                    image.Name
+                )),
                 Categories = r.Categories.Select(c => c.Name),
-                Images = r.Images.Select(image => new
-                {
-                    Id = image.Id,
-                    Name = image.Name,
-                }),
                 r.AverageReviews,
                 r.ReviewCount,
                 r.CreationDate
             })
-            // .Where(r => r.Images.Any())
-            .OrderBy(r => Guid.NewGuid())
-            .Take(count)
             .ToListAsync();
+
+        return intermediate.Select(r => new PartialRecipeView(
+                r.Name,
+                r.Id,
+                r.Images,
+                r.Categories,
+                r.AverageReviews,
+                r.ReviewCount,
+                r.CreationDate
+            ))
+            .ToList();
+    }
+
+    public async Task<List<RecipeView>> GetFavoriteRecipeViewAsync(ApplicationUser user)
+    {
+        var favorites = await this.GetFavoritesAsync(user);
+        var initialQuery = this.GetSimpleActiveCartQuery(user, Cart.Favorites);
+        var allRecipesQuery = await PartialRecipeViewQueryAsync(
+            initialQuery.SelectMany(f =>
+                f.RecipeRequirement.Select(rr =>
+                    rr.MultiPartRecipe)));
         return allRecipesQuery
-            .Select(r =>
-                new RecipeView(
-                    r.Name,
-                    r.Id,
-                    r.Images.Select(image => image.Id).ToList(),
-                    r.Categories.ToList(),
-                    r.AverageReviews,
-                    r.ReviewCount,
-                    favorites?.ContainsRecipe(r.Id) ?? null))
+            .Select(r => RecipeView.From(r, favorites))
+            .ToList();
+    }
+
+    public async Task<List<RecipeView>> GetFeaturedRecipeViewAsync(Cart? favorites, int count = 3)
+    {
+        var allRecipesQuery = (await PartialRecipeViewQueryAsync())
+            .Where(r => r.Images.Any())
+            .OrderBy(r => Guid.NewGuid())
+            .Take(count);
+        return allRecipesQuery
+            .Select(r => RecipeView.From(r, favorites))
+            .ToList();
+    }
+
+    public async Task<Cart> GetFavoritesView(ApplicationUser user)
+    {
+        return await GetCartAsync(user, Cart.Favorites, simple: true);
+    }
+
+    public async Task<List<RecipeView>> GetOwnedRecipesAsync(ApplicationUser user)
+    {
+        var init = await PartialRecipeViewQueryAsync(this.MultiPartRecipes.Where(r => r.Owner == user));
+        var favorites = await this.GetFavoritesAsync(user);
+        return init.Select(r => RecipeView.From(r, favorites)).ToList();
+    }
+
+    public async Task<List<RecipeView>> GetNewRecipeViewAsync(Cart? favorites, int count = 3)
+    {
+        var allRecipesQuery = (await PartialRecipeViewQueryAsync())
+            .Where(recipe => recipe.CreationDate > DateTimeOffset.UtcNow - TimeSpan.FromDays(7))
+            .Where(r => r.Images.Any())
+            .Take(count);
+        return allRecipesQuery
+            .Select(r => RecipeView.From(r, favorites))
             .ToList();
     }
 

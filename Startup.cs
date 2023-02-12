@@ -89,14 +89,6 @@ public class Startup
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
-            app.Map(
-                "/js", ctx =>
-                {
-                    ctx.UseSpa(spa =>
-                    {
-                        spa.UseProxyToSpaDevelopmentServer("http://localhost:8080/js");
-                    });
-                });
         }
         else
         {
@@ -117,7 +109,8 @@ public class Startup
             endpoints.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-            endpoints.MapRazorPages();
+            // endpoints.MapRazorPages();
+            endpoints.MapFallbackToFile("index.html");
         });
     }
 }

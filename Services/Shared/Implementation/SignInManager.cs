@@ -35,4 +35,9 @@ public class SignInManager : ISignInManager
     {
         await this.signInManager.SignInAsync(user, isPersistent);
     }
+
+    public async Task SignOutAsync()
+    {
+        await this.signInManager.SignOutAsync();
+    }
 }

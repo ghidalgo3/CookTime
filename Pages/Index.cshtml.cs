@@ -8,7 +8,6 @@ namespace babe_algorithms.Pages.Recipes;
 
 public class IndexModel : PageModel
 {
-    const int RecipesPerPage = 15;
 
     public ISignInManager SigninManager { get; }
 
@@ -42,139 +41,8 @@ public class IndexModel : PageModel
         [FromQuery]
         string search = null)
     {
-        var user = await this.Session.GetSignedInUserAsync(this.User);
-        if (user != null)
-        {
-            this.Favorites = await this._context.GetFavoritesAsync(user);
-        }
 
-        if (search != null)
-        {
-            await this.Search(search, page);
-        }
-        else
-        {
-            await AllRecipes(page);
-        }
     }
 
-    public static async Task<List<RecipeView>> GetRecipeViewsForQuery(
-        IQueryable<MultiPartRecipe> query,
-        Cart? favorites)
-    {
-        var recipes =
-            await query
-                .AsSplitQuery()
-                .Include(r => r.Images)
-                .Include(r => r.Categories)
-                .Select(r => new
-                {
-                    Id = r.Id,
-                    Name = r.Name,
-                    Categories = r.Categories.Select(c => c.Name),
-                    Images = r.Images.Select(image => new
-                    {
-                        Id = image.Id,
-                        Name = image.Name,
-                    }),
-                    r.AverageReviews,
-                    r.ReviewCount
-                })
-                .OrderBy(r => r.Name)
-                .ToListAsync();
-        return recipes
-            .Select(r =>
-                new RecipeView(
-                    r.Name,
-                    r.Id,
-                    r.Images.Select(image => image.Id).ToList(),
-                    r.Categories.ToList(),
-                    r.AverageReviews,
-                    r.ReviewCount,
-                    favorites?.ContainsRecipe(r.Id) ?? null))
-                .ToList();
-    }
 
-    private async Task Search(string search, int page)
-    {
-        var byName = await GetRecipeViewsForQuery(
-            this._context.SearchRecipesByName(search),
-            this.Favorites);
-        byName.AddRange(await GetRecipeViewsForQuery(
-            this._context.GetRecipesWithIngredient(search),
-            this.Favorites));
-        byName.AddRange(await GetRecipeViewsForQuery(
-            this._context.SearchRecipesByTag(search),
-            this.Favorites));
-        var x = new HashSet<RecipeView>(byName, new RecipeViewEqualityComparer());
-        this.PagedResult = x
-            .GetPaged(page, RecipesPerPage, p => $"/?page={p}&search={search}");
-    }
-
-    private async Task AllRecipes(int page)
-    {
-        var allRecipesQuery = await _context
-            .MultiPartRecipes
-            .AsSplitQuery()
-            .Include(r => r.Images)
-            .Include(r => r.Categories)
-            .Select(r => new
-            {
-                Id = r.Id,
-                Name = r.Name,
-                Categories = r.Categories.Select(c => c.Name),
-                Images = r.Images.Select(image => new
-                {
-                    Id = image.Id,
-                    Name = image.Name,
-                }),
-                r.AverageReviews,
-                r.ReviewCount,
-                r.CreationDate
-            })
-            .OrderBy(r => r.Name)
-            .ToListAsync();
-        this.PagedResult = allRecipesQuery
-            .Select(r =>
-                new RecipeView(
-                    r.Name,
-                    r.Id,
-                    r.Images.Select(image => image.Id).ToList(),
-                    r.Categories.ToList(),
-                    r.AverageReviews,
-                    r.ReviewCount,
-                    this.Favorites?.ContainsRecipe(r.Id) ?? null))
-            .GetPaged(page, RecipesPerPage, p => $"/?page={p}");
-
-        if (page == 1) 
-        {
-            this.NewRecipes = allRecipesQuery
-                .Where(recipe => recipe.CreationDate > DateTimeOffset.UtcNow - TimeSpan.FromDays(7))
-                .Select(r =>
-                    new RecipeView(
-                        r.Name,
-                        r.Id,
-                        r.Images.Select(image => image.Id).ToList(),
-                        r.Categories.ToList(),
-                        r.AverageReviews,
-                        r.ReviewCount,
-                        this.Favorites?.ContainsRecipe(r.Id) ?? null))
-                    .ToList();
-
-            this.FeaturedRecipes = allRecipesQuery
-                .Where(r => r.Images.Any())
-                .OrderBy(a => Guid.NewGuid())
-                .Take(3)
-                .Select(r =>
-                    new RecipeView(
-                        r.Name,
-                        r.Id,
-                        r.Images.Select(image => image.Id).ToList(),
-                        r.Categories.ToList(),
-                        r.AverageReviews,
-                        r.ReviewCount,
-                        this.Favorites?.ContainsRecipe(r.Id) ?? null))
-                .ToList();
-        }
-    }
 }

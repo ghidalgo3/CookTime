@@ -1,0 +1,113 @@
+@page
+@model babe_algorithms.Pages.SignUpModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Sign up";
+    Layout = "_PlainLayout";
+}
+
+<div class="container margin-top-625rem">
+    <div class="row justify-content-md-center">
+        <div class="col-lg max-width-34rem">
+
+            <div id="email" class="card my-card margin-bottom-5percent display-none min-height-15rem">
+                <div class="card-body margin-25rem">
+                    <h5 class="card-title">Sign up</h5>
+                    <div class="card-text">
+                        <form class="form" method="POST">
+                            <div class="form-group mx-auto">
+                                This is your public username
+                                <input
+                                    asp-for="SignUp.UserName"
+                                    class="form-control bg-light"
+                                    placeholder="User name">
+                                <span asp-validation-for="SignUp.UserName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group mx-auto margin-top-15">
+                                You will receive a confirmaton link at this email
+                                <input
+                                    asp-for="SignUp.Email"
+                                    class="form-control bg-light"
+                                    placeholder="Email">
+                                <span asp-validation-for="SignUp.Email" class="text-danger"></span>
+                            </div>
+                            <div class="form-group mx-auto margin-top-15">
+                                Choose a password
+                                <input asp-for="SignUp.Password" type="password" class="form-control bg-light" placeholder="Password">
+                                <span asp-validation-for="SignUp.Password" class="text-danger"></span>
+                                Confirm your password
+                                <input asp-for="SignUp.ConfirmPassword" type="password" class="form-control bg-light" placeholder="Password">
+                                <span asp-validation-for="SignUp.ConfirmPassword" class="text-danger"></span>
+                            </div>
+                            <div class="mx-auto">
+                                <button type="submit" class="pl-button btn btn-success btn-large btn-block mx-auto">Sign up</button>
+                            </div>
+                        </form>
+                        <br>
+                    </div>
+                </div>
+            </div>
+
+            <div id="success" class="card my-card margin-bottom-5percent display-none">
+                <div class="card-body margin-25rem">
+                    <h5 class="card-title">Success!</h5>
+                    <div class="card-text">
+                        <p class="margin-bottom-0rem">Click on the confirmation link in your email to verify your email.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tryagain" class="card my-card margin-bottom-5percent display-none">
+                <div class="card-body margin-25rem">
+                    <h5 class="card-title">Oops something went wrong</h5>
+                    <div class="card-text">
+                        <form class="form" method="POST">
+                            Please try again (sorry!)
+                            <div class="form-group mx-auto">
+                                <input asp-for="SignUp.Email" class="form-control bg-light" placeholder="Email">
+                                <span asp-validation-for="SignUp.Email" class="text-danger"></span>
+                                 <input asp-for="Resend" type="hidden" value="true">
+                            </div>
+                            <div class="mx-auto">
+                                <button type="submit" class="pl-button btn btn-success btn-large btn-block mx-auto">Confirm email</button>
+                            </div>
+                            
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="resendemail" class="card my-card margin-bottom-5percent display-none min-height-15rem">
+                <div class="card-body margin-25rem">
+                    <h5 class="card-title">Confirmation email was already sent, would you like to resend it?</h5>
+                    <div class="card-text">
+                        <form class="form" method="POST">
+                            We will send another confirmation email
+                            <div class="form-group mx-auto">
+                                <input asp-for="SignUp.Email" class="form-control bg-light" placeholder="Email">
+                                <span asp-validation-for="SignUp.Email" class="text-danger"></span>
+                            </div>
+                            <input asp-for="Resend" type="hidden" value="true">
+                            <div class="mx-auto">
+                                 <button type="submit" class="pl-button btn btn-success btn-large btn-block mx-auto">Resend confirmation email</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="userexists" class="card my-card margin-bottom-5percent display-none">
+                <div class="card-body margin-25rem">
+                    <h5 class="card-title">It looks like you already have an account!</h5>
+                    <div class="card-text">
+                        <a href="/Auth/SignIn"><button class="btn btn-success btn-large btn-block mx-auto margin-bottom-0rem margin-top-2rem">Sign in here</button></a>
+                        <a class="forgot-password-link" href="/Auth/ResetPassword"><p class="margin-bottom-0rem text-align-center">Forgot your password?</p></a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="~/js/registration.js" asp-append-version="true"></script>

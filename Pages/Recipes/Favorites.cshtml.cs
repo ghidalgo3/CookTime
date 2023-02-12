@@ -63,17 +63,17 @@ public class FavoritesModel : PageModel
             })
             .OrderBy(r => r.Name);
 
-        this.Recipes = complexQueryResults
-            .Select(r =>
-                new RecipeView(
-                    r.Name,
-                    r.Id,
-                    r.Images.Select(image => image.Id).ToList(),
-                    r.Categories.ToList(),
-                    r.AverageReviews,
-                    r.ReviewCount,
-                    true
-                ))
-                .ToList();
+        // this.Recipes = complexQueryResults
+        //     .Select(r =>
+        //         new RecipeView(
+        //             r.Name,
+        //             r.Id,
+        //             r.Images.Select(image => image.Id).ToList(),
+        //             r.Categories.ToList(),
+        //             r.AverageReviews,
+        //             r.ReviewCount,
+        //             true
+        //         ))
+        //         .ToList();
     }
 }

@@ -232,4 +232,10 @@ public class UserService : IUserService
         var token = await this.UserManager.GeneratePasswordResetTokenAsync(user);
         return await this.UserManager.ResetPasswordAsync(user, token, newPassword);
     }
+
+    public async Task<UserDetails> GetUserDetails(ApplicationUser user)
+    {
+        var roles = await this.GetRolesAsync(user);
+        return new(user.UserName, user.Id, roles.Select(role => role.ToString()).ToArray());
+    }
 }

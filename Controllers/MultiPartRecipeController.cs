@@ -4,7 +4,9 @@ using babe_algorithms.Services;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using System.Globalization;
 using babe_algorithms.Models.Users;
-using Microsoft.AspNetCore.Authorization;
+using babe_algorithms.Pages;
+using babe_algorithms.ViewComponents;
+using GustavoTech.Implementation;
 
 namespace babe_algorithms.Controllers
 {
@@ -12,11 +14,17 @@ namespace babe_algorithms.Controllers
     [ApiController]
     public class MultiPartRecipeController : ControllerBase, IImageController
     {
+        const int RecipesPerPage = 15;
+
         private readonly ApplicationDbContext _context;
 
         public ISessionManager Session { get; }
 
         public TextInfo TextInfo { get; }
+
+        public Cart Favorites { get; private set; }
+
+        public PagedResult<object> PagedResult { get; private set; }
 
         public MultiPartRecipeController(
             ApplicationDbContext context,
@@ -27,11 +35,100 @@ namespace babe_algorithms.Controllers
             this.TextInfo = new CultureInfo("en-US",false).TextInfo;
         }
 
+        [HttpPost("create")]
+        public async Task<IActionResult> Create([FromForm] string name) 
+        {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user == null)
+            {
+                return this.Unauthorized("You must be signed in to create recipes.");
+            }
+            var recipe = new MultiPartRecipe
+            {
+                Name = name,
+                Owner = user,
+                CreationDate = DateTimeOffset.UtcNow,
+                LastModifiedDate = DateTimeOffset.UtcNow,
+            };
+            recipe.RecipeComponents.Add(new RecipeComponent()
+            {
+                Name = name,
+            });
+            _context.MultiPartRecipes.Add(recipe);
+            await _context.SaveChangesAsync();
+            await _context.Entry(recipe).ReloadAsync();
+            return this.Ok(recipe);
+        }
+
         // GET: api/MultiPartRecipe
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MultiPartRecipe>>> GetMultiPartRecipes()
+        public async Task<ActionResult<PagedResult<RecipeView>>> GetMultiPartRecipes(
+            [FromQuery]
+            int page = 1,
+            [FromQuery]
+            string search = null
+        )
         {
-            return await _context.MultiPartRecipes.ToListAsync();
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user != null)
+            {
+                this.Favorites = await this._context.GetFavoritesAsync(user);
+            }
+            var recipes = search switch {
+                null => await AllRecipes(page),
+                _ when search != null => await this.Search(search, page),
+            };
+            return this.Ok(recipes);
+        }
+
+        [HttpGet("featured")]
+        public async Task<ActionResult<List<RecipeView>>> GetFeaturedRecipesAsync()
+        {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user != null)
+            {
+                this.Favorites = await this._context.GetFavoritesAsync(user);
+            }
+
+            var results = await this._context.GetFeaturedRecipeViewAsync(this.Favorites, 3);
+            return this.Ok(results);
+        }
+
+        [HttpGet("new")]
+        public async Task<ActionResult<List<RecipeView>>> GetNewRecipesAsync()
+        {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user != null)
+            {
+                this.Favorites = await this._context.GetFavoritesAsync(user);
+            }
+
+            var results = await this._context.GetNewRecipeViewAsync(this.Favorites, 3);
+            return this.Ok(results);
+        }
+        
+        [HttpGet("favorites")]
+        public async Task<ActionResult<List<RecipeView>>> GetFavoriteRecipesAsync()
+        {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user == null)
+            {
+                return this.Unauthorized("You must be signed in to see favorites");
+            }
+            var favorites = await this._context.GetFavoriteRecipeViewAsync(user);
+            return this.Ok(favorites);
+        }
+
+        [HttpGet("mine")]
+        public async Task<ActionResult<List<RecipeView>>> GetMyRecipesAsync()
+        {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user == null)
+            {
+                return this.Unauthorized("You must be signed in to see your recipes");
+            }
+            var myRecipes = await this._context.GetOwnedRecipesAsync(user);
+            return this.Ok(myRecipes);
         }
 
         [HttpDelete("{id}/favorite")]
@@ -511,6 +608,44 @@ namespace babe_algorithms.Controllers
         private bool MultiPartRecipeExists(Guid id)
         {
             return _context.MultiPartRecipes.Any(e => e.Id == id);
+        }
+
+        private async Task<PagedResult<RecipeView>> GetPagedRecipeViewsForQuery(
+            IQueryable<MultiPartRecipe> query,
+            Cart? favorites,
+            int page)
+        {
+            var projection =
+                (await _context.PartialRecipeViewQueryAsync(query))
+                    .OrderBy(r => r.Name)
+                    .ToList();
+
+            var paged = projection.GetPaged(page, RecipesPerPage);
+            return paged.To(r => RecipeView.From(r, favorites));
+        }
+
+        private async Task<PagedResult<RecipeView>> Search(string search, int page)
+        {
+            var queries = new [] {
+                        this._context.SearchRecipesByName,
+                        this._context.GetRecipesWithIngredient,
+                        this._context.SearchRecipesByTag,
+            };
+            // Must be run sequentially!
+            // https://learn.microsoft.com/en-us/ef/core/dbcontext-configuration/#asynchronous-operation-pitfalls 
+            var partials = new List<PartialRecipeView>();
+            foreach (var query in queries)
+            {
+                partials.AddRange(await this._context.PartialRecipeViewQueryAsync(query(search)));
+            }
+            var results = partials.Select(p => RecipeView.From(p, this.Favorites));
+            var uniques = new HashSet<RecipeView>(results, new RecipeViewEqualityComparer());
+            return uniques.ToList().GetPaged(page, RecipesPerPage);
+        }
+
+        private async Task<PagedResult<RecipeView>> AllRecipes(int page)
+        {
+            return await GetPagedRecipeViewsForQuery(this._context.MultiPartRecipes, this.Favorites, page);
         }
     }
 
