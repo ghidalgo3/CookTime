@@ -25,8 +25,14 @@ export default function Home() {
       {
         !query && 
         <>
-          <RecipeList title="Featured Recipes" type="Featured" hideIfEmpty/>
-          <RecipeList title="New Recipes!" type="New" hideIfEmpty/>
+          <RecipeList
+            title="Featured Recipes"
+            type="Featured"
+            hideIfEmpty/>
+          <RecipeList
+            title="New Recipes!"
+            type="New"
+            hideIfEmpty/>
         </>
       }
       <RecipeList title="Recipes" type="Query" query={searchParams}/>

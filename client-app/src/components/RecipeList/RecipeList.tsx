@@ -51,7 +51,7 @@ export default function RecipeList({title, query, type, hideIfEmpty} : RecipeLis
         <h1>{title}</h1>
       </Col>
       {
-        user &&
+        user && type === "Query" &&
         <Col className="margin-bottom-20 text-end" xs={2}>
           <Link to="/Recipes/Create">
             <i className="fas fa-plus-circle themePrimary-color fa-2x"></i>

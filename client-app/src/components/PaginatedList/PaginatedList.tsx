@@ -35,7 +35,10 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
       </Row>
       { items.pageCount > 1 &&
         <Pagination className="justify-content-center">
-          <Pagination.Prev onClick={() => navigateToPage(activePage - 1)}>Previous</Pagination.Prev>
+
+          {activePage > 1 &&
+            <Pagination.Prev onClick={() => navigateToPage(activePage - 1)}>Previous</Pagination.Prev>}
+
           {Array.from({ length: items.pageCount }, (x, i) =>
             <Pagination.Item
               key={i}
@@ -45,7 +48,10 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
                 navigateToPage(i + 1);
             }}>{i + 1}</Pagination.Item>
           )}
-          <Pagination.Next onClick={() => {navigateToPage(activePage + 1)}}>Next</Pagination.Next>
+
+          {activePage < items.pageCount &&
+            <Pagination.Next onClick={() => {navigateToPage(activePage + 1)}}>Next</Pagination.Next>}
+
         </Pagination>
       }
     </>);

@@ -230,7 +230,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         var allRecipesQuery = (await PartialRecipeViewQueryAsync())
             .Where(recipe => recipe.CreationDate > DateTimeOffset.UtcNow - TimeSpan.FromDays(7))
-            .Where(r => r.Images.Any())
+            // .Where(r => r.Images.Any())
             .Take(count);
         return allRecipesQuery
             .Select(r => RecipeView.From(r, favorites))
