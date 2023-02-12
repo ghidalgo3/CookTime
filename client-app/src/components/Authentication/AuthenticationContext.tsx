@@ -10,7 +10,7 @@ export function useAuthentication() {
 }
 
 export function AuthenticationContext({ children } : { children : React.ReactNode }) {
-  const { signUp, signIn, signOut, getUserDetails, sendPasswordResetEmail } = useAuthentication();
+  const { signUp, signIn, signOut, getUserDetails, sendPasswordResetEmail, changePassword } = useAuthentication();
   const [user, setUser] = useState<UserDetails | null>(null);
   useEffect(() => {
     if (user == null) {
@@ -40,7 +40,8 @@ export function AuthenticationContext({ children } : { children : React.ReactNod
       },
       signUp,
       getUserDetails,
-      sendPasswordResetEmail
+      sendPasswordResetEmail,
+      changePassword
     }}>
       {children}
     </AuthContext.Provider>

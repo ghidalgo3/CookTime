@@ -22,6 +22,7 @@ export default function SignUpForm() {
               <Form.Label>You will receive a confirmaton link at this email</Form.Label>
               <Form.Control
                 required
+                autoComplete="email"
                 className="bg-light"
                 type="email"
                 placeholder="Email"
@@ -31,6 +32,7 @@ export default function SignUpForm() {
               <Form.Label>Choose a password</Form.Label>
               <Form.Control
                 required
+                autoComplete="new-password"
                 className="bg-light"
                 type="password"
                 placeholder="Password"
@@ -41,6 +43,7 @@ export default function SignUpForm() {
               <Form.Control
                 required
                 type="password"
+                autoComplete="new-password"
                 className="bg-light"
                 placeholder="Password"
                 name="confirmPassword" />

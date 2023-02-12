@@ -1,15 +1,18 @@
 import React, {useEffect } from"react"
 import { Button, Form } from "react-bootstrap";
-import { Form as RouterForm, Link, useNavigate} from "react-router-dom";
+import { Form as RouterForm, Link, useLocation, useNavigate} from "react-router-dom";
 import { useAuthentication } from "./AuthenticationContext";
 
 
 export function SignInForm() {
   const {user, signIn } = useAuthentication();
   const navigate = useNavigate();
+  const { state } = useLocation();
   useEffect(() => {
     if (user) {
-      if (window.history.length <= 2) {
+      if (state.redirectTo) {
+        navigate(state.redirectTo, { replace: true } );
+      } else  if (window.history.length <= 2) {
         navigate("/", {replace: true});
       } else {
         navigate(-1);

@@ -33,6 +33,8 @@ export interface IAuthenticationProvider {
   getUserDetails() : Promise<UserDetails | null>,
 
   sendPasswordResetEmail(email: string) : Promise<Response>
+
+  changePassword(userId : string, token: string, newPassword: string, confirmPassword: string): Promise<Response>
 }
 
 export const AuthenticationProvider : IAuthenticationProvider = {
@@ -94,6 +96,20 @@ export const AuthenticationProvider : IAuthenticationProvider = {
       method: "post",
       body: JSON.stringify({
         email
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+  },
+  changePassword: async function (userId: string, token: string, newPassword: string, confirmPassword: string): Promise<Response> {
+    return await fetch("/api/account/changePassword", {
+      method: "post",
+      body: JSON.stringify({
+        userId,
+        token,
+        password: newPassword,
+        confirmPassword
       }),
       headers: {
         "Content-Type": "application/json"

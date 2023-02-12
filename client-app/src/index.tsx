@@ -30,6 +30,7 @@ import MyRecipes from './pages/MyRecipes';
 import IngredientsView from './pages/IngredientsView';
 import IngredientNormalizer from './pages/IngredientNormalizer';
 import ResetPassword, {action as sendPasswordResetEmail} from './pages/ResetPassword';
+import Registration, {action as finishRegistration} from './pages/Registration';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -84,6 +85,13 @@ function App() {
             return await (sendPasswordResetEmail(authProvider)(actionArgs))
           }}
           element={<ResetPassword />}></Route>
+
+        <Route
+          path="/registration"
+          action={async (actionArgs) => {
+            return await (finishRegistration(authProvider)(actionArgs))
+          }}
+          element={<Registration />}></Route>
       </Route>
 
       <Route

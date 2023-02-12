@@ -1,6 +1,7 @@
 namespace babe_algorithms.Controllers;
 
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using babe_algorithms.Models.Users;
 using babe_algorithms.Pages;
@@ -108,6 +109,30 @@ public class AccountController : ControllerBase
         }
     }
 
+    [HttpPost("changePassword")]
+    public async Task<ActionResult> ChangePassword(PasswordChangeRequest request)
+    {
+        var user = await this.userManager.FindByIdAsync(request.UserId.ToString());
+        if (user == null)
+        {
+            return this.NotFound("User not found");
+        }
+        if (!string.Equals(request.Password, request.ConfirmPassword))
+        {
+            return this.BadRequest("Passwords do not match");
+        }
+        var result = await this.userManager.ResetPasswordAsync(user, request.Token, request.Password);
+        if (result.Succeeded)
+        {
+            return this.Ok();
+        }
+        else
+        {
+            logger.LogWarning("Change password request for user '{userId}' failed because '{errors}'", request.UserId, string.Join(", ", result.Errors.Select(e => e.Description)));
+            return this.BadRequest("Could not change password");
+        }
+    }
+
     [HttpPost("resetPassword")]
     public async Task<ActionResult> SendPasswordResetEmailAsync(
         [FromBody] PasswordResetRequest request)
@@ -117,7 +142,10 @@ public class AccountController : ControllerBase
         {
             return this.NotFound();
         }
-        await SendVerificationEmailAsync(user);
+        await this.userManager.SendPasswordResetEmailAsync(user, token =>
+        {
+            return $"{this.Request.Scheme}://{this.Request.Host.ToUriComponent()}/ResetPassword?token={WebUtility.UrlEncode(token)}&userId={user.Id}";
+        });
         return this.Ok();
     }
 
