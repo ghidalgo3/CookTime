@@ -241,7 +241,7 @@ public class AccountController : ControllerBase
         var user = await this.userManager.FindByIdAsync(userId);
         if (user.EmailConfirmed)
         {
-            return this.Redirect("/SignIn");
+            return this.Redirect("/");
         }
         else
         {
