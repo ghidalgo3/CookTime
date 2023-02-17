@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react"
 import IngredientNormalizerRow from "src/components/Ingredients/IngredientNormalizerRow";
 import { IngredientReplacementRequest } from "src/shared/CookTime";
+import { useTitle } from "src/shared/useTitle";
 
 export default function IngredientNormalizer() {
   const [replacements, setReplacements] = useState<IngredientReplacementRequest[]>([])
@@ -12,6 +13,7 @@ export default function IngredientNormalizer() {
     }
     loadReplacements();
   }, [])
+  useTitle("Ingredient Normalizer")
   return (
     <>
       <h1>Ingredients</h1>

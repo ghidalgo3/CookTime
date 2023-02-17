@@ -3,6 +3,7 @@ import { ActionFunctionArgs, Form as RouterForm, redirect } from "react-router-d
 import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { createRecipe, MultiPartRecipe } from "src/shared/CookTime";
 import { Path } from "./Recipe";
+import { useTitle } from "src/shared/useTitle";
 
 export async function action(args : ActionFunctionArgs) {
   const formData = await args.request.formData();
@@ -21,6 +22,7 @@ export async function action(args : ActionFunctionArgs) {
 }
 
 export default function RecipeCreation() {
+  useTitle("New Recipe")
   return (
     <>
     <Container>
@@ -33,7 +35,7 @@ export default function RecipeCreation() {
                 <Form.Control type="text" name="name"></Form.Control>
               </Form.Group>
               <Form.Group>
-                <Button className="btn btn-primary width-100" type="submit">Create</Button>
+                <Button className="width-100" type="submit">Create</Button>
               </Form.Group>
               {/* <Form.Control></Form.Control> */}
             </RouterForm>

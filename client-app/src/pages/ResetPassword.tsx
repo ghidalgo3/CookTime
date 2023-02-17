@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react"
 import { Form, Card, Col, Container, Row, Button, Alert } from "react-bootstrap"
 import { ActionFunction, ActionFunctionArgs, Form as RouterForm, Link, useActionData, useSearchParams } from "react-router-dom";
 import { IAuthenticationProvider } from "src/shared/AuthenticationProvider";
+import { useTitle } from "src/shared/useTitle";
 
 export function action(
   { sendPasswordResetEmail, changePassword }: IAuthenticationProvider): ActionFunction {
@@ -68,6 +69,7 @@ export default function ResetPassword() {
       alert = null
       break;
   }
+  useTitle("Reset Password")
   return (
     <Container>
       {showAlert && alert}

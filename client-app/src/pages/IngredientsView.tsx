@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react"
 import IngredientInternalUpdateRow from "src/components/Ingredients/IngredientInternalUpdateRow";
 import { getInternalIngredientUpdates, IngredientInternalUpdate } from "src/shared/CookTime";
+import { useTitle } from "src/shared/useTitle";
 
 export default function IngredientsView() {
   const [ingredients, setIngredients] = useState<IngredientInternalUpdate[]>([]);
@@ -11,6 +12,7 @@ export default function IngredientsView() {
     }
     loadIngredients();
   }, [])
+  useTitle("Ingredients View")
   return (
     <>
       <h1>Ingredients</h1>

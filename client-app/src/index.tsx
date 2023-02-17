@@ -7,17 +7,17 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
-import './index.css';
+// import './index.css';
 import reportWebVitals from './reportWebVitals';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './assets/css/site.css';
-import './assets/css/all.css';
+import 'bootstrap/dist/css/bootstrap.min.css'; // bootstrap
+import './assets/css/site.css'; // ours
+import './assets/css/all.css'; // fontawesome
+import '@smastrom/react-rating/style.css'
 import { action as signInAction, SignIn } from './pages/SignIn';
 import { AuthenticationProvider, IAuthenticationProvider } from './shared/AuthenticationProvider';
 import { AuthenticationContext, useAuthentication } from './components/Authentication/AuthenticationContext';
 import DefaultLayout, {loader as recipeLoader} from './pages/DefaultLayout';
 import { getCategories } from './shared/CookTime';
-import '@smastrom/react-rating/style.css'
 // import RecipeList, {loader as recipeListLoader } from './components/RecipeList/RecipeList';
 import Recipe from './pages/Recipe';
 import GroceriesList from './pages/GroceriesList';

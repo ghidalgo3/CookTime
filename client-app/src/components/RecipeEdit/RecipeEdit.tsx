@@ -79,6 +79,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
         .then(
           result => {
             let r = result as MultiPartRecipe
+            document.title = r.name + " - CookTime"
             r.recipeComponents.sort((a, b) => a.position - b.position);
             let newServings = this.setServingsFromQueryParameters(r);
             for (let i = 0; i < r.recipeComponents.length; i++) {

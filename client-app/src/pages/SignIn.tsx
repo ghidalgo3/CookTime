@@ -3,6 +3,7 @@ import { Alert, Col, Container, Row } from "react-bootstrap";
 import { ActionFunction, ActionFunctionArgs, redirect, useActionData } from "react-router-dom";
 import { SignInForm } from "src/components";
 import { IAuthenticationProvider } from "src/shared/AuthenticationProvider";
+import { useTitle } from "src/shared/useTitle";
 
 export function action(
   { signIn }: IAuthenticationProvider) : ActionFunction {
@@ -37,6 +38,8 @@ export function SignIn() {
       <Alert.Heading>Uh-oh!</Alert.Heading>
       <p className="margin-bottom-0rem">User name or password is wrong</p>
     </Alert>;
+  
+  useTitle("Sign In")
   return (
     <Container>
       {showAlert && errorAlert}

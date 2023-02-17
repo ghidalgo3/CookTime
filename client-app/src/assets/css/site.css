@@ -198,7 +198,8 @@ a:hover, a:active {
   background-color: var(--btn-primary-bg-color);
   border-width: 0;
 }
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+
+.btn:first-child:active, .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
   color: var(--btn-primary-text);
   background-color: var(--btn-primary-bg-color-hover);
 }

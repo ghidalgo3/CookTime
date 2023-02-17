@@ -3,6 +3,7 @@ import { Alert, Col, Container, Row } from "react-bootstrap";
 import { ActionFunction, ActionFunctionArgs, Form, useActionData } from "react-router-dom";
 import SignUpForm from "src/components/Authentication/SignUpForm";
 import { IAuthenticationProvider, SignUpResult } from "src/shared/AuthenticationProvider";
+import { useTitle } from "src/shared/useTitle";
 
 export function action(
   { signUp }: IAuthenticationProvider) : ActionFunction {
@@ -50,6 +51,7 @@ export default function SignUp() {
       break;
   }
 
+  useTitle("Sign Up")
   return (
     <Container className="margin-top-625rem">
       {showAlert && alert}
