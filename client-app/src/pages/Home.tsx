@@ -35,6 +35,7 @@ export default function Home() {
             hideIfEmpty/>
         </>
       }
+      {query && <p>Searching for '{query}'</p>}
       <RecipeList title="Recipes" type="Query" query={searchParams}/>
     </>);
 }
