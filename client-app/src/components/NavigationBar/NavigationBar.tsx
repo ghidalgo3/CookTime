@@ -24,6 +24,9 @@ export function NavigationBar({ categories }: { categories: string[] }) {
           <NavDropdown.Item as={Link} to="/recipes/favorites">
             Favorites
           </NavDropdown.Item>
+          <NavDropdown.Item as={Link} to="/recipes/create">
+            Add new recipe
+          </NavDropdown.Item>
           <NavDropdown.Divider />
           <NavDropdown.Item onClick={signOut}>
             Sign out
