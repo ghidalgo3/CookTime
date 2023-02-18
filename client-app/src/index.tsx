@@ -1,3 +1,4 @@
+import { ApplicationInsights } from '@microsoft/applicationinsights-web';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {
@@ -5,32 +6,32 @@ import {
   createRoutesFromElements,
   Navigate,
   Route,
-  RouterProvider,
+  RouterProvider
 } from "react-router-dom";
 // import './index.css';
-import reportWebVitals from './reportWebVitals';
+import '@smastrom/react-rating/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css'; // bootstrap
-import './assets/css/site.css'; // ours
 import './assets/css/all.css'; // fontawesome
-import '@smastrom/react-rating/style.css'
-import { action as signInAction, SignIn } from './pages/SignIn';
-import { AuthenticationProvider, IAuthenticationProvider } from './shared/AuthenticationProvider';
+import './assets/css/site.css'; // ours
 import { AuthenticationContext, useAuthentication } from './components/Authentication/AuthenticationContext';
-import DefaultLayout, {loader as recipeLoader} from './pages/DefaultLayout';
+import DefaultLayout, { loader as recipeLoader } from './pages/DefaultLayout';
+import { action as signInAction, SignIn } from './pages/SignIn';
+import reportWebVitals from './reportWebVitals';
+import { AuthenticationProvider, IAuthenticationProvider } from './shared/AuthenticationProvider';
 import { getCategories } from './shared/CookTime';
 // import RecipeList, {loader as recipeListLoader } from './components/RecipeList/RecipeList';
-import Recipe from './pages/Recipe';
-import GroceriesList from './pages/GroceriesList';
-import PlainLayout from './pages/PlainLayout/PlainLayout';
-import SignUp, { action as signUpAction } from './pages/SignUp';
-import RecipeCreation, {action as createRecipe} from './pages/RecipeCreation';
-import Home, {loader as recipeListLoader } from './pages/Home';
 import Favorites from './pages/Favorites';
-import MyRecipes from './pages/MyRecipes';
-import IngredientsView from './pages/IngredientsView';
+import GroceriesList from './pages/GroceriesList';
+import Home, { loader as recipeListLoader } from './pages/Home';
 import IngredientNormalizer from './pages/IngredientNormalizer';
-import ResetPassword, {action as sendPasswordResetEmail} from './pages/ResetPassword';
-import Registration, {action as finishRegistration} from './pages/Registration';
+import IngredientsView from './pages/IngredientsView';
+import MyRecipes from './pages/MyRecipes';
+import PlainLayout from './pages/PlainLayout/PlainLayout';
+import Recipe from './pages/Recipe';
+import RecipeCreation, { action as createRecipe } from './pages/RecipeCreation';
+import Registration, { action as finishRegistration } from './pages/Registration';
+import ResetPassword, { action as sendPasswordResetEmail } from './pages/ResetPassword';
+import SignUp, { action as signUpAction } from './pages/SignUp';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -105,6 +106,18 @@ function App() {
     </React.StrictMode>
   )
 }
+
+const appInsights = new ApplicationInsights({ config: {
+  connectionString: 'InstrumentationKey=b37afa75-076b-4438-a84d-79b9f4617d30;IngestionEndpoint=https://eastus2-3.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus2.livediagnostics.monitor.azure.com/',
+  enableAutoRouteTracking: true,
+  enableCorsCorrelation: true,
+  enableRequestHeaderTracking: true,
+  enableResponseHeaderTracking: true,
+  correlationHeaderExcludedDomains: ['*.queue.core.windows.net']
+  /* ...Other Configuration Options... */
+} });
+appInsights.loadAppInsights();
+appInsights.trackPageView(); // Manually call trackPageView to establish the current user/session/pageview
 
 // This is the file that contains all the global state
 root.render(
