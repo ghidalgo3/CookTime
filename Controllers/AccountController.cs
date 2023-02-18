@@ -253,7 +253,7 @@ public class AccountController : ControllerBase
                 var roles = this.userManager.GetRoles(user);
                 if (roles.Contains(Role.User))
                 {
-                    return this.Redirect("/Registration");
+                    return this.Redirect("/");
                 }
                 return this.Redirect("/");
             }
