@@ -237,23 +237,6 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
     }
   }
 
-  // updateIngredientRequirement(ir: IngredientRequirement, update : (ir : IngredientRequirement) => IngredientRequirement) {
-  //     if (!this.props.multipart) {
-  //         var recipe = (this.state.recipe as Recipe)
-  //         const idx = recipe.ingredients!.findIndex(i => i.ingredient.id == ir.ingredient.id);
-  //         const newIr = update(recipe.ingredients![idx])
-  //         let newIrs = Array.from(recipe.ingredients!)
-  //         newIrs[idx] = newIr
-  //         this.setState({
-  //             ...this.state,
-  //             recipe: {
-  //                 ...recipe,
-  //                 ingredients: newIrs
-  //             }
-  //         })
-  //     }
-  // }
-
   updateIngredientRequirementForComponent(
     componentIndex: number,
     component: RecipeComponent,
@@ -276,20 +259,6 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
     }
   }
 
-  // appendNewStep(): void {
-  //     if (!this.props.multipart) {
-  //         var recipe = (this.state.recipe as Recipe)
-  //         var newSteps = Array.from(recipe.steps ?? [])
-  //         newSteps.push({text: ''})
-  //         this.setState({
-  //             recipe: {
-  //                 ...this.state.recipe,
-  //                 steps : newSteps
-  //             }
-  //         })
-  //     }
-  // }
-
   appendNewStepForComponent(componentIndex: number, component: RecipeComponent): void {
     if (this.props.multipart) {
       var newSteps = Array.from(component.steps ?? [])
@@ -307,8 +276,6 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
 
   changeOrReorder(componentIndex: number, component: RecipeComponent, newSteps: RecipeStep[]): void {
     if (this.props.multipart) {
-      // var newSteps = Array.from(component.steps ?? [])
-      // newSteps.push({text: '', id: uuidv4()})
       component.steps = newSteps;
       let newComponents = Array.from((this.state.recipe as MultiPartRecipe).recipeComponents);
       this.setState({
@@ -322,13 +289,6 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
 
   deleteStep(idx: number, component?: RecipeComponent) {
     if (!this.props.multipart) {
-      // let recipe = (this.state.recipe as Recipe)
-      // this.setState({
-      //     recipe: {
-      //         ...this.state.recipe,
-      //         steps: recipe.steps?.filter((s, i) => i !== idx) ?? [],
-      //     }
-      // })
     } else {
       let mpRecipe = (this.state.recipe as MultiPartRecipe)
       let newComponents = Array.from(mpRecipe.recipeComponents);
@@ -358,17 +318,8 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
                     onChange={(e) => this.setState({ recipe: { ...this.state.recipe, name: e.target.value } })}
                     value={this.state.recipe.name}></Form.Control>
                 </div> :
-                <h1>{this.state.recipe.name}</h1>}
-              {this.state.recipe.reviewCount > 0 ?
-                <Stack direction="horizontal" className="margin-bottom-8">
-                  <Rating
-                    style={{maxWidth: 150}}
-                    value={this.state.recipe.averageReviews}
-                    readOnly />{" "}({this.state.recipe.reviewCount})
-                </Stack>
-                :
-                null
-              }
+                null}
+              {null}
               By {this.state.recipe.owner?.userName}
             </Col>
             <AuthContext.Consumer>
@@ -518,10 +469,10 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
             <div className="border-top-1 margin-top-10">
               <Row>
                 <Col xs={3} className="nft-row">
-                  {this.nutritionFacts()}
+                  {/* {this.nutritionFacts()} */}
                 </Col>
                 <Col>
-                  {this.ingredientNutritionFacts()}
+                  {/* {this.ingredientNutritionFacts()} */}
                 </Col>
               </Row>
             </div>
@@ -599,71 +550,6 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
     );
   }
 
-  ingredientNutritionFacts() {
-    if ((this.state.nutritionFacts?.recipe ?? null) !== null) {
-      var lis = this.state.nutritionFacts?.ingredients.map((description, i) => {
-        return (
-          <div className="nbi-table-entry" key={i}>
-            <div>{description.quantity} {description.unit == "Count" ? "" : description.unit.toLowerCase()} {description.name}</div>
-            <div className="nbi-table-source">
-              {description.quantity} {description.unit == "Count" ? "" : description.unit.toLowerCase()} {description.nutritionDatabaseId !== null ? <a target="_blank" href={`https://fdc.nal.usda.gov/fdc-app.html#/food-details/${description.nutritionDatabaseId}/nutrients`}>{description.nutritionDatabaseDescriptor}</a> : description.nutritionDatabaseDescriptor} | {Math.round(description.caloriesPerServing)} calories per serving</div>
-          </div>);
-      })
-      return (
-        <div className="nbi-table">
-          <h1 className="performance-facts__title padding-8">Nutrition by Ingredient</h1>
-          <div>
-            {lis}
-          </div>
-        </div>);
-    } else {
-      return null;
-    }
-  }
-
-  nutritionFacts() {
-    // return null;
-    if ((this.state.nutritionFacts?.recipe ?? null) !== null) {
-      let {
-        calories,
-        carbohydrates,
-        proteins,
-        polyUnsaturatedFats,
-        monoUnsaturatedFats,
-        saturatedFats,
-        sugars,
-        transFats,
-        iron,
-        vitaminD,
-        calcium,
-        potassium
-      } = this.state.nutritionFacts!.recipe;
-      return (
-        <NutritionFacts
-          // servingSize={'1 cup (228g)'}
-          // servingsPerContainer={2}
-          calories={Math.round(calories / this.state.recipe.servingsProduced)}
-          // totalFat={Math.round(monoUnsaturatedFats + polyUnsaturatedFats + saturatedFats)}
-          saturatedFats={Math.round(saturatedFats / this.state.recipe.servingsProduced)}
-          monoUnsaturatedFats={Math.round(monoUnsaturatedFats / this.state.recipe.servingsProduced)}
-          polyUnsaturatedFats={Math.round(polyUnsaturatedFats / this.state.recipe.servingsProduced)}
-          transFats={Math.round(transFats / this.state.recipe.servingsProduced)}
-          // cholesterol={0}
-          // sodium={0}
-          carbohydrates={Math.round(carbohydrates / this.state.recipe.servingsProduced)}
-          // dietaryFiber={0}
-          sugars={Math.round(sugars / this.state.recipe.servingsProduced)}
-          proteins={Math.round(proteins / this.state.recipe.servingsProduced)}
-          servings={this.state.newServings}
-          potassium={Math.round(potassium / this.state.recipe.servingsProduced)}
-          vitaminD={Math.round(vitaminD / this.state.recipe.servingsProduced)}
-          calcium={Math.round(calcium / this.state.recipe.servingsProduced)}
-          iron={Math.round(iron / this.state.recipe.servingsProduced)}
-        />)
-    } else {
-      return null;
-    }
-  }
 
   private caloriesPerServingComponent() {
     var rightColContents: any = null;
@@ -676,10 +562,6 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
       && this.state.recipe.caloriesPerServing === 0
       && (this.state.nutritionFacts?.recipe?.calories ?? 0) !== 0) {
       // if the user did not provide a value and we computed one, use that
-      let allFats =
-        this.state.nutritionFacts!.recipe.saturatedFats
-        + this.state.nutritionFacts!.recipe.monoUnsaturatedFats
-        + this.state.nutritionFacts!.recipe.polyUnsaturatedFats;
       rightColContents =
         <div>
           {Math.round(this.state.nutritionFacts!.recipe.calories / this.state.recipe.servingsProduced)} kcal <i className="fas fa-solid fa-calculator"></i>
@@ -712,30 +594,27 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
   }
 
   private RecipeOrComponents() {
-    if (this.props.multipart) {
-      let editBlockComponents = (this.state.recipe as MultiPartRecipe).recipeComponents?.map((component, componentIndex) => {
-        return this.EditBlockComponent(
-          componentIndex,
-          this.state.recipe as MultiPartRecipe,
-          component);
-      })
-      return (
-        <div>
-          {editBlockComponents}
-          {this.state.edit ?
-            <Form>
-              <Col xs={12}>
-                <Button
-                  variant="outline-primary"
-                  className="width-100"
-                  onClick={(_) => this.appendNewComponent()}>New component</Button>
-              </Col>
-            </Form>
-            : null}
-        </div>);
-    } else {
-      return null;
-    }
+    let editBlockComponents = (this.state.recipe as MultiPartRecipe)
+      .recipeComponents?.map((component, componentIndex) => {
+      return this.EditBlockComponent(
+        componentIndex,
+        this.state.recipe as MultiPartRecipe,
+        component);
+    })
+    return (
+      <div>
+        {editBlockComponents}
+        {this.state.edit ?
+          <Form>
+            <Col xs={12}>
+              <Button
+                variant="outline-primary"
+                className="width-100"
+                onClick={(_) => this.appendNewComponent()}>New component</Button>
+            </Col>
+          </Form>
+          : null}
+      </div>);
   }
 
   private appendNewComponent() {
@@ -844,14 +723,6 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
                 onChange={(newSteps) => {
                   console.log(newSteps);
                   this.changeOrReorder(componentIndex, component, newSteps);
-                  // this.setState({
-                  //     ...this.state,
-                  //     recipe: {
-                  //         ...recipe,
-
-                  //         // todo TODO wtf?
-                  //     }
-                  // })
                 }
                 }
                 onNewStep={() => this.appendNewStepForComponent(componentIndex, component)} />
@@ -904,12 +775,6 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
           <Col>
             <Button variant="danger" className="recipe-edit-buttons margin-bottom-15" onClick={_ => this.onDelete()}>Delete</Button>
           </Col>
-          {!this.props.multipart ?
-            <Col>
-              <Button variant="danger" className="recipe-edit-buttons margin-bottom-15" onClick={_ => this.onMigrate()}>Migrate</Button>
-            </Col>
-            :
-            null}
         </Row>
       </Col>
       :
@@ -955,17 +820,6 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
           </Col>
         </Row>
       </Col>;
-  }
-
-  onMigrate(): void {
-    fetch(`/api/Recipe/${this.props.recipeId}/migrate`, {
-      method: 'POST',
-    }).then(response => {
-      if (response.redirected) {
-        window.location.href = response.url
-      }
-      // TODO redirect to new page
-    })
   }
 
   onAddtoCard(): void {

@@ -14,7 +14,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'; // bootstrap
 import './assets/css/all.css'; // fontawesome
 import './assets/css/site.css'; // ours
 import { AuthenticationContext, useAuthentication } from './components/Authentication/AuthenticationContext';
-import DefaultLayout, { loader as recipeLoader } from './pages/DefaultLayout';
+import DefaultLayout, { loader as categoryLoader } from './pages/DefaultLayout';
 import { action as signInAction, SignIn } from './pages/SignIn';
 import reportWebVitals from './reportWebVitals';
 import { AuthenticationProvider, IAuthenticationProvider } from './shared/AuthenticationProvider';
@@ -27,7 +27,7 @@ import IngredientNormalizer from './pages/IngredientNormalizer';
 import IngredientsView from './pages/IngredientsView';
 import MyRecipes from './pages/MyRecipes';
 import PlainLayout from './pages/PlainLayout/PlainLayout';
-import Recipe from './pages/Recipe';
+import Recipe, {loader as recipeLoader} from './pages/Recipe';
 import RecipeCreation, { action as createRecipe } from './pages/RecipeCreation';
 import Registration, { action as finishRegistration } from './pages/Registration';
 import ResetPassword, { action as sendPasswordResetEmail } from './pages/ResetPassword';
@@ -43,7 +43,7 @@ function App() {
       {/* Top level route defines layout */}
       <Route
         element={<DefaultLayout />}
-        loader={recipeLoader}
+        loader={categoryLoader}
       >
         <Route
           index
@@ -51,7 +51,9 @@ function App() {
           loader={recipeListLoader}
           element={<Home />} />
 
-        <Route path="Recipes/Details" element={<Recipe />} />
+        <Route path="Recipes/Details"
+          loader={recipeLoader}
+          element={<Recipe />} />
         <Route path="Recipes/Favorites" element={<Favorites />} />
         <Route path="Recipes/Mine" element={<MyRecipes />} />
         <Route
