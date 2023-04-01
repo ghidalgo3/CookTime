@@ -19,7 +19,9 @@ export default function Recipe() {
   const recipeId = searchParams.get("id");
   return (
     recipeId ?
-    <RecipeDisplay recipe={recipe} servings={Number.parseInt(searchParams.get("servings") ?? "0")} />
+    <RecipeDisplay
+      recipe={recipe}
+      servings={Number.parseInt(searchParams.get("servings") ?? "0")} />
     // <RecipeEdit recipeId={recipeId} multipart />
     :
     <>No</>
