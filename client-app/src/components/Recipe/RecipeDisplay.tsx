@@ -6,6 +6,7 @@ import { useAuthentication } from "../Authentication/AuthenticationContext";
 import { NutritionFacts } from "../NutritionFacts";
 import { RecipeStructuredData } from "../RecipeStructuredData";
 import { TodaysTenDisplay } from "../todaysTenDisplay";
+import { RecipeStepList } from "../RecipeEdit/RecipeStepList";
 
 export default function RecipeDisplay(props: {recipe : MultiPartRecipe, servings? : number}) {
   const { recipe } = props;
@@ -268,8 +269,31 @@ export default function RecipeDisplay(props: {recipe : MultiPartRecipe, servings
     }
   }
 
-  function ComponentDisplay({ component }: { component: RecipeComponent }) {
-    return null;
+  function ComponentDisplay({ component, components }: { component: RecipeComponent, components: RecipeComponent[] }) {
+    return (
+    <div className="border-top-1 margin-bottom-20">
+        {components.length > 1 &&
+          <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
+            <Col className="col-3 recipe-field-title">
+              Component Name
+            </Col>
+            <Col>
+              <Row>
+                <div className="component-name-field">{component.name}</div>
+              </Row>
+            </Col>
+          </Row>}
+          <RecipeStepList
+            recipe={recipe}
+            newServings={servings}
+            multipart={true}
+            component={component}
+            onDeleteStep={(i, x) => {}}
+            onChange={(x) => {}}
+            onNewStep={() => {}}
+            edit={false}
+            />
+      </div>);
   }
 
   return (<>
@@ -324,7 +348,7 @@ export default function RecipeDisplay(props: {recipe : MultiPartRecipe, servings
     </Row>
     {/* Recipe components and ingredients go here  */}
     {recipe.recipeComponents.map((component, idx, components) =>
-      <ComponentDisplay component={component} key={idx}/>
+      <ComponentDisplay component={component} key={idx} components={components}/>
     )}
     <div className="border-top-1 margin-top-10">
       <Row>
