@@ -1,7 +1,13 @@
 import { IngredientInternalUpdate, PagedResult, RecipeView, Review } from "./CookTime.types";
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
-
+export const DietDetails = {
+  TODAYS_TEN: "TodaysTen"
+}
+export async function getMultiPartRecipe(id : string) {
+  const response = await fetch(`/api/multipartrecipe/${id}`);
+  return await response.json();
+}
 export async function createRecipe(recipeCreationArgs : string) {
   const form = new FormData();
   form.set("name", recipeCreationArgs);
@@ -14,6 +20,11 @@ export async function createRecipe(recipeCreationArgs : string) {
 export async function getCategories() : Promise<string[]> {
   const response = await fetch("/api/category/list")
   return await response.json()
+}
+
+export async function getNutritionData(id : string) {
+  const response = await fetch(`/api/MultiPartRecipe/${id}/nutritionData`);
+  return await response.json();
 }
 
 export async function getRecipeViews(args?: {search?: string, page?: number}) : Promise<PagedResult<RecipeView>>{
@@ -89,4 +100,13 @@ export async function getReviews(recipeId : string) {
 export async function getInternalIngredientUpdates() {
   const response = await fetch(`/api/ingredient/internalUpdate`)
   return (await response.json()) as IngredientInternalUpdate[];
+}
+
+export function toTitleCase(str: string) {
+  return str.replace(
+    /\w\S*/g,
+    function (txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    }
+  );
 }
