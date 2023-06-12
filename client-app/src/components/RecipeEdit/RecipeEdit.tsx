@@ -15,6 +15,7 @@ import { TodaysTenDisplay } from '../todaysTenDisplay';
 import { Tags } from '../Tags/Tags';
 import { AuthContext, AuthenticationContext } from '../Authentication/AuthenticationContext';
 import { UserDetails } from 'src/shared/AuthenticationProvider';
+import { GoogleInFeedAds } from '../GoogleInFeedAds';
 
 type RecipeEditProps = {
   recipeId: string,
@@ -639,27 +640,31 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
         potassium
       } = this.state.nutritionFacts!.recipe;
       return (
-        <NutritionFacts
-          // servingSize={'1 cup (228g)'}
-          // servingsPerContainer={2}
-          calories={Math.round(calories / this.state.recipe.servingsProduced)}
-          // totalFat={Math.round(monoUnsaturatedFats + polyUnsaturatedFats + saturatedFats)}
-          saturatedFats={Math.round(saturatedFats / this.state.recipe.servingsProduced)}
-          monoUnsaturatedFats={Math.round(monoUnsaturatedFats / this.state.recipe.servingsProduced)}
-          polyUnsaturatedFats={Math.round(polyUnsaturatedFats / this.state.recipe.servingsProduced)}
-          transFats={Math.round(transFats / this.state.recipe.servingsProduced)}
-          // cholesterol={0}
-          // sodium={0}
-          carbohydrates={Math.round(carbohydrates / this.state.recipe.servingsProduced)}
-          // dietaryFiber={0}
-          sugars={Math.round(sugars / this.state.recipe.servingsProduced)}
-          proteins={Math.round(proteins / this.state.recipe.servingsProduced)}
-          servings={this.state.newServings}
-          potassium={Math.round(potassium / this.state.recipe.servingsProduced)}
-          vitaminD={Math.round(vitaminD / this.state.recipe.servingsProduced)}
-          calcium={Math.round(calcium / this.state.recipe.servingsProduced)}
-          iron={Math.round(iron / this.state.recipe.servingsProduced)}
-        />)
+        <>
+          <GoogleInFeedAds />
+          <NutritionFacts
+            // servingSize={'1 cup (228g)'}
+            // servingsPerContainer={2}
+            calories={Math.round(calories / this.state.recipe.servingsProduced)}
+            // totalFat={Math.round(monoUnsaturatedFats + polyUnsaturatedFats + saturatedFats)}
+            saturatedFats={Math.round(saturatedFats / this.state.recipe.servingsProduced)}
+            monoUnsaturatedFats={Math.round(monoUnsaturatedFats / this.state.recipe.servingsProduced)}
+            polyUnsaturatedFats={Math.round(polyUnsaturatedFats / this.state.recipe.servingsProduced)}
+            transFats={Math.round(transFats / this.state.recipe.servingsProduced)}
+            // cholesterol={0}
+            // sodium={0}
+            carbohydrates={Math.round(carbohydrates / this.state.recipe.servingsProduced)}
+            // dietaryFiber={0}
+            sugars={Math.round(sugars / this.state.recipe.servingsProduced)}
+            proteins={Math.round(proteins / this.state.recipe.servingsProduced)}
+            servings={this.state.newServings}
+            potassium={Math.round(potassium / this.state.recipe.servingsProduced)}
+            vitaminD={Math.round(vitaminD / this.state.recipe.servingsProduced)}
+            calcium={Math.round(calcium / this.state.recipe.servingsProduced)}
+            iron={Math.round(iron / this.state.recipe.servingsProduced)}
+          />
+        </>
+        )
     } else {
       return null;
     }
