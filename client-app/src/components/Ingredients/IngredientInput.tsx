@@ -54,7 +54,7 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
 
   // // Use your imagination to render suggestions.
   renderSuggestion = (suggestion: Ingredient) => (
-    <span>{suggestion.name}</span>
+    <>{suggestion.name}</>
   );
 
   // called every time a key is pressed or when the user presses enter
