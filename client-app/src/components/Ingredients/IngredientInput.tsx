@@ -68,7 +68,7 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
         // console.log(`Default ${newValue}`)
         var possibleSuggestions = this.state.suggestions.filter(suggestion =>
           suggestion.name.toUpperCase().includes(newValue));
-        if (possibleSuggestions.length == 1) {
+        if (possibleSuggestions.length === 1) {
           this.setState({
             selection: possibleSuggestions[0],
             value: newValue,
