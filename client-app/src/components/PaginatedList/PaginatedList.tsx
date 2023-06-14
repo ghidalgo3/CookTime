@@ -13,11 +13,13 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
   const { items, element, colClassName} = props;
   const [searchParams, setSearchParams] = useSearchParams();
   const activePage = Number.parseInt(searchParams.get("page") ?? "1");
-
-  function navigateToPage(i: number) {
+  function paramsForPage(i : number) {
     const urlParams = new URLSearchParams(window.location.search);
     urlParams.set("page", i === 0 ? "" : encodeURIComponent(i));
-    setSearchParams(urlParams);
+    return urlParams;
+  }
+  function navigateToPage(i: number) {
+    setSearchParams(paramsForPage(i));
   }
 
   return (
@@ -37,8 +39,14 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
         <Pagination className="justify-content-center">
 
           {activePage > 1 &&
-            <Pagination.Prev onClick={() => navigateToPage(activePage - 1)}>Previous</Pagination.Prev>}
-
+            <>
+              <a
+                style={{ "display": "none" }}
+                href={`/?${paramsForPage(activePage - 1).toString()}`}>Crawling link</a>
+              <Pagination.Prev onClick={() => navigateToPage(activePage - 1)}>Previous</Pagination.Prev>
+            </>
+            }
+            
           {Array.from({ length: items.pageCount }, (x, i) =>
             <Pagination.Item
               key={i}
@@ -46,11 +54,23 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
               style={{color: "black"}}
               onClick={() => {
                 navigateToPage(i + 1);
-            }}>{i + 1}</Pagination.Item>
+            }}>
+              {i + 1}
+            </Pagination.Item>
           )}
 
           {activePage < items.pageCount &&
-            <Pagination.Next onClick={() => {navigateToPage(activePage + 1)}}>Next</Pagination.Next>}
+            <>
+              <a
+                style={{ "display": "none" }}
+                href={`/?${paramsForPage(activePage + 1).toString()}`}>Crawling link</a>
+              <Pagination.Next
+                onClick={() => { navigateToPage(activePage + 1) }}>
+                Next
+              </Pagination.Next>
+            </>
+            }
+
 
         </Pagination>
       }
