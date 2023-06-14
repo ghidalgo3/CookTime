@@ -15,11 +15,12 @@ import './assets/css/all.css'; // fontawesome
 import './assets/css/site.css'; // ours
 import { AuthenticationContext, useAuthentication } from './components/Authentication/AuthenticationContext';
 import DefaultLayout, { loader as recipeLoader } from './pages/DefaultLayout';
-import { action as signInAction, SignIn } from './pages/SignIn';
+import { SignIn, action as signInAction } from './pages/SignIn';
 import reportWebVitals from './reportWebVitals';
 import { AuthenticationProvider, IAuthenticationProvider } from './shared/AuthenticationProvider';
 import { getCategories } from './shared/CookTime';
 // import RecipeList, {loader as recipeListLoader } from './components/RecipeList/RecipeList';
+import { HelmetProvider } from 'react-helmet-async';
 import Favorites from './pages/Favorites';
 import GroceriesList from './pages/GroceriesList';
 import Home, { loader as recipeListLoader } from './pages/Home';
@@ -27,7 +28,7 @@ import IngredientNormalizer from './pages/IngredientNormalizer';
 import IngredientsView from './pages/IngredientsView';
 import MyRecipes from './pages/MyRecipes';
 import PlainLayout from './pages/PlainLayout/PlainLayout';
-import Recipe from './pages/Recipe';
+import Recipe, { RECIPE_PAGE_PATH } from './pages/Recipe';
 import RecipeCreation, { action as createRecipe } from './pages/RecipeCreation';
 import Registration, { action as finishRegistration } from './pages/Registration';
 import ResetPassword, { action as sendPasswordResetEmail } from './pages/ResetPassword';
@@ -36,6 +37,7 @@ import SignUp, { action as signUpAction } from './pages/SignUp';
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
 function App() {
   const authProvider = useAuthentication();
   const router = createBrowserRouter(createRoutesFromElements(
@@ -51,7 +53,7 @@ function App() {
           loader={recipeListLoader}
           element={<Home />} />
 
-        <Route path="Recipes/Details" element={<Recipe />} />
+        <Route path={RECIPE_PAGE_PATH} element={<Recipe />} />
         <Route path="Recipes/Favorites" element={<Favorites />} />
         <Route path="Recipes/Mine" element={<MyRecipes />} />
         <Route
@@ -121,9 +123,12 @@ appInsights.trackPageView(); // Manually call trackPageView to establish the cur
 
 // This is the file that contains all the global state
 root.render(
-<AuthenticationContext>
-  <App />
-</AuthenticationContext>);
+  <HelmetProvider>
+    <AuthenticationContext>
+      <App />
+    </AuthenticationContext>
+  </HelmetProvider>
+);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
