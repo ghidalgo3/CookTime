@@ -7,6 +7,10 @@ using babe_algorithms.Models.Users;
 using babe_algorithms.Pages;
 using babe_algorithms.ViewComponents;
 using GustavoTech.Implementation;
+using Microsoft.Extensions.Options;
+using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
+using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
+using Category = babe_algorithms.Models.Category;
 
 namespace babe_algorithms.Controllers
 {
@@ -22,17 +26,21 @@ namespace babe_algorithms.Controllers
 
         public TextInfo TextInfo { get; }
 
+        public AzureOptions AzureOptions { get; }
+
         public Cart Favorites { get; private set; }
 
         public PagedResult<object> PagedResult { get; private set; }
 
         public MultiPartRecipeController(
             ApplicationDbContext context,
+            IOptions<AzureOptions> visionOptions,
             ISessionManager sessionManager)
         {
             _context = context;
             this.Session = sessionManager;
             this.TextInfo = new CultureInfo("en-US",false).TextInfo;
+            this.AzureOptions = visionOptions.Value;
         }
 
         [HttpPost("create")]
@@ -58,6 +66,46 @@ namespace babe_algorithms.Controllers
             await _context.SaveChangesAsync();
             await _context.Entry(recipe).ReloadAsync();
             return this.Ok(recipe);
+        }
+
+        [HttpPost("importFromImage")]
+        public async Task<IActionResult> CreateFromImage([FromForm] List<IFormFile> files)
+        {
+            var user = await this.Session.GetSignedInUserAsync(this.User);
+            if (user == null)
+            {
+                return this.Unauthorized("You must be signed in to create recipes.");
+            }
+
+            var file = files[0];
+            using var fileStream = file.OpenReadStream();
+            var client = Authenticate(this.AzureOptions.VisionEndpoint, this.AzureOptions.VisionKey);
+            try {
+                var headers = await client.ReadInStreamAsync(fileStream);
+                string operationLocation = headers.OperationLocation;
+                await Task.Delay(1000);
+                // <snippet_extract_response>
+                // Retrieve the URI where the recognized text will be stored from the Operation-Location header.
+                // We only need the ID and not the full URL
+                const int numberOfCharsInOperationId = 36;
+                string operationId = operationLocation[^numberOfCharsInOperationId..];
+
+                // Extract the text
+                ReadOperationResult results;
+                do
+                {
+                    results = await client.GetReadResultAsync(Guid.Parse(operationId));
+                }
+                while ((results.Status == OperationStatusCodes.Running ||
+                    results.Status == OperationStatusCodes.NotStarted));
+                var textUrlFileResults = results.AnalyzeResult.ReadResults;
+
+                return this.Ok(textUrlFileResults);
+            }
+            catch (Exception e)
+            {
+                return this.BadRequest(e);
+            }
         }
 
         // GET: api/MultiPartRecipe
@@ -646,6 +694,14 @@ namespace babe_algorithms.Controllers
         private async Task<PagedResult<RecipeView>> AllRecipes(int page)
         {
             return await GetPagedRecipeViewsForQuery(this._context.MultiPartRecipes, this.Favorites, page);
+        }
+
+        private static ComputerVisionClient Authenticate(string endpoint, string key)
+        {
+            ComputerVisionClient client =
+              new(new ApiKeyServiceClientCredentials(key))
+              { Endpoint = endpoint };
+            return client;
         }
     }
 
