@@ -8,6 +8,7 @@ export const RECIPE_PAGE_PATH = "Recipes/Details";
 export function Path(id: string) {
   return `/${RECIPE_PAGE_PATH}?id=${id}`;
 }
+
 export default function Recipe() {
   const [searchParams, setSearchParams] = useSearchParams();
   const origin = window.location.origin;

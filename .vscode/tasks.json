@@ -39,6 +39,7 @@
             "args": [
                 "watch",
                 "run",
+                "--project",
                 "${workspaceFolder}/babe-algorithms.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"

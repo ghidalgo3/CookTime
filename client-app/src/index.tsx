@@ -15,14 +15,14 @@ import './assets/css/all.css'; // fontawesome
 import './assets/css/site.css'; // ours
 import { AuthenticationContext, useAuthentication } from './components/Authentication/AuthenticationContext';
 import DefaultLayout, { loader as recipeLoader } from './pages/DefaultLayout';
-import { SignIn, action as signInAction } from './pages/SignIn';
+import { SIGN_IN_PAGE_PATH, SignIn, action as signInAction } from './pages/SignIn';
 import reportWebVitals from './reportWebVitals';
 import { AuthenticationProvider, IAuthenticationProvider } from './shared/AuthenticationProvider';
 import { getCategories } from './shared/CookTime';
 // import RecipeList, {loader as recipeListLoader } from './components/RecipeList/RecipeList';
 import { HelmetProvider } from 'react-helmet-async';
 import Favorites from './pages/Favorites';
-import GroceriesList from './pages/GroceriesList';
+import GroceriesList, { CART_PAGE_PATH } from './pages/GroceriesList';
 import Home, { loader as recipeListLoader } from './pages/Home';
 import IngredientNormalizer from './pages/IngredientNormalizer';
 import IngredientsView from './pages/IngredientsView';
@@ -31,8 +31,8 @@ import PlainLayout from './pages/PlainLayout/PlainLayout';
 import Recipe, { RECIPE_PAGE_PATH } from './pages/Recipe';
 import RecipeCreation, { action as createRecipe } from './pages/RecipeCreation';
 import Registration, { action as finishRegistration } from './pages/Registration';
-import ResetPassword, { action as sendPasswordResetEmail } from './pages/ResetPassword';
-import SignUp, { action as signUpAction } from './pages/SignUp';
+import ResetPassword, { RESET_PASSWORD_PAGE_PATH, action as sendPasswordResetEmail } from './pages/ResetPassword';
+import SignUp, { SIGN_UP_PAGE_PATH, action as signUpAction } from './pages/SignUp';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -60,7 +60,7 @@ function App() {
           path="Recipes/Create"
           element={<RecipeCreation />}
           action={createRecipe} />
-        <Route path="Cart" element={<GroceriesList />} />
+        <Route path={CART_PAGE_PATH} element={<GroceriesList />} />
         <Route path="Admin/IngredientsView" element={<IngredientsView />} />
         <Route path="Admin/IngredientNormalizer" element={<IngredientNormalizer />} />
       </Route>
@@ -69,21 +69,21 @@ function App() {
       <Route
         element={<PlainLayout />}>
         <Route
-          path="/signin"
+          path={`/${SIGN_IN_PAGE_PATH}`}
           action={async (actionArgs) => {
             return await (signInAction(authProvider)(actionArgs));
           }}
           element={<SignIn />}></Route>
 
         <Route
-          path="/signup"
+          path={`/${SIGN_UP_PAGE_PATH}`}
           action={async (actionArgs) => {
             return await (signUpAction(authProvider)(actionArgs));
           }}
           element={<SignUp />}></Route>
 
         <Route
-          path="/resetPassword"
+          path={`/${RESET_PASSWORD_PAGE_PATH}`}
           action={async (actionArgs) => {
             return await (sendPasswordResetEmail(authProvider)(actionArgs))
           }}

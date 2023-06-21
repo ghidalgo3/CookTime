@@ -1,8 +1,11 @@
 import React, {useEffect, useState} from "react"
 import { Form, Card, Col, Container, Row, Button, Alert } from "react-bootstrap"
+import { Helmet } from "react-helmet-async";
 import { ActionFunction, ActionFunctionArgs, Form as RouterForm, Link, useActionData, useSearchParams } from "react-router-dom";
 import { IAuthenticationProvider } from "src/shared/AuthenticationProvider";
 import { useTitle } from "src/shared/useTitle";
+
+export const RESET_PASSWORD_PAGE_PATH = "resetPassword";
 
 export function action(
   { sendPasswordResetEmail, changePassword }: IAuthenticationProvider): ActionFunction {
@@ -71,14 +74,21 @@ export default function ResetPassword() {
   }
   useTitle("Reset Password")
   return (
-    <Container>
-      {showAlert && alert}
-      <Row className="justify-content-md-center">
-        <Col lg className="max-width-34rem">
-          {emailReceived ? <PasswordReset /> : <EmailRequest />}
-        </Col>
-      </Row>
-    </Container>
+    <>
+      <Helmet>
+        <link rel="canonical" href={`${origin}/${RESET_PASSWORD_PAGE_PATH}`} />
+      </Helmet>
+
+      <Container>
+        {showAlert && alert}
+        <Row className="justify-content-md-center">
+          <Col lg className="max-width-34rem">
+            {emailReceived ? <PasswordReset /> : <EmailRequest />}
+          </Col>
+        </Row>
+      </Container>
+
+    </>
   )
 
   function PasswordReset() {
