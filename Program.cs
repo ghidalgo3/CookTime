@@ -57,8 +57,10 @@ public class Program
         builder.Services.AddScoped<ISessionManager, SessionManager>();
         builder.Services.AddScoped<IEmailSender, EmailSender>();
         builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
-        builder.Services.Configure<AzureOptions>(builder.Configuration);
         builder.Services.Configure<AzureOptions>(builder.Configuration.GetSection("Azure"));
+        builder.Services.Configure<OpenAIOptions>(builder.Configuration.GetSection("OpenAI"));
+        builder.Services.AddScoped<IRecipeArtificialIntelligence, ChatGPT>();
+        builder.Services.AddScoped<IComputerVision, AzureCognitiveServices>();
         builder.Services.AddTransient<IEmailSender, EmailSender>();
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
         {

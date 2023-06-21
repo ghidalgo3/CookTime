@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
 using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Category = babe_algorithms.Models.Category;
+using OpenAI_API;
 
 namespace babe_algorithms.Controllers
 {
@@ -26,7 +27,11 @@ namespace babe_algorithms.Controllers
 
         public TextInfo TextInfo { get; }
 
+        public IComputerVision ComputerVision { get; }
+
         public AzureOptions AzureOptions { get; }
+
+        public IRecipeArtificialIntelligence AI { get; }
 
         public Cart Favorites { get; private set; }
 
@@ -34,13 +39,15 @@ namespace babe_algorithms.Controllers
 
         public MultiPartRecipeController(
             ApplicationDbContext context,
-            IOptions<AzureOptions> visionOptions,
+            IRecipeArtificialIntelligence ai,
+            IComputerVision computerVision,
             ISessionManager sessionManager)
         {
             _context = context;
             this.Session = sessionManager;
             this.TextInfo = new CultureInfo("en-US",false).TextInfo;
-            this.AzureOptions = visionOptions.Value;
+            this.ComputerVision = computerVision;
+            this.AI = ai;
         }
 
         [HttpPost("create")]
@@ -79,33 +86,9 @@ namespace babe_algorithms.Controllers
 
             var file = files[0];
             using var fileStream = file.OpenReadStream();
-            var client = Authenticate(this.AzureOptions.VisionEndpoint, this.AzureOptions.VisionKey);
-            try {
-                var headers = await client.ReadInStreamAsync(fileStream);
-                string operationLocation = headers.OperationLocation;
-                await Task.Delay(1000);
-                // <snippet_extract_response>
-                // Retrieve the URI where the recognized text will be stored from the Operation-Location header.
-                // We only need the ID and not the full URL
-                const int numberOfCharsInOperationId = 36;
-                string operationId = operationLocation[^numberOfCharsInOperationId..];
-
-                // Extract the text
-                ReadOperationResult results;
-                do
-                {
-                    results = await client.GetReadResultAsync(Guid.Parse(operationId));
-                }
-                while ((results.Status == OperationStatusCodes.Running ||
-                    results.Status == OperationStatusCodes.NotStarted));
-                var textUrlFileResults = results.AnalyzeResult.ReadResults;
-
-                return this.Ok(textUrlFileResults);
-            }
-            catch (Exception e)
-            {
-                return this.BadRequest(e);
-            }
+            var prompt = await this.ComputerVision.GetTextAsync(fileStream, CancellationToken.None);
+            var response = await this.AI.ConvertToRecipeAsync(prompt, CancellationToken.None);
+            return this.Ok(response);
         }
 
         // GET: api/MultiPartRecipe
@@ -696,13 +679,6 @@ namespace babe_algorithms.Controllers
             return await GetPagedRecipeViewsForQuery(this._context.MultiPartRecipes, this.Favorites, page);
         }
 
-        private static ComputerVisionClient Authenticate(string endpoint, string key)
-        {
-            ComputerVisionClient client =
-              new(new ApiKeyServiceClientCredentials(key))
-              { Endpoint = endpoint };
-            return client;
-        }
     }
 
     public class ReviewDTO

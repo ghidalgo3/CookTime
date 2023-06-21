@@ -1,7 +1,4 @@
-
-namespace GustavoTech;
-
-#nullable enable
+namespace babe_algorithms;
 
 public class AzureOptions
 {
