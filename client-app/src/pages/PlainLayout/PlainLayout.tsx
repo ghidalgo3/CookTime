@@ -12,6 +12,7 @@ export default function PlainLayout() {
             id="pl-navbar-brand"
             to="/" >
             <img
+              alt={""}
               height={30}
               style={{marginRight: 8}}
               className="d-inline-block align-top"
