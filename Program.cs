@@ -98,7 +98,7 @@ public class Program
         app.MapRazorPages();
         app.MapFallbackToFile("index.html");
 
-        CreateDbIfNotExists(app);
+        PreStartActions(app);
 
         app.Run();
     }
@@ -114,11 +114,19 @@ public class Program
                 webBuilder.UseStartup<Startup>();
             });
 
-    private static void CreateDbIfNotExists(IHost host)
+    private static void PreStartActions(IHost host)
+    {
+
+        var scope = host.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        ConfigureDatabase(logger, services);
+        logger.LogInformation("PID = {pid}", Environment.ProcessId);
+    }
+
+    private static void ConfigureDatabase(ILogger<Program> logger, IServiceProvider services)
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-        using var scope = host.Services.CreateScope();
-        var services = scope.ServiceProvider;
         try
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
@@ -140,7 +148,6 @@ public class Program
         }
         catch (Exception ex)
         {
-            var logger = services.GetRequiredService<ILogger<Program>>();
             logger.LogError(ex, "An error occurred creating the DB.");
             throw;
         }
