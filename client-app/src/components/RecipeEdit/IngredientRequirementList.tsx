@@ -110,12 +110,21 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
             inputMode="decimal"
             // pattern="[0-9\.]*"
             onChange={(e) => {
-              if (!Number.isNaN(Number.parseFloat(e.target.value))) {
-                this.props.updateIngredientRequirement(ir, ir => { ir.quantity = parseFloat(e.target.value); return ir; })}
-              }
+              console.log(e.target)
+              console.log(e.target.value);
+              let newValue = parseFloat(e.target.value);
+              if (Number.isNaN(newValue)) {
+                newValue = 0.0
+              } 
+              this.props.updateIngredientRequirement(ir, ir => { ir.quantity = newValue; return ir; })}
             }
             placeholder={"0"}
-            value={ir.quantity === 0.0 ? undefined : ir.quantity}></Form.Control>
+            // https://react.dev/reference/react-dom/components/input#im-getting-an-error-a-component-is-changing-an-uncontrolled-input-to-be-controlled
+            // Never set this to undefined
+            value={ir.quantity === 0.0 ? "" : ir.quantity}
+            >
+
+            </Form.Control>
         </Col>
         <Col key={`${id}unit`} xs={3} className="ingredient-col-middle">
           <Form.Select
