@@ -107,8 +107,10 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
           <Form.Control
             type="number"
             min="0"
+            inputMode="decimal"
+            // pattern="[0-9\.]*"
             onChange={(e) => {
-              if (!Number.isNaN(Number(e.target.value))) {
+              if (!Number.isNaN(Number.parseFloat(e.target.value))) {
                 this.props.updateIngredientRequirement(ir, ir => { ir.quantity = parseFloat(e.target.value); return ir; })}
               }
             }
