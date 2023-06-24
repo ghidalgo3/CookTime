@@ -28,9 +28,9 @@ export function RecipeReviews({recipeId} : RecipeReviewsProps) {
       if (response.ok) {
         // TODO this cannot be a location.reload()
         // eslint-disable-next-line no-restricted-globals
-        location.reload();
-      }
-    });
+        // location.reload();
+        setReviews(reviews.filter(review => review.owner.id !== user?.id));
+    }});
   }
 
   return (
