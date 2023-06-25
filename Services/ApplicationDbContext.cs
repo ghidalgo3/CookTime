@@ -112,7 +112,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                             ir.Ingredient.Id == ingredientId)));
     }
 
-    public async Task<List<Ingredient>> GetIngredients(string? name = null)
+    public async Task<List<Ingredient>> GetIngredients(string name = null)
     {
         if (!string.IsNullOrEmpty(name))
         {
@@ -198,7 +198,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .ToList();
     }
 
-    public async Task<List<RecipeView>> GetFeaturedRecipeViewAsync(Cart? favorites, int count = 3)
+    public async Task<List<RecipeView>> GetFeaturedRecipeViewAsync(Cart favorites, int count = 3)
     {
         var allRecipesQuery = (await PartialRecipeViewQueryAsync())
             .Where(r => r.Images.Any())
@@ -221,7 +221,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         return init.Select(r => RecipeView.From(r, favorites)).ToList();
     }
 
-    public async Task<List<RecipeView>> GetNewRecipeViewAsync(Cart? favorites, int count = 3)
+    public async Task<List<RecipeView>> GetNewRecipeViewAsync(Cart favorites, int count = 3)
     {
         var allRecipesQuery = (await PartialRecipeViewQueryAsync())
             .Where(recipe => recipe.CreationDate > DateTimeOffset.UtcNow - TimeSpan.FromDays(7))
@@ -343,22 +343,22 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         string name)
     {
         return this.Carts
-                            .Where(c => c.Name.Equals(name))
-                            .Where(c => c.Active)
-                            .Where(c => c.Owner.Id == user.Id)
-                            .AsSplitQuery()
-                            .Include(c => c.RecipeRequirement)
-                                .ThenInclude(rr => rr.MultiPartRecipe)
-                                    .ThenInclude(mpRecipe => mpRecipe.RecipeComponents)
-                                        .ThenInclude(c => c.Ingredients)
-                                            .ThenInclude(i => i.Ingredient)
-                                                .ThenInclude(ingredient => ingredient.NutritionData)
-                            .Include(c => c.RecipeRequirement)
-                                .ThenInclude(rr => rr.MultiPartRecipe)
-                                    .ThenInclude(mpRecipe => mpRecipe.Images)
-                            .Include(c => c.RecipeRequirement)
-                                .ThenInclude(rr => rr.MultiPartRecipe)
-                                    .ThenInclude(mpRecipe => mpRecipe.Categories);
+                        .Where(c => c.Name.Equals(name))
+                        .Where(c => c.Active)
+                        .Where(c => c.Owner.Id == user.Id)
+                        .AsSplitQuery()
+                        .Include(c => c.RecipeRequirement)
+                            .ThenInclude(rr => rr.MultiPartRecipe)
+                                .ThenInclude(mpRecipe => mpRecipe.RecipeComponents)
+                                    .ThenInclude(c => c.Ingredients)
+                                        .ThenInclude(i => i.Ingredient)
+                                            .ThenInclude(ingredient => ingredient.NutritionData)
+                        .Include(c => c.RecipeRequirement)
+                            .ThenInclude(rr => rr.MultiPartRecipe)
+                                .ThenInclude(mpRecipe => mpRecipe.Images)
+                        .Include(c => c.RecipeRequirement)
+                            .ThenInclude(rr => rr.MultiPartRecipe)
+                                .ThenInclude(mpRecipe => mpRecipe.Categories);
     }
     
     public IQueryable<Cart> GetSimpleActiveCartQuery(ApplicationUser user, string name)
