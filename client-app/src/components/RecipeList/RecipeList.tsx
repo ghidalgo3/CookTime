@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react"
 import { Col, Row } from "react-bootstrap";
 import { RecipeCard } from "../RecipeCard/RecipeCard";
-import { getFavoriteRecipeViews, getFeaturedRecipeViews, getMyRecipes, getNewRecipeViews, getRecipeViews, Image, PagedResult, RecipeView, toPagedResult } from "src/shared/CookTime"
-import { Link, LoaderFunctionArgs, useLoaderData, useLocation, useSearchParams } from "react-router-dom";
+import { getFavoriteRecipeViews, getFeaturedRecipeViews, getMyRecipes, getNewRecipeViews, getRecipeViews, PagedResult, RecipeView, toPagedResult } from "src/shared/CookTime"
+import { Link } from "react-router-dom";
 import PaginatedList from "../PaginatedList/PaginatedList";
 import { useAuthentication } from "../Authentication/AuthenticationContext";
 

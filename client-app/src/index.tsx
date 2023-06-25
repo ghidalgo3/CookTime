@@ -17,8 +17,6 @@ import { AuthenticationContext, useAuthentication } from './components/Authentic
 import DefaultLayout, { loader as recipeLoader } from './pages/DefaultLayout';
 import { SIGN_IN_PAGE_PATH, SignIn, action as signInAction } from './pages/SignIn';
 import reportWebVitals from './reportWebVitals';
-import { AuthenticationProvider, IAuthenticationProvider } from './shared/AuthenticationProvider';
-import { getCategories } from './shared/CookTime';
 // import RecipeList, {loader as recipeListLoader } from './components/RecipeList/RecipeList';
 import { HelmetProvider } from 'react-helmet-async';
 import Favorites from './pages/Favorites';

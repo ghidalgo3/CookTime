@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react"
-import { useLocation, useSearchParams } from "react-router-dom";
+import React from "react"
+import { useSearchParams } from "react-router-dom";
 import { RecipeEdit } from "src/components/RecipeEdit/RecipeEdit";
 import { Helmet } from 'react-helmet-async';
 
@@ -10,7 +10,7 @@ export function Path(id: string) {
 }
 
 export default function Recipe() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const origin = window.location.origin;
   const recipeId = searchParams.get("id");
   return (
