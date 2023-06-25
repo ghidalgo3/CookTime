@@ -21,10 +21,13 @@ public class ApplicationUser : IdentityUser
 
     public List<MultiPartRecipe> OwnedRecipes { get; set; } = new List<MultiPartRecipe>();
 
+#nullable disable
     [JsonProperty]
+    [Required]
     public override string UserName { get; set; }
 
     [JsonProperty]
+    [Required]
     public override string Id { get; set; }
 }
 
