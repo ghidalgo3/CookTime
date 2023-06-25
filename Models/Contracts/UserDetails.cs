@@ -5,7 +5,7 @@ namespace GustavoTech.Implementation;
 /// It's useful when a use wants to GET their own details.
 /// </summary>
 public record class UserDetails(
-    string name,
-    string id,
-    string[] roles
+    string Name,
+    string Id,
+    string[] Roles
 );
