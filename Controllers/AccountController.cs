@@ -18,20 +18,17 @@ public class AccountController : ControllerBase
     private readonly IUserService userManager;
     private readonly ISignInManager signInManager;
     private readonly ILogger<AccountController> logger;
-    private readonly IAntiforgery antiForgery;
 
     public AccountController(
         IUserService userManager,
         ISignInManager signInManager,
         ILogger<AccountController> logger,
-        ApplicationDbContext appDbContext,
-        IAntiforgery antiForgery)
+        ApplicationDbContext appDbContext)
     {
         this.appDbContext = appDbContext;
         this.userManager = userManager;
         this.signInManager = signInManager;
         this.logger = logger;
-        this.antiForgery = antiForgery;
     }
 
     [ValidateAntiForgeryToken]
