@@ -67,7 +67,11 @@ public class Program
                     System.Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres")
                     ?? throw new NullReferenceException("Connection string was not found.");
             }
-            options.UseNpgsql(connectionString);
+            // Call UseNodaTime() when building your data source:
+            var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+            dataSourceBuilder.MapEnum<Unit>();
+            var dataSource = dataSourceBuilder.Build();
+            options.UseNpgsql(dataSource);
             options.EnableSensitiveDataLogging(true);
         });
         builder.Services.AddImageSharp(options => 

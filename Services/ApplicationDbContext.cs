@@ -8,11 +8,6 @@ namespace babe_algorithms.Services;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
-    static ApplicationDbContext()
-    {
-        NpgsqlConnection.GlobalTypeMapper.MapEnum<Unit>();
-    }
-
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
     {
