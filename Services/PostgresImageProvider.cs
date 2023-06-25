@@ -66,8 +66,8 @@ public class PostgresImageResolver : IImageResolver
         var image = await this.Context.Images.FindAsync(this.ImageId);
         if (image != null)
         {
-            var _image = await SixLabors.ImageSharp.Image.LoadAsync(
-                new MemoryStream(image.Data), new JpegDecoder());
+            // var _image = await SixLabors.ImageSharp.Image.LoadAsync(
+            //     new MemoryStream(image.Data), new JpegDecoder());
             return new ImageMetadata(DateTime.UtcNow, TimeSpan.FromHours(1), image.Data.Length);
         }
         else
