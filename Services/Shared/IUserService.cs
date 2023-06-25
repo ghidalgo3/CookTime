@@ -20,7 +20,7 @@ public interface IUserService
 
     Task<(IdentityResult, ApplicationUser)> CreateUser(UserSignUp user);
 
-    Task<ApplicationUser> FindByIdAsync(string id);
+    Task<ApplicationUser?> FindByIdAsync(string id);
 
     Task<IdentityResult> SetPassword(ApplicationUser user, string newPassword);
 
