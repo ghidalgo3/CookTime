@@ -51,7 +51,7 @@ public class BasicAuthFilter : IAuthorizationFilter
         }
     }
 
-    public bool IsAuthorized(AuthorizationFilterContext context, string username, string password)
+    public static bool IsAuthorized(AuthorizationFilterContext context, string username, string password)
     {
         var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
         return userService.IsValidBasicAuthUser(username, password);
