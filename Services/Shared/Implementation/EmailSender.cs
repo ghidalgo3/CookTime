@@ -22,8 +22,7 @@ public class EmailSender : IEmailSender
 
     public async Task SendEmailAsync(string email, string subject, string message)
     {
-        this.Logger.LogInformation(
-            $"Sending email to {email} with subject {subject}");
+        this.Logger.LogInformation("Sending email to {} with subject {}", email, subject);
         var responseCode = await this.Execute(this.Options.SendGridKey, subject, message, email);
         this.Logger.LogInformation("Email {HttpStatusCode}", responseCode);
     }
