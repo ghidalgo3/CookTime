@@ -98,12 +98,8 @@ public class RecipeController : ControllerBase, IImageController
             // is this an existing ingredient requirement?
             if (matching == null)
             {
-                var existingIngredient = await context.Ingredients.FindAsync(ingredientRequirement.Ingredient.Id);
-                if (existingIngredient == null)
-                {
-                    existingIngredient = await context.Ingredients
-                        .FirstOrDefaultAsync(ingredient => EF.Functions.Like(ingredientRequirement.Ingredient.Name.Trim(), ingredient.Name.Trim()));
-                }
+                var existingIngredient = await context.Ingredients.FindAsync(ingredientRequirement.Ingredient.Id)
+                    ?? await context.Ingredients.FirstOrDefaultAsync(ingredient => EF.Functions.Like(ingredientRequirement.Ingredient.Name.Trim(), ingredient.Name.Trim()));
                 if (existingIngredient == null)
                 {
                     // new ingredient
@@ -187,8 +183,6 @@ public class RecipeController : ControllerBase, IImageController
         return NoContent();
     }
 
-    private bool RecipeExists(Guid id) => context.Recipes.Any(e => e.Id == id);
-
     [HttpPut("{containerId}/image")]
     public async Task<IActionResult> PutImageAsync(
         [FromRoute] Guid containerId,
@@ -237,7 +231,7 @@ public class RecipeController : ControllerBase, IImageController
         var result = await this.context.Recipes
             .Where(r => r.Id == containerId)
             .Include(r => r.Images)
-            .SelectMany(r => r.Images.Select(i => new {Name = i.Name, Id = i.Id}))
+            .SelectMany(r => r.Images.Select(i => new { i.Name, i.Id}))
             .ToListAsync();
         return this.Ok(result);
     }
