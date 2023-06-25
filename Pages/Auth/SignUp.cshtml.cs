@@ -40,7 +40,7 @@ public class SignUpModel : PageModel
 
         if (user == null)
         {
-            var (result, foundUser) = await this.UserService.CreateUser(this.SignUp);
+            var (result, _) = await this.UserService.CreateUser(this.SignUp);
             if (result.Succeeded)
             {
                 // await SendVerificationEmailAsync(foundUser);
