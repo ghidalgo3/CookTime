@@ -75,10 +75,7 @@ public class Startup
                     ?? throw new NullReferenceException("Connection string was not found.");
             }
 
-            var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-            dataSourceBuilder.MapEnum<Unit>();
-            var dataSource = dataSourceBuilder.Build();
-            options.UseNpgsql(dataSource);
+            options.UseNpgsql(Program.CreateNpgsqlDataSource(connectionString));
             options.EnableSensitiveDataLogging(true);
         });
         services.AddImageSharp(options => 
