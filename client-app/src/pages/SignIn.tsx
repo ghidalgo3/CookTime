@@ -1,9 +1,12 @@
 import React, {useEffect, useState} from"react"
 import { Alert, Col, Container, Row } from "react-bootstrap";
+import { Helmet } from "react-helmet-async";
 import { ActionFunction, ActionFunctionArgs, redirect, useActionData } from "react-router-dom";
 import { SignInForm } from "src/components";
 import { IAuthenticationProvider } from "src/shared/AuthenticationProvider";
 import { useTitle } from "src/shared/useTitle";
+
+export const SIGN_IN_PAGE_PATH = "signin"
 
 export function action(
   { signIn }: IAuthenticationProvider) : ActionFunction {
@@ -41,13 +44,18 @@ export function SignIn() {
   
   useTitle("Sign In")
   return (
-    <Container>
-      {showAlert && errorAlert}
-      <Row className="justify-content-md-center">
-        <Col style={{maxWidth: "540px", marginTop: "1rem"}}>
-          <SignInForm />
-        </Col>
-      </Row>
-    </Container>
+    <>
+      <Helmet>
+        <link rel="canonical" href={`${origin}/${SIGN_IN_PAGE_PATH}`} />
+      </Helmet>
+      <Container>
+        {showAlert && errorAlert}
+        <Row className="justify-content-md-center">
+          <Col style={{ maxWidth: "540px", marginTop: "1rem" }}>
+            <SignInForm />
+          </Col>
+        </Row>
+      </Container>
+    </>
   );
 }

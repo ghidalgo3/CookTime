@@ -35,7 +35,7 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
     [Required]
     public string Name { get; set; }
 
-    public string? StaticImage { get; set; }
+    public string StaticImage { get; set; }
 
     public double ServingsProduced { get; set; } = 1.0;
 
@@ -60,13 +60,13 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
     /// <summary>
     /// The source where the recipe came from.
     /// </summary>
-    public string? Source { get; set; }
+    public string Source { get; set; }
 
     [JsonIgnore]
     [BindNever]
     public NpgsqlTsVector SearchVector { get; set; }
 
-    public ApplicationUser? Owner { get; set; }
+    public ApplicationUser Owner { get; set; }
 
     [BindNever]
     public DateTimeOffset CreationDate { get; set; }
@@ -74,7 +74,7 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
     [BindNever]
     public DateTimeOffset LastModifiedDate { get; set; }
 
-    public bool Equals(MultiPartRecipe? other) => this.Id == other.Id;
+    public bool Equals(MultiPartRecipe other) => other != null && this.Id == other.Id;
 
     public ISet<Ingredient> GetAllIngredients() =>
             this.RecipeComponents
@@ -96,10 +96,7 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
         }
     }
 
-    private bool ArePlantBased(ISet<Ingredient> ingredients)
-    {
-        return ingredients.All(i => i.IsPlantBased);
-    }
+    private static bool ArePlantBased(ISet<Ingredient> ingredients) => ingredients.All(i => i.IsPlantBased);
 
     public bool ReplaceIngredient(
         Predicate<Ingredient> replace,
@@ -123,6 +120,10 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
         }
         return modifiedRecipe;
     }
+
+    public override bool Equals(object obj) => Equals(obj as MultiPartRecipe);
+
+    public override int GetHashCode() => this.Id.GetHashCode();
 }
 
 

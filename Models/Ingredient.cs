@@ -7,7 +7,7 @@ public class Ingredient
     public Guid Id { get; set; }
 
     [Required]
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     public string CanonicalName => this.Name.Split(";").First();
     
@@ -63,7 +63,7 @@ public class Ingredient
         }
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return obj is Ingredient ingredient &&
                string.Equals(
@@ -121,8 +121,8 @@ public static class UnitExtension {
         return (int)value < 2000 && (int)value >= 1000;
     }
 
-    public static double GetSIValue(this Unit value) {
-        return value switch
+    public static double GetSIValue(this Unit Unit) {
+        return Unit switch
         {
             // Volume
             Unit.Tablespoon => 0.0147868,
@@ -130,7 +130,7 @@ public static class UnitExtension {
             Unit.Milliliter => 0.001,
             Unit.Cup => 0.236588,
             Unit.FluidOunce => 0.0295735,
-            Unit.Pint  => 0.568261,
+            Unit.Pint => 0.568261,
             Unit.Quart => 0.946353,
             Unit.Gallon => 3.78541,
             Unit.Liter => 1.0,
@@ -142,6 +142,7 @@ public static class UnitExtension {
             Unit.Milligram => 0.001,
             Unit.Gram => 0.001,
             Unit.Kilogram => 1.0,
+            _ => throw new ArgumentOutOfRangeException(nameof(Unit), "Unknown unit name"),
         };
     }
 }

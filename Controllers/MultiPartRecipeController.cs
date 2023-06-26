@@ -107,7 +107,7 @@ namespace babe_algorithms.Controllers
             }
             var recipes = search switch {
                 null => await AllRecipes(page),
-                _ when search != null => await this.Search(search, page),
+                _ => await this.Search(search, page),
             };
             return this.Ok(recipes);
         }
@@ -326,7 +326,7 @@ namespace babe_algorithms.Controllers
             return this.Ok(body);
         }
 
-        private void SetDietDetails(
+        private static void SetDietDetails(
             MultiPartRecipe multiPartRecipe,
             RecipeNutritionFacts body)
         {
@@ -425,10 +425,10 @@ namespace babe_algorithms.Controllers
         {
             await MergeCategories(payload, existingRecipe);
             await MergeComponents(payload, existingRecipe);
-            await ApplyDefaultCategories(payload, existingRecipe);
+            await ApplyDefaultCategories(existingRecipe);
         }
 
-        private async Task ApplyDefaultCategories(MultiPartRecipe payload, MultiPartRecipe existingRecipe)
+        private async Task ApplyDefaultCategories(MultiPartRecipe existingRecipe)
         {
             var applicableCategories = existingRecipe.ApplicableDefaultCategories.ToHashSet();
             var currentCategories = existingRecipe.Categories.Select(cat => cat.Name).ToHashSet();
@@ -608,7 +608,7 @@ namespace babe_algorithms.Controllers
         var result = await this._context.MultiPartRecipes
             .Where(r => r.Id == containerId)
             .Include(r => r.Images)
-            .SelectMany(r => r.Images.Select(i => new {Name = i.Name, Id = i.Id}))
+            .SelectMany(r => r.Images.Select(i => new { i.Name, i.Id}))
             .ToListAsync();
         return this.Ok(result);
     }
@@ -643,7 +643,7 @@ namespace babe_algorithms.Controllers
 
         private async Task<PagedResult<RecipeView>> GetPagedRecipeViewsForQuery(
             IQueryable<MultiPartRecipe> query,
-            Cart? favorites,
+            Cart favorites,
             int page)
         {
             var projection =

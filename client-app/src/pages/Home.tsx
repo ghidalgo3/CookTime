@@ -6,6 +6,7 @@ import PaginatedList from "src/components/PaginatedList/PaginatedList";
 import { RecipeCard } from "src/components/RecipeCard/RecipeCard";
 import { useAuthentication } from "src/components/Authentication/AuthenticationContext";
 import RecipeList from "src/components/RecipeList/RecipeList";
+import { Helmet } from "react-helmet-async";
 
 export async function loader(load : LoaderFunctionArgs) {
   const {request, params} = load;
@@ -22,6 +23,9 @@ export default function Home() {
   const { user } = useAuthentication();
   return (
     <>
+      <Helmet>
+        <link rel="canonical" href={`${origin}/`} />
+      </Helmet>
       {
         !query && 
         <>

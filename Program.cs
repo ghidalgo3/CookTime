@@ -13,6 +13,8 @@ namespace babe_algorithms;
 
 public class Program
 {
+    private static NpgsqlDataSource dataSource;
+
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
@@ -68,10 +70,13 @@ public class Program
             if (string.IsNullOrEmpty(connectionString))
             {
                 connectionString =
-                    System.Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres")
-                    ?? throw new NullReferenceException("Connection string was not found.");
+                        System.Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres")
+                        ?? throw new NullReferenceException("Connection string was not found.");
             }
-            options.UseNpgsql(connectionString);
+            Console.WriteLine("HELLLLLLLLLLLLLLLLOOOOOOOOOOOOOOOOOOOOOOO");
+            NpgsqlDataSource dataSource = CreateNpgsqlDataSource(connectionString);
+
+            options.UseNpgsql(dataSource);
             options.EnableSensitiveDataLogging(true);
         });
         builder.Services.AddImageSharp(options => 
@@ -102,9 +107,27 @@ public class Program
         app.MapRazorPages();
         app.MapFallbackToFile("index.html");
 
-        CreateDbIfNotExists(app);
+        PreStartActions(app);
 
         app.Run();
+    }
+
+    /// <summary>
+    /// Creates an Npgsql data source. You must only create one instance of NpgsqlDataSource
+    /// for each connection string otherwise EF complains that you're creating too many ServiceProviders.
+    /// See here: https://github.com/npgsql/efcore.pg/issues/2720
+    /// </summary>
+    public static NpgsqlDataSource CreateNpgsqlDataSource(string connectionString)
+    {
+        if (dataSource == null)
+        {
+            var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+            dataSourceBuilder.MapEnum<Unit>();
+            dataSource = dataSourceBuilder.Build();
+            return dataSource;
+        }
+
+        return dataSource;
     }
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -118,11 +141,19 @@ public class Program
                 webBuilder.UseStartup<Startup>();
             });
 
-    private static void CreateDbIfNotExists(IHost host)
+    private static void PreStartActions(IHost host)
+    {
+
+        var scope = host.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        ConfigureDatabase(logger, services);
+        logger.LogInformation("PID = {pid}", Environment.ProcessId);
+    }
+
+    private static void ConfigureDatabase(ILogger<Program> logger, IServiceProvider services)
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-        using var scope = host.Services.CreateScope();
-        var services = scope.ServiceProvider;
         try
         {
             var context = services.GetRequiredService<ApplicationDbContext>();
@@ -144,7 +175,6 @@ public class Program
         }
         catch (Exception ex)
         {
-            var logger = services.GetRequiredService<ILogger<Program>>();
             logger.LogError(ex, "An error occurred creating the DB.");
             throw;
         }

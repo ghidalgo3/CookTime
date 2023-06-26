@@ -7,18 +7,18 @@ namespace babe_algorithms.Models;
 public class BrandedNutritionData : USDANutritionData
 {
     [Key]
-    public string GtinUpc { get; set; }
+    public required string GtinUpc { get; set; }
 
-    public string Ingredients { get; set; }
+    public required string Ingredients { get; set; }
 
     public double ServingSize { get; set; }
 
-    public string ServingSizeUnit { get; set; }
+    public required string ServingSizeUnit { get; set; }
 
     [JsonIgnore]
-    public JsonDocument LabelNutrients { get; set; }
+    public required JsonDocument LabelNutrients { get; set; }
 
-    public string BrandedFoodCategory { get; set; }
+    public required string BrandedFoodCategory { get; set; }
 
     public override double CalculateDensity() => 1;
 

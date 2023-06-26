@@ -80,7 +80,7 @@ public class SignInModel : PageModel
     }
 
     public async Task<IActionResult> OnPostAsync(
-        [FromQuery] string? redirectTo)
+        [FromQuery] string redirectTo)
     {
         try
         {

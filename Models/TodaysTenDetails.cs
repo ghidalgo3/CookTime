@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace babe_algorithms.Models;
 
-public class TodaysTenDetails 
+public partial class TodaysTenDetails 
 {
     public bool HasFruits { get; set; }
     public bool HasVegetables { get; set; }
@@ -16,45 +16,41 @@ public class TodaysTenDetails
     public bool HasGreens { get; set; }
     public bool HasCruciferousVegetables { get; set; }
 
-    private static Regex Greens = new(
-        "arugula|greens|beet greens|mustard greens|kale|spring mix|salad|mesclun|collard|sorrel|spinach|swiss chard|turnip greens",
-        RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+    private static readonly Regex Greens = GreensRegex();
 
-    private static Regex Crucifers = new(
-        "arugula|bok choy|broccoli|brussels sprouts|cabbage|cauliflower|collard greens|horseradish|kale|kohlrabi|mustard greens|radish|turnip greens|watercress",
-        RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+    private static Regex Crucifers = CrucifersRegex();
 
-    private static Regex Berries = new(
-        "strawberr|blueberr|açai|raspberr|blackberr|cherry",
-        RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+    private static Regex Berries = BerriesRegex();
 
     public static DietDetail GetTodaysTenDietDetail(ISet<Ingredient> allIngredients)
     {
-        Func<string, string, bool> strcmp = (a, b) => string.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
-        Func<Ingredient, string, bool> IsTodaysTen = (ingredient, name) =>
+        static bool strcmp(string a, string b) => string.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
+
+        bool IsTodaysTen(Ingredient ingredient, string name) =>
             allIngredients.Any(ingredient => strcmp(ingredient.NutritionData?.GetFoodCategoryDescription(), name));
+
         // Fruit
-        var hasFruit = allIngredients.Any(TodaysTenDetails.IsFruit);
+        var hasFruit = allIngredients.Any(IsFruit);
         // Vegetable
         var hasVegetable = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.VegetableAndVegetableProducts));
         // Bean
         var hasBeans = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.LegumeAndLegumeProducts));
         // Spices
-        var hasSpices = allIngredients.Any(TodaysTenDetails.IsSpicesAndHerbs);
+        var hasSpices = allIngredients.Any(IsSpicesAndHerbs);
         // Grain
         var hasGrain = allIngredients.Any(ingredient => IsTodaysTen(ingredient, StandardReferenceNutritionData.CerealGrainsAndPasta));
         // Nuts
-        var hasNuts = allIngredients.Any(TodaysTenDetails.IsNutsAndSeeds);
+        var hasNuts = allIngredients.Any(IsNutsAndSeeds);
         // Flaxseed
-        var hasFlaxseed = allIngredients.Any(TodaysTenDetails.IsFlaxseed);
+        var hasFlaxseed = allIngredients.Any(IsFlaxseed);
         // Berry
-        var hasBerry = allIngredients.Any(TodaysTenDetails.IsBerry);
+        var hasBerry = allIngredients.Any(IsBerry);
         // Greens
-        var hasGreens = allIngredients.Any(TodaysTenDetails.IsGreen);
+        var hasGreens = allIngredients.Any(IsGreen);
         // Crucifers
-        var hasCruciferousVegetables = allIngredients.Any(TodaysTenDetails.IsCruciferousVegetable);
+        var hasCruciferousVegetables = allIngredients.Any(IsCruciferousVegetable);
         
-        return (new DietDetail()
+        return new DietDetail()
         {
             Name = "TodaysTen",
             Opinion = DietOpinion.Neutral, // TODO
@@ -71,7 +67,7 @@ public class TodaysTenDetails
                 HasGreens = hasGreens,
                 HasCruciferousVegetables = hasCruciferousVegetables
             }
-        });
+        };
     }
 
     public static bool IsGreen(Ingredient ingredient)
@@ -119,4 +115,11 @@ public class TodaysTenDetails
     {
         return Crucifers.IsMatch(ingredient.Name);
     }
+
+    [GeneratedRegex("arugula|greens|beet greens|mustard greens|kale|spring mix|salad|mesclun|collard|sorrel|spinach|swiss chard|turnip greens", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace, "en-US")]
+    private static partial Regex GreensRegex();
+    [GeneratedRegex("arugula|bok choy|broccoli|brussels sprouts|cabbage|cauliflower|collard greens|horseradish|kale|kohlrabi|mustard greens|radish|turnip greens|watercress", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace, "en-US")]
+    private static partial Regex CrucifersRegex();
+    [GeneratedRegex("strawberr|blueberr|açai|raspberr|blackberr|cherry", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.IgnorePatternWhitespace, "en-US")]
+    private static partial Regex BerriesRegex();
 }

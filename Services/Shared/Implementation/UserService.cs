@@ -14,8 +14,8 @@ public class UserService : IUserService
 {
     private readonly ILogger<UserService> _logger;
 
-    private readonly string username;
-    private readonly string password;
+    private readonly string? username;
+    private readonly string? password;
 
     private readonly ILogger logger;
     private readonly ApplicationDbContext applicationDbContext;
@@ -86,7 +86,7 @@ public class UserService : IUserService
         return this.GetUserAsync(claimsPrincipal).Result;
     }
 
-    public async Task<ApplicationUser> GetUserAsync(ClaimsPrincipal claimsPrincipal) =>
+    public async Task<ApplicationUser?> GetUserAsync(ClaimsPrincipal claimsPrincipal) =>
         await this.UserManager.GetUserAsync(claimsPrincipal);
 
     public async Task<ApplicationUser?> FindUserByEmail(string email)
@@ -99,7 +99,7 @@ public class UserService : IUserService
         return await this.UserManager.FindByNameAsync(userName);
     }
 
-    public async Task<ApplicationUser> FindByEmailAsync(string email) =>
+    public async Task<ApplicationUser?> FindByEmailAsync(string email) =>
         await this.UserManager.FindByEmailAsync(email);
 
     public async Task<IdentityResult> AddToRoleAsync(ApplicationUser user, string role)
@@ -121,7 +121,7 @@ public class UserService : IUserService
     public async Task<string> GeneratePasswordResetTokenAsync(ApplicationUser user) =>
         await this.UserManager.GeneratePasswordResetTokenAsync(user);
 
-    public async Task<ApplicationUser> FindByIdAsync(string id) =>
+    public async Task<ApplicationUser?> FindByIdAsync(string id) =>
         await this.UserManager.FindByIdAsync(id);
 
     public async Task<IdentityResult> ConfirmEmailAsync(
@@ -156,16 +156,19 @@ public class UserService : IUserService
             }
         }
 
-    public async System.Threading.Tasks.Task SendEmailVerificationEmailAsync(
+    public async Task SendEmailVerificationEmailAsync(
         ApplicationUser user,
         Func<string, string> callback)
     {
         var token = await this.GenerateEmailConfirmationTokenAsync(user);
         var url = callback(token);
-        await this.EmailSender.SendEmailAsync(
-            user.Email,
-            "Confirm your CookTime email",
-            $"Hello! Please confirm your CookTime account by <a href='{HtmlEncoder.Default.Encode(url)}'>clicking here</a>.");
+        if (user.Email != null)
+        {
+            await this.EmailSender.SendEmailAsync(
+                user.Email,
+                "Confirm your CookTime email",
+                $"Hello! Please confirm your CookTime account by <a href='{HtmlEncoder.Default.Encode(url)}'>clicking here</a>.");
+        }
     }
 
     public async System.Threading.Tasks.Task SendPasswordResetEmailAsync(
@@ -174,10 +177,14 @@ public class UserService : IUserService
     {
         var token = await this.GeneratePasswordResetTokenAsync(user);
         var url = callback(token);
-        await this.EmailSender.SendEmailAsync(
-            user.Email,
-            subject: "CookTime password reset",
-            htmlMessage: $"Hello! Please <a href='{HtmlEncoder.Default.Encode(url)}'>click here</a> to reset your CookTime password.");
+
+        if (user.Email != null)
+        {
+            await this.EmailSender.SendEmailAsync(
+                user.Email,
+                subject: "CookTime password reset",
+                htmlMessage: $"Hello! Please <a href='{HtmlEncoder.Default.Encode(url)}'>click here</a> to reset your CookTime password.");
+        }
     }
 
     public async Task<(IdentityResult, ApplicationUser)> CreateUser(UserSignUp registrationData)

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Button, Card, Row, Col, Form, FormControl, ListGroup } from "react-bootstrap";
+import { Button, Card, Row, Col } from "react-bootstrap";
 import { Rating } from "@smastrom/react-rating";
-import { getReviews, MultiPartRecipe, Review } from "src/shared/CookTime";
+import { getReviews, Review } from "src/shared/CookTime";
 import { useAuthentication } from "../Authentication/AuthenticationContext";
 
 type RecipeReviewsProps = {
@@ -28,9 +28,9 @@ export function RecipeReviews({recipeId} : RecipeReviewsProps) {
       if (response.ok) {
         // TODO this cannot be a location.reload()
         // eslint-disable-next-line no-restricted-globals
-        location.reload();
-      }
-    });
+        // location.reload();
+        setReviews(reviews.filter(review => review.owner.id !== user?.id));
+    }});
   }
 
   return (

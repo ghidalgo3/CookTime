@@ -8,10 +8,10 @@ public abstract class USDANutritionData
 {
     public int FdcId { get; set; }
 
-    public string Description { get; set; }
+    public required string Description { get; set; }
 
     [JsonIgnore]
-    public JsonDocument FoodNutrients { get; set; }
+    public required JsonDocument FoodNutrients { get; set; }
 
     // public Ingredient? Ingredient { get; set; }
 

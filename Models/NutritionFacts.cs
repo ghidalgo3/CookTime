@@ -55,7 +55,7 @@ public class DietDetail
 
 public class IngredientNutritionDescription
 {
-    public string nutritionDatabaseId { get; set; }
+    public string NutritionDatabaseId { get; set; }
     public string NutritionDatabaseDescriptor { get; set; }
     public string Name { get; set; }
     public string Unit { get; set; }

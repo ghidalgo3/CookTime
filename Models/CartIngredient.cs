@@ -14,7 +14,9 @@ public class CartIngredient : IEquatable<CartIngredient>
 
     public bool Checked { get; set; }
 
-    public bool Equals(CartIngredient other) => this.Id == other.Id;
+    public bool Equals(CartIngredient other) => other != null && this.Id == other.Id;
 
     public override int GetHashCode() => this.Id.GetHashCode();
+
+    public override bool Equals(object obj) => Equals(obj as CartIngredient);
 }

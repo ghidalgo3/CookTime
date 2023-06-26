@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
@@ -44,7 +43,7 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
         };
         if (this.Ingredient.NormalNutritionData is StandardReferenceNutritionData data)
         {
-            description.nutritionDatabaseId = data.FdcId.ToString();
+            description.NutritionDatabaseId = data.FdcId.ToString();
             description.NutritionDatabaseDescriptor = data.Description;
             if (this.Unit.IsCount())
             {
@@ -53,7 +52,7 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
         }
         else if (this.Ingredient.NormalNutritionData is BrandedNutritionData brandedData)
         {
-            description.nutritionDatabaseId = brandedData.FdcId.ToString();
+            description.NutritionDatabaseId = brandedData.FdcId.ToString();
             description.NutritionDatabaseDescriptor = brandedData.Description;
         }
         else

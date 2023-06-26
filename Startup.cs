@@ -5,8 +5,12 @@ using GustavoTech.Implementation;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using babe_algorithms.Models.Users;
 using Microsoft.AspNetCore.Identity;
+using Npgsql;
 
 namespace babe_algorithms;
+
+// Keeping this class around because it's needed for migration scaffolding.
+// TODO: Merge as much of this as possible with Program.cs
 public class Startup
 {
     public Startup(IConfiguration configuration, IWebHostEnvironment env)
@@ -70,7 +74,8 @@ public class Startup
                     System.Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres")
                     ?? throw new NullReferenceException("Connection string was not found.");
             }
-            options.UseNpgsql(connectionString);
+
+            options.UseNpgsql(Program.CreateNpgsqlDataSource(connectionString));
             options.EnableSensitiveDataLogging(true);
         });
         services.AddImageSharp(options => 

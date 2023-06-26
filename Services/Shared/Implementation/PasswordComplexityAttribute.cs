@@ -1,7 +1,9 @@
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
-public class PasswordComplexityAttribute : ValidationAttribute, IClientModelValidator
+namespace babe_algorithms;
+
+public partial class PasswordComplexityAttribute : ValidationAttribute, IClientModelValidator
 {
     public PasswordComplexityAttribute(
         bool requiresNonAlphanumeric,
@@ -9,10 +11,10 @@ public class PasswordComplexityAttribute : ValidationAttribute, IClientModelVali
         bool requiresUpper,
         bool allowSpaces = false)
     {
-        this.RequiresUpper = requiresUpper;
-        this.RequiresLower = requiresLower;
-        this.RequiresNonAlphanumeric = requiresNonAlphanumeric;
-        this.AllowSpaces = allowSpaces;
+        RequiresUpper = requiresUpper;
+        RequiresLower = requiresLower;
+        RequiresNonAlphanumeric = requiresNonAlphanumeric;
+        AllowSpaces = allowSpaces;
     }
 
     public bool AllowSpaces { get; }
@@ -30,8 +32,8 @@ public class PasswordComplexityAttribute : ValidationAttribute, IClientModelVali
             throw new ArgumentNullException(nameof(context));
         }
 
-        this.MergeAttribute(context.Attributes, "data-val", "true");
-        this.MergeAttribute(context.Attributes, "data-val-password", this.GetErrorMessage(context));
+        MergeAttribute(context.Attributes, "data-val", "true");
+        MergeAttribute(context.Attributes, "data-val-password", GetErrorMessage(context));
     }
 
     protected override ValidationResult IsValid(
@@ -39,28 +41,27 @@ public class PasswordComplexityAttribute : ValidationAttribute, IClientModelVali
         ValidationContext validationContext)
     {
         string errorMessage = string.Empty;
-        var password = value as string;
-        if (password == null)
+        if (value is not string password)
         {
             return new ValidationResult("Password is empty");
         }
 
-        if (this.RequiresNonAlphanumeric && !this.ContainsNonAlphanumeric(password))
+        if (RequiresNonAlphanumeric && !ContainsNonAlphanumeric(password))
         {
             errorMessage += "Must use non-alphanumeric character. ";
         }
 
-        if (this.RequiresLower && !this.ContainsLowerCase(password))
+        if (RequiresLower && !ContainsLowerCase(password))
         {
             errorMessage += "Must use lower case character. ";
         }
 
-        if (this.RequiresUpper && !this.ContainsUpperCase(password))
+        if (RequiresUpper && !ContainsUpperCase(password))
         {
             errorMessage += "Must use upper case character. ";
         }
 
-        if (!this.AllowSpaces && this.ContainsSpaces(password))
+        if (!AllowSpaces && ContainsSpaces(password))
         {
             errorMessage += "Cannot contains spaces. ";
         }
@@ -77,28 +78,28 @@ public class PasswordComplexityAttribute : ValidationAttribute, IClientModelVali
 
     private bool ContainsUpperCase(string str)
     {
-        var regex = new Regex(@"[A-Z]");
+        var regex = UpperCase();
         var match = regex.Match(str);
         return match.Success;
     }
 
     private bool ContainsLowerCase(string str)
     {
-        var regex = new Regex(@"[a-z]");
+        var regex = LowerCase();
         var match = regex.Match(str);
         return match.Success;
     }
 
     private bool ContainsNonAlphanumeric(string str)
     {
-        var regex = new Regex(@"\W");
+        var regex = NonAlpha();
         var match = regex.Match(str);
         return match.Success;
     }
 
     private bool ContainsSpaces(string str)
     {
-        var regex = new Regex(@"\s");
+        var regex = Spaces();
         var match = regex.Match(str);
         return match.Success;
     }
@@ -118,4 +119,13 @@ public class PasswordComplexityAttribute : ValidationAttribute, IClientModelVali
         attributes.Add(key, value);
         return true;
     }
+
+    [GeneratedRegex("[A-Z]")]
+    private static partial Regex UpperCase();
+    [GeneratedRegex("[a-z]")]
+    private static partial Regex LowerCase();
+    [GeneratedRegex("\\W")]
+    private static partial Regex NonAlpha();
+    [GeneratedRegex("\\s")]
+    private static partial Regex Spaces();
 }
