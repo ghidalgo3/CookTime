@@ -7,11 +7,7 @@ using babe_algorithms.Models.Users;
 using babe_algorithms.Pages;
 using babe_algorithms.ViewComponents;
 using GustavoTech.Implementation;
-using Microsoft.Extensions.Options;
-using Microsoft.Azure.CognitiveServices.Vision.ComputerVision;
-using Microsoft.Azure.CognitiveServices.Vision.ComputerVision.Models;
 using Category = babe_algorithms.Models.Category;
-using OpenAI_API;
 
 namespace babe_algorithms.Controllers
 {
