@@ -51,9 +51,9 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
 
     public Guid Id { get; set; }
 
-    public ISet<Category> Categories { get; set; }
+    public ISet<Category> Categories { get; set; } = new HashSet<Category>();
 
-    public List<Image> Images { get; set; }
+    public List<Image> Images { get; set; } 
 
     public List<RecipeComponent> RecipeComponents { get; set; } = new List<RecipeComponent>();
 

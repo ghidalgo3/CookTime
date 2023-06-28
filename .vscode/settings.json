@@ -1,0 +1,4 @@
+{
+    "dotnet.defaultSolution": "babe-algorithms.sln",
+    "cmake.configureOnOpen": false
+}

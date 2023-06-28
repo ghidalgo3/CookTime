@@ -8,7 +8,8 @@ export async function getMultiPartRecipe(id : string) {
   const response = await fetch(`/api/multipartrecipe/${id}`);
   return await response.json();
 }
-export async function createRecipe(recipeCreationArgs : string) {
+
+export async function createRecipeWithName(recipeCreationArgs : string) {
   const form = new FormData();
   form.set("name", recipeCreationArgs);
   const response = await fetch("/api/multipartrecipe/create", {
@@ -17,6 +18,15 @@ export async function createRecipe(recipeCreationArgs : string) {
   });
   return response;
 }
+
+export async function importRecipeFromImage(recipeCreationArgs : FormData) {
+  const response = await fetch("/api/multipartrecipe/importFromImage", {
+    method: "POST",
+    body: recipeCreationArgs
+  });
+  return response;
+}
+
 export async function getCategories() : Promise<string[]> {
   const response = await fetch("/api/category/list")
   return await response.json()

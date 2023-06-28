@@ -2,7 +2,7 @@
 layout: post
 title:  "AI Generated Recipes Photography"
 date:   2023-06-011 20:36:58 -0400
-categories: 
+categories: ai, machine learning, dall-e
 ---
 
 We know that most users browse for recipes with their eyes, so having good images is important.

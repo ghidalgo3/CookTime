@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Image2Recipe: Import recipe photoes | CookTime Blog</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Image2Recipe: Import recipe photoes" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Have you ever wanted to take a picture of a recipe book and digitize that recipe in one click? With CookTime, now you can! This update brings the power of ChatGPT and Azure Cognitive Services together to enable seamless recipe import from images:" />
+<meta property="og:description" content="Have you ever wanted to take a picture of a recipe book and digitize that recipe in one click? With CookTime, now you can! This update brings the power of ChatGPT and Azure Cognitive Services together to enable seamless recipe import from images:" />
+<link rel="canonical" href="https://letscooktime.com/Blog/ai,/machine/learning,/chatgpt,/ocr/2023/06/27/chatgpt.html" />
+<meta property="og:url" content="https://letscooktime.com/Blog/ai,/machine/learning,/chatgpt,/ocr/2023/06/27/chatgpt.html" />
+<meta property="og:site_name" content="CookTime Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-06-27T20:36:58-04:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Image2Recipe: Import recipe photoes" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2023-06-27T20:36:58-04:00","datePublished":"2023-06-27T20:36:58-04:00","description":"Have you ever wanted to take a picture of a recipe book and digitize that recipe in one click? With CookTime, now you can! This update brings the power of ChatGPT and Azure Cognitive Services together to enable seamless recipe import from images:","headline":"Image2Recipe: Import recipe photoes","mainEntityOfPage":{"@type":"WebPage","@id":"https://letscooktime.com/Blog/ai,/machine/learning,/chatgpt,/ocr/2023/06/27/chatgpt.html"},"url":"https://letscooktime.com/Blog/ai,/machine/learning,/chatgpt,/ocr/2023/06/27/chatgpt.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/Blog/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://letscooktime.com/Blog/feed.xml" title="CookTime Blog" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/Blog/">CookTime Blog</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/Blog/about/">About</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Image2Recipe: Import recipe photoes</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2023-06-27T20:36:58-04:00" itemprop="datePublished">Jun 27, 2023
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p>Have you ever wanted to take a picture of a recipe book and digitize that recipe in one click?
+With CookTime, now you can! This update brings the power of ChatGPT and Azure Cognitive Services together to enable seamless recipe import from images:</p>
+
+<p><img src="assets/RecipeImport.gif" alt="Recipe Import GIF" /></p>
+
+<h1 id="how-we-made-this">How we made this:</h1>
+
+<p>The general algorithm is this:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func importRecipe(image):
+    let allText = AzureCognitiveServices.ReadText(image);
+    let recipe = ChatGPT.CreateImportRecipeFunctionCall(allText);
+    database.LinkIngredients(recipe);
+    database.Save(recipe);
+</code></pre></div></div>
+
+<p>Let’s break that down even further!</p>
+
+<h2 id="azure-cognitive-services-computer-vision">Azure Cognitive Services Computer Vision</h2>
+<p>Azure has a really good OCR API. You can try it out yourself <a href="https://portal.vision.cognitive.azure.com/demo/extract-text-from-images">here</a>.
+Given an image, it will produce an object of all the pages, lines, and words within that image:</p>
+
+<p><img src="assets/visionExample.png" alt="Example of vision API" /></p>
+
+<p>For our purposes, we simply take the text inside the image and concatenate it all together to form one big string that we will pass to ChatGPT. I found that replacing new-lines (\n) with spaces produced better results with ChatGPT, maybe the new-line tokens throw off the model.</p>
+
+<h2 id="chatgpt">ChatGPT</h2>
+
+<p>Recently ChatGPT included a new <a href="https://platform.openai.com/docs/guides/gpt/function-calling">function calling</a> feature.
+Essentially it’s a more reliable way of transforming a prompt into JSON.
+You must supply ChatGPT with a JSONSchema definition of a function’s <em>arguments</em> (as an object), a prompt that asks ChatGPT to do something that may require calling that function, and then let ChatGPT do its magic.
+For CookTime’s case, I defined a function like this (this is TypeScript like but pretend it’s JSONSchema):</p>
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">void</span> <span class="nx">ImportRecipe</span><span class="p">(</span><span class="nx">recipe</span><span class="p">:</span>
+    <span class="p">{</span>
+        <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span>
+        <span class="nx">servings</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span>
+        <span class="nx">cookTime</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span>
+        <span class="nx">steps</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="na">text</span><span class="p">:</span> <span class="kr">string</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+        <span class="nx">ingredientRequirements</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="na">ingredientName</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span>
+                <span class="na">quantity</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span>
+                <span class="na">unit</span><span class="p">:</span> <span class="kr">string</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">})</span>
+</code></pre></div></div>
+<p>To note:</p>
+<ol>
+  <li>Your top level function argument must be an object, not an array.</li>
+  <li>You should <em>not</em> use <code class="language-plaintext highlighter-rouge">$refs</code> in your JSONSchema, they seem to be ignored.</li>
+  <li>You can have arrays of primitives or objects in your JSONSchema, ChatGPT will handle it.</li>
+  <li>The <code class="language-plaintext highlighter-rouge">description</code> property of the JSONSchema does affect how ChatGPT interprets the text. For example, sometimes ingredient requirements would have a name like <code class="language-plaintext highlighter-rouge">"tbsp. olive oil"</code> so I had to change the property description to say something like <code class="language-plaintext highlighter-rouge">"ingredient name without units, or abbreviations"</code>. If you think AI is going to take everyone’s jobs, just remember even AI needs to be given precise instructions about what to do!</li>
+</ol>
+
+<p>Finally, the prompt I used to call ChatGPT went something like: <code class="language-plaintext highlighter-rouge">Import the following as a recipe: [VISION API RESULTS CONCATENATED]</code>.
+ChatGPT then returned an object according to my JSONSchema that was trivially convertible to the database recipe type.</p>
+
+<h2 id="linking-ingredients">Linking ingredients</h2>
+<p>The output of ChatGPT may or may not reference ingredients that CookTime already knows about.
+For example, the recipe shown in this post references olive oil.
+It’s important that the olive oil referenced by the recipe object is the existing olive oil ingredient in the database and not a duplicate.
+This merging/deduplication process already happens when a recipe is updated, but now we needed to run it even during creation.</p>
+
+<h2 id="performance">Performance</h2>
+<p>An import does take about 30 seconds, but I need to deploy it to production and see how long it takes once everythign is in the cloud. I should come back here and update this with some numbers in the future.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+<p>This was the result of maybe 4-5 days of work, though I did already have experience working with the Vision API and ChatGPT from some work projects.
+Most of the time was spent refining the prompt and function schema for ChatGPT to produce the right results, and there may be an opportunity there to save time for more complex objects.</p>
+
+  </div><a class="u-url" href="/Blog/ai,/machine/learning,/chatgpt,/ocr/2023/06/27/chatgpt.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/Blog/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">CookTime Blog</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">CookTime Blog</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>CookTime Blog</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
