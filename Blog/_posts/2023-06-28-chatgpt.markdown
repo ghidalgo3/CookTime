@@ -1,0 +1,80 @@
+---
+layout: post
+title:  "Image2Recipe: Import recipe photoes"
+date:   2023-06-28 20:36:58 -0400
+categories: ai, machine learning, chatgpt, ocr
+---
+
+Have you ever wanted to take a picture of a recipe book and digitize that recipe in one click?
+With CookTime, now you can! This update brings the power of ChatGPT and Azure Cognitive Services together to enable seamless recipe import from images:
+
+![Recipe Import GIF](assets/RecipeImport.gif)
+
+# How we made this:
+
+The general algorithm is this:
+```
+func importRecipe(image):
+    let allText = AzureCognitiveServices.ReadText(image);
+    let recipe = ChatGPT.CreateImportRecipeFunctionCall(allText);
+    database.LinkIngredients(recipe);
+    database.Save(recipe);
+```
+
+Let's break that down even further!
+
+## Azure Cognitive Services Computer Vision
+Azure has a really good OCR API. You can try it out yourself [here](https://portal.vision.cognitive.azure.com/demo/extract-text-from-images).
+Given an image, it will produce an object of all the pages, lines, and words within that image:
+
+![Example of vision API](assets/visionExample.png)
+
+For our purposes, we simply take the text inside the image and concatenate it all together to form one big string that we will pass to ChatGPT. I found that replacing new-lines (\n) with spaces produced better results with ChatGPT, maybe the new-line tokens throw off the model.
+
+## ChatGPT
+
+Recently ChatGPT included a new [function calling](https://platform.openai.com/docs/guides/gpt/function-calling) feature.
+Essentially it's a more reliable way of transforming a prompt into JSON.
+You must supply ChatGPT with a JSONSchema definition of a function's _arguments_ (as an object), a prompt that asks ChatGPT to do something that may require calling that function, and then let ChatGPT do its magic.
+For CookTime's case, I defined a function like this (this is TypeScript like but pretend it's JSONSchema):
+```typescript
+void ImportRecipe(recipe:
+    {
+        name: string,
+        servings: number,
+        cookTime: number,
+        steps: [
+            {
+                text: string
+            }
+        ]
+        ingredientRequirements: [
+            {
+                ingredientName: string,
+                quantity: string,
+                unit: string
+            }
+        ]
+    })
+```
+To note:
+1. Your top level function argument must be an object, not an array.
+1. You should _not_ use `$refs` in your JSONSchema, they seem to be ignored.
+1. You can have arrays of primitives or objects in your JSONSchema, ChatGPT will handle it.
+1. The `description` property of the JSONSchema does affect how ChatGPT interprets the text. For example, sometimes ingredient requirements would have a name like `"tbsp. olive oil"` so I had to change the property description to say something like `"ingredient name without units, or abbreviations"`. If you think AI is going to take everyone's jobs, just remember even AI needs to be given precise instructions about what to do!
+
+Finally, the prompt I used to call ChatGPT went something like: `Import the following as a recipe: [VISION API RESULTS CONCATENATED]`.
+ChatGPT then returned an object according to my JSONSchema that was trivially convertible to the database recipe type.
+
+## Linking ingredients
+The output of ChatGPT may or may not reference ingredients that CookTime already knows about.
+For example, the recipe shown in this post references olive oil.
+It's important that the olive oil referenced by the recipe object is the existing olive oil ingredient in the database and not a duplicate.
+This merging/deduplication process already happens when a recipe is updated, but now we needed to run it even during creation.
+
+## Performance
+An import does take about 30 seconds, but I need to deploy it to production and see how long it takes once everythign is in the cloud. I should come back here and update this with some numbers in the future.
+
+# Conclusion
+This was the result of maybe 4-5 days of work, though I did already have experience working with the Vision API and ChatGPT from some work projects.
+Most of the time was spent refining the prompt and function schema for ChatGPT to produce the right results, and there may be an opportunity there to save time for more complex objects.
