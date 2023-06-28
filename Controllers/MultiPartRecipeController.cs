@@ -92,7 +92,7 @@ namespace babe_algorithms.Controllers
             recipe.Owner = user;
             recipe.CreationDate = DateTimeOffset.UtcNow;
             recipe.LastModifiedDate = DateTimeOffset.UtcNow;
-            await MergeRecipeRelationsAwait(payload: recipe, new MultiPartRecipe());
+            await MergeRecipeRelationsAwait(payload: recipe, existingRecipe: new MultiPartRecipe());
             this._context.MultiPartRecipes.Add(recipe);
             await this._context.SaveChangesAsync();
             await _context.Entry(recipe).ReloadAsync();
