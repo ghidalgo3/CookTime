@@ -14,7 +14,7 @@ public class AzureCognitiveServices : IComputerVision
 
     public async Task<string> GetTextAsync(Stream image, CancellationToken ct)
     {
-        var headers = await this.Client.ReadInStreamAsync(image);
+        var headers = await this.Client.ReadInStreamAsync(image, cancellationToken: ct);
         string operationLocation = headers.OperationLocation;
         await Task.Delay(1000, ct);
         // <snippet_extract_response>
@@ -33,6 +33,7 @@ public class AzureCognitiveServices : IComputerVision
             results.Status == OperationStatusCodes.NotStarted));
         var textUrlFileResults = results.AnalyzeResult.ReadResults;
 
+        // Leaving this as a space instead of \n improves tokenization for the LLM
         return string.Join(" ", textUrlFileResults.SelectMany(result => result.Lines.Select(line => line.Text)));
     }
 

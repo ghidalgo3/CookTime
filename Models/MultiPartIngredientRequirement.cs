@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace babe_algorithms.Models;
 
-public class MultiPartIngredientRequirement : IIngredientRequirement
+public class MultiPartIngredientRequirement : IIngredientRequirement, IEquatable<MultiPartIngredientRequirement>
 {
     public MultiPartIngredientRequirement()
     {
@@ -115,4 +115,20 @@ public class MultiPartIngredientRequirement : IIngredientRequirement
             propertySetter.Invoke(kilogramsOfUnit * 10 * calorieData.Value<double>("amount"));
         }
     }
+
+    public bool Equals(MultiPartIngredientRequirement other)
+    {
+        return other != null
+            && this.Id == other.Id
+            && this.Quantity == other.Quantity
+            && this.Unit == other.Unit
+            && this.Ingredient == other.Ingredient;
+    }
+
+    public override bool Equals(object obj)
+    {
+        return Equals(obj as MultiPartIngredientRequirement);
+    }
+
+    public override int GetHashCode() => HashCode.Combine(this.Id, this.Unit, this.Quantity, this.Ingredient);
 }

@@ -1,3 +1,4 @@
+using System.Globalization;
 using babe_algorithms.ViewComponents;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.WebUtilities;
@@ -23,6 +24,13 @@ public static class Extensions
         {
             return ("text-secondary", $"{weeksAgo} weeks ago");
         }
+    }
+
+    public static string ToTitleCase(this string str)
+    {
+        TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+        string lowerCase = str.ToLower();
+        return textInfo.ToTitleCase(lowerCase);
     }
 }
 
