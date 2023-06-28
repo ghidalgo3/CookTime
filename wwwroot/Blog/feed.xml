@@ -1,4 +1,76 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://letscooktime.com/Blog/feed.xml" rel="self" type="application/atom+xml" /><link href="https://letscooktime.com/Blog/" rel="alternate" type="text/html" /><updated>2023-02-11T16:23:30-05:00</updated><id>https://letscooktime.com/Blog/feed.xml</id><title type="html">CookTime Blog</title><subtitle>CookTime Blog</subtitle><entry><title type="html">Refactoring to React</title><link href="https://letscooktime.com/Blog/2023/01/16/reimplement-react.html" rel="alternate" type="text/html" title="Refactoring to React" /><published>2023-01-16T19:36:58-05:00</published><updated>2023-01-16T19:36:58-05:00</updated><id>https://letscooktime.com/Blog/2023/01/16/reimplement-react</id><content type="html" xml:base="https://letscooktime.com/Blog/2023/01/16/reimplement-react.html"><![CDATA[<p>Since the beginning, CookTime was mainly an ASP.NET Razor page application with a small amount of React, mainly for the very interactive recipe edit page.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://letscooktime.com/Blog/feed.xml" rel="self" type="application/atom+xml" /><link href="https://letscooktime.com/Blog/" rel="alternate" type="text/html" /><updated>2023-06-28T15:08:26-04:00</updated><id>https://letscooktime.com/Blog/feed.xml</id><title type="html">CookTime Blog</title><subtitle>CookTime Blog</subtitle><entry><title type="html">Image2Recipe: Import recipe photoes</title><link href="https://letscooktime.com/Blog/ai,/machine/learning,/chatgpt,/ocr/2023/06/27/chatgpt.html" rel="alternate" type="text/html" title="Image2Recipe: Import recipe photoes" /><published>2023-06-27T20:36:58-04:00</published><updated>2023-06-27T20:36:58-04:00</updated><id>https://letscooktime.com/Blog/ai,/machine/learning,/chatgpt,/ocr/2023/06/27/chatgpt</id><content type="html" xml:base="https://letscooktime.com/Blog/ai,/machine/learning,/chatgpt,/ocr/2023/06/27/chatgpt.html"><![CDATA[<p>Have you ever wanted to take a picture of a recipe book and digitize that recipe in one click?
+With CookTime, now you can! This update brings the power of ChatGPT and Azure Cognitive Services together to enable seamless recipe import from images:</p>
+
+<p><img src="assets/RecipeImport.gif" alt="Recipe Import GIF" /></p>
+
+<h1 id="how-we-made-this">How we made this:</h1>
+
+<p>The general algorithm is this:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func importRecipe(image):
+    let allText = AzureCognitiveServices.ReadText(image);
+    let recipe = ChatGPT.CreateImportRecipeFunctionCall(allText);
+    database.LinkIngredients(recipe);
+    database.Save(recipe);
+</code></pre></div></div>
+
+<p>Let’s break that down even further!</p>
+
+<h2 id="azure-cognitive-services-computer-vision">Azure Cognitive Services Computer Vision</h2>
+<p>Azure has a really good OCR API. You can try it out yourself <a href="https://portal.vision.cognitive.azure.com/demo/extract-text-from-images">here</a>.
+Given an image, it will produce an object of all the pages, lines, and words within that image:</p>
+
+<p><img src="assets/visionExample.png" alt="Example of vision API" /></p>
+
+<p>For our purposes, we simply take the text inside the image and concatenate it all together to form one big string that we will pass to ChatGPT. I found that replacing new-lines (\n) with spaces produced better results with ChatGPT, maybe the new-line tokens throw off the model.</p>
+
+<h2 id="chatgpt">ChatGPT</h2>
+
+<p>Recently ChatGPT included a new <a href="https://platform.openai.com/docs/guides/gpt/function-calling">function calling</a> feature.
+Essentially it’s a more reliable way of transforming a prompt into JSON.
+You must supply ChatGPT with a JSONSchema definition of a function’s <em>arguments</em> (as an object), a prompt that asks ChatGPT to do something that may require calling that function, and then let ChatGPT do its magic.
+For CookTime’s case, I defined a function like this (this is TypeScript like but pretend it’s JSONSchema):</p>
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">void</span> <span class="nx">ImportRecipe</span><span class="p">(</span><span class="nx">recipe</span><span class="p">:</span>
+    <span class="p">{</span>
+        <span class="nl">name</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span>
+        <span class="nx">servings</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span>
+        <span class="nx">cookTime</span><span class="p">:</span> <span class="kr">number</span><span class="p">,</span>
+        <span class="nx">steps</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="na">text</span><span class="p">:</span> <span class="kr">string</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+        <span class="nx">ingredientRequirements</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="na">ingredientName</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span>
+                <span class="na">quantity</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span>
+                <span class="na">unit</span><span class="p">:</span> <span class="kr">string</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">})</span>
+</code></pre></div></div>
+<p>To note:</p>
+<ol>
+  <li>Your top level function argument must be an object, not an array.</li>
+  <li>You should <em>not</em> use <code class="language-plaintext highlighter-rouge">$refs</code> in your JSONSchema, they seem to be ignored.</li>
+  <li>You can have arrays of primitives or objects in your JSONSchema, ChatGPT will handle it.</li>
+  <li>The <code class="language-plaintext highlighter-rouge">description</code> property of the JSONSchema does affect how ChatGPT interprets the text. For example, sometimes ingredient requirements would have a name like <code class="language-plaintext highlighter-rouge">"tbsp. olive oil"</code> so I had to change the property description to say something like <code class="language-plaintext highlighter-rouge">"ingredient name without units, or abbreviations"</code>. If you think AI is going to take everyone’s jobs, just remember even AI needs to be given precise instructions about what to do!</li>
+</ol>
+
+<p>Finally, the prompt I used to call ChatGPT went something like: <code class="language-plaintext highlighter-rouge">Import the following as a recipe: [VISION API RESULTS CONCATENATED]</code>.
+ChatGPT then returned an object according to my JSONSchema that was trivially convertible to the database recipe type.</p>
+
+<h2 id="linking-ingredients">Linking ingredients</h2>
+<p>The output of ChatGPT may or may not reference ingredients that CookTime already knows about.
+For example, the recipe shown in this post references olive oil.
+It’s important that the olive oil referenced by the recipe object is the existing olive oil ingredient in the database and not a duplicate.
+This merging/deduplication process already happens when a recipe is updated, but now we needed to run it even during creation.</p>
+
+<h2 id="performance">Performance</h2>
+<p>An import does take about 30 seconds, but I need to deploy it to production and see how long it takes once everythign is in the cloud. I should come back here and update this with some numbers in the future.</p>
+
+<h1 id="conclusion">Conclusion</h1>
+<p>This was the result of maybe 4-5 days of work, though I did already have experience working with the Vision API and ChatGPT from some work projects.
+Most of the time was spent refining the prompt and function schema for ChatGPT to produce the right results, and there may be an opportunity there to save time for more complex objects.</p>]]></content><author><name></name></author><category term="ai," /><category term="machine" /><category term="learning," /><category term="chatgpt," /><category term="ocr" /><summary type="html"><![CDATA[Have you ever wanted to take a picture of a recipe book and digitize that recipe in one click? With CookTime, now you can! This update brings the power of ChatGPT and Azure Cognitive Services together to enable seamless recipe import from images:]]></summary></entry><entry><title type="html">Refactoring to React</title><link href="https://letscooktime.com/Blog/2023/01/16/reimplement-react.html" rel="alternate" type="text/html" title="Refactoring to React" /><published>2023-01-16T19:36:58-05:00</published><updated>2023-01-16T19:36:58-05:00</updated><id>https://letscooktime.com/Blog/2023/01/16/reimplement-react</id><content type="html" xml:base="https://letscooktime.com/Blog/2023/01/16/reimplement-react.html"><![CDATA[<p>Since the beginning, CookTime was mainly an ASP.NET Razor page application with a small amount of React, mainly for the very interactive recipe edit page.
 This was fine for a while, but I’ve been using React more at work and I’ve decided that Razor pages, while good, lack the development maturity, mindshare, and interactivity of React. 
 I’ve resolved to reimplement the CookTime UI as a React single page application (SPA) with these goals:</p>
 
@@ -288,4 +360,18 @@ Accounts will allow for some exciting new features like:</p>
 </ol>
 
 <p>And many more!
-To create an account, navigate to the Sign In page and fill in the form.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[We have finished implementing accounts on CookTime. Accounts will allow for some exciting new features like: Favorite recipes ✅ Private recipes Ratings ✅ Comments Recipe lists Personal shopping lists ✅]]></summary></entry><entry><title type="html">Welcome to CookTime!</title><link href="https://letscooktime.com/Blog/2022/04/18/welcome-to-cooktime-blog.html" rel="alternate" type="text/html" title="Welcome to CookTime!" /><published>2022-04-18T19:36:58-04:00</published><updated>2022-04-18T19:36:58-04:00</updated><id>https://letscooktime.com/Blog/2022/04/18/welcome-to-cooktime-blog</id><content type="html" xml:base="https://letscooktime.com/Blog/2022/04/18/welcome-to-cooktime-blog.html"><![CDATA[<p>We will use this blog to write about new features added to CookTime!</p>]]></content><author><name></name></author><summary type="html"><![CDATA[We will use this blog to write about new features added to CookTime!]]></summary></entry></feed>
+To create an account, navigate to the Sign In page and fill in the form.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[We have finished implementing accounts on CookTime. Accounts will allow for some exciting new features like: Favorite recipes ✅ Private recipes Ratings ✅ Comments Recipe lists Personal shopping lists ✅]]></summary></entry><entry><title type="html">Welcome to CookTime!</title><link href="https://letscooktime.com/Blog/2022/04/18/welcome-to-cooktime-blog.html" rel="alternate" type="text/html" title="Welcome to CookTime!" /><published>2022-04-18T19:36:58-04:00</published><updated>2022-04-18T19:36:58-04:00</updated><id>https://letscooktime.com/Blog/2022/04/18/welcome-to-cooktime-blog</id><content type="html" xml:base="https://letscooktime.com/Blog/2022/04/18/welcome-to-cooktime-blog.html"><![CDATA[<p>We will use this blog to write about new features added to CookTime!</p>]]></content><author><name></name></author><summary type="html"><![CDATA[We will use this blog to write about new features added to CookTime!]]></summary></entry><entry><title type="html">AI Generated Recipes Photography</title><link href="https://letscooktime.com/Blog/ai,/machine/learning,/dall-e/0011/06/30/stablediffusion.html" rel="alternate" type="text/html" title="AI Generated Recipes Photography" /><published>0011-06-30T19:36:58-05:00</published><updated>0011-06-30T19:36:58-05:00</updated><id>https://letscooktime.com/Blog/ai,/machine/learning,/dall-e/0011/06/30/stablediffusion</id><content type="html" xml:base="https://letscooktime.com/Blog/ai,/machine/learning,/dall-e/0011/06/30/stablediffusion.html"><![CDATA[<p>We know that most users browse for recipes with their eyes, so having good images is important.
+Camila and I quickly learned that food photography is very difficult, so we were looking for a way to save time and avoid copyright infringement.
+Earlier this year, we started using AI to generate images for CookTime recipes.
+It was very simple, we simply followed the guide laid out <a href="https://huggingface.co/blog/stable_diffusion">here</a>.
+The one quirky thing was that we had to run this on the single machine at home with 8GB of GPU memory which was a gaming laptop.
+After that, we did some prompt engineering using the recipe titles and put some AI generated images on CookTime.</p>
+
+<p>Here are some examples:</p>
+<ol>
+  <li><a href="https://letscooktime.com/Recipes/Details?id=af5a0f90-a348-439a-bd5a-752b434ed081">Beef wellington</a></li>
+  <li><a href="https://letscooktime.com/Recipes/Details?id=7ff14788-5680-41cf-8aec-dbfff22a6d02">Baklava overnight oats</a></li>
+  <li><a href="https://letscooktime.com/Recipes/Details?id=f2e05068-83e0-450a-bce9-ff8ed9146861">Beet pancakes</a></li>
+</ol>
+
+<p>Pretty cool!</p>]]></content><author><name></name></author><category term="ai," /><category term="machine" /><category term="learning," /><category term="dall-e" /><summary type="html"><![CDATA[We know that most users browse for recipes with their eyes, so having good images is important. Camila and I quickly learned that food photography is very difficult, so we were looking for a way to save time and avoid copyright infringement. Earlier this year, we started using AI to generate images for CookTime recipes. It was very simple, we simply followed the guide laid out here. The one quirky thing was that we had to run this on the single machine at home with 8GB of GPU memory which was a gaming laptop. After that, we did some prompt engineering using the recipe titles and put some AI generated images on CookTime.]]></summary></entry></feed>
