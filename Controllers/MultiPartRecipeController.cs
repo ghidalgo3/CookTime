@@ -8,6 +8,8 @@ using babe_algorithms.Pages;
 using babe_algorithms.ViewComponents;
 using GustavoTech.Implementation;
 using Category = babe_algorithms.Models.Category;
+using Microsoft.CodeAnalysis.Options;
+using Microsoft.Extensions.Options;
 
 namespace babe_algorithms.Controllers
 {
@@ -35,15 +37,18 @@ namespace babe_algorithms.Controllers
 
         public MultiPartRecipeController(
             ApplicationDbContext context,
-            IRecipeArtificialIntelligence ai,
-            IComputerVision computerVision,
-            ISessionManager sessionManager)
+            // IRecipeArtificialIntelligence ai,
+            // IComputerVision computerVision,
+            IOptions<AzureOptions> azureOptions,
+            IOptions<OpenAIOptions> openAIOptions,
+            ISessionManager sessionManager,
+            ILoggerFactory loggerFactory)
         {
             _context = context;
             this.Session = sessionManager;
             this.TextInfo = new CultureInfo("en-US",false).TextInfo;
-            this.ComputerVision = computerVision;
-            this.AI = ai;
+            this.ComputerVision = new AzureCognitiveServices(azureOptions.Value);
+            this.AI = new ChatGPT(openAIOptions.Value, loggerFactory.CreateLogger<ChatGPT>());
         }
 
         [HttpPost("create")]
@@ -83,8 +88,15 @@ namespace babe_algorithms.Controllers
             var file = files[0];
             using var fileStream = file.OpenReadStream();
             var prompt = await this.ComputerVision.GetTextAsync(fileStream, CancellationToken.None);
-            var response = await this.AI.ConvertToRecipeAsync(prompt, CancellationToken.None);
-            return this.Ok(response);
+            var recipe = await this.AI.ConvertToRecipeAsync(prompt, CancellationToken.None);
+            recipe.Owner = user;
+            recipe.CreationDate = DateTimeOffset.UtcNow;
+            recipe.LastModifiedDate = DateTimeOffset.UtcNow;
+            await MergeRecipeRelationsAwait(payload: recipe, new MultiPartRecipe());
+            this._context.MultiPartRecipes.Add(recipe);
+            await this._context.SaveChangesAsync();
+            await _context.Entry(recipe).ReloadAsync();
+            return this.Ok(recipe);
         }
 
         // GET: api/MultiPartRecipe
@@ -396,7 +408,7 @@ namespace babe_algorithms.Controllers
             }
 
             _context.Entry(existingRecipe).CurrentValues.SetValues(payload);
-            await MergeRecipeRelations(payload, existingRecipe);
+            await MergeRecipeRelationsAwait(payload, existingRecipe);
             existingRecipe.LastModifiedDate = DateTimeOffset.UtcNow;
             try
             {
@@ -417,7 +429,7 @@ namespace babe_algorithms.Controllers
             return this.Ok(existingRecipe);
         }
 
-        private async Task MergeRecipeRelations(MultiPartRecipe payload, MultiPartRecipe existingRecipe)
+        private async Task MergeRecipeRelationsAwait(MultiPartRecipe payload, MultiPartRecipe existingRecipe)
         {
             await MergeCategories(payload, existingRecipe);
             await MergeComponents(payload, existingRecipe);

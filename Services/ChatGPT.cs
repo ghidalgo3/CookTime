@@ -64,16 +64,17 @@ public class ChatGPT : IRecipeArtificialIntelligence
                 Text = ir.ToString(),
             };
         }).ToList() ?? new();
-
+        string recipeName = arguments[RECIPE_NAME].ToString().ToTitleCase();
         var recipe = new MultiPartRecipe()
         {
-            Name = arguments[RECIPE_NAME].ToString().ToTitleCase(),
+            Name = recipeName,
             ServingsProduced = ParseQuantity(arguments[nameof(MultiPartRecipe.ServingsProduced)]?.ToString() ?? "0.0"),
             CooktimeMinutes = (int)ParseQuantity(arguments[nameof(MultiPartRecipe.CooktimeMinutes)]?.ToString() ?? "0.0"),
             RecipeComponents = new List<RecipeComponent>()
             {
                 new RecipeComponent()
                 {
+                    Name = recipeName,
                     Steps = steps,
                     Ingredients = ingredientRequirements.Select(ir => new MultiPartIngredientRequirement()
                     {
@@ -229,7 +230,7 @@ public class ChatGPT : IRecipeArtificialIntelligence
                                         {
                                             ["type"] = "string",
                                             // ["enum"] = unitsArray,
-                                            ["description"] = "Just the simple ingredient name, without cooking preparation steps, quantities, or units.",
+                                            ["description"] = "Just the simple ingredient name without cooking preparation steps, quantities, units, or abbreviations.",
                                         },
                                         ["preparation"] = new JsonObject
                                         {
