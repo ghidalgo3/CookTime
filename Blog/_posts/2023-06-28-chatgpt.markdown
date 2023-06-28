@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Image2Recipe: Import recipe photoes"
-date:   2023-06-28 20:36:58 -0400
+date:   2023-06-27 20:36:58 -0400
 categories: ai, machine learning, chatgpt, ocr
 ---
 
