@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react"
-import { ActionFunctionArgs, Form as RouterForm, redirect } from "react-router-dom";
-import { Button, Col, Container, Form, Row } from "react-bootstrap";
+import { ActionFunctionArgs, Form as RouterForm, redirect, useRouteError } from "react-router-dom";
+import { Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
 import { createRecipeWithName, importRecipeFromImage, MultiPartRecipe } from "src/shared/CookTime";
 import { Path } from "./Recipe";
 import { useTitle } from "src/shared/useTitle";
@@ -15,11 +15,16 @@ export async function action(args : ActionFunctionArgs) {
       var recipe = await result.json() as MultiPartRecipe;
       return redirect(Path(recipe.id))
     } else {
-      return { errors: "Something went wrong" }
+      return { errors: "Something went wrong creating a recipe" }
     }
   } else if (formName === IMPORT) {
-    await importRecipeFromImage(formData)
-    return null;
+    const result = await importRecipeFromImage(formData)
+    if (result.ok) {
+      const recipe = await result.json() as MultiPartRecipe;
+      return redirect(Path(recipe.id))
+    } else {
+      return { errors: "Something went wrong importing from an image" }
+    }
   }
   else {
     return {errors: "Name is required"}
@@ -35,6 +40,11 @@ export default function RecipeCreation() {
 
   const [image, setImage] = useState<Blob>();
   const [imageSrc, setImageSrc] = useState<string>();
+  const [importInProgress, setImportInProgress] = useState<boolean>();
+  if (useRouteError())
+  {
+    setImportInProgress(false);
+  }
 
   return (
     <>
@@ -82,7 +92,12 @@ export default function RecipeCreation() {
                   }} />
               </Form.Group>
               <Form.Group>
-                <Button className="width-100" type="submit" name="intent" value={IMPORT}>Import</Button>
+                <Button
+                  className="width-100"
+                  type="submit"
+                  name="intent"
+                  onClick={() => setImportInProgress(true)}
+                  value={IMPORT}>{importInProgress ? <Spinner /> : "Import"}</Button>
               </Form.Group>
             </RouterForm>
         </Col>
