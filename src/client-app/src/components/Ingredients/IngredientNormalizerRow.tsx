@@ -18,7 +18,7 @@ export default function IngredientNormalizerRow(props: IngredientReplacementRequ
         <input
           type="text"
           name="replacementId"
-          placeholder="Replace with (ID)"
+          placeholder="Replace for (ID)"
           onChange={e => setReplacement({ ...replacement, keptId: e.target.value })}
           value={replacement.keptId === EMPTY_GUID ? "" : replacement.keptId} />
       </th>

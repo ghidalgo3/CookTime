@@ -17,7 +17,12 @@ export default function IngredientNormalizer() {
   return (
     <>
       <h1>Ingredients</h1>
-
+      <h2>
+        How to use
+      </h2>
+      <p>
+        When you find an ingredient that should be replace with another one, copy the ID of the ingredient "to remove" and paste it in the text field of the ingredient "to keep".
+      </p>
       <table className="table table-sm">
         <thead>
           <tr>
