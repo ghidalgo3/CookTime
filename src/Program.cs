@@ -168,7 +168,8 @@ public class Program
             else
             {
                 LoadFoodData(context);
-                DeduplicateIngredients(context).Wait();
+                // TODO: Uncomment and fix this!!!
+                // DeduplicateIngredients(context).Wait();
             }
             CreateRoles(roleManager).Wait();
         }
