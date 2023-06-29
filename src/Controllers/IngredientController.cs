@@ -69,7 +69,7 @@ public class IngredientController : ControllerBase
         {
             return this.Unauthorized("You must be an administrator");
         }
-        var ingredient = this._context.GetIngredient(request.ReplacedId);
+        var ingredient = this._context.GetIngredient(request.KeptId);
         if (ingredient == null)
         {
             return this.NotFound();
