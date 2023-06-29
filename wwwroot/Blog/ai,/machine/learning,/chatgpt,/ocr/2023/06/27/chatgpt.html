@@ -50,7 +50,7 @@
     <p>Have you ever wanted to take a picture of a recipe book and digitize that recipe in one click?
 With CookTime, now you can! This update brings the power of ChatGPT and Azure Cognitive Services together to enable seamless recipe import from images:</p>
 
-<p><img src="assets/RecipeImport.gif" alt="Recipe Import GIF" /></p>
+<p><img src="/Blog/assets/images/RecipeImport.gif" alt="Recipe Import GIF" /></p>
 
 <h1 id="how-we-made-this">How we made this:</h1>
 
@@ -68,7 +68,7 @@ With CookTime, now you can! This update brings the power of ChatGPT and Azure Co
 <p>Azure has a really good OCR API. You can try it out yourself <a href="https://portal.vision.cognitive.azure.com/demo/extract-text-from-images">here</a>.
 Given an image, it will produce an object of all the pages, lines, and words within that image:</p>
 
-<p><img src="assets/visionExample.png" alt="Example of vision API" /></p>
+<p><img src="/Blog/assets/images/visionExample.png" alt="Example of vision API" /></p>
 
 <p>For our purposes, we simply take the text inside the image and concatenate it all together to form one big string that we will pass to ChatGPT. I found that replacing new-lines (\n) with spaces produced better results with ChatGPT, maybe the new-line tokens throw off the model.</p>
 

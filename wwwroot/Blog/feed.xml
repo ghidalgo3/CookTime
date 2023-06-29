@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://letscooktime.com/Blog/feed.xml" rel="self" type="application/atom+xml" /><link href="https://letscooktime.com/Blog/" rel="alternate" type="text/html" /><updated>2023-06-28T15:08:26-04:00</updated><id>https://letscooktime.com/Blog/feed.xml</id><title type="html">CookTime Blog</title><subtitle>CookTime Blog</subtitle><entry><title type="html">Image2Recipe: Import recipe photoes</title><link href="https://letscooktime.com/Blog/ai,/machine/learning,/chatgpt,/ocr/2023/06/27/chatgpt.html" rel="alternate" type="text/html" title="Image2Recipe: Import recipe photoes" /><published>2023-06-27T20:36:58-04:00</published><updated>2023-06-27T20:36:58-04:00</updated><id>https://letscooktime.com/Blog/ai,/machine/learning,/chatgpt,/ocr/2023/06/27/chatgpt</id><content type="html" xml:base="https://letscooktime.com/Blog/ai,/machine/learning,/chatgpt,/ocr/2023/06/27/chatgpt.html"><![CDATA[<p>Have you ever wanted to take a picture of a recipe book and digitize that recipe in one click?
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://letscooktime.com/Blog/feed.xml" rel="self" type="application/atom+xml" /><link href="https://letscooktime.com/Blog/" rel="alternate" type="text/html" /><updated>2023-06-28T21:12:09-04:00</updated><id>https://letscooktime.com/Blog/feed.xml</id><title type="html">CookTime Blog</title><subtitle>CookTime Blog</subtitle><entry><title type="html">Image2Recipe: Import recipe photoes</title><link href="https://letscooktime.com/Blog/ai,/machine/learning,/chatgpt,/ocr/2023/06/27/chatgpt.html" rel="alternate" type="text/html" title="Image2Recipe: Import recipe photoes" /><published>2023-06-27T20:36:58-04:00</published><updated>2023-06-27T20:36:58-04:00</updated><id>https://letscooktime.com/Blog/ai,/machine/learning,/chatgpt,/ocr/2023/06/27/chatgpt</id><content type="html" xml:base="https://letscooktime.com/Blog/ai,/machine/learning,/chatgpt,/ocr/2023/06/27/chatgpt.html"><![CDATA[<p>Have you ever wanted to take a picture of a recipe book and digitize that recipe in one click?
 With CookTime, now you can! This update brings the power of ChatGPT and Azure Cognitive Services together to enable seamless recipe import from images:</p>
 
-<p><img src="assets/RecipeImport.gif" alt="Recipe Import GIF" /></p>
+<p><img src="/Blog/assets/images/RecipeImport.gif" alt="Recipe Import GIF" /></p>
 
 <h1 id="how-we-made-this">How we made this:</h1>
 
@@ -19,7 +19,7 @@ With CookTime, now you can! This update brings the power of ChatGPT and Azure Co
 <p>Azure has a really good OCR API. You can try it out yourself <a href="https://portal.vision.cognitive.azure.com/demo/extract-text-from-images">here</a>.
 Given an image, it will produce an object of all the pages, lines, and words within that image:</p>
 
-<p><img src="assets/visionExample.png" alt="Example of vision API" /></p>
+<p><img src="/Blog/assets/images/visionExample.png" alt="Example of vision API" /></p>
 
 <p>For our purposes, we simply take the text inside the image and concatenate it all together to form one big string that we will pass to ChatGPT. I found that replacing new-lines (\n) with spaces produced better results with ChatGPT, maybe the new-line tokens throw off the model.</p>
 
@@ -121,7 +121,7 @@ The full documentation for the new NuGet is <a href="https://github.com/dotnet/A
 <p>With all that done, the standard <code class="language-plaintext highlighter-rouge">create-react-app</code> page loads with the spinning Rutherfordian atom.</p>
 
 <p>Success!
-<img src="assets/react-day1.png" alt="Create react app template" /></p>
+<img src="/Blog/assets/images/react-day1.png" alt="Create react app template" /></p>
 
 <h1 id="day-2-authentication-and-authorization">Day 2: Authentication and Authorization</h1>
 
@@ -153,7 +153,7 @@ The whole process is mind-meltingly boring.</p>
 
 <h2 id="hoes-does-aspnet-authentication-actually-work">Hoes does ASP.NET authentication actually work?</h2>
 <p>If you use <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies">cookie</a> authentication, the signin process just involves the server setting a cookie in a response.
-<img src="assets/react-day2-2.png" alt="Cookie signin evidence" /></p>
+<img src="/Blog/assets/images/react-day2-2.png" alt="Cookie signin evidence" /></p>
 
 <p>Here’s what happened:</p>
 <ol>
@@ -199,7 +199,7 @@ The whole process is mind-meltingly boring.</p>
 <p>The registration form is “simple” (Ha! Nothing with authentication is simple!).
 A user providers the following information (taken from the current sign up form).</p>
 
-<p><img src="assets/react-day2-1.png" alt="Alt text" /></p>
+<p><img src="/Blog/assets/images/react-day2-1.png" alt="Alt text" /></p>
 
 <p>Then in the backend, we take this and check to see if a user with the same <code class="language-plaintext highlighter-rouge">username</code> <em>or</em> <code class="language-plaintext highlighter-rouge">email</code> has previously been registered.
 Assuming not, we try to create the user and if their password passes the complexity checks then they get a database entry in the <code class="language-plaintext highlighter-rouge">AspNetUsers</code> table.

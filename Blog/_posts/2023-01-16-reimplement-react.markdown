@@ -53,7 +53,7 @@ The full documentation for the new NuGet is [here](https://github.com/dotnet/Asp
 With all that done, the standard `create-react-app` page loads with the spinning Rutherfordian atom.
 
 Success!
-![Create react app template](assets/react-day1.png)
+![Create react app template](/Blog/assets/images/react-day1.png)
 
 # Day 2: Authentication and Authorization
 
@@ -79,7 +79,7 @@ Having decided that, I need to reimplement the Identity flows using React compon
 
 ## Hoes does ASP.NET authentication actually work?
 If you use [cookie](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies) authentication, the signin process just involves the server setting a cookie in a response.
-![Cookie signin evidence](assets/react-day2-2.png)
+![Cookie signin evidence](/Blog/assets/images/react-day2-2.png)
 
 Here's what happened:
 1. The client POSTs a signin form with the username and password
@@ -124,7 +124,7 @@ To solve this, we need an *authenticated* request to a route like `/profile` tha
 The registration form is "simple" (Ha! Nothing with authentication is simple!).
 A user providers the following information (taken from the current sign up form).
 
-![Alt text](assets/react-day2-1.png)
+![Alt text](/Blog/assets/images/react-day2-1.png)
 
 Then in the backend, we take this and check to see if a user with the same `username` _or_ `email` has previously been registered.
 Assuming not, we try to create the user and if their password passes the complexity checks then they get a database entry in the `AspNetUsers` table.
