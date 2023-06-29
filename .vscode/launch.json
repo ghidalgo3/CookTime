@@ -22,22 +22,22 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/bin/Debug/net7.0/babe-algorithms.dll",
+            "program": "${workspaceFolder}/src/bin/Debug/net7.0/babe-algorithms.dll",
             "args": [],
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/src",
             "stopAtEntry": false,
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
             "serverReadyAction": {
                 "action": "debugWithEdge",
                 "pattern": "\\bNow listening on:\\s+(http://\\S+)",
-                "webRoot": "${workspaceFolder}/client-app"
+                "webRoot": "${workspaceFolder}/src/client-app"
             },
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
                 "POSTGRESQLCONNSTR_Postgres": "Server=localhost;Database=KookTime;Include Error Detail=true"
             },
             "sourceFileMap": {
-                "/Views": "${workspaceFolder}/Views"
+                "/Views": "${workspaceFolder}/src/Views"
             }
         }
     ]

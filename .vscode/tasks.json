@@ -13,7 +13,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/babe-algorithms.csproj",
+                "${workspaceFolder}/src/babe-algorithms.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -25,7 +25,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/babe-algorithms.csproj",
+                "${workspaceFolder}/src/babe-algorithms.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -40,7 +40,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/babe-algorithms.csproj",
+                "${workspaceFolder}/src/babe-algorithms.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],

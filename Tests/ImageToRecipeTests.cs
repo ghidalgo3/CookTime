@@ -1,5 +1,3 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
 namespace babe_algorithms.Tests;
 
 [TestClass]
@@ -20,7 +18,7 @@ public class ImageToRecipeTests
         var ai = ChatGPTTests.GetChatGPT();
         var cv = GetComputerVision();
 
-        var fileStream = File.OpenRead("Tests/lemony pasta with chickpeas.png");
+        var fileStream = File.OpenRead("Images/lemony pasta with chickpeas.png");
         var text = await cv.GetTextAsync(fileStream, CancellationToken.None);
         var recipe = await ai.ConvertToRecipeAsync(text, CancellationToken.None);
         Assert.AreEqual("Lemony Pasta With Chickpeas", recipe.Name);
@@ -28,5 +26,11 @@ public class ImageToRecipeTests
         Assert.AreEqual(3, recipe.RecipeComponents[0].Steps.Count);
         Assert.AreEqual(12, recipe.RecipeComponents[0].Ingredients.Count);
         Assert.AreEqual(0.5, recipe.RecipeComponents[0].Ingredients[0].Quantity);
+    }
+
+    [TestMethod]
+    public async Task InsertEmptyRecipe()
+    {
+        Assert.IsTrue(true);
     }
 }

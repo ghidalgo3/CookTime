@@ -1,4 +1,4 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using babe_algorithms.Models;
 
 namespace babe_algorithms.Tests;
 
