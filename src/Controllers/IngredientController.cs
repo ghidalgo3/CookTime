@@ -20,7 +20,7 @@ public class IngredientController : ControllerBase
     }
 
     // GET: api/Ingredient
-    [HttpGet]
+[HttpGet]
     public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients(
         [FromQuery] string name)
     {

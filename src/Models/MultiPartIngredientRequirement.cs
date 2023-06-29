@@ -1,8 +1,10 @@
+using System.Diagnostics;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
 namespace babe_algorithms.Models;
 
+[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public class MultiPartIngredientRequirement : IIngredientRequirement, IEquatable<MultiPartIngredientRequirement>
 {
     public MultiPartIngredientRequirement()
@@ -131,4 +133,14 @@ public class MultiPartIngredientRequirement : IIngredientRequirement, IEquatable
     }
 
     public override int GetHashCode() => HashCode.Combine(this.Id, this.Unit, this.Quantity, this.Ingredient);
+
+    public override string ToString()
+    {
+        return $"{this.Quantity} {this.Unit} {this.Ingredient.Name}";
+    }
+
+    private string GetDebuggerDisplay()
+    {
+        return this.ToString();
+    }
 }

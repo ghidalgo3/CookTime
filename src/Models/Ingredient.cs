@@ -1,7 +1,10 @@
 #nullable enable
 namespace babe_algorithms.Models;
+
+using System.Diagnostics;
 using Newtonsoft.Json.Converters;
 
+[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public class Ingredient : IEquatable<Ingredient>
 {
     public Guid Id { get; set; }
@@ -78,6 +81,12 @@ public class Ingredient : IEquatable<Ingredient>
         return HashCode.Combine(Name.Trim().ToUpper());
     }
 
+    public override string ToString() => $"{this.Name}";
+
+    private string GetDebuggerDisplay()
+    {
+        return this.ToString();
+    }
 }
 
 [JsonConverter(typeof(StringEnumConverter))]

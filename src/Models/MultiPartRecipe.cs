@@ -1,9 +1,11 @@
+using System.Diagnostics;
 using babe_algorithms.Models.Users;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using NpgsqlTypes;
 
 namespace babe_algorithms.Models;
 
+[DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOwned
 {
     public MultiPartRecipe() 
@@ -124,6 +126,10 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
     public override bool Equals(object obj) => Equals(obj as MultiPartRecipe);
 
     public override int GetHashCode() => this.Id.GetHashCode();
+
+    public override string ToString() => this.Name;
+
+    private string GetDebuggerDisplay() => this.ToString();
 }
 
 
