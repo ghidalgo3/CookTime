@@ -65,8 +65,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public async Task<IEnumerable<Ingredient>> SearchIngredientsAsync(string query)
     {
+        var queryMatch = $"%{query}%";
         return await this.Ingredients
-            .Where(ingredient => EF.Functions.ILike(ingredient.Name.Trim(), query.Trim()))
+            .Where(ingredient => EF.Functions.ILike(ingredient.Name.Trim(), queryMatch.Trim()))
             .ToListAsync();
     }
     public async Task<IEnumerable<Ingredient>> GetIngredientsForAutosuggest(string name)
