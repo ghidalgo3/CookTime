@@ -10,6 +10,11 @@
     <ProjectReference Include="..\src\babe-algorithms.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images/**/*.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="MSTest.TestFramework" Version="3.0.4" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.0.4" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.2" />

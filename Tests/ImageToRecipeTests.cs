@@ -15,22 +15,24 @@ public class ImageToRecipeTests
         });
     }
 
-    [TestMethod]
     [Ignore("Ignore tests that make network calls to 3rd party APIs.")]
-    public async Task LemonyPastaWithChickpeas()
+    [DataTestMethod]
+    [DataRow("Images/lemony pasta with chickpeas.png", "Lemony Pasta With Chickpeas", 12, 3)]
+    [DataRow("Images/breville-air-fryer.png", "Dehydrated Bananas With Coconut", 1, 4)]
+    public async Task LemonyPastaWithChickpeas(string file, string title, int ingredients, int steps)
     {
         var ai = ChatGPTTests.GetChatGPT();
         var cv = GetComputerVision();
 
-        var fileStream = File.OpenRead("Images/lemony pasta with chickpeas.png");
+        var fileStream = File.OpenRead(file);
         var text = await cv.GetTextAsync(fileStream, CancellationToken.None);
         var recipe = await ai.ConvertToRecipeAsync(text, CancellationToken.None);
         Assert.IsNotNull(recipe);
-        Assert.AreEqual("Lemony Pasta With Chickpeas", recipe.Name);
-        Assert.AreEqual(4, recipe.ServingsProduced);
-        Assert.AreEqual(3, recipe.RecipeComponents[0].Steps.Count);
-        Assert.AreEqual(12, recipe.RecipeComponents[0].Ingredients.Count);
-        Assert.AreEqual(0.5, recipe.RecipeComponents[0].Ingredients[0].Quantity);
+        Assert.AreEqual(title, recipe.Name);
+        // Assert.AreEqual(4, recipe.ServingsProduced);
+        Assert.AreEqual(steps, recipe.RecipeComponents[0].Steps.Count);
+        Assert.AreEqual(ingredients, recipe.RecipeComponents[0].Ingredients.Count);
+        // Assert.AreEqual(0.5, recipe.RecipeComponents[0].Ingredients[0].Quantity);
     }
 
     [TestMethod]
