@@ -8,7 +8,7 @@ type RecipeStructuredDataProps = {
 }
 
 export function RecipeStructuredData({recipe, images} : RecipeStructuredDataProps) {
-  let metadata = {
+  let metadata : any = {
     "@context": "https://schema.org/",
     "@type": "Recipe",
     "name": recipe.name,
@@ -34,13 +34,18 @@ export function RecipeStructuredData({recipe, images} : RecipeStructuredDataProp
         }
       })
     }),
-    "aggregateRating": {
+  }
+
+  if (recipe.reviewCount > 0) {
+    metadata["aggregateRating"] = {
       "@type": "AggregateRating",
       "ratingValue": recipe.averageReviews,
-      "ratingCount": recipe.reviewCount
-    },
-
+      "ratingCount": recipe.reviewCount,
+      "bestRating" : 5,
+      "worstRating" : 1
+    }
   }
+
   return (
     <script type="application/ld+json">
       {JSON.stringify(metadata)}
