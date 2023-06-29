@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Npgsql;
 using babe_algorithms.Models.Users;
 using babe_algorithms.Pages;
+using GustavoTech.Implementation;
 
 namespace babe_algorithms.Services;
 
@@ -62,6 +63,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .ToListAsync();
     }
 
+    public async Task<IEnumerable<Ingredient>> SearchIngredientsAsync(string query)
+    {
+        return await this.Ingredients
+            .Where(ingredient => EF.Functions.ILike(ingredient.Name.Trim(), query.Trim()))
+            .ToListAsync();
+    }
     public async Task<IEnumerable<Ingredient>> GetIngredientsForAutosuggest(string name)
     {
         var initialQUery = await this.Ingredients
@@ -405,6 +412,169 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         else
         {
             return false;
+        }
+    }
+
+    public async Task MergeRecipeRelationsAsync(MultiPartRecipe payload, MultiPartRecipe existingRecipe)
+    {
+        await MergeCategories(payload, existingRecipe);
+        await MergeComponents(payload, existingRecipe);
+        await ApplyDefaultCategories(existingRecipe);
+    }
+
+    private async Task MergeCategories(MultiPartRecipe payload, MultiPartRecipe existingRecipe)
+    {
+        var currentCategories = existingRecipe.Categories;
+        existingRecipe.Categories = new HashSet<Category>();
+        foreach (var category in payload.Categories)
+        {
+            var existingCategory = currentCategories.FirstOrDefault(c => c.Id == category.Id);
+            if (existingCategory != null)
+            {
+                // category exists, add it back.
+                existingRecipe.Categories.Add(existingCategory);
+
+            }
+            else if (await this.GetCategoryAsync(category.Name) is Category existing)
+            {
+                // category exists, adding it to this recipe
+                existingRecipe.Categories.Add(existing);
+            }
+            else
+            {
+                if (Category.DefaultCategories.Select(c => c.ToUpperInvariant()).Contains(category.Name.Trim().ToUpperInvariant()))
+                {
+                    // entirely new category
+                    category.Name = category.Name.Trim().ToTitleCase();
+                    category.Id = Guid.Empty;
+                    existingRecipe.Categories.Add(category);
+                }
+            }
+        }
+    }
+
+    private async Task ApplyDefaultCategories(MultiPartRecipe existingRecipe)
+    {
+        var applicableCategories = existingRecipe.ApplicableDefaultCategories.ToHashSet();
+        var currentCategories = existingRecipe.Categories.Select(cat => cat.Name).ToHashSet();
+        if (!applicableCategories.IsSubsetOf(currentCategories))
+        {
+            foreach (var ac in applicableCategories)
+            {
+                var toAdd = await this.GetCategoryAsync(ac);
+                if (toAdd != null && !existingRecipe.Categories.Contains(toAdd))
+                {
+                    existingRecipe.Categories.Add(toAdd);
+                }
+            }
+        }
+    }
+
+    private async Task MergeComponents(MultiPartRecipe payload, MultiPartRecipe existingRecipe)
+    {
+        var currentComponents = existingRecipe.RecipeComponents;
+        existingRecipe.RecipeComponents = new List<RecipeComponent>();
+        foreach (var component in payload.RecipeComponents)
+        {
+            var existingComponent = currentComponents.FirstOrDefault(c => c.Id == component.Id);
+            if (existingComponent != null)
+            {
+                this.Entry(existingComponent).CurrentValues.SetValues(component);
+                existingComponent.Steps = component.Steps.Where(s => !string.IsNullOrWhiteSpace(s.Text)).ToList();
+                await this.CopyIngredients(component, existingComponent);
+                if (!existingComponent.IsEmpty())
+                {
+                    existingRecipe.RecipeComponents.Add(existingComponent);
+                }
+            }
+            else
+            {
+                // new component
+                var newComponent = new RecipeComponent()
+                {
+                    Name = component.Name,
+                    Position = component.Position,
+                    Steps = component.Steps,
+                };
+                await this.CopyIngredients(component, newComponent);
+                if (!newComponent.IsEmpty())
+                {
+                    existingRecipe.RecipeComponents.Add(newComponent);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// A recipe can be created spontaneously that uses ingredients which are already in the database.
+    /// This method's responsibility is to replace in Ingredient objects with the correct database objects
+    /// so that when this recipe is saved to the database it references the existing ingredients.
+    /// </summary>
+    public async Task LinkImportedRecipeIngredientsAsync(MultiPartRecipe recipe)
+    {
+        await MergeRecipeRelationsAsync(payload: recipe, existingRecipe: new MultiPartRecipe());
+    }
+
+    public async Task CopyIngredients<TRecipeStep, TIngredientRequirement>(
+        IRecipeComponent<TRecipeStep, TIngredientRequirement> payloadComponent,
+        IRecipeComponent<TRecipeStep, TIngredientRequirement> existingComponent)
+        where TRecipeStep : IRecipeStep
+        where TIngredientRequirement : IIngredientRequirement
+    {
+        var currentIngredients = existingComponent.Ingredients;
+        existingComponent.Ingredients = new List<TIngredientRequirement>();
+        foreach (var ingredientRequirement in payloadComponent.Ingredients)
+        {
+            var matching = currentIngredients
+                .FirstOrDefault(ir =>
+                    ir.Id == ingredientRequirement.Id);
+            // is this an existing ingredient requirement?
+            if (matching == null)
+            {
+                var existingIngredient = await this.Ingredients.FindAsync(ingredientRequirement.Ingredient.Id)
+                    ?? (await this.SearchIngredientsAsync(ingredientRequirement.Ingredient.Name)).FirstOrDefault();
+                if (existingIngredient == null)
+                {
+                    // new ingredient
+                    ingredientRequirement.Ingredient.Id = Guid.Empty;
+                    ingredientRequirement.Ingredient.Name = ingredientRequirement.Ingredient.Name.Trim();
+                    this.Ingredients.Add(ingredientRequirement.Ingredient);
+                }
+                else
+                {
+                    // existing ingredient
+                    ingredientRequirement.Ingredient = existingIngredient;
+                }
+                // new ingredient requirement
+                existingComponent.Ingredients.Add(ingredientRequirement);
+                this.MultiPartIngredientRequirement.Add(ingredientRequirement as MultiPartIngredientRequirement);
+            }
+            else
+            {
+                // update of existing ingredient requirement
+                matching.Quantity = ingredientRequirement.Quantity;
+                matching.Unit = ingredientRequirement.Unit;
+                matching.Position = ingredientRequirement.Position;
+                matching.Text = ingredientRequirement.Text;
+                // (matching as MultiPartIngredientRequirement).RecipeComponentId = (ingredientRequirement as MultiPartIngredientRequirement).RecipeComponentId;
+                var ingredient = await this.Ingredients.FindAsync(ingredientRequirement.Ingredient.Id);
+                if (ingredient == null)
+                {
+                    // entirely new ingredient, client chose ID
+                    ingredientRequirement.Id = Guid.NewGuid();
+                    ingredientRequirement.Ingredient.Name = ingredientRequirement.Ingredient.Name.Trim();
+                    matching.Ingredient = ingredientRequirement.Ingredient;
+                    this.MultiPartIngredientRequirement.Add(ingredientRequirement as MultiPartIngredientRequirement);
+                }
+                else if (!currentIngredients.Any(i => i.Ingredient.Id == ingredient.Id))
+                {
+                    // reassignment of existing ingredient
+                    matching.Ingredient = ingredient;
+                }
+                this.MultiPartIngredientRequirement.Update(matching as MultiPartIngredientRequirement);
+                // Are you actually changing the ingredient being referenced?
+                existingComponent.Ingredients.Add(matching);
+            }
         }
     }
 }

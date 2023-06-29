@@ -168,7 +168,6 @@ public class Program
             else
             {
                 LoadFoodData(context);
-                // TODO: Uncomment and fix this!!!
                 // DeduplicateIngredients(context).Wait();
             }
             CreateRoles(roleManager).Wait();
@@ -197,23 +196,28 @@ public class Program
     public static async Task DeduplicateIngredients(ApplicationDbContext context)
     {
         var allIngredients = await context.Ingredients.ToListAsync();
-        var freq = new Dictionary<Ingredient, int>();
+        var freq = new Dictionary<Ingredient, List<Ingredient>>();
+        // The dictionary should be the size of the ingredients table
+        // Entry _values_ are the duplicates, but later we will choose to keep
+        // one of them
         foreach (var ingredient in allIngredients)
         {
             if (freq.ContainsKey(ingredient))
             {
-                freq[ingredient]++;
+                freq[ingredient].Add(ingredient);
             }
             else
             {
-                freq[ingredient] = 1;
+                freq[ingredient] = new List<Ingredient>();
             }
         }
-        var duplicateIngredientFrequencies = freq.Where(kvpPair => kvpPair.Value > 1);
+        var duplicateIngredientFrequencies = freq.Where(kvpPair => kvpPair.Value.Count > 0);
         var duplicateIngredients = duplicateIngredientFrequencies.Select(kvPair => kvPair.Key);
         // fix up recipes so they only reference one of the duplicate ingredients
         foreach (var duplicateIngredient in duplicateIngredients)
         {
+            // var toKeep = SelectIngredientToKeep(
+            //     duplicateIngredientFrequencies.FirstOrDefault(i => i.Equals(duplicateIngredient)));
             // all these recipes contain a duplicate ingredient
             var recipes = context.GetRecipesWithIngredient(duplicateIngredient.Name).ToList();
             foreach (var recipe in recipes)

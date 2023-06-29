@@ -2,7 +2,7 @@
 namespace babe_algorithms.Models;
 using Newtonsoft.Json.Converters;
 
-public class Ingredient
+public class Ingredient : IEquatable<Ingredient>
 {
     public Guid Id { get; set; }
 
@@ -63,12 +63,13 @@ public class Ingredient
         }
     }
 
-    public override bool Equals(object? obj)
+    public override bool Equals(object? obj) => this.Equals(obj as Ingredient);
+
+    public bool Equals(Ingredient? other)
     {
-        return obj is Ingredient ingredient &&
-               string.Equals(
-                   Name.Trim().ToUpper(),
-                   ingredient.Name.Trim().ToUpper(),
+        return other != null && string.Equals(
+                   this.Name.Trim().ToUpper(),
+                   other.Name.Trim().ToUpper(),
                    StringComparison.InvariantCultureIgnoreCase);
     }
 

@@ -92,12 +92,13 @@ namespace babe_algorithms.Controllers
             recipe.Owner = user;
             recipe.CreationDate = DateTimeOffset.UtcNow;
             recipe.LastModifiedDate = DateTimeOffset.UtcNow;
-            await MergeRecipeRelationsAwait(payload: recipe, existingRecipe: new MultiPartRecipe());
+            await this._context.LinkImportedRecipeIngredientsAsync(recipe);
             this._context.MultiPartRecipes.Add(recipe);
             await this._context.SaveChangesAsync();
-            await _context.Entry(recipe).ReloadAsync();
+            await this._context.Entry(recipe).ReloadAsync();
             return this.Ok(recipe);
         }
+
 
         // GET: api/MultiPartRecipe
         [HttpGet]
@@ -334,6 +335,7 @@ namespace babe_algorithms.Controllers
             return this.Ok(body);
         }
 
+
         private static void SetDietDetails(
             MultiPartRecipe multiPartRecipe,
             RecipeNutritionFacts body)
@@ -408,7 +410,7 @@ namespace babe_algorithms.Controllers
             }
 
             _context.Entry(existingRecipe).CurrentValues.SetValues(payload);
-            await MergeRecipeRelationsAwait(payload, existingRecipe);
+            await _context.MergeRecipeRelationsAsync(payload, existingRecipe);
             existingRecipe.LastModifiedDate = DateTimeOffset.UtcNow;
             try
             {
@@ -429,95 +431,7 @@ namespace babe_algorithms.Controllers
             return this.Ok(existingRecipe);
         }
 
-        private async Task MergeRecipeRelationsAwait(MultiPartRecipe payload, MultiPartRecipe existingRecipe)
-        {
-            await MergeCategories(payload, existingRecipe);
-            await MergeComponents(payload, existingRecipe);
-            await ApplyDefaultCategories(existingRecipe);
-        }
 
-        private async Task ApplyDefaultCategories(MultiPartRecipe existingRecipe)
-        {
-            var applicableCategories = existingRecipe.ApplicableDefaultCategories.ToHashSet();
-            var currentCategories = existingRecipe.Categories.Select(cat => cat.Name).ToHashSet();
-            if (!applicableCategories.IsSubsetOf(currentCategories))
-            {
-                foreach (var ac in applicableCategories)
-                {
-                    var toAdd = await this._context.GetCategoryAsync(ac);
-                    if (toAdd != null && !existingRecipe.Categories.Contains(toAdd))
-                    {
-                        existingRecipe.Categories.Add(toAdd);
-                    }
-                }
-            }
-        }
-
-        private async Task MergeCategories(MultiPartRecipe payload, MultiPartRecipe existingRecipe)
-        {
-            var currentCategories = existingRecipe.Categories;
-            existingRecipe.Categories = new HashSet<Category>();
-            foreach (var category in payload.Categories)
-            {
-                var existingCategory = currentCategories.FirstOrDefault(c => c.Id == category.Id);
-                if (existingCategory != null)
-                {
-                    // category exists, add it back.
-                    existingRecipe.Categories.Add(existingCategory);
-
-                }
-                else if (await this._context.GetCategoryAsync(category.Name) is Category existing)
-                {
-                    // category exists, adding it to this recipe
-                    existingRecipe.Categories.Add(existing);
-                }
-                else
-                {
-                    if (Category.DefaultCategories.Select(c => c.ToUpperInvariant()).Contains(category.Name.Trim().ToUpperInvariant()))
-                    {
-                        // entirely new category
-                        category.Name = this.TextInfo.ToTitleCase(category.Name.Trim());
-                        category.Id = Guid.Empty;
-                        existingRecipe.Categories.Add(category);
-                    }
-                }
-            }
-        }
-
-        private async Task MergeComponents(MultiPartRecipe payload, MultiPartRecipe existingRecipe)
-        {
-            var currentComponents = existingRecipe.RecipeComponents;
-            existingRecipe.RecipeComponents = new List<RecipeComponent>();
-            foreach (var component in payload.RecipeComponents)
-            {
-                var existingComponent = currentComponents.FirstOrDefault(c => c.Id == component.Id);
-                if (existingComponent != null)
-                {
-                    _context.Entry(existingComponent).CurrentValues.SetValues(component);
-                    existingComponent.Steps = component.Steps.Where(s => !string.IsNullOrWhiteSpace(s.Text)).ToList();
-                    await RecipeController.CopyIngredients(this._context, component, existingComponent);
-                    if (!existingComponent.IsEmpty())
-                    {
-                        existingRecipe.RecipeComponents.Add(existingComponent);
-                    }
-                }
-                else
-                {
-                    // new component
-                    var newComponent = new RecipeComponent()
-                    {
-                        Name = component.Name,
-                        Position = component.Position,
-                        Steps = component.Steps,
-                    };
-                    await RecipeController.CopyIngredients(this._context, component, newComponent);
-                    if (!newComponent.IsEmpty())
-                    {
-                        existingRecipe.RecipeComponents.Add(newComponent);
-                    }
-                }
-            }
-        }
 
         [HttpPost("deduplicate")]
         // POST: api/MultiPartRecipe/deduplicate

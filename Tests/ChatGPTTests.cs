@@ -18,6 +18,7 @@ public class ChatGPTTests
 
 
     [TestMethod]
+    [Ignore("Ignore tests that make network calls to 3rd party APIs.")]
     public void NonRecipe()
     {
         var ai = GetChatGPT();
@@ -32,6 +33,7 @@ Not a recipe
     }
 
     [TestMethod]
+    [Ignore("Ignore tests that make network calls to 3rd party APIs.")]
     public void SimpleRecipeParse()
     {
         var ai = GetChatGPT();
@@ -53,6 +55,7 @@ Serve and enjoy.
 """;
 
         var recipe = ai.ConvertToRecipeAsync(input, CancellationToken.None).Result;
+        Assert.IsNotNull(recipe);
         Assert.AreEqual("My Crazy Recipe", recipe.Name);
         Assert.AreEqual(4, recipe.GetAllIngredients().Count);
         Assert.AreEqual(3, recipe.ServingsProduced);

@@ -81,69 +81,6 @@ public class RecipeController : ControllerBase, IImageController
         return Ok(recipe);
     }
 
-    public static async Task CopyIngredients<TRecipeStep, TIngredientRequirement>(
-        ApplicationDbContext context,
-        IRecipeComponent<TRecipeStep, TIngredientRequirement> payloadComponent,
-        IRecipeComponent<TRecipeStep, TIngredientRequirement> existingComponent)
-        where TRecipeStep : IRecipeStep
-        where TIngredientRequirement : IIngredientRequirement
-    {
-        var currentIngredients = existingComponent.Ingredients;
-        existingComponent.Ingredients = new List<TIngredientRequirement>();
-        foreach (var ingredientRequirement in payloadComponent.Ingredients)
-        {
-            var matching = currentIngredients
-                .FirstOrDefault(ir =>
-                    ir.Id == ingredientRequirement.Id);
-            // is this an existing ingredient requirement?
-            if (matching == null)
-            {
-                var existingIngredient = await context.Ingredients.FindAsync(ingredientRequirement.Ingredient.Id)
-                    ?? await context.Ingredients.FirstOrDefaultAsync(ingredient => EF.Functions.Like(ingredientRequirement.Ingredient.Name.Trim(), ingredient.Name.Trim()));
-                if (existingIngredient == null)
-                {
-                    // new ingredient
-                    ingredientRequirement.Ingredient.Id = Guid.Empty;
-                    ingredientRequirement.Ingredient.Name = ingredientRequirement.Ingredient.Name.Trim();
-                    context.Ingredients.Add(ingredientRequirement.Ingredient);
-                }
-                else
-                {
-                    // existing ingredient
-                    ingredientRequirement.Ingredient = existingIngredient;
-                }
-                // new ingredient requirement
-                existingComponent.Ingredients.Add(ingredientRequirement);
-                context.MultiPartIngredientRequirement.Add(ingredientRequirement as MultiPartIngredientRequirement);
-            }
-            else
-            {
-                // update of existing ingredient requirement
-                matching.Quantity = ingredientRequirement.Quantity;
-                matching.Unit = ingredientRequirement.Unit;
-                matching.Position = ingredientRequirement.Position;
-                matching.Text = ingredientRequirement.Text;
-                // (matching as MultiPartIngredientRequirement).RecipeComponentId = (ingredientRequirement as MultiPartIngredientRequirement).RecipeComponentId;
-                var ingredient = await context.Ingredients.FindAsync(ingredientRequirement.Ingredient.Id);
-                if (ingredient == null)
-                {
-                    // entirely new ingredient, client chose ID
-                    ingredientRequirement.Id = Guid.NewGuid();
-                    ingredientRequirement.Ingredient.Name = ingredientRequirement.Ingredient.Name.Trim();
-                    matching.Ingredient = ingredientRequirement.Ingredient;
-                    context.MultiPartIngredientRequirement.Add(ingredientRequirement as MultiPartIngredientRequirement);
-                }
-                else if (!currentIngredients.Any(i => i.Ingredient.Id == ingredient.Id))
-                {
-                    // reassignment of existing ingredient
-                    matching.Ingredient = ingredient;
-                }
-                context.MultiPartIngredientRequirement.Update(matching as MultiPartIngredientRequirement);
-                // Are you actually changing the ingredient being referenced?
-                existingComponent.Ingredients.Add(matching);
-            }
-        }
-    }
 
     [HttpGet("ingredients")]
     public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients(
