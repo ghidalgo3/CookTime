@@ -1,6 +1,5 @@
 using System.Text.Json.Nodes;
 using GustavoTech.Implementation;
-using Microsoft.AspNetCore.WebUtilities;
 using OpenAI;
 using OpenAI.Chat;
 
@@ -68,7 +67,7 @@ public class ChatGPT : IRecipeArtificialIntelligence
         var recipe = new MultiPartRecipe()
         {
             Name = recipeName,
-            ServingsProduced = ParseQuantity(arguments[nameof(MultiPartRecipe.ServingsProduced)]?.ToString() ?? "0.0"),
+            ServingsProduced = ParseQuantity(arguments[nameof(MultiPartRecipe.ServingsProduced)]?.ToString() ?? "1.0"),
             CooktimeMinutes = (int)ParseQuantity(arguments[nameof(MultiPartRecipe.CooktimeMinutes)]?.ToString() ?? "0.0"),
             RecipeComponents = new List<RecipeComponent>()
             {
@@ -76,7 +75,7 @@ public class ChatGPT : IRecipeArtificialIntelligence
                 {
                     Name = recipeName,
                     Steps = steps,
-                    Ingredients = ingredientRequirements.Select(ir => new MultiPartIngredientRequirement()
+                    Ingredients = ingredientRequirements.Select((ir, idx) => new MultiPartIngredientRequirement()
                     {
                         Ingredient = new Ingredient()
                         {
@@ -84,6 +83,7 @@ public class ChatGPT : IRecipeArtificialIntelligence
                         },
                         Quantity = ir.Quantity,
                         Unit = ir.Unit,
+                        Position = idx,
                     }).ToList(),
                 }
             }
