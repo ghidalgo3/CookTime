@@ -179,46 +179,6 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
     }
   }
 
-  // appendNewIngredientRequiremendtRow(): void {
-  //     if (!this.props.multipart) {
-  //         var recipe = (this.state.recipe as Recipe)
-  //         var ir : IngredientRequirement = {
-  //             ingredient: {name: '', id: uuidv4(), isNew: false},
-  //             unit: 'Count',
-  //             quantity: 0,
-  //             id: uuidv4(),
-  //             position: recipe.ingredients?.length ?? 0
-  //         }
-  //         var newIrs = Array.from(recipe.ingredients ?? [])
-  //         newIrs.push(ir)
-  //         this.setState({
-  //             ...this.state,
-  //             recipe: {
-  //                 ...this.state.recipe,
-  //                 ingredients: newIrs
-  //             }
-  //         })
-  //     }
-  // }
-
-
-  // deleteIngredientRequirement(ir: IngredientRequirement) {
-  //     if (!this.props.multipart) {
-  //         var recipe = (this.state.recipe as Recipe)
-  //         var newIrs = recipe.ingredients?.filter(i => i.id !== ir.id).map((e, i) => {
-  //             e.position = i;
-  //             return e;
-  //         })
-
-  //         this.setState({
-  //             recipe: {
-  //                 ...this.state.recipe,
-  //                 ingredients: newIrs,
-  //             }
-  //         })
-  //     }
-  // }
-
   deleteIngredientRequirementForComponent(componentIndex: number, component: RecipeComponent, ir: IngredientRequirement) {
     if (this.props.multipart) {
       var newIrs = component.ingredients?.filter(i => i.id !== ir.id).map((e, i) => {
@@ -238,23 +198,6 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
     }
   }
 
-  // updateIngredientRequirement(ir: IngredientRequirement, update : (ir : IngredientRequirement) => IngredientRequirement) {
-  //     if (!this.props.multipart) {
-  //         var recipe = (this.state.recipe as Recipe)
-  //         const idx = recipe.ingredients!.findIndex(i => i.ingredient.id == ir.ingredient.id);
-  //         const newIr = update(recipe.ingredients![idx])
-  //         let newIrs = Array.from(recipe.ingredients!)
-  //         newIrs[idx] = newIr
-  //         this.setState({
-  //             ...this.state,
-  //             recipe: {
-  //                 ...recipe,
-  //                 ingredients: newIrs
-  //             }
-  //         })
-  //     }
-  // }
-
   updateIngredientRequirementForComponent(
     componentIndex: number,
     component: RecipeComponent,
@@ -262,7 +205,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
     update: (ir: IngredientRequirement) => IngredientRequirement) {
     if (this.props.multipart) {
       // var recipe = (this.state.recipe as MultiPartRecipe)
-      const idx = component.ingredients!.findIndex(i => i.ingredient.id == ir.ingredient.id);
+      const idx = component.ingredients!.findIndex(i => i.ingredient.id === ir.ingredient.id);
       const newIr = update(component.ingredients![idx])
       let newIrs = Array.from(component.ingredients!)
       newIrs[idx] = newIr
@@ -276,20 +219,6 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
       })
     }
   }
-
-  // appendNewStep(): void {
-  //     if (!this.props.multipart) {
-  //         var recipe = (this.state.recipe as Recipe)
-  //         var newSteps = Array.from(recipe.steps ?? [])
-  //         newSteps.push({text: ''})
-  //         this.setState({
-  //             recipe: {
-  //                 ...this.state.recipe,
-  //                 steps : newSteps
-  //             }
-  //         })
-  //     }
-  // }
 
   appendNewStepForComponent(componentIndex: number, component: RecipeComponent): void {
     if (this.props.multipart) {
@@ -308,8 +237,6 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
 
   changeOrReorder(componentIndex: number, component: RecipeComponent, newSteps: RecipeStep[]): void {
     if (this.props.multipart) {
-      // var newSteps = Array.from(component.steps ?? [])
-      // newSteps.push({text: '', id: uuidv4()})
       component.steps = newSteps;
       let newComponents = Array.from((this.state.recipe as MultiPartRecipe).recipeComponents);
       this.setState({
@@ -681,10 +608,8 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
       && this.state.recipe.caloriesPerServing === 0
       && (this.state.nutritionFacts?.recipe?.calories ?? 0) !== 0) {
       // if the user did not provide a value and we computed one, use that
-      let allFats =
-        this.state.nutritionFacts!.recipe.saturatedFats
-        + this.state.nutritionFacts!.recipe.monoUnsaturatedFats
-        + this.state.nutritionFacts!.recipe.polyUnsaturatedFats;
+      let { saturatedFats, monoUnsaturatedFats, polyUnsaturatedFats } = this.state.nutritionFacts!.recipe;
+      let allFats = saturatedFats + monoUnsaturatedFats + polyUnsaturatedFats;
       rightColContents =
         <div>
           {Math.round(this.state.nutritionFacts!.recipe.calories / this.state.recipe.servingsProduced)} kcal <i className="fas fa-solid fa-calculator"></i>
