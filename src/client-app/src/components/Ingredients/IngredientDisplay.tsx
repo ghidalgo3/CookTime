@@ -8,9 +8,9 @@ type IngredientDisplayProps = {
     units? : MeasureUnit[]
 }
 export class IngredientDisplay extends React.Component<IngredientDisplayProps, {}> {
-    constructor(props: IngredientDisplayProps) {
-        super(props);
-    }
+    // constructor(props: IngredientDisplayProps) {
+    //     super(props);
+    // }
 
 
     render() {
@@ -56,7 +56,6 @@ export class IngredientDisplay extends React.Component<IngredientDisplayProps, {
         } else if (decimalStr === "0.1250") {
             quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>1</sup>&frasl;<sub>8</sub></>;
         }
-
         if (0 < decimal && decimal <= 0.0625) {
             quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>1</sup>&frasl;<sub>16</sub></>;
         } else if (0.0625 < decimal && decimal <= 0.1250) {
