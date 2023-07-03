@@ -34,7 +34,7 @@ public class RegistrationModel : PageModel
         var currentUser = await this.UserService.GetUserAsync(this.User);
         if (currentUser == null)
         {
-            return this.Redirect("/Index");
+            return this.Redirect("/");
         }
         if (currentUser.PasswordHash == null)
         {

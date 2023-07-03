@@ -50,10 +50,10 @@ public class SignInModel : PageModel
             var user = this.UserManager.GetUser(this.User);
             if (user == null)
             {
-                return this.Redirect("/Index");
+                return this.Redirect("/");
             }
 
-            return this.Redirect("/Index");
+            return this.Redirect("/");
         }
         else
         {
@@ -103,7 +103,7 @@ public class SignInModel : PageModel
                     // User does not have an identity yet at this time, and user is null...
                     if (user == null)
                     {
-                        return this.Redirect("/Index");
+                        return this.Redirect("/");
                     }
 
 
@@ -113,7 +113,7 @@ public class SignInModel : PageModel
                         return this.Redirect(redirectTo);
                     }
 
-                    return this.Redirect("/Index");
+                    return this.Redirect("/");
                 }
                 else
                 {
