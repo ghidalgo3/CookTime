@@ -19,6 +19,7 @@ export function RecipeStructuredData({recipe, images} : RecipeStructuredDataProp
     "image": images.map(image => {
       return `${window.location.origin}/image/${image.id}`
     }),
+    "recipeYield": recipe.servingsProduced,
     "cookTime": `${moment.duration(recipe.cooktimeMinutes, 'minutes').toISOString()}`,
     "recipeIngredient": recipe.recipeComponents.flatMap(component => {
       return component.ingredients?.map(ir => {
