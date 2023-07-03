@@ -31,6 +31,7 @@ import RecipeCreation, { action as createRecipe } from './pages/RecipeCreation';
 import Registration, { action as finishRegistration } from './pages/Registration';
 import ResetPassword, { RESET_PASSWORD_PAGE_PATH, action as sendPasswordResetEmail } from './pages/ResetPassword';
 import SignUp, { SIGN_UP_PAGE_PATH, action as signUpAction } from './pages/SignUp';
+import About, { ABOUT_PAGE_PATH } from './pages/About';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -53,6 +54,7 @@ function App() {
 
         <Route path={RECIPE_PAGE_PATH} element={<Recipe />} />
         <Route path="Recipes/Favorites" element={<Favorites />} />
+        <Route path={ABOUT_PAGE_PATH} element={<About />} />
         <Route path="Recipes/Mine" element={<MyRecipes />} />
         <Route
           path="Recipes/Create"

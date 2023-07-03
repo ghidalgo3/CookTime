@@ -79,6 +79,11 @@ export function NavigationBar({ categories }: { categories: string[] }) {
                 }
               </NavDropdown>
               <Nav.Link
+                as={Link}
+                to="/about">
+                  About
+              </Nav.Link>
+              <Nav.Link
                 id={!user ? "my-nav-link-disabled" : ""}
                 // className={!user ? "my-nav-link-disabled" : ""}
                 disabled={!user}
