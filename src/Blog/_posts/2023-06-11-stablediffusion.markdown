@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "AI Generated Recipes Photography"
-date:   2023-06-011 20:36:58 -0400
+date:   2023-06-11 20:36:58 -0400
 categories: ai, machine learning, dall-e
 ---
 
