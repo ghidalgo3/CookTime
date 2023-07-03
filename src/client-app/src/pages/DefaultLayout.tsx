@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react"
-import { Outlet, useLoaderData, useLocation } from "react-router-dom";
+import { Outlet, ScrollRestoration, useLoaderData, useLocation } from "react-router-dom";
 import { CookTimeBanner, NavigationBar } from "src/components";
 import Footer from "src/components/Footer";
 import { getCategories, getRecipeViews } from "src/shared/CookTime";
@@ -17,6 +17,17 @@ export default function DefaultLayout() {
   useTitle();
   return (
     <>
+    {/* Scroll restoration is bringing the user to the top of the page in every refresh, which is desirable in most pages.
+    The location.pathname should allow us to keep previous scroll height on the recipe list but it's not working as intended right now. */}
+    <ScrollRestoration
+      getKey={(location, matches) => {
+        return location.pathname === "/"
+          ?
+            location.pathname + location.search
+          : 
+            location.key;
+      }}
+    />
     <NavigationBar categories={categories as string[]}/>
 
     <main role="main" className="pb-3">
