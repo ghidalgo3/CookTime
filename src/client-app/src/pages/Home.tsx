@@ -20,6 +20,7 @@ export default function Home() {
   const recipes = useLoaderData() as PagedResult<RecipeView>;
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("search");
+  const page = searchParams.get("page") ?? "1";
   const { user } = useAuthentication();
   return (
     <>
@@ -27,7 +28,7 @@ export default function Home() {
         <link rel="canonical" href={`${origin}/`} />
       </Helmet>
       {
-        !query && 
+        !query && page === "1" &&
         <>
           <RecipeList
             title="Featured Recipes"
