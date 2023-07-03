@@ -77,7 +77,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                         .AsSplitQuery()
                         .Where(ingredient =>
                             ingredient.Name.ToUpper().Contains(name.ToUpper()))
-                            // EF.Functions.Like(ingredient.Name, name))
                         .ToListAsync();
         var x = initialQUery.SelectMany(ingredient =>
         {

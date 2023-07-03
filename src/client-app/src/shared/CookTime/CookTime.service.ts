@@ -1,9 +1,11 @@
 import { IngredientInternalUpdate, PagedResult, RecipeView, Review } from "./CookTime.types";
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
+
 export const DietDetails = {
   TODAYS_TEN: "TodaysTen"
 }
+
 export async function getMultiPartRecipe(id : string) {
   const response = await fetch(`/api/multipartrecipe/${id}`);
   return await response.json();
