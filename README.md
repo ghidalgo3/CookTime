@@ -1,5 +1,12 @@
 # babe-algorithms
 Materializing all hard decisions into code.
+# Getting started
+You must have installed:
+1. [.NET 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+1. [Node.js](https://nodejs.org/en/download) (latest LTS release)
+1. PostgreSQL
+
+
 # Hot Reloading Everything
 I have not figured out how to get `dotnet watch` to work properly with VSCode's launch configurations, instead if you want to get a hot-reload loop going then you should open 2 terminal windows and run the following:
 ```bash
@@ -24,3 +31,4 @@ jekyll build -d ../wwwroot/Blog
 
 That will dump new blog contents into the static files directory `wwwroot`.
 Commit the changes after you generate the new blog post.
+
