@@ -12,13 +12,17 @@ export function SignInForm() {
     if (user) {
       if (state?.redirectTo) {
         navigate(state.redirectTo, { replace: true } );
-      } else  if (window.history.length <= 2) {
+      } else  if (window.history.length === 2) { 
+        // when you initiate a password reset flow, the flow is:
+        // 1. Reset
+        // 2. Sign In
+        // Which is a special case!
         navigate("/", {replace: true});
       } else {
         navigate(-1);
       }
     }
-  }, [user]);
+  }, [user, navigate, state?.redirectTo ]);
   return (
     <>
       <h1>Sign in to CookTime</h1>
