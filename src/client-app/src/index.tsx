@@ -27,7 +27,7 @@ import IngredientsView from './pages/IngredientsView';
 import MyRecipes from './pages/MyRecipes';
 import PlainLayout from './pages/PlainLayout/PlainLayout';
 import Recipe, { RECIPE_PAGE_PATH } from './pages/Recipe';
-import RecipeCreation, { action as createRecipe } from './pages/RecipeCreation';
+import RecipeCreation, { action as createRecipe, RECIPE_CREATE_PAGE_PATH } from './pages/RecipeCreation';
 import Registration, { action as finishRegistration } from './pages/Registration';
 import ResetPassword, { RESET_PASSWORD_PAGE_PATH, action as sendPasswordResetEmail } from './pages/ResetPassword';
 import SignUp, { SIGN_UP_PAGE_PATH, action as signUpAction } from './pages/SignUp';
@@ -57,7 +57,7 @@ function App() {
         <Route path={ABOUT_PAGE_PATH} element={<About />} />
         <Route path="Recipes/Mine" element={<MyRecipes />} />
         <Route
-          path="Recipes/Create"
+          path={RECIPE_CREATE_PAGE_PATH}
           element={<RecipeCreation />}
           action={createRecipe} />
         <Route path={CART_PAGE_PATH} element={<GroceriesList />} />

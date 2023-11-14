@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react"
-import { Container, Form, Nav, Navbar, NavDropdown } from "react-bootstrap";
-import { isMainThread } from "worker_threads";
-import { Form as RouterForm, Link, NavLink } from "react-router-dom";
+import { Button, Container, Form, Nav, Navbar, NavDropdown } from "react-bootstrap";
+import { Form as RouterForm, Link } from "react-router-dom";
 import imgs from "../../assets";
 import "./NavigationBar.css"
-import { useContext } from "react";
 import { RequireAuth, useAuthentication } from "../Authentication/AuthenticationContext";
 import { UserDetails } from "src/shared/AuthenticationProvider";
-import { Category } from "src/shared/CookTime/CookTime.types";
+import { RECIPE_CREATE_PAGE_PATH } from "src/pages/RecipeCreation";
 
 export function action() {
 }
@@ -23,9 +21,6 @@ export function NavigationBar({ categories }: { categories: string[] }) {
           </NavDropdown.Item>
           <NavDropdown.Item as={Link} to="/recipes/favorites">
             Favorites
-          </NavDropdown.Item>
-          <NavDropdown.Item as={Link} to="/recipes/create">
-            Add new recipe
           </NavDropdown.Item>
           <NavDropdown.Divider />
           <NavDropdown.Item onClick={signOut}>
@@ -96,6 +91,18 @@ export function NavigationBar({ categories }: { categories: string[] }) {
                 <AdminNavBarSection />
               </RequireAuth>
               {UserDropdown(user)}
+              <RequireAuth roles={["User"]}>
+                <Nav.Link
+                  id={!user ? "my-nav-link-disabled" : ""}
+                  // className={!user ? "my-nav-link-disabled" : ""}
+                  disabled={!user}
+                  as={Link}
+                  to={`/${RECIPE_CREATE_PAGE_PATH}`}>
+                    <Button>
+                      New Recipe
+                    </Button>
+                </Nav.Link>
+              </RequireAuth>
             </Nav>
           </Navbar.Collapse>
         </Container>

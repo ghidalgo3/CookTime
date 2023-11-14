@@ -33,7 +33,7 @@ export async function action(args : ActionFunctionArgs) {
 
 const SIMPLE_CREATE = "Simple create";
 const IMPORT = "Import from image";
-
+export const RECIPE_CREATE_PAGE_PATH = "Recipes/Create"
 export default function RecipeCreation() {
 
   useTitle("New Recipe")
