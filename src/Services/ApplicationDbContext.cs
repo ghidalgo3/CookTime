@@ -66,10 +66,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public async Task<IEnumerable<Ingredient>> SearchIngredientsAsync(string query)
     {
         var queryMatch = $"%{query}%";
-        return await this.Ingredients
+        Fastenshtein.Levenshtein lev = new(query);
+        var list = await this.Ingredients
             .Where(ingredient => EF.Functions.ILike(ingredient.Name.Trim(), queryMatch.Trim()))
             .ToListAsync();
+
+        return list.OrderBy(result => result.Name.Split(";").Select(n => lev.DistanceFrom(n)).Min());
     }
+
     public async Task<IEnumerable<Ingredient>> GetIngredientsForAutosuggest(string name)
     {
         var initialQUery = await this.Ingredients
