@@ -10,7 +10,8 @@ export async function action(args : ActionFunctionArgs) {
   const formName = formData.get("intent")?.toString();
   const name = formData.get("name")?.toString();
   if (formName === SIMPLE_CREATE && name) {
-    const result = await createRecipeWithName(name);
+    const body = formData.get("body")?.toString();
+    const result = await createRecipeWithName({name, body});
     if (result.ok) {
       var recipe = await result.json() as MultiPartRecipe;
       return redirect(Path(recipe.id))
@@ -55,13 +56,23 @@ export default function RecipeCreation() {
             <h1>Create recipe</h1>
             <RouterForm method="post">
               <Form.Group className="margin-bottom-8">
-                <Form.Label>Recipe name</Form.Label>
-                <Form.Control type="text" name="name"></Form.Control>
+                <Form.Control placeholder="Name" type="text" name="name"></Form.Control>
+              </Form.Group>
+              <Form.Group className="margin-bottom-8">
+                <Form.Label>
+                  Tips for recipe writing:
+                  <ul>
+                    <li> List your ingredients first, then the steps. </li>
+                    <li> Write ingredients like this: quantity unit name (example: 2 tablespoons salt)</li>
+                    <li> Write steps one line at a time </li>
+                  </ul>
+                  The AI may get it wrong. It's ok! You can edit it later.
+                </Form.Label>
+                <Form.Control as="textarea" rows={7} placeholder="Recipe text" type="textarea" name="body"></Form.Control>
               </Form.Group>
               <Form.Group>
                 <Button className="width-100" type="submit" name="intent" value={SIMPLE_CREATE}>Create</Button>
               </Form.Group>
-              {/* <Form.Control></Form.Control> */}
             </RouterForm>
 
             <br />

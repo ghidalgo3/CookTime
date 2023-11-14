@@ -52,28 +52,40 @@ namespace babe_algorithms.Controllers
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromForm] string name) 
+        public async Task<IActionResult> Create([FromForm] string name, [FromForm] string body) 
         {
             var user = await this.Session.GetSignedInUserAsync(this.User);
             if (user == null)
             {
                 return this.Unauthorized("You must be signed in to create recipes.");
             }
-            var recipe = new MultiPartRecipe
+            if (string.IsNullOrEmpty(body))
             {
-                Name = name,
-                Owner = user,
-                CreationDate = DateTimeOffset.UtcNow,
-                LastModifiedDate = DateTimeOffset.UtcNow,
-            };
-            recipe.RecipeComponents.Add(new RecipeComponent()
+                var recipe = new MultiPartRecipe
+                {
+                    Name = name,
+                    Owner = user,
+                    CreationDate = DateTimeOffset.UtcNow,
+                    LastModifiedDate = DateTimeOffset.UtcNow,
+                };
+                recipe.RecipeComponents.Add(new RecipeComponent()
+                {
+                    Name = name,
+                });
+                _context.MultiPartRecipes.Add(recipe);
+                await _context.SaveChangesAsync();
+                await _context.Entry(recipe).ReloadAsync();
+                return this.Ok(recipe);
+            }
+            else
             {
-                Name = name,
-            });
-            _context.MultiPartRecipes.Add(recipe);
-            await _context.SaveChangesAsync();
-            await _context.Entry(recipe).ReloadAsync();
-            return this.Ok(recipe);
+                var recipe = await this.ImportRecipeFromTextAsync(user, body);
+                recipe.Name = name;
+                _context.MultiPartRecipes.Add(recipe);
+                await _context.SaveChangesAsync();
+                await _context.Entry(recipe).ReloadAsync();
+                return this.Ok(recipe);
+            }
         }
 
         [HttpPost("importFromImage")]
@@ -88,15 +100,21 @@ namespace babe_algorithms.Controllers
             var file = files[0];
             using var fileStream = file.OpenReadStream();
             var prompt = await this.ComputerVision.GetTextAsync(fileStream, CancellationToken.None);
+            MultiPartRecipe recipe = await ImportRecipeFromTextAsync(user, prompt);
+            this._context.MultiPartRecipes.Add(recipe);
+            await this._context.SaveChangesAsync();
+            await this._context.Entry(recipe).ReloadAsync();
+            return this.Ok(recipe);
+        }
+
+        private async Task<MultiPartRecipe> ImportRecipeFromTextAsync(ApplicationUser user, string prompt)
+        {
             var recipe = await this.AI.ConvertToRecipeAsync(prompt, CancellationToken.None);
             recipe.Owner = user;
             recipe.CreationDate = DateTimeOffset.UtcNow;
             recipe.LastModifiedDate = DateTimeOffset.UtcNow;
             await this._context.LinkImportedRecipeIngredientsAsync(recipe);
-            this._context.MultiPartRecipes.Add(recipe);
-            await this._context.SaveChangesAsync();
-            await this._context.Entry(recipe).ReloadAsync();
-            return this.Ok(recipe);
+            return recipe;
         }
 
 

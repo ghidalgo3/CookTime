@@ -63,7 +63,7 @@ public class ChatGPT : IRecipeArtificialIntelligence
                 Text = ir.ToString(),
             };
         }).ToList() ?? new();
-        string recipeName = arguments[RECIPE_NAME].ToString().ToTitleCase();
+        string recipeName = arguments[RECIPE_NAME]?.ToString().ToTitleCase();
         var recipe = new MultiPartRecipe()
         {
             Name = recipeName,

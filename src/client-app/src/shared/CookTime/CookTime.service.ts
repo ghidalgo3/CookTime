@@ -11,9 +11,12 @@ export async function getMultiPartRecipe(id : string) {
   return await response.json();
 }
 
-export async function createRecipeWithName(recipeCreationArgs : string) {
+export async function createRecipeWithName(recipeCreationArgs : {name: string, body?: string}) {
   const form = new FormData();
-  form.set("name", recipeCreationArgs);
+  form.set("name", recipeCreationArgs.name);
+  if (recipeCreationArgs.body) {
+    form.set("body", recipeCreationArgs.body);
+  }
   const response = await fetch("/api/multipartrecipe/create", {
     method: "post",
     body: form
