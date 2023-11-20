@@ -71,7 +71,14 @@ export default function RecipeCreation() {
                 <Form.Control as="textarea" rows={7} placeholder="Recipe text" type="textarea" name="body"></Form.Control>
               </Form.Group>
               <Form.Group>
-                <Button className="width-100" type="submit" name="intent" value={SIMPLE_CREATE}>Create</Button>
+                <Button
+                  className="width-100"
+                  type="submit"
+                  name="intent"
+                  onClick={() => setImportInProgress(true)}
+                  value={SIMPLE_CREATE}>
+                    {importInProgress ? <Spinner /> : "Create"}
+                  </Button>
               </Form.Group>
             </RouterForm>
 
