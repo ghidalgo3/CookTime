@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using babe_algorithms.Services;
 using SixLabors.ImageSharp.Formats.Jpeg;
+using Image = babe_algorithms.Models.Image;
 
 namespace babe_algorithms;
 

@@ -7,9 +7,8 @@ using babe_algorithms.Models.Users;
 using babe_algorithms.Pages;
 using babe_algorithms.ViewComponents;
 using GustavoTech.Implementation;
-using Category = babe_algorithms.Models.Category;
-using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Options;
+using Image = babe_algorithms.Models.Image;
 
 namespace babe_algorithms.Controllers
 {

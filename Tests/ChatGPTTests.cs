@@ -18,7 +18,7 @@ public class ChatGPTTests
 
 
     [TestMethod]
-    [Ignore("Ignore tests that make network calls to 3rd party APIs.")]
+    // [Ignore("Ignore tests that make network calls to 3rd party APIs.")]
     public void NonRecipe()
     {
         var ai = GetChatGPT();
@@ -33,7 +33,7 @@ Not a recipe
     }
 
     [TestMethod]
-    [Ignore("Ignore tests that make network calls to 3rd party APIs.")]
+    // [Ignore("Ignore tests that make network calls to 3rd party APIs.")]
     public void SimpleRecipeParse()
     {
         var ai = GetChatGPT();

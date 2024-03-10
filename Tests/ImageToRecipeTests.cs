@@ -19,7 +19,7 @@ public class ImageToRecipeTests
     [DataTestMethod]
     // [DataRow("Images/lemony pasta with chickpeas.png", "Lemony Pasta With Chickpeas", 12, 3)]
     // [DataRow("Images/breville-air-fryer.png", "Dehydrated Bananas With Coconut", 1, 4)]
-    [DataRow("Images/hot apple waffle.png", "Hot Apple Pie And Coconut Crumble", 14, 8)]
+    [DataRow("Images/hot apple waffle.png", "Hot Apple Pie And Coconut Crumble Waffles", 14, 8)]
     public async Task LemonyPastaWithChickpeas(string file, string title, int ingredients, int steps)
     {
         var ai = ChatGPTTests.GetChatGPT();
@@ -36,7 +36,7 @@ public class ImageToRecipeTests
     }
 
     [TestMethod]
-    [Ignore]
+    // [Ignore]
     public async Task ReorderedTextTest()
     {
 

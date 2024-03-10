@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Converters;
+using Image = babe_algorithms.Models.Image;
 
 namespace babe_algorithms;
 

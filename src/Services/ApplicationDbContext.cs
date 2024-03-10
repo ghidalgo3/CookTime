@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Npgsql;
 using babe_algorithms.Models.Users;
 using babe_algorithms.Pages;
 using GustavoTech.Implementation;
+using Image = babe_algorithms.Models.Image;
 
 namespace babe_algorithms.Services;
 
@@ -170,7 +170,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .Include(r => r.Images)
             .Include(r => r.Categories)
             // EFCore dumb dumb can't translate this query in one go ORMs suck
-            .Select(r => new {
+            .Select(r => new
+            {
                 r.Name,
                 r.Id,
                 Images = r.Images.Select(image => new ImageReference(
@@ -237,6 +238,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         var allRecipesQuery = (await PartialRecipeViewQueryAsync())
             .Where(recipe => recipe.CreationDate > DateTimeOffset.UtcNow - TimeSpan.FromDays(7))
             // .Where(r => r.Images.Any())
+            .OrderByDescending(r => r.CreationDate)
             .Take(count);
         return allRecipesQuery
             .Select(r => RecipeView.From(r, favorites))
@@ -257,7 +259,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             // .Include(recipe => recipe.Images)
             .SingleOrDefaultAsync(recipe => recipe.Id == id);
     }
-    
+
     public async Task<MultiPartRecipe> GetMultiPartRecipeWithImagesAsync(Guid id)
     {
         return await this.MultiPartRecipes
@@ -317,9 +319,9 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 
     public async Task<Cart> GetCartAsync(ApplicationUser user, string name, bool simple = false)
     {
-        var activeCart = 
-            simple ? 
-                await GetSimpleActiveCartQuery(user, name).FirstOrDefaultAsync() : 
+        var activeCart =
+            simple ?
+                await GetSimpleActiveCartQuery(user, name).FirstOrDefaultAsync() :
                 await GetActiveCartQuery(user, name).FirstOrDefaultAsync();
         if (activeCart == null)
         {
@@ -371,7 +373,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                             .ThenInclude(rr => rr.MultiPartRecipe)
                                 .ThenInclude(mpRecipe => mpRecipe.Categories);
     }
-    
+
     public IQueryable<Cart> GetSimpleActiveCartQuery(ApplicationUser user, string name)
     {
         return this.Carts

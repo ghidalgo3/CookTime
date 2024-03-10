@@ -1,7 +1,9 @@
 using System.Text.Json.Nodes;
 using GustavoTech.Implementation;
+using Microsoft.Build.Evaluation;
 using OpenAI;
 using OpenAI.Chat;
+using OpenAI.Models;
 
 namespace babe_algorithms;
 
@@ -32,20 +34,21 @@ public class ChatGPT : IRecipeArtificialIntelligence
             new Message(Role.User, prompt + text),
         };
         var functions = AvailableChatFunctions();
+        var tools = new List<Tool>(functions);
         var chatRequest = new ChatRequest(
             messages,
-            functions: functions,
-            functionCall: "auto",
-            model: "gpt-3.5-turbo-0613",
+            tools: tools,
+            toolChoice: "auto",
+            model: Model.GPT3_5_Turbo,
             temperature: 0.0);
         // model: "gpt-4-0613"); // not available via API call yet, only on the GUI.
         var result = await this.OpenAIClient.ChatEndpoint.GetCompletionAsync(chatRequest, ct);
-        if (result.FirstChoice.Message.Function == null)
+        if (result.FirstChoice.Message.ToolCalls.Count == 0)
         {
             return null;
         }
 
-        JsonNode arguments = JsonNode.Parse(result.FirstChoice.Message.Function.Arguments.ToString());
+        JsonNode arguments = JsonNode.Parse(result.FirstChoice.Message.ToolCalls.First().Function.Arguments.ToString());
         var ingredientRequirements = arguments[INGREDIENT_REQUIREMENTS]?.AsArray().Select(ir =>
             new
             {
@@ -139,7 +142,7 @@ public class ChatGPT : IRecipeArtificialIntelligence
         }
     }
 
-    private static List<Function> AvailableChatFunctions()
+    private static List<Tool> AvailableChatFunctions()
     {
         // Define the functions that the assistant is able to use:
         var units = Enum.GetValues<Unit>().Select(unit => unit.ToString()).ToArray();
@@ -149,7 +152,7 @@ public class ChatGPT : IRecipeArtificialIntelligence
             unitsArray.Add(unit);
         }
 
-        var functions = new List<Function>
+        var functions = new List<Tool>
         {
             // TODO this function needs to accept an array of ingredients
             // Follow this guide to make this object be an array
