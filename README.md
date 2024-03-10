@@ -2,7 +2,7 @@
 Materializing all hard decisions into code.
 # Getting started
 You must have installed:
-1. [.NET 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
+1. [.NET 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 1. [Node.js](https://nodejs.org/en/download) (latest LTS release)
 1. PostgreSQL
 
