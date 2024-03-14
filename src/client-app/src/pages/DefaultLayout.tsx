@@ -15,6 +15,7 @@ export default function DefaultLayout() {
   let {categories} = useLoaderData() as {categories: string[]};
 
   useTitle();
+  let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   return (
     <>
     {/* Scroll restoration is bringing the user to the top of the page in every refresh, which is desirable in most pages.
@@ -30,7 +31,7 @@ export default function DefaultLayout() {
     />
     <NavigationBar categories={categories as string[]}/>
 
-    <main role="main" className="pb-3">
+    <main data-bs-theme={theme} role="main" className="pb-3">
       <div className="container margin-top-30">
           {/* TODO don't render this always  */}
           {location.pathname === "/" && location.search === "" && 
