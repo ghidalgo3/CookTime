@@ -32,6 +32,13 @@ export async function importRecipeFromImage(recipeCreationArgs : FormData) {
   return response;
 }
 
+export async function generateRecipeImage(id: string) {
+  const response = await fetch(`/api/multipartrecipe/${id}/generateImage`, {
+    method: "POST",
+  });
+  return response;
+}
+
 export async function getCategories() : Promise<string[]> {
   const response = await fetch("/api/category/list")
   return await response.json()

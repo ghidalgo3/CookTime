@@ -16,6 +16,7 @@ import { Tags } from '../Tags/Tags';
 import { AuthContext, AuthenticationContext } from '../Authentication/AuthenticationContext';
 import { UserDetails } from 'src/shared/AuthenticationProvider';
 import { GoogleInFeedAds } from '../GoogleInFeedAds';
+import { RecipeEditButtons } from './RecipeEditButtons';
 
 type RecipeEditProps = {
   recipeId: string,
@@ -300,7 +301,18 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
               By {this.state.recipe.owner?.userName}
             </Col>
             <AuthContext.Consumer>
-              {({user}) => this.editButtons(user)}
+              {({ user }) =>
+                <RecipeEditButtons
+                  user={user}
+                  recipe={this.state.recipe}
+                  edit={this.state.edit}
+                  operationInProgress={this.state.operationInProgress}
+                  onSave={() => this.onSave()}
+                  onCancel={() => this.onCancel()}
+                  onDelete={() => this.onDelete()}
+                  onToggleEdit={() => this.setState({ edit: !this.state.edit })}
+                  onAddtoCard={() => this.onAddtoCard()}
+              />}
             </AuthContext.Consumer>
           </>
         </Row>
@@ -805,86 +817,6 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
         :
         <img className="recipe-image" src={`/${this.state.recipe.staticImage}`} />;
     }
-  }
-
-  private editButtons(user? : UserDetails | null) {
-    let userSignedIn = user !== null;
-    let canEdit = userSignedIn && user!.id === this.state.recipe.owner?.id || user?.roles.includes("Administrator");
-    return this.state.edit ?
-      <Col>
-        <Row>
-          <Col>
-            <Button className="recipe-edit-buttons font-weight-600" onClick={_ => this.onSave()}>
-              {
-                this.state.operationInProgress ?
-                  <Spinner
-                    as="span"
-                    animation="border"
-                    size="sm"
-                    role="status"
-                    aria-hidden="true"
-                  />
-                  : "Save"
-              }
-            </Button>
-          </Col>
-          <Col>
-            <Button className="recipe-edit-buttons margin-bottom-15" onClick={_ => this.onCancel()}>Cancel</Button>
-          </Col>
-          <Col>
-            <Button variant="danger" className="recipe-edit-buttons margin-bottom-15" onClick={_ => this.onDelete()}>Delete</Button>
-          </Col>
-          {!this.props.multipart ?
-            <Col>
-              <Button variant="danger" className="recipe-edit-buttons margin-bottom-15" onClick={_ => this.onMigrate()}>Migrate</Button>
-            </Col>
-            :
-            null}
-        </Row>
-      </Col>
-      :
-      <Col>
-        <Row>
-          <Col>
-            {(!userSignedIn || !canEdit) ?
-              <div data-bs-toggle="tooltip" data-bs-placement="bottom" title="Sign in to modify your own recipes">
-                <Button
-                  className="recipe-edit-buttons"
-                  disabled={!userSignedIn || !canEdit}
-                  onClick={(event) => this.setState({ edit: !this.state.edit })}>
-                  Edit
-                </Button>
-              </div>
-              :
-              <Button
-                className="recipe-edit-buttons"
-                disabled={!userSignedIn || !canEdit}
-                onClick={(event) => this.setState({ edit: !this.state.edit })}>
-                Edit
-              </Button>
-            }
-          </Col>
-          <Col>
-            {!userSignedIn ?
-              <div data-bs-toggle="tooltip" data-bs-placement="bottom" title="Sign in to add recipes to your cart">
-                <Button
-                  className="recipe-edit-buttons"
-                  disabled={!userSignedIn}
-                  onClick={(event) => this.onAddtoCard()}>
-                  Add to Groceries
-                </Button>
-              </div>
-              :
-              <Button
-                className="recipe-edit-buttons"
-                disabled={!userSignedIn}
-                onClick={(event) => this.onAddtoCard()}>
-                Add to Groceries
-              </Button>
-            }
-          </Col>
-        </Row>
-      </Col>;
   }
 
   onMigrate(): void {

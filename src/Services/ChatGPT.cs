@@ -21,9 +21,11 @@ public class ChatGPT : IRecipeArtificialIntelligence
     public ChatGPT(OpenAIOptions configuration, ILogger<ChatGPT> logger)
     {
         this.OpenAIClient = new OpenAIClient(configuration.Key);
+        this.Logger = logger;
     }
 
     private OpenAIClient OpenAIClient { get; }
+    public ILogger<ChatGPT> Logger { get; }
 
     public async Task<MultiPartRecipe> ConvertToRecipeAsync(string text, CancellationToken ct)
     {
@@ -276,6 +278,7 @@ public class ChatGPT : IRecipeArtificialIntelligence
             responseFormat: OpenAI.Images.ResponseFormat.B64_Json,
             style: "natural",
             model: Model.DallE_3);
+        this.Logger.LogInformation("Generating image for recipe {recipeName}", recipe.Name);
         var imageResults = await this.OpenAIClient.ImagesEndPoint.GenerateImageAsync(request);
         var result = new List<Models.Image>();
         foreach (var image in imageResults)
