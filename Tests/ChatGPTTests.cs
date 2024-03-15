@@ -16,6 +16,17 @@ public class ChatGPTTests
         return ai;
     }
 
+    [TestMethod]
+    [Ignore]
+    public async Task ImageGeneration()
+    {
+        var ai = GetChatGPT();
+        await ai.GenerateRecipeImageAsync(new MultiPartRecipe()
+        {
+            Name = "Test Recipe",
+        }, CancellationToken.None);
+    }
+
 
     [TestMethod]
     // [Ignore("Ignore tests that make network calls to 3rd party APIs.")]

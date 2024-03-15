@@ -9,6 +9,7 @@ using babe_algorithms.ViewComponents;
 using GustavoTech.Implementation;
 using Microsoft.Extensions.Options;
 using Image = babe_algorithms.Models.Image;
+using Microsoft.AspNetCore.Authorization;
 
 namespace babe_algorithms.Controllers
 {
@@ -71,6 +72,7 @@ namespace babe_algorithms.Controllers
                 {
                     Name = name,
                 });
+                await this.GenerateImageForRecipe(recipe);
                 _context.MultiPartRecipes.Add(recipe);
                 await _context.SaveChangesAsync();
                 await _context.Entry(recipe).ReloadAsync();
@@ -81,10 +83,25 @@ namespace babe_algorithms.Controllers
                 var recipe = await this.ImportRecipeFromTextAsync(user, body);
                 recipe.Name = name;
                 _context.MultiPartRecipes.Add(recipe);
+                await this.GenerateImageForRecipe(recipe);
                 await _context.SaveChangesAsync();
                 await _context.Entry(recipe).ReloadAsync();
                 return this.Ok(recipe);
             }
+        }
+
+        [Authorize(Roles = nameof(Role.Administrator))]
+        [HttpPost("{id}/generateImage")]
+        public async Task<IActionResult> GenerateImage(Guid id)
+        {
+            var recipe = await this._context.MultiPartRecipes.Include(r => r.Images).FirstAsync(r => r.Id == id);
+            if (recipe == null)
+            {
+                return NotFound("recipe");
+            }
+            await GenerateImageForRecipe(recipe);
+            await this._context.SaveChangesAsync();
+            return this.Ok();
         }
 
         [HttpPost("importFromImage")]
@@ -101,6 +118,7 @@ namespace babe_algorithms.Controllers
             var prompt = await this.ComputerVision.GetTextAsync(fileStream, CancellationToken.None);
             MultiPartRecipe recipe = await ImportRecipeFromTextAsync(user, prompt);
             this._context.MultiPartRecipes.Add(recipe);
+            await this.GenerateImageForRecipe(recipe);
             await this._context.SaveChangesAsync();
             await this._context.Entry(recipe).ReloadAsync();
             return this.Ok(recipe);
@@ -112,6 +130,7 @@ namespace babe_algorithms.Controllers
             recipe.Owner = user;
             recipe.CreationDate = DateTimeOffset.UtcNow;
             recipe.LastModifiedDate = DateTimeOffset.UtcNow;
+            recipe.Images = [];
             await this._context.LinkImportedRecipeIngredientsAsync(recipe);
             return recipe;
         }
@@ -352,6 +371,23 @@ namespace babe_algorithms.Controllers
             return this.Ok(body);
         }
 
+        private async Task GenerateImageForRecipe(MultiPartRecipe recipe)
+        {
+            if (recipe.Images.Count > 0)
+            {
+                // Delete whatever you have
+                var current = recipe.Images[0];
+                recipe.Images.Clear();
+                _context.Images.Remove(current);
+            }
+
+            var images = await this.AI.GenerateRecipeImageAsync(recipe, CancellationToken.None);
+            foreach (var image in images)
+            {
+                recipe.Images.Add(image);
+                _context.Images.Add(image);
+            }
+        }
 
         private static void SetDietDetails(
             MultiPartRecipe multiPartRecipe,

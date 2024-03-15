@@ -1,8 +1,9 @@
 using System.Text.Json.Nodes;
 using GustavoTech.Implementation;
-using Microsoft.Build.Evaluation;
+using Newtonsoft.Json.Linq;
 using OpenAI;
 using OpenAI.Chat;
+using OpenAI.Images;
 using OpenAI.Models;
 
 namespace babe_algorithms;
@@ -58,7 +59,7 @@ public class ChatGPT : IRecipeArtificialIntelligence
                 // Preparation = ir["preparation"].ToString(),
                 // quantity = ir["quantity"],
             })
-            .ToList() ?? new ();
+            .ToList() ?? new();
         var steps = arguments[STEPS]?.AsArray().Select(ir =>
         {
             return new MultiPartRecipeStep()
@@ -132,7 +133,7 @@ public class ChatGPT : IRecipeArtificialIntelligence
 
     private static Unit GetUnit(JsonNode ir)
     {
-        if(Enum.TryParse<Unit>(ir["unit"].ToString(), ignoreCase: true, out Unit value))
+        if (Enum.TryParse<Unit>(ir["unit"].ToString(), ignoreCase: true, out Unit value))
         {
             return value;
         }
@@ -178,28 +179,28 @@ public class ChatGPT : IRecipeArtificialIntelligence
                     //     },
                     // },
                     // Top level argument MUST be an object for ChatGPT
-                    ["type"] = "object", 
+                    ["type"] = "object",
                     ["properties"] = new JsonObject
                     {
                         [RECIPE_NAME] = new JsonObject
                         {
-                            ["type"] = "string", 
+                            ["type"] = "string",
                             ["description"] = "The name of the recipe",
                         },
                         [nameof(MultiPartRecipe.CooktimeMinutes)] = new JsonObject
                         {
-                            ["type"] = "string", 
+                            ["type"] = "string",
                             ["description"] = "The cooking time of the recipe in minutes.",
                         },
                         [nameof(MultiPartRecipe.ServingsProduced)] = new JsonObject
                         {
-                            ["type"] = "string", 
+                            ["type"] = "string",
                             ["description"] = "The number of servings the recipe produces",
                         },
                         [STEPS] = new JsonObject
                         {
 
-                            ["type"] = "array", 
+                            ["type"] = "array",
                             ["items"] = new JsonObject
                             {
                                 ["type"] = "string",
@@ -208,12 +209,12 @@ public class ChatGPT : IRecipeArtificialIntelligence
                         },
                         [INGREDIENT_REQUIREMENTS] = new JsonObject
                         {
-                            ["type"] = "array", 
+                            ["type"] = "array",
                             ["items"] = new JsonObject
                             {
                                 // ["ingredientRequirement"] = new JsonObject
                                 // {
-                                    ["type"] = "object", 
+                                    ["type"] = "object",
                                     ["properties"] = new JsonObject
                                     {
                                         // TODO change "name" to "ingredient" object when GPT-4 is available
@@ -261,5 +262,35 @@ public class ChatGPT : IRecipeArtificialIntelligence
         };
 
         return functions;
+    }
+
+    public async Task<IEnumerable<Models.Image>> GenerateRecipeImageAsync(
+        MultiPartRecipe recipe,
+        CancellationToken ct)
+    {
+        string prompt = $"Generate a succulent image of the food '{recipe.Name}'.";
+        // https://platform.openai.com/docs/api-reference/images/create
+        var request = new ImageGenerationRequest(
+            prompt,
+            quality: "hd",
+            responseFormat: OpenAI.Images.ResponseFormat.B64_Json,
+            style: "natural",
+            model: Model.DallE_3);
+        var imageResults = await this.OpenAIClient.ImagesEndPoint.GenerateImageAsync(request);
+        var result = new List<Models.Image>();
+        foreach (var image in imageResults)
+        {
+            byte[] data = Convert.FromBase64String(image.B64_Json);
+            SixLabors.ImageSharp.Image img = SixLabors.ImageSharp.Image.Load(data);
+            using var outputStream = new MemoryStream();
+            await img.SaveAsJpegAsync(outputStream, ct);
+            result.Add(new Models.Image()
+            {
+                Data = outputStream.ToArray(),
+                LastModifiedAt = DateTimeOffset.UtcNow,
+                Name = recipe.Name,
+            });
+        }
+        return result;
     }
 }
