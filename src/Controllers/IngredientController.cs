@@ -135,12 +135,12 @@ public class IngredientController : ControllerBase
             return this.Unauthorized("You must be an administrator");
         }
 
-        var ingredient = this._context.GetIngredient(update.IngredientId);
-        var nutrition = await this._context.SRNutritionData.FindAsync(update.NdbNumber);
-        var brandedNutrition = await this._context.BrandedNutritionData.FindAsync(update.GtinUpc);
-        if (ingredient == null && (nutrition == null || brandedNutrition == null))
+        var ingredient = this._context.GetIngredient(update.IngredientId ?? Guid.Empty);
+        var nutrition = await this._context.SRNutritionData.FindAsync(update.NdbNumber ?? -1);
+        var brandedNutrition = await this._context.BrandedNutritionData.FindAsync(update.GtinUpc ?? string.Empty);
+        if (ingredient == null)
         {
-            return this.BadRequest("No ingredient or nutrition data found.");
+            return this.BadRequest("No ingredient found with that id");
         }
         ingredient.NutritionData = nutrition;
         ingredient.BrandedNutritionData = brandedNutrition;
@@ -149,7 +149,7 @@ public class IngredientController : ControllerBase
         {
             nutrition.CountRegex = update.CountRegex;
         }
-        ingredient.ExpectedUnitMass = update.ExpectedUnitMass;
+        ingredient.ExpectedUnitMass = update.ExpectedUnitMass ?? 0.1;
         await this._context.SaveChangesAsync();
         await this._context.Entry(ingredient).ReloadAsync();
         return this.Ok(IngredientInternalUpdate.FromIngredient(ingredient));
