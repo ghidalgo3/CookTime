@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react"
+import React, { useEffect, useState } from "react"
 import { Alert, Col, Container, Row } from "react-bootstrap";
 import { Helmet } from "react-helmet-async";
-import { ActionFunction, ActionFunctionArgs, Form, useActionData } from "react-router-dom";
+import { ActionFunction, ActionFunctionArgs, Form, useActionData } from "react-router";
 import SignUpForm from "src/components/Authentication/SignUpForm";
 import { IAuthenticationProvider, SignUpResult } from "src/shared/AuthenticationProvider";
 import { useTitle } from "src/shared/useTitle";
@@ -9,7 +9,7 @@ import { useTitle } from "src/shared/useTitle";
 export const SIGN_UP_PAGE_PATH = "signup";
 
 export function action(
-  { signUp }: IAuthenticationProvider) : ActionFunction {
+  { signUp }: IAuthenticationProvider): ActionFunction {
   return async (args: ActionFunctionArgs) => {
     const { request } = args;
     const formData = await request.formData()
@@ -29,15 +29,15 @@ export default function SignUp() {
   }, [actionData]);
   const [showAlert, setShowAlert] = useState(false);
   const dismissAlert = () => setShowAlert(false);
-  const successAlert = 
-      <Alert dismissible variant="success" onClose={dismissAlert}>
-        <Alert.Heading>Success!</Alert.Heading>
-        <p className="margin-bottom-0rem">Look for a confirmation link in your email to verify your email.</p>
-      </Alert>;
-  const errorAlert = 
-      <Alert dismissible variant="danger" onClose={dismissAlert}>
-        <Alert.Heading>Uh-oh!</Alert.Heading>
-        <p className="margin-bottom-0rem">{actionData?.message}</p>
+  const successAlert =
+    <Alert dismissible variant="success" onClose={dismissAlert}>
+      <Alert.Heading>Success!</Alert.Heading>
+      <p className="margin-bottom-0rem">Look for a confirmation link in your email to verify your email.</p>
+    </Alert>;
+  const errorAlert =
+    <Alert dismissible variant="danger" onClose={dismissAlert}>
+      <Alert.Heading>Uh-oh!</Alert.Heading>
+      <p className="margin-bottom-0rem">{actionData?.message}</p>
     </Alert>;
   let alert
   switch (actionData?.success) {

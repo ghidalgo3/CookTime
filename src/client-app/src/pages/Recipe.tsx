@@ -1,5 +1,5 @@
 import React from "react"
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 import { RecipeEdit } from "src/components/RecipeEdit/RecipeEdit";
 import { Helmet } from 'react-helmet-async';
 
@@ -15,13 +15,13 @@ export default function Recipe() {
   const recipeId = searchParams.get("id");
   return (
     recipeId ?
-    <>
-      <Helmet>
-        <link rel="canonical" href={`${origin}/${RECIPE_PAGE_PATH}?id=${recipeId}`} />
-      </Helmet>
-      <RecipeEdit recipeId={recipeId} multipart />
-    </>
-    :
-    <>No</>
+      <>
+        <Helmet>
+          <link rel="canonical" href={`${origin}/${RECIPE_PAGE_PATH}?id=${recipeId}`} />
+        </Helmet>
+        <RecipeEdit recipeId={recipeId} multipart />
+      </>
+      :
+      <>No</>
   );
 }

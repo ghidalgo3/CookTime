@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from "react"
+import React, { useEffect, useState } from "react"
 import { Navbar } from "react-bootstrap";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router";
 import imgs from "src/assets";
 
 export default function PlainLayout() {
@@ -16,10 +16,10 @@ export default function PlainLayout() {
               <img
                 alt={""}
                 height={30}
-                style={{marginRight: 8}}
+                style={{ marginRight: 8 }}
                 className="d-inline-block align-top"
                 src={imgs.logo}></img>
-                CookTime
+              CookTime
             </Link>
           </Navbar.Brand>
         </Navbar>

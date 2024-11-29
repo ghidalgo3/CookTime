@@ -1,28 +1,28 @@
-import React, {useEffect } from"react"
+import React, { useEffect } from "react"
 import { Button, Form } from "react-bootstrap";
-import { Form as RouterForm, Link, useLocation, useNavigate} from "react-router-dom";
+import { Form as RouterForm, Link, useLocation, useNavigate } from "react-router";
 import { useAuthentication } from "./AuthenticationContext";
 
 
 export function SignInForm() {
-  const {user, signIn } = useAuthentication();
+  const { user, signIn } = useAuthentication();
   const navigate = useNavigate();
   const { state } = useLocation();
   useEffect(() => {
     if (user) {
       if (state?.redirectTo) {
-        navigate(state.redirectTo, { replace: true } );
-      } else  if (window.history.length === 2) { 
+        navigate(state.redirectTo, { replace: true });
+      } else if (window.history.length === 2) {
         // when you initiate a password reset flow, the flow is:
         // 1. Reset
         // 2. Sign In
         // Which is a special case!
-        navigate("/", {replace: true});
+        navigate("/", { replace: true });
       } else {
         navigate(-1);
       }
     }
-  }, [user, navigate, state?.redirectTo ]);
+  }, [user, navigate, state?.redirectTo]);
   return (
     <>
       <h1>Sign in to CookTime</h1>

@@ -7,7 +7,7 @@ import {
   Navigate,
   Route,
   RouterProvider
-} from "react-router-dom";
+} from "react-router";
 // import './index.css';
 import '@smastrom/react-rating/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css'; // bootstrap
@@ -101,7 +101,15 @@ function App() {
         path="*"
         element={<Navigate to="/" replace />} />
     </>
-  ));
+  ), {
+    future: {
+      v7_relativeSplatPath: true,
+      v7_fetcherPersist: true,
+      v7_normalizeFormMethod: true,
+      v7_partialHydration: true,
+      v7_skipActionErrorRevalidation: true,
+    },
+  });
   return (
     <React.StrictMode>
       <RouterProvider router={router} />
@@ -109,15 +117,17 @@ function App() {
   )
 }
 
-const appInsights = new ApplicationInsights({ config: {
-  connectionString: 'InstrumentationKey=b37afa75-076b-4438-a84d-79b9f4617d30;IngestionEndpoint=https://eastus2-3.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus2.livediagnostics.monitor.azure.com/',
-  enableAutoRouteTracking: true,
-  enableCorsCorrelation: true,
-  enableRequestHeaderTracking: true,
-  enableResponseHeaderTracking: true,
-  correlationHeaderExcludedDomains: ['*.queue.core.windows.net']
-  /* ...Other Configuration Options... */
-} });
+const appInsights = new ApplicationInsights({
+  config: {
+    connectionString: 'InstrumentationKey=b37afa75-076b-4438-a84d-79b9f4617d30;IngestionEndpoint=https://eastus2-3.in.applicationinsights.azure.com/;LiveEndpoint=https://eastus2.livediagnostics.monitor.azure.com/',
+    enableAutoRouteTracking: true,
+    enableCorsCorrelation: true,
+    enableRequestHeaderTracking: true,
+    enableResponseHeaderTracking: true,
+    correlationHeaderExcludedDomains: ['*.queue.core.windows.net']
+    /* ...Other Configuration Options... */
+  }
+});
 appInsights.loadAppInsights();
 appInsights.trackPageView(); // Manually call trackPageView to establish the current user/session/pageview
 

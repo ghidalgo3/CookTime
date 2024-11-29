@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from "react"
+import React, { useEffect, useState } from "react"
 import { Button, Card, Form } from "react-bootstrap";
-import { Form as RouterForm } from "react-router-dom";
+import { Form as RouterForm } from "react-router";
 
 export default function SignUpForm() {
   return (
     <>
       <Card>
-        <Card.Body style={{padding: "30px"}}>
+        <Card.Body style={{ padding: "30px" }}>
           <Card.Title>Sign up</Card.Title>
           <RouterForm method="post">
             <Form.Group className="margin-top-15" controlId="formUsername">

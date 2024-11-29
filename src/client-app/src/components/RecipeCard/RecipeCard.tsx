@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react"
+import React, { useEffect, useState } from "react"
 import { Button, Card, Spinner, Stack } from "react-bootstrap";
 import { Rating } from "@smastrom/react-rating";
-import { Link, ActionFunctionArgs, useFetcher} from "react-router-dom";
+import { Link } from "react-router";
 import { Fa6RegularStar, Fa6SolidStar } from "../SVG";
 import "./RecipeCard.css"
 import { addToFavorites, Image, RecipeView, removeFromFavorites } from "src/shared/CookTime"
@@ -15,7 +15,7 @@ export function RecipeCard({
   name,
   averageReviews,
   reviewCount,
-  images}: RecipeView) {
+  images }: RecipeView) {
 
   const [favorite, setFavorite] = useState(isFavorite);
   const { user } = useAuthentication();
@@ -59,7 +59,7 @@ export function RecipeCard({
       </>
     )
   }
-  
+
   function CardImage() {
     let image = (images.length === 0 || images[0].id === "null") ?
       imgs.placeholder :

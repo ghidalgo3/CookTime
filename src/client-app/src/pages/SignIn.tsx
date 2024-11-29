@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from"react"
+import React, { useEffect, useState } from "react"
 import { Alert, Col, Container, Row } from "react-bootstrap";
 import { Helmet } from "react-helmet-async";
-import { ActionFunction, ActionFunctionArgs, redirect, useActionData } from "react-router-dom";
+import { ActionFunction, ActionFunctionArgs, redirect, useActionData } from "react-router";
 import { SignInForm } from "src/components";
 import { IAuthenticationProvider } from "src/shared/AuthenticationProvider";
 import { useTitle } from "src/shared/useTitle";
@@ -9,7 +9,7 @@ import { useTitle } from "src/shared/useTitle";
 export const SIGN_IN_PAGE_PATH = "signin"
 
 export function action(
-  { signIn }: IAuthenticationProvider) : ActionFunction {
+  { signIn }: IAuthenticationProvider): ActionFunction {
   return async (args: ActionFunctionArgs) => {
     const { request } = args;
     const formData = await request.formData()
@@ -41,7 +41,7 @@ export function SignIn() {
       <Alert.Heading>Uh-oh!</Alert.Heading>
       <p className="margin-bottom-0rem">User name or password is wrong</p>
     </Alert>;
-  
+
   useTitle("Sign In")
   return (
     <>

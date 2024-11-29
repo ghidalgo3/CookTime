@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from "react"
+import React, { useEffect, useState } from "react"
 import { Col, Row } from "react-bootstrap";
 import { RecipeCard } from "../RecipeCard/RecipeCard";
 import { getFavoriteRecipeViews, getFeaturedRecipeViews, getMyRecipes, getNewRecipeViews, getRecipeViews, PagedResult, RecipeView, toPagedResult } from "src/shared/CookTime"
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import PaginatedList from "../PaginatedList/PaginatedList";
 import { useAuthentication } from "../Authentication/AuthenticationContext";
 
@@ -13,7 +13,7 @@ interface RecipeListProps {
   hideIfEmpty?: boolean
 }
 
-export default function RecipeList({title, query, type, hideIfEmpty} : RecipeListProps) {
+export default function RecipeList({ title, query, type, hideIfEmpty }: RecipeListProps) {
   const [recipes, setRecipes] = useState<PagedResult<RecipeView>>(toPagedResult([]));
   useEffect(() => {
     async function loadData() {
@@ -26,7 +26,7 @@ export default function RecipeList({title, query, type, hideIfEmpty} : RecipeLis
       } else if (type === "Query") {
         const page = query?.get("page") ?? "";
         const search = query?.get("search") ?? "";
-        const result = await getRecipeViews({search, page: Number.parseInt(page)})
+        const result = await getRecipeViews({ search, page: Number.parseInt(page) })
         setRecipes(result);
       } else if (type === "Favorites") {
         const result = await getFavoriteRecipeViews();
@@ -46,22 +46,22 @@ export default function RecipeList({title, query, type, hideIfEmpty} : RecipeLis
 
   return (
     <>
-    <Row>
-      <Col xs={10}>
-        <h1>{title}</h1>
-      </Col>
-      {
-        user && type === "Query" &&
-        <Col className="margin-bottom-20 text-end" xs={2}>
-          <Link to="/Recipes/Create">
-            <i className="fas fa-plus-circle themePrimary-color fa-2x"></i>
-          </Link>
+      <Row>
+        <Col xs={10}>
+          <h1>{title}</h1>
         </Col>
-      }
-    </Row>
-    <PaginatedList
-      element={(recipe : RecipeView) => <RecipeCard {...recipe}/>}
-      items={recipes}
+        {
+          user && type === "Query" &&
+          <Col className="margin-bottom-20 text-end" xs={2}>
+            <Link to="/Recipes/Create">
+              <i className="fas fa-plus-circle themePrimary-color fa-2x"></i>
+            </Link>
+          </Col>
+        }
+      </Row>
+      <PaginatedList
+        element={(recipe: RecipeView) => <RecipeCard {...recipe} />}
+        items={recipes}
       />
       {/* {query && <p>Searching for '{query}'</p>}
       <Row>

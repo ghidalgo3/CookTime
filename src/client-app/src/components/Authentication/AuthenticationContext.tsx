@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from "react"
+import React, { useEffect, useState } from "react"
 import { useContext } from "react";
-// import { useLocation, Navigate, useSearchParams } from "react-router-dom";
 import { AuthenticationProvider, IAuthenticationProvider, Role, UserDetails } from "src/shared/AuthenticationProvider";
 
 export const AuthContext = React.createContext<IAuthenticationProvider>(AuthenticationProvider);
@@ -9,7 +8,7 @@ export function useAuthentication() {
   return useContext(AuthContext);
 }
 
-export function AuthenticationContext({ children } : { children : React.ReactNode }) {
+export function AuthenticationContext({ children }: { children: React.ReactNode }) {
   const { signUp, signIn, signOut, getUserDetails, sendPasswordResetEmail, changePassword } = useAuthentication();
   const [user, setUser] = useState<UserDetails | null>(null);
   useEffect(() => {
@@ -52,7 +51,7 @@ export function AuthenticationContext({ children } : { children : React.ReactNod
  * This component selectively renders UI depending on the authentication state
  * of the user and their authorized roles.
  */
-export function RequireAuth({ children, roles }: { roles: Role[], children: JSX.Element , redirect?: boolean | undefined}) {
+export function RequireAuth({ children, roles }: { roles: Role[], children: JSX.Element, redirect?: boolean | undefined }) {
   let auth = useAuthentication();
   // let location = useLocation();
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Button, Container, Form, Nav, Navbar, NavDropdown } from "react-bootstrap";
-import { Form as RouterForm, Link } from "react-router-dom";
+import { Form as RouterForm, Link } from "react-router";
 import imgs from "../../assets";
 import "./NavigationBar.css"
 import { RequireAuth, useAuthentication } from "../Authentication/AuthenticationContext";
@@ -45,7 +45,7 @@ export function NavigationBar({ categories }: { categories: string[] }) {
   return (
     <header>
       <Navbar expand="sm">
-        <Container fluid style={{lineHeight: "30px", justifyContent: "space-between", display: "flex"}}>
+        <Container fluid style={{ lineHeight: "30px", justifyContent: "space-between", display: "flex" }}>
           <Link to="/">
             <Navbar.Brand id="my-navbar-brand">
               <img
@@ -76,7 +76,7 @@ export function NavigationBar({ categories }: { categories: string[] }) {
               <Nav.Link
                 as={Link}
                 to="/about">
-                  About
+                About
               </Nav.Link>
               <Nav.Link
                 id={!user ? "my-nav-link-disabled" : ""}
@@ -84,7 +84,7 @@ export function NavigationBar({ categories }: { categories: string[] }) {
                 disabled={!user}
                 as={Link}
                 to="/cart">
-                  Groceries List
+                Groceries List
               </Nav.Link>
               <Nav.Link href="/Blog/index.html">Blog</Nav.Link>
               <RequireAuth roles={["Administrator"]}>
@@ -98,9 +98,9 @@ export function NavigationBar({ categories }: { categories: string[] }) {
                   disabled={!user}
                   as={Link}
                   to={`/${RECIPE_CREATE_PAGE_PATH}`}>
-                    <Button>
-                      New Recipe
-                    </Button>
+                  <Button>
+                    New Recipe
+                  </Button>
                 </Nav.Link>
               </RequireAuth>
             </Nav>

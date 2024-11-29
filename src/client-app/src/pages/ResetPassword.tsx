@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from "react"
+import React, { useEffect, useState } from "react"
 import { Form, Card, Col, Container, Row, Button, Alert } from "react-bootstrap"
 import { Helmet } from "react-helmet-async";
-import { ActionFunction, ActionFunctionArgs, Form as RouterForm, Link, useActionData, useSearchParams } from "react-router-dom";
+import { ActionFunction, ActionFunctionArgs, Form as RouterForm, Link, useActionData, useSearchParams } from "react-router";
 import { IAuthenticationProvider } from "src/shared/AuthenticationProvider";
 import { useTitle } from "src/shared/useTitle";
 
@@ -34,7 +34,7 @@ export default function ResetPassword() {
   const [showAlert, setShowAlert] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const emailReceived = searchParams.get("token") && searchParams.get("userId");
-  const actionData = useActionData() as {response: Response, statusCode: number};
+  const actionData = useActionData() as { response: Response, statusCode: number };
   useEffect(() => {
     setShowAlert(!!actionData)
   }, [actionData]);
@@ -43,9 +43,9 @@ export default function ResetPassword() {
   const successAlert = emailReceived ?
     <Alert dismissible variant="success" onClose={dismissAlert}>
       <Alert.Heading>Success!</Alert.Heading>
-      <p className="margin-bottom-0rem">Your password has been changed! <Link state={{redirectTo: "/"}} to="/signin">Sign in.</Link></p>
+      <p className="margin-bottom-0rem">Your password has been changed! <Link state={{ redirectTo: "/" }} to="/signin">Sign in.</Link></p>
     </Alert>
-  :
+    :
     <Alert dismissible variant="success" onClose={dismissAlert}>
       <Alert.Heading>Success!</Alert.Heading>
       <p className="margin-bottom-0rem">Look for a password change email.</p>
@@ -123,7 +123,7 @@ export default function ResetPassword() {
               <Button
                 type="submit"
                 className="pl-button btn-success btn-large btn-block mx-auto">
-                  Change password
+                Change password
               </Button>
             </div>
           </RouterForm>
