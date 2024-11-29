@@ -20,8 +20,8 @@ for details on configuring this project to bundle and minify static web assets. 
   --red-dirt-highlight: #c26950;
   --red-dirt-highlight-border: #a35844;
 
-/* These are the colors generated from the Microsoft theme builder tool https://fabricweb.z5.web.core.windows.net/pr-deploy-site/refs/heads/master/theming-designer/ */
-/* Primary color = #0cad85
+  /* These are the colors generated from the Microsoft theme builder tool https://fabricweb.z5.web.core.windows.net/pr-deploy-site/refs/heads/master/theming-designer/ */
+  /* Primary color = #0cad85
 Text color = #323232
 Background color = #fafafa */
 
@@ -64,7 +64,7 @@ Background color = #fafafa */
     --a-text: var(--themeTertiary);
     --a-text-hover: var(--themeSecondary);
   }
-  
+
   .card {
     border-color: var(--neutralLight);
     background-color: var(--primary-background);
@@ -75,15 +75,17 @@ Background color = #fafafa */
   }
 
   #my-burger-menu {
-    color: rgba(255,255,255,.55);
-    border-color: rgba(255,255,255,.1);
+    color: rgba(255, 255, 255, .55);
+    border-color: rgba(255, 255, 255, .1);
     background-color: var(--white);
     height: 44px;
   }
+
   .btn-primary:disabled {
     background-color: var(--neutralPrimaryAlt);
     color: var(--neutralQuaternary);
   }
+
   .navbar-light .navbar-nav .nav-link.disabled {
     color: var(--neutralPrimaryAlt);
   }
@@ -104,10 +106,12 @@ Background color = #fafafa */
     --a-text: var(--themeDark);
     --a-text-hover: var(--themeDarker);
   }
+
   .btn-primary:disabled {
     background-color: var(--neutralLighter);
     color: var(--neutralQuaternary);
   }
+
   #my-nav-link-disabled {
     color: var(--neutralSecondary);
   }
@@ -154,7 +158,10 @@ Background color = #fafafa */
   border-color: var(--btn-outline-primary-border);
   background-color: var(--btn-outline-primary-bg-color);
 }
-.input-field-style:hover, .input-field-style:active, .input-field-style:focus {
+
+.input-field-style:hover,
+.input-field-style:active,
+.input-field-style:focus {
   color: var(--primary-text);
   border-color: var(--btn-outline-primary-border);
   background-color: var(--btn-outline-primary-bg-color);
@@ -163,7 +170,9 @@ Background color = #fafafa */
 .navbar-light .navbar-nav .nav-link {
   color: var(--primary-text);
 }
-.navbar-light .navbar-nav .nav-link:hover, .navbar-light .navbar-nav .nav-link:active {
+
+.navbar-light .navbar-nav .nav-link:hover,
+.navbar-light .navbar-nav .nav-link:active {
   color: var(--a-text-hover);
 }
 
@@ -174,7 +183,7 @@ Background color = #fafafa */
 .step-number {
   border-right: var(--a-text);
   color: var(--a-text);
-  font-weight:600;
+  font-weight: 600;
   border-top: none;
   border-style: solid;
   border-right-width: 3px;
@@ -189,7 +198,9 @@ a {
   color: var(--a-text);
   text-decoration: none;
 }
-a:hover, a:active {
+
+a:hover,
+a:active {
   color: var(--a-text-hover);
 }
 
@@ -199,35 +210,47 @@ a:hover, a:active {
   border-width: 0;
 }
 
-.btn:first-child:active, .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+.btn:first-child:active,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
   color: var(--btn-primary-text);
   background-color: var(--btn-primary-bg-color-hover);
 }
+
 .btn-outline-primary {
   color: var(--primary-text);
   border-color: var(--btn-outline-primary-border);
   background-color: var(--btn-outline-primary-bg-color);
 }
-.btn-outline-primary:hover, .btn-outline-primary:active {
+
+.btn-outline-primary:hover,
+.btn-outline-primary:active {
   color: var(--primary-text);
   border-color: var(--btn-outline-primary-border);
   background-color: var(--btn-outline-primary-bg-color-hover);
 }
+
 .btn-success {
   color: var(--white);
   background-color: var(--btn-primary-bg-color);
   border: 0;
 }
-.btn-success:hover, .btn-success:active {
+
+.btn-success:hover,
+.btn-success:active {
   color: var(--white);
   background-color: var(--btn-primary-bg-color-hover);
 }
+
 .btn-danger {
   color: var(--white);
   background-color: var(--red-dirt);
   border: 0;
 }
-.btn-danger:hover, .btn-danger:active {
+
+.btn-danger:hover,
+.btn-danger:active {
   color: var(--white);
   background-color: var(--red-dirt-highlight);
 }
@@ -258,14 +281,17 @@ a:hover, a:active {
   border: 1px solid var(--nutrition-facts-table-outline);
   /* min-width: 358px; */
 }
+
 .nbi-table-entry {
   margin: 0 8px 8px 8px;
   border-bottom: 1px solid var(--nutrition-facts-table-outline);
 }
+
 .nbi-table-source {
   padding: 2px 0 10px 16px;
   font-size: small;
 }
+
 .nbi-table-entry:last-child {
   border: 0;
 }
@@ -274,6 +300,7 @@ a:hover, a:active {
   border-top: 1px solid #e5e5e5;
   padding-top: 10px;
 }
+
 .border-0 {
   border: 0;
 }
@@ -315,12 +342,15 @@ hr {
   color: var(--primary-text);
   font-variant: small-caps;
 }
-.tag-style:hover, .tag-style:active {
+
+.tag-style:hover,
+.tag-style:active {
   color: var(--primary-text);
   font-variant: small-caps;
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+.nav-pills .nav-link.active,
+.nav-pills .show>.nav-link {
   color: var(--light-grey);
   background-color: var(--deep-water-highlight);
   border-color: var(--deep-water-highlight-border);
@@ -346,6 +376,7 @@ hr {
 .height-38 {
   height: 38px;
 }
+
 .height-32 {
   height: 32px !important;
 }
@@ -374,10 +405,12 @@ html {
 .ingredient-col-left {
   padding-right: 5px;
 }
+
 .ingredient-col-middle {
   padding-left: 5px;
   padding-right: 5px;
 }
+
 .ingredient-col-right {
   padding-left: 5px;
 }
@@ -390,6 +423,7 @@ html {
 .recipe-card {
   background-color: var(--secondary-background);
 }
+
 .review-card {
   padding: 16px 16px 0 16px;
 }
@@ -419,11 +453,13 @@ html {
 .cr-image-parent {
   height: 180px;
 }
+
 .card-recipe-image {
   width: 100%;
   height: 180px;
   object-fit: cover;
 }
+
 .favorite-button {
   position: relative;
   top: -180px;
@@ -443,19 +479,23 @@ html {
     width: 280px;
   }
 }
+
 /* From experimentation, below 767px the normal 180px looks bad*/
 @media all and (max-width: 767px) {
   .nft-row {
     width: 100%;
   }
+
   .cr-image-parent {
     height: 140px;
   }
+
   .card-recipe-image {
     width: 100%;
     height: 140px;
     object-fit: cover;
   }
+
   .favorite-button {
     position: relative;
     top: -140px;
@@ -485,9 +525,11 @@ html {
 .vertical-align-bottom {
   vertical-align: bottom;
 }
+
 .border-top {
   border-top: 1px solid #e5e5e5;
 }
+
 .border-bottom {
   border-bottom: 1px solid #e5e5e5;
 }
@@ -520,7 +562,8 @@ body {
   bottom: 0;
   width: 100%;
   white-space: nowrap;
-  line-height: 60px; /* Vertically center the text there */
+  line-height: 60px;
+  /* Vertically center the text there */
 }
 
 .cart-header {
@@ -561,8 +604,8 @@ body {
 }
 
 .do-not-overflow-text {
-  overflow: hidden; 
-  white-space: nowrap; 
+  overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
   -webkit-line-clamp: 2;
 }
@@ -578,33 +621,43 @@ body {
   display: block;
   min-width: 200px;
 }
+
 #padding-0 {
   padding: 0;
 }
+
 .padding-8 {
   padding: 8px;
 }
+
 .padding-16 {
   padding: 16px;
 }
+
 .padding-top-2 {
   padding-top: 2px;
 }
+
 .padding-left-0 {
   padding-left: 0px;
 }
+
 .padding-left-4 {
   padding-left: 4px;
 }
+
 .padding-left-12 {
   padding-left: 12px;
 }
+
 .padding-left-58 {
   padding-left: 58px;
 }
+
 .padding-right-0 {
   padding-right: 0px;
 }
+
 .padding-right-10 {
   padding-right: 10px;
 }
@@ -612,24 +665,31 @@ body {
 .margin-10 {
   margin: 10px;
 }
+
 .margin-bottom-0 {
   margin-bottom: 0px;
 }
+
 .margin-bottom-8 {
   margin-bottom: 8px;
 }
+
 .margin-bottom-10 {
   margin-bottom: 10px;
 }
+
 .margin-bottom-12 {
   margin-bottom: 12px;
 }
+
 .margin-bottom-15 {
   margin-bottom: 15px;
 }
+
 .margin-bottom-20 {
   margin-bottom: 20px;
 }
+
 .margin-bottom-30 {
   margin-bottom: 30px;
 }
@@ -641,21 +701,27 @@ body {
 .margin-top-5 {
   margin-top: 5px;
 }
+
 .margin-top-7 {
   margin-top: 7px;
 }
+
 .margin-top-8 {
   margin-top: 8px;
 }
+
 .margin-top-10 {
   margin-top: 10px;
 }
+
 .margin-top-15 {
   margin-top: 15px;
 }
+
 .margin-top-20 {
   margin-top: 20px;
 }
+
 .margin-top-30 {
   margin-top: 30px;
 }
@@ -663,9 +729,11 @@ body {
 .margin-left-4 {
   margin-left: 4px;
 }
+
 .margin-left-10 {
   margin-left: 10px;
 }
+
 .margin-left-20 {
   margin-left: 20px;
 }
@@ -673,6 +741,7 @@ body {
 .width-100 {
   width: 100%;
 }
+
 .width-320 {
   width: 320px;
 }
@@ -707,6 +776,7 @@ body {
 .ingredient-input {
   position: relative;
 }
+
 .ingredient-list {
   padding-left: 0px;
   margin-bottom: 8px;
@@ -844,91 +914,117 @@ EXAMPLE WITH ALL DIFFERENT SCREEN SIZE BREAKPOINTS
   box-sizing: content-box;
   margin-top: 10px;
 }
+
 .nf-p {
   margin: 0;
 }
+
 .performance-facts {
   border: 1px solid var(--nutrition-facts-table-outline);
   /* width: 280px; */
   padding: 0.5rem;
 }
+
 .performance-facts__table {
   border-collapse: collapse;
 }
+
 .performance-facts__title {
   font-weight: bold;
   font-size: 2rem;
   margin: 0 0 0.25rem 0;
 }
+
 .performance-facts__header {
   border-bottom: 10px solid var(--nutrition-facts-table-outline);
   padding: 0 0 0.25rem 0;
   margin: 0 0 0.5rem 0;
 }
+
 .performance-facts__header__p {
   margin: 0;
 }
+
 .performance-facts__table {
   width: 100%;
 }
-.performance-facts__table thead tr th, td {
+
+.performance-facts__table thead tr th,
+td {
   border: 0;
 }
-.performance-facts__table th, .performance-facts__table td {
+
+.performance-facts__table th,
+.performance-facts__table td {
   font-weight: normal;
   text-align: left;
   padding: 0.25rem 0;
   border-top: 1px solid var(--nutrition-facts-table-outline);
   white-space: nowrap;
 }
+
 .performance-facts__table td:last-child {
   text-align: right;
 }
+
 .performance-facts__table .blank-cell {
   width: 1rem;
   border-top: 0;
-} 
+}
+
 .thick-row {
   border-top: 5px solid var(--nutrition-facts-table-outline);
-} 
+}
+
 .small-info {
   font-size: 0.7rem;
 }
+
 .performance-facts__table__small {
   border-bottom: 1px solid var(--nutrition-facts-table-outline);
   margin: 0 0 0.5rem 0;
 }
+
 .nf-small-th-and-td {
   border: 0;
   padding: 0;
 }
+
 .nf-thead-tr {
   border-bottom: 1px solid var(--nutrition-facts-table-outline);
 }
+
 .nf-small-td-lastchild {
   text-align: left;
 }
+
 .performance-facts__table__grid {
   margin: 0 0 0.5rem 0;
 }
+
 .nf-td-lastchild::before {
   text-align: left !important;
   content: "•";
   font-weight: bold;
   margin: 0 0.25rem 0 0;
 }
+
 .nf-text-center {
   text-align: center;
 }
+
 .thick-end {
   border-bottom: 10px solid var(--nutrition-facts-table-outline);
 }
+
 .thin-end {
   border-bottom: 1px solid var(--nutrition-facts-table-outline);
 }
+
 .calories-title {
   font-size: 1.7rem;
 }
+
 .calories-qty {
   text-align: right;
   font-size: 2.4rem;
