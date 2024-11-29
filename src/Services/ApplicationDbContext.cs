@@ -74,6 +74,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         return list.OrderBy(result => result.Name.Split(";").Select(n => lev.DistanceFrom(n)).Min());
     }
 
+    public StandardReferenceNutritionData SearchSRNutritionData(string query)
+    {
+        return this.SRNutritionData
+            .OrderByDescending(d => EF.Functions.TrigramsSimilarity(d.Description, query))
+            .ThenByDescending(d => d.NdbNumber)
+            .FirstOrDefault();
+    }
+
     public async Task<IEnumerable<Ingredient>> GetIngredientsForAutosuggest(string name)
     {
         var initialQUery = await this.Ingredients

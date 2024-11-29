@@ -73,6 +73,7 @@ namespace babe_algorithms.Controllers
                     Name = name,
                 });
                 await this.GenerateImageForRecipe(recipe);
+                this.MatchIngredientsToSRNutritionIdsAsync(recipe, CancellationToken.None);
                 _context.MultiPartRecipes.Add(recipe);
                 await _context.SaveChangesAsync();
                 await _context.Entry(recipe).ReloadAsync();
@@ -84,6 +85,7 @@ namespace babe_algorithms.Controllers
                 recipe.Name = name;
                 _context.MultiPartRecipes.Add(recipe);
                 await this.GenerateImageForRecipe(recipe);
+                this.MatchIngredientsToSRNutritionIdsAsync(recipe, CancellationToken.None);
                 await _context.SaveChangesAsync();
                 await _context.Entry(recipe).ReloadAsync();
                 return this.Ok(recipe);
@@ -465,6 +467,7 @@ namespace babe_algorithms.Controllers
 
             _context.Entry(existingRecipe).CurrentValues.SetValues(payload);
             await _context.MergeRecipeRelationsAsync(payload, existingRecipe);
+            this.MatchIngredientsToSRNutritionIdsAsync(existingRecipe, CancellationToken.None);
             existingRecipe.LastModifiedDate = DateTimeOffset.UtcNow;
             try
             {
@@ -609,6 +612,15 @@ namespace babe_algorithms.Controllers
             else
             {
                 return NotFound("image");
+            }
+        }
+
+        private void MatchIngredientsToSRNutritionIdsAsync(MultiPartRecipe recipe, CancellationToken ct)
+        {
+            var ingredients = recipe.GetAllIngredients().Where(i => i.NutritionData == null);
+            foreach (var ingredient in ingredients)
+            {
+                ingredient.NutritionData ??= this._context.SearchSRNutritionData(ingredient.Name);
             }
         }
 

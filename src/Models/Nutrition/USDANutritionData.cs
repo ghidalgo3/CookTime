@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace babe_algorithms.Models;
 
-public abstract class USDANutritionData 
+public abstract class USDANutritionData
 {
     public int FdcId { get; set; }
 

@@ -44,7 +44,7 @@ public class Program
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-        builder.Services.ConfigureApplicationCookie(options => 
+        builder.Services.ConfigureApplicationCookie(options =>
         {
             // Cookie settings
             options.Cookie.HttpOnly = true;
@@ -78,11 +78,11 @@ public class Program
             options.UseNpgsql(dataSource);
             options.EnableSensitiveDataLogging(true);
         });
-        builder.Services.AddImageSharp(options => 
+        builder.Services.AddImageSharp(options =>
         {
         })
             .ClearProviders()
-            .AddProvider<PostgresImageProvider>(sp => 
+            .AddProvider<PostgresImageProvider>(sp =>
             {
                 return new PostgresImageProvider(sp);
             });
@@ -102,7 +102,7 @@ public class Program
         app.UseAuthorization();
         app.MapControllerRoute(
             name: "default",
-            pattern:"{controller=Home}/{action=Index}/{id?}");
+            pattern: "{controller=Home}/{action=Index}/{id?}");
         app.MapRazorPages();
         app.MapFallbackToFile("index.html");
 
@@ -168,6 +168,7 @@ public class Program
             else
             {
                 LoadFoodData(context);
+                LabelNutrients(context);
                 // DeduplicateIngredients(context).Wait();
             }
             CreateRoles(roleManager).Wait();
@@ -177,6 +178,16 @@ public class Program
             logger.LogError(ex, "An error occurred creating the DB.");
             throw;
         }
+    }
+
+    private static void LabelNutrients(ApplicationDbContext context)
+    {
+        var allIngredients = context.Ingredients.Include(i => i.NutritionData).ToList();
+        foreach (var ingredient in allIngredients)
+        {
+            ingredient.NutritionData ??= context.SearchSRNutritionData(ingredient.Name);
+        }
+        context.SaveChanges();
     }
 
     public static async Task CreateRoles(RoleManager<IdentityRole> roleManager)
