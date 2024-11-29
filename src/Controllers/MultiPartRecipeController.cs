@@ -46,13 +46,13 @@ namespace babe_algorithms.Controllers
         {
             _context = context;
             this.Session = sessionManager;
-            this.TextInfo = new CultureInfo("en-US",false).TextInfo;
+            this.TextInfo = new CultureInfo("en-US", false).TextInfo;
             this.ComputerVision = new AzureCognitiveServices(azureOptions.Value);
             this.AI = new ChatGPT(openAIOptions.Value, loggerFactory.CreateLogger<ChatGPT>());
         }
 
         [HttpPost("create")]
-        public async Task<IActionResult> Create([FromForm] string name, [FromForm] string body) 
+        public async Task<IActionResult> Create([FromForm] string name, [FromForm] string body)
         {
             var user = await this.Session.GetSignedInUserAsync(this.User);
             if (user == null)
@@ -150,7 +150,8 @@ namespace babe_algorithms.Controllers
             {
                 this.Favorites = await this._context.GetFavoritesAsync(user);
             }
-            var recipes = search switch {
+            var recipes = search switch
+            {
                 null => await AllRecipes(page),
                 _ => await this.Search(search, page),
             };
@@ -182,7 +183,7 @@ namespace babe_algorithms.Controllers
             var results = await this._context.GetNewRecipeViewAsync(this.Favorites, 3);
             return this.Ok(results);
         }
-        
+
         [HttpGet("favorites")]
         public async Task<ActionResult<List<RecipeView>>> GetFavoriteRecipesAsync()
         {
@@ -278,7 +279,7 @@ namespace babe_algorithms.Controllers
             {
                 existingRecipe.ReviewCount--;
             }
-            if (existingRecipe.ReviewCount > 0 )
+            if (existingRecipe.ReviewCount > 0)
             {
                 existingRecipe.AverageReviews = existingReviews.Select(r => r.Rating).Sum() / (double)existingRecipe.ReviewCount;
             }
@@ -335,7 +336,7 @@ namespace babe_algorithms.Controllers
             await this._context.SaveChangesAsync();
             return this.Ok();
         }
-        
+
         [HttpGet("{id}/reviews")]
         public async Task<ActionResult> GetReviews(Guid id)
         {
@@ -373,7 +374,7 @@ namespace babe_algorithms.Controllers
 
         private async Task GenerateImageForRecipe(MultiPartRecipe recipe)
         {
-            if (recipe.Images.Count > 0)
+            if (recipe.Images?.Count > 0)
             {
                 // Delete whatever you have
                 var current = recipe.Images[0];
@@ -535,81 +536,81 @@ namespace babe_algorithms.Controllers
             return NoContent();
         }
 
-    [HttpPut("{containerId}/image")]
-    public async Task<IActionResult> PutImageAsync(
-        [FromRoute] Guid containerId,
-        [FromForm] List<IFormFile> files)
-    {
-        var recipe = await this._context.MultiPartRecipes.Include(r => r.Images).FirstAsync(r => r.Id == containerId);
-        if (recipe == null)
+        [HttpPut("{containerId}/image")]
+        public async Task<IActionResult> PutImageAsync(
+            [FromRoute] Guid containerId,
+            [FromForm] List<IFormFile> files)
         {
-            return NotFound("recipe");
-        }
-        if (files.Count != 1)
-        {
-            return this.BadRequest("One image at a time");
-        }
+            var recipe = await this._context.MultiPartRecipes.Include(r => r.Images).FirstAsync(r => r.Id == containerId);
+            if (recipe == null)
+            {
+                return NotFound("recipe");
+            }
+            if (files.Count != 1)
+            {
+                return this.BadRequest("One image at a time");
+            }
 
-        var file = files[0];
-        using var fileStream = file.OpenReadStream();
-        var _image = await SixLabors.ImageSharp.Image.LoadAsync(fileStream);
-        using var outputStream = new MemoryStream();
-        // Now save as Jpeg
-        await _image.SaveAsync(outputStream, new JpegEncoder());
-        var newId = Guid.NewGuid();
-        var image = new Image()
-        {
-            Id = newId,
-            Name = newId.ToString(),
-            LastModifiedAt = DateTimeOffset.UtcNow,
-            Data = outputStream.ToArray(),
-        };
-        if (recipe.Images.Count > 0)
-        {
-            // only allow one image
-            var toRemove = recipe.Images[0];
-            _context.Images.Remove(toRemove);
-            recipe.Images.Clear();
-        }
-        recipe.Images.Add(image);
-        _context.Images.Add(image);
-        await this._context.SaveChangesAsync();
-        return this.Ok();
-    }
-
-    [HttpGet("{containerId}/images")]
-    public async Task<IActionResult> ListImagesAsync(Guid containerId)
-    {
-        var result = await this._context.MultiPartRecipes
-            .Where(r => r.Id == containerId)
-            .Include(r => r.Images)
-            .SelectMany(r => r.Images.Select(i => new { i.Name, i.Id}))
-            .ToListAsync();
-        return this.Ok(result);
-    }
-
-    [HttpDelete("{containerId}/image/{imageId}")]
-    [BasicAuth]
-    public async Task<IActionResult> DeleteImageAsync(Guid containerId, Guid imageId)
-    {
-        var recipe = await this._context.MultiPartRecipes.Where(r => r.Id == containerId).Include(r => r.Images).FirstAsync();
-        if (recipe == null)
-        {
-            return NotFound("recipe");
-        }
-        var img = recipe.Images.FirstOrDefault(i => i.Id == imageId);
-        if (img != null)
-        {
-            recipe.Images.Remove(img);
-            _context.Images.Remove(img);
+            var file = files[0];
+            using var fileStream = file.OpenReadStream();
+            var _image = await SixLabors.ImageSharp.Image.LoadAsync(fileStream);
+            using var outputStream = new MemoryStream();
+            // Now save as Jpeg
+            await _image.SaveAsync(outputStream, new JpegEncoder());
+            var newId = Guid.NewGuid();
+            var image = new Image()
+            {
+                Id = newId,
+                Name = newId.ToString(),
+                LastModifiedAt = DateTimeOffset.UtcNow,
+                Data = outputStream.ToArray(),
+            };
+            if (recipe.Images.Count > 0)
+            {
+                // only allow one image
+                var toRemove = recipe.Images[0];
+                _context.Images.Remove(toRemove);
+                recipe.Images.Clear();
+            }
+            recipe.Images.Add(image);
+            _context.Images.Add(image);
             await this._context.SaveChangesAsync();
-            return Ok();
+            return this.Ok();
         }
-        else
+
+        [HttpGet("{containerId}/images")]
+        public async Task<IActionResult> ListImagesAsync(Guid containerId)
         {
-            return NotFound("image");
+            var result = await this._context.MultiPartRecipes
+                .Where(r => r.Id == containerId)
+                .Include(r => r.Images)
+                .SelectMany(r => r.Images.Select(i => new { i.Name, i.Id }))
+                .ToListAsync();
+            return this.Ok(result);
         }
-    }
+
+        [HttpDelete("{containerId}/image/{imageId}")]
+        [BasicAuth]
+        public async Task<IActionResult> DeleteImageAsync(Guid containerId, Guid imageId)
+        {
+            var recipe = await this._context.MultiPartRecipes.Where(r => r.Id == containerId).Include(r => r.Images).FirstAsync();
+            if (recipe == null)
+            {
+                return NotFound("recipe");
+            }
+            var img = recipe.Images.FirstOrDefault(i => i.Id == imageId);
+            if (img != null)
+            {
+                recipe.Images.Remove(img);
+                _context.Images.Remove(img);
+                await this._context.SaveChangesAsync();
+                return Ok();
+            }
+            else
+            {
+                return NotFound("image");
+            }
+        }
 
         private bool MultiPartRecipeExists(Guid id)
         {
@@ -632,7 +633,7 @@ namespace babe_algorithms.Controllers
 
         private async Task<PagedResult<RecipeView>> Search(string search, int page)
         {
-            var queries = new [] {
+            var queries = new[] {
                         this._context.SearchRecipesByName,
                         this._context.GetRecipesWithIngredient,
                         this._context.SearchRecipesByTag,

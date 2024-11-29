@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { ActionFunctionArgs, Form as RouterForm, redirect, useRouteError } from "react-router";
+import { ActionFunctionArgs, Form as RouterForm, redirect, useActionData, useFetcher, useRouteError } from "react-router";
 import { Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
 import { createRecipeWithName, importRecipeFromImage, MultiPartRecipe } from "src/shared/CookTime";
 import { Path } from "./Recipe";
@@ -42,13 +42,10 @@ export const RECIPE_CREATE_PAGE_PATH = "Recipes/Create"
 export default function RecipeCreation() {
 
   useTitle("New Recipe")
+  const fetcher = useFetcher();
 
   const [image, setImage] = useState<Blob>();
   const [imageSrc, setImageSrc] = useState<string>();
-  const [importInProgress, setImportInProgress] = useState<boolean>();
-  if (useRouteError()) {
-    setImportInProgress(false);
-  }
 
   return (
     <>
@@ -57,9 +54,11 @@ export default function RecipeCreation() {
           <Col style={{ maxWidth: "540px" }}>
 
             <h1>Create recipe</h1>
-            <RouterForm method="post">
+            <fetcher.Form
+              method="post" >
               <Form.Group className="margin-bottom-8">
-                <Form.Control placeholder="Name" type="text" name="name"></Form.Control>
+                <Form.Control required placeholder="Name" type="text" name="name"></Form.Control>
+                {fetcher.data && fetcher.data.errors && <Form.Text className="text-danger">{fetcher.data.errors}</Form.Text>}
               </Form.Group>
               <Form.Group className="margin-bottom-8">
                 <Form.Label>
@@ -78,12 +77,11 @@ export default function RecipeCreation() {
                   className="width-100"
                   type="submit"
                   name="intent"
-                  onClick={() => setImportInProgress(true)}
                   value={SIMPLE_CREATE}>
-                  {importInProgress ? <Spinner /> : "Create"}
+                  {fetcher.formData?.get("intent") === SIMPLE_CREATE ? <Spinner /> : "Create"}
                 </Button>
               </Form.Group>
-            </RouterForm>
+            </fetcher.Form>
 
             <br />
 
@@ -91,7 +89,9 @@ export default function RecipeCreation() {
             <p>Take a picture of a recipe and CookTime will use AI to import the content for you</p>
 
 
-            <RouterForm method="post" encType="multipart/form-data">
+            <fetcher.Form
+              method="post"
+              encType="multipart/form-data">
               <Form.Group controlId="formFile" className="image-selector margin-bottom-8">
                 <Form.Control
                   type="file"
@@ -117,13 +117,12 @@ export default function RecipeCreation() {
                   className="width-100"
                   type="submit"
                   name="intent"
-                  onClick={() => setImportInProgress(true)}
-                  value={IMPORT}>{importInProgress ? <Spinner /> : "Import"}</Button>
+                  value={IMPORT}>{fetcher.formData?.get("intent") === IMPORT ? <Spinner /> : "Import"}</Button>
               </Form.Group>
-            </RouterForm>
+            </fetcher.Form>
           </Col>
         </Row>
-      </Container>
+      </Container >
     </>
   );
 }

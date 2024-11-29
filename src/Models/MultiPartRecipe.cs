@@ -8,11 +8,11 @@ namespace babe_algorithms.Models;
 [DebuggerDisplay($"{{{nameof(GetDebuggerDisplay)}(),nq}}")]
 public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOwned
 {
-    public MultiPartRecipe() 
+    public MultiPartRecipe()
     {
     }
 
-    public MultiPartRecipe(Recipe recipe) 
+    public MultiPartRecipe(Recipe recipe)
     {
         this.Name = recipe.Name;
         this.StaticImage = recipe.StaticImage;
@@ -23,9 +23,9 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
         this.Categories = recipe.Categories;
         this.Images = recipe.Images;
         this.Source = recipe.Source;
-        this.RecipeComponents = new List<RecipeComponent>() 
+        this.RecipeComponents = new List<RecipeComponent>()
         {
-            new RecipeComponent() 
+            new RecipeComponent()
             {
                 Name = recipe.Name,
                 Ingredients = recipe.Ingredients.Select(ir => new MultiPartIngredientRequirement(ir)).ToList(),
@@ -55,7 +55,7 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
 
     public ISet<Category> Categories { get; set; } = new HashSet<Category>();
 
-    public List<Image> Images { get; set; } 
+    public List<Image> Images { get; set; } = new List<Image>();
 
     public List<RecipeComponent> RecipeComponents { get; set; } = new List<RecipeComponent>();
 
@@ -84,7 +84,7 @@ public class MultiPartRecipe : IImageContainer, IEquatable<MultiPartRecipe>, IOw
                 .Select(ir => ir.Ingredient)
                 .ToHashSet();
 
-    public List<string> ApplicableDefaultCategories 
+    public List<string> ApplicableDefaultCategories
     {
         get
         {
