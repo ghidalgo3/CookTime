@@ -6,7 +6,7 @@ export function RecipeCardInFeedAd() {
             <ins className="adsbygoogle"
                 style={{ display: "block" }}
                 data-ad-format="fluid"
-                data-ad-layout-key="-7t+f1-16-4w+d9"
+                data-ad-layout-key="-6t+d5-27+4v+al"
                 data-ad-client="ca-pub-6004231239349931"
                 data-ad-slot="7056881482"></ins>
             <script>
