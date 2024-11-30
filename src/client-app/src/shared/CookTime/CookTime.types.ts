@@ -185,7 +185,8 @@ export type IngredientInternalUpdate = {
   ingredientNames: string,
   gtinUpc: string,
   countRegex: string,
-  expectedUnitMass: number
+  expectedUnitMass: string,
+  nutritionDescription: string
 }
 
 export type IngredientReplacementRequest = {

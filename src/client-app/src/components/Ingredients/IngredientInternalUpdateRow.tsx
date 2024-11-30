@@ -1,15 +1,17 @@
-import React, {useEffect, useState} from "react"
+import React, { useEffect, useState } from "react"
 import { Spinner } from "react-bootstrap";
 import { IngredientInternalUpdate } from "src/shared/CookTime";
 
-export default function IngredientInternalUpdateRow(props : IngredientInternalUpdate) {
+export default function IngredientInternalUpdateRow(props: IngredientInternalUpdate) {
   const {
     ingredientId,
     ingredientNames,
     gtinUpc,
     ndbNumber,
     countRegex,
-    expectedUnitMass } = props;
+    expectedUnitMass,
+    nutritionDescription
+  } = props;
   const [update, setUpdate] = useState(props);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -20,38 +22,49 @@ export default function IngredientInternalUpdateRow(props : IngredientInternalUp
         <input
           type="text"
           name="ingredientNames"
-          placeholder="Ingredient names (semi-colon separated)"
-          onChange={e => setUpdate({...update, ingredientNames: e.target.value})}
+          placeholder="Cooktime ingredient name (semi-colon separated)"
+          onChange={e => setUpdate({ ...update, ingredientNames: e.target.value })}
           value={update.ingredientNames} />
       </th>
+      <th scope="row">{nutritionDescription}</th>
       <th>
         <input
           type="number"
           name="ndbNumber"
           placeholder="NDB Number"
-          onChange={e => setUpdate({...update, ndbNumber: Number.parseInt(e.target.value)})}
+          onChange={e => setUpdate({ ...update, ndbNumber: Number.parseInt(e.target.value) })}
           value={update.ndbNumber === 0 ? "" : update.ndbNumber} />
         <input
           type="text"
           name="gtinUpc"
           placeholder="GTIN/UPC Number"
-          onChange={e => setUpdate({...update, gtinUpc: e.target.value})}
+          onChange={e => setUpdate({ ...update, gtinUpc: e.target.value })}
           value={update.gtinUpc} />
       </th>
       <th>
         <input
           type="text"
           name="countRegex"
-          onChange={e => setUpdate({...update, countRegex: e.target.value})}
+          onChange={e => setUpdate({ ...update, countRegex: e.target.value })}
           placeholder="Count RegEx"
           value={update.countRegex} />
       </th>
       <th>
         <input
-          type="number"
+          type="text"
           name="expectedUnitMass"
-          step="0.001"
-          onChange={e => setUpdate({...update, expectedUnitMass: Number.parseInt(e.target.value)})}
+          onChange={e => {
+            let unitMass = Number.parseFloat(e.target.value);
+            if (e.target.value === "0.") {
+              setUpdate({ ...update, expectedUnitMass: "0." });
+            } else {
+              if (isNaN(unitMass)) {
+                unitMass = 0.1;
+              }
+              setUpdate({ ...update, expectedUnitMass: unitMass.toString() })
+            }
+          }
+          }
           value={update.expectedUnitMass} />
       </th>
       <th>

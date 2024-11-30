@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react"
+import React, { useEffect, useState } from "react"
 import IngredientInternalUpdateRow from "src/components/Ingredients/IngredientInternalUpdateRow";
 import { getInternalIngredientUpdates, IngredientInternalUpdate } from "src/shared/CookTime";
 import { useTitle } from "src/shared/useTitle";
@@ -21,6 +21,7 @@ export default function IngredientsView() {
           <tr>
             <th scope="col">ID</th>
             <th scope="col">Ingredient names</th>
+            <th scope="col">Nutrition description</th>
             <th scope="col">NDB/GTIN/UPC Number</th>
             <th scope="col">Count RegEx</th>
             <th scope="col">Unit mass (kg)</th>
@@ -30,7 +31,7 @@ export default function IngredientsView() {
         <tbody>{ingredients.map((i, idx) =>
           <IngredientInternalUpdateRow
             key={idx}
-            {...i}/>)}
+            {...i} />)}
         </tbody>
       </table>
     </>
