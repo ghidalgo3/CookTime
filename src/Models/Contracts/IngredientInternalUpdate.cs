@@ -16,7 +16,7 @@ public record IngredientInternalUpdate
         new()
         {
             IngredientId = ingredient.Id,
-            NutritionDescription = ingredient.NutritionData?.Description ?? "",
+            NutritionDescription = ingredient.NutritionData?.Description ?? ingredient.BrandedNutritionData?.Description ?? "",
             NdbNumber = ingredient.NutritionData?.NdbNumber ?? 0,
             GtinUpc = ingredient.BrandedNutritionData?.GtinUpc ?? "",
             IngredientNames = ingredient.Name,
