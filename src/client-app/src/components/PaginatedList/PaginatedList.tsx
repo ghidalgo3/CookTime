@@ -36,7 +36,7 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
               return (
                 <RecipeCardInFeedAd />
               )
-            } else if (props.inFeedAdIndex && idx > props.inFeedAdIndex) {
+            } else {
               return (
                 <Col
                   sm="4"
