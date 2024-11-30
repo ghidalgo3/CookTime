@@ -61,6 +61,7 @@ export default function RecipeList({ title, query, type, hideIfEmpty }: RecipeLi
       </Row>
       <PaginatedList
         element={(recipe: RecipeView) => <RecipeCard {...recipe} />}
+        inFeedAdIndex={4}
         items={recipes}
       />
       {/* {query && <p>Searching for '{query}'</p>}

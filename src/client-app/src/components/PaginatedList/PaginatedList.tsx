@@ -3,11 +3,13 @@ import { Col, Pagination, Row } from "react-bootstrap";
 import { useSearchParams } from "react-router";
 import { PagedResult } from "src/shared/CookTime";
 import "./PaginatedList.css"
+import { RecipeCardInFeedAd } from "../RecipeCardInFeedAd";
 
 interface PaginatedListProps<T> {
   element: (item: T) => React.ReactNode
   items: PagedResult<T>
   colClassName?: string
+  inFeedAdIndex?: number
 }
 export default function PaginatedList<T>(props: PaginatedListProps<T>) {
   const { items, element, colClassName } = props;
@@ -26,13 +28,26 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
     <>
       <Row>
         {
-          items.results.map((item, idx) =>
-            <Col
-              sm="4"
-              className={colClassName}
-              key={idx}>
-              {element(item)}
-            </Col>)
+          items.results.map((item, idx) => {
+            if (props.inFeedAdIndex && idx > props.inFeedAdIndex) {
+              idx--;
+            }
+            if (props.inFeedAdIndex && idx === props.inFeedAdIndex) {
+              return (
+                <RecipeCardInFeedAd />
+              )
+            } else if (props.inFeedAdIndex && idx > props.inFeedAdIndex) {
+              return (
+                <Col
+                  sm="4"
+                  className={colClassName}
+                  key={idx}>
+                  {element(item)}
+                </Col>
+              )
+            }
+          }
+          )
         }
       </Row>
       {items.pageCount > 1 &&
