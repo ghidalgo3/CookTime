@@ -19,8 +19,8 @@ export default function IngredientNormalizerRow(props: IngredientReplacementRequ
           type="text"
           name="replacementId"
           placeholder="Replace for (ID)"
-          onChange={e => setReplacement({ ...replacement, keptId: e.target.value })}
-          value={replacement.keptId === EMPTY_GUID ? "" : replacement.keptId} />
+          onChange={e => setReplacement({ ...replacement, keptId: replacedId, replacedId: e.target.value })}
+          value={replacement.keptId === EMPTY_GUID ? "" : replacement.replacedId} />
       </th>
       <th>
         <input type="hidden" name="ingredientId" value="@ingredient.Id" />

@@ -1,5 +1,9 @@
 namespace babe_algorithms.Models;
 
+/// <summary>
+/// When this is served to the client, KeptId is empty
+/// When the client replies, they set both ids
+/// </summary>
 public record IngredientReplacementRequest
 {
     public Guid ReplacedId { get; init; }

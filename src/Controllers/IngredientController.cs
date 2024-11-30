@@ -10,19 +10,22 @@ public class IngredientController : ControllerBase
     private readonly ApplicationDbContext _context;
 
     public ISessionManager Session { get; }
+    public ILogger<IngredientController> Logger { get; }
 
     public IngredientController(
         ApplicationDbContext context,
-        ISessionManager sessionManager)
+        ISessionManager sessionManager,
+        ILogger<IngredientController> logger)
     {
         _context = context;
         this.Session = sessionManager;
+        this.Logger = logger;
     }
 
     // GET: api/Ingredient
-[HttpGet]
+    [HttpGet]
     public async Task<ActionResult<IEnumerable<Ingredient>>> GetIngredients(
-        [FromQuery] string name)
+            [FromQuery] string name)
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -41,7 +44,7 @@ public class IngredientController : ControllerBase
         var result = ingredients.Select(i => IngredientInternalUpdate.FromIngredient(i)).ToList();
         return this.Ok(result);
     }
-    
+
     [HttpGet("normalized")]
     public async Task<ActionResult<List<IngredientReplacementRequest>>> GetNormalizedIngredientsView([FromQuery] string search)
     {
@@ -69,15 +72,18 @@ public class IngredientController : ControllerBase
         {
             return this.Unauthorized("You must be an administrator");
         }
-        var ingredient = this._context.GetIngredient(request.ReplacedId);
+        var ingredient = this._context.GetIngredient(request.KeptId);
         if (ingredient == null)
         {
             return this.NotFound();
         }
-        var recipesToModify = await this._context.GetRecipesWithIngredient(request.KeptId).ToListAsync();
+        var recipesToModify = await this._context
+            .GetRecipesWithIngredient(request.ReplacedId)
+            .ToListAsync();
+        this.Logger.LogInformation($"Replacing {request.ReplacedId} with {request.KeptId} in {recipesToModify.Count} recipes");
         foreach (var recipe in recipesToModify)
         {
-            recipe.ReplaceIngredient(i => i.Id == request.KeptId, ingredient);
+            recipe.ReplaceIngredient(i => i.Id == request.ReplacedId, ingredient);
         }
 
         this._context.SaveChanges();
