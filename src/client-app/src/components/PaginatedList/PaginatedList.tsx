@@ -24,30 +24,62 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
     setSearchParams(paramsForPage(i));
   }
 
+  let elementInner = (item: T, idx: number) => {
+    if (idx === props.inFeedAdIndex) {
+      return (
+        <RecipeCardInFeedAd />
+      )
+    } else {
+      return element(item);
+    }
+  }
+  let itemsWithAd = items.results;
+  if (props.inFeedAdIndex && props.inFeedAdIndex < items.results.length) {
+    let itemsWithAd = [
+      ...items.results.slice(0, props.inFeedAdIndex),
+      null,
+      ...items.results.slice(props.inFeedAdIndex)];
+  }
   return (
     <>
       <Row>
         {
-          items.results.map((item, idx) => {
-            if (props.inFeedAdIndex && idx > props.inFeedAdIndex) {
-              idx--;
-            }
-            if (props.inFeedAdIndex && idx === props.inFeedAdIndex) {
-              return (
-                <RecipeCardInFeedAd />
-              )
-            } else {
-              return (
-                <Col
-                  sm="4"
-                  className={colClassName}
-                  key={idx}>
-                  {element(item)}
-                </Col>
-              )
-            }
-          }
-          )
+          itemsWithAd.map((item, idx) => {
+            return (
+              <Col
+                sm="4"
+                className={colClassName}
+                key={idx}>
+                {elementInner(item, idx)}
+              </Col>
+            )
+            return elementInner(item, idx)
+          })
+          //     if (props.inFeedAdIndex && idx > props.inFeedAdIndex) {
+          //   idx--;
+          //     }
+          // if (props.inFeedAdIndex && idx === props.inFeedAdIndex) {
+          //       return (
+          // <Col
+          //   sm="4"
+          //   className={colClassName}
+          //   key={idx}>
+
+          //   <RecipeCardInFeedAd />
+          // </Col>
+          // )
+          //     } else {
+          //       return (
+          // <Col
+          //   sm="4"
+          //   className={colClassName}
+          //   key={idx}>
+          //   {element(item)}
+          // </Col>
+          // )
+          // }
+          // }
+          // )
         }
       </Row>
       {items.pageCount > 1 &&
