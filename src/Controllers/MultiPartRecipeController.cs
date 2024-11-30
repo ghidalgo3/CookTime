@@ -620,7 +620,10 @@ namespace babe_algorithms.Controllers
             var ingredients = recipe.GetAllIngredients().Where(i => i.NutritionData == null);
             foreach (var ingredient in ingredients)
             {
-                ingredient.NutritionData ??= this._context.SearchSRNutritionData(ingredient.Name);
+                if (ingredient.BrandedNutritionData == null)
+                {
+                    ingredient.NutritionData ??= this._context.SearchSRNutritionData(ingredient.Name);
+                }
             }
         }
 

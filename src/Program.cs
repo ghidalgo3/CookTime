@@ -182,10 +182,17 @@ public class Program
 
     private static void LabelNutrients(ApplicationDbContext context)
     {
-        var allIngredients = context.Ingredients.Include(i => i.NutritionData).ToList();
+        var allIngredients = context
+            .Ingredients
+            .Include(i => i.NutritionData)
+            .Include(i => i.BrandedNutritionData)
+            .ToList();
         foreach (var ingredient in allIngredients)
         {
-            ingredient.NutritionData ??= context.SearchSRNutritionData(ingredient.Name);
+            if (ingredient.BrandedNutritionData == null)
+            {
+                ingredient.NutritionData = context.SearchSRNutritionData(ingredient.Name);
+            }
         }
         context.SaveChanges();
     }
