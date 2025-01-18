@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Edge",
+            "name": "Client",
             "request": "launch",
             "type": "msedge",
             "url": "https://localhost:44481",
@@ -17,7 +17,7 @@
             // Use IntelliSense to find out which attributes exist for C# debugging
             // Use hover for the description of the existing attributes
             // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
-            "name": "Launch",
+            "name": "Server",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -39,6 +39,13 @@
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/src/Views"
             }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Cooktime",
+            "configurations": ["Server", "Client"],
+            "stopAll": false
         }
     ]
 }

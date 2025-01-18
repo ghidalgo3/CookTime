@@ -352,7 +352,8 @@ MigrationBackup/
 .DS_Store
 *.g.*
 wwwroot/js/*.js
-wwwroot/is-cache/*
+src/wwwroot/is-cache/*
 FoodData_Central_sr_legacy_food_json_2021-10-28.json
 FoodData_Central_branded_food_json_2021-10-28.json
 .env.development.local
+.react-router/

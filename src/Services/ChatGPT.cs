@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using GustavoTech.Implementation;
 using Newtonsoft.Json.Linq;
@@ -16,7 +18,16 @@ public class ChatGPT : IRecipeArtificialIntelligence
 {
     private const string INGREDIENT_REQUIREMENTS = "ingredientRequirements";
     private const string RECIPE_NAME = "recipeName";
+    private const string INGREDIENTS = "ingredients";
+    private const string NDB_NUMBERS = "ndb_numbers";
     private const string STEPS = "steps";
+
+    private readonly static List<Tool> Functions;
+
+    static ChatGPT()
+    {
+        Functions = [.. AvailableChatFunctions()];
+    }
 
     public ChatGPT(OpenAIOptions configuration, ILogger<ChatGPT> logger)
     {
@@ -27,30 +38,72 @@ public class ChatGPT : IRecipeArtificialIntelligence
     private OpenAIClient OpenAIClient { get; }
     public ILogger<ChatGPT> Logger { get; }
 
+    public async Task<Dictionary<string, int>> MatchIngredientsToSRNutritionIdsAsync(
+        IEnumerable<string> ingredients,
+        CancellationToken ct)
+    {
+        var prompt = "Match the following comma-separated foods to their closest match from the USDA SR Legacy Foods. The result should be a json object mapping foods to their ndbNumbers. The given food name should preferrably be in the name of the SR item matched. ";
+        var text = string.Join(", ", ingredients);
+        var messages = new List<Message>
+        {
+            new(Role.System, "You are a helpful assistant that knows the USDA SR Legacy Foods database."),
+            new(Role.User, prompt + text),
+        };
+        var tools = new List<Tool> { };
+        var chatRequest = new ChatRequest(
+            messages,
+            // tools: tools,
+            responseFormat: ChatResponseFormat.Json,
+            // toolChoice: "auto",
+            model: new Model("gpt-4o-mini", "openai"),
+            temperature: 0.0);
+        // model: "gpt-4-0613"); // not available via API call yet, only on the GUI.
+        var result = await this.OpenAIClient.ChatEndpoint.GetCompletionAsync(chatRequest, ct);
+        // if (result.FirstChoice.Message.ToolCalls.Count == 0)
+        // {
+        //     Logger.LogWarning("No tool calls were made for '{text}'", text);
+        //     return null;
+        // }
+
+        JsonNode arguments = JsonNode.Parse(result.FirstChoice.Message.Content.ToString());
+
+        Logger.LogInformation("Matched ingredients to SR Nutrition IDs: {arguments}", arguments.ToJsonString());
+        var toReturn = new Dictionary<string, int>();
+        foreach (var (ingredient, ndbNumber) in arguments.Deserialize<Dictionary<string, string>>())
+        {
+            if (int.TryParse(ndbNumber, out int val))
+            {
+                toReturn[ingredient] = val;
+            }
+        }
+        return toReturn;
+    }
+
     public async Task<MultiPartRecipe> ConvertToRecipeAsync(string text, CancellationToken ct)
     {
         // TODO change to all when JSONSchema is modified to describe an array of ingredients.
         var prompt = "Convert the following to a recipe: ";
         var messages = new List<Message>
         {
-            new Message(Role.System, "You convert unstructured recipe text into structured recipe objects."),
-            new Message(Role.User, prompt + text),
+            new(Role.System, "You convert unstructured recipe text into structured recipe objects."),
+            new(Role.User, prompt + text),
         };
-        var functions = AvailableChatFunctions();
-        var tools = new List<Tool>(functions);
         var chatRequest = new ChatRequest(
             messages,
-            tools: tools,
+            tools: Functions,
             toolChoice: "auto",
             model: Model.GPT3_5_Turbo,
             temperature: 0.0);
         // model: "gpt-4-0613"); // not available via API call yet, only on the GUI.
+        Logger.LogInformation("Sending chat request to OpenAI: {chatRequest}", chatRequest);
         var result = await this.OpenAIClient.ChatEndpoint.GetCompletionAsync(chatRequest, ct);
+        Logger.LogInformation(result);
         if (result.FirstChoice.Message.ToolCalls.Count == 0)
         {
             return null;
         }
 
+        Logger.LogInformation("Chat result: {result}", result.FirstChoice.Message.ToString());
         JsonNode arguments = JsonNode.Parse(result.FirstChoice.Message.ToolCalls.First().Function.Arguments.ToString());
         var ingredientRequirements = arguments[INGREDIENT_REQUIREMENTS]?.AsArray().Select(ir =>
             new
@@ -144,6 +197,37 @@ public class ChatGPT : IRecipeArtificialIntelligence
             return Unit.Count;
         }
     }
+
+    private static Tool IngredientAssociationTool() =>
+        new Function(
+                name: "AssociateIngredient",
+                description: "Matches ingredient names to their closest USDA SR Legacy Foods NDB Number",
+                parameters: new JsonObject
+                {
+                    ["type"] = "object",
+                    ["properties"] = new JsonObject
+                    {
+                        [INGREDIENTS] = new JsonObject
+                        {
+                            ["type"] = "array",
+                            ["items"] = new JsonObject
+                            {
+                                ["type"] = "string",
+                                ["description"] = "The name of the ingredient"
+                            }
+                        },
+                        [NDB_NUMBERS] = new JsonObject
+                        {
+                            ["type"] = "array",
+                            ["items"] = new JsonObject
+                            {
+                                ["type"] = "string",
+                                ["description"] = "The USDA SR Legacy Foods NDB Number"
+                            }
+                        }
+                    }
+                }
+            );
 
     private static List<Tool> AvailableChatFunctions()
     {
@@ -296,4 +380,5 @@ public class ChatGPT : IRecipeArtificialIntelligence
         }
         return result;
     }
+
 }

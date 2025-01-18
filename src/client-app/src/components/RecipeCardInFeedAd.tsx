@@ -1,6 +1,6 @@
 export function RecipeCardInFeedAd() {
     return (
-        <>
+        <div>
             <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6004231239349931"
                 crossOrigin="anonymous"></script>
             <ins className="adsbygoogle"
@@ -12,6 +12,6 @@ export function RecipeCardInFeedAd() {
             <script>
                 (adsbygoogle = window.adsbygoogle || []).push({ });
             </script>
-        </>
+        </div>
     )
 }

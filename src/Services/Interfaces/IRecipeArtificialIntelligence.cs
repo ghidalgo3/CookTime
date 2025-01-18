@@ -19,4 +19,6 @@ public interface IRecipeArtificialIntelligence
     /// <param name="ct">Optional cancellation token</param>
     /// <returns>An awaitable task that yields a list of images.</returns>
     Task<IEnumerable<Models.Image>> GenerateRecipeImageAsync(MultiPartRecipe recipe, CancellationToken ct);
+
+    Task<Dictionary<string, int>> MatchIngredientsToSRNutritionIdsAsync(IEnumerable<string> ingredients, CancellationToken ct);
 }
