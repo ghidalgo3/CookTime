@@ -25,6 +25,9 @@ jobs:
         with:
           dotnet-version: "10.0.x"
 
+      - name: Build
+        run: dotnet build
+
       - name: Test
         working-directory: Tests
         run: dotnet test --no-restore --verbosity normal
