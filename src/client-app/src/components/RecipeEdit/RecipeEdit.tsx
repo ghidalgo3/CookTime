@@ -580,7 +580,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
       } = this.state.nutritionFacts!.recipe;
       return (
         <>
-          <GoogleInFeedAds />
+          {/* <GoogleInFeedAds /> */}
           <NutritionFacts
             // servingSize={'1 cup (228g)'}
             // servingsPerContainer={2}

@@ -7,34 +7,39 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # checkout the repo
-    - name: 'Checkout Github Action'
-      uses: actions/checkout@master
+      # checkout the repo
+      - name: "Checkout Github Action"
+        uses: actions/checkout@master
 
-    - name: Set up .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: '8.0.x'
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "10.0.x"
 
-    # - name: Test
-    #   working-directory: Tests
-    #   run: dotnet test --no-restore --verbosity normal
+      - name: Build
+        run: scripts/build.sh
 
-    - name: dotnet publish
-      working-directory: src
-      run: dotnet publish --configuration Release --verbosity normal --output ${{env.DOTNET_ROOT}}/myapp
+      - name: Test
+        run: scripts/test.sh
 
-    - name: Run Azure webapp deploy action using publish profile credentials
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: kooktime
-        slot-name: Production
-        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0F6BD73EF94E4FA98AD4FB7410D07D5C }}
-        package: ${{env.DOTNET_ROOT}}/myapp
+      - name: Publish
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: scripts/publish.sh ${{env.DOTNET_ROOT}}/myapp
 
+      - name: Run Azure webapp deploy action using publish profile credentials
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: kooktime
+          slot-name: Production
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0F6BD73EF94E4FA98AD4FB7410D07D5C }}
+          package: ${{env.DOTNET_ROOT}}/myapp
