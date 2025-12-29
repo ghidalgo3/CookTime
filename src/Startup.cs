@@ -26,9 +26,9 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllersWithViews().AddNewtonsoftJson(options => 
+        services.AddControllersWithViews().AddJsonOptions(options =>
         {
-            options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         });
 
         var mvcBuilder = services.AddRazorPages();
@@ -49,7 +49,7 @@ public class Startup
         })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
-        services.ConfigureApplicationCookie(options => 
+        services.ConfigureApplicationCookie(options =>
         {
             // Cookie settings
             options.Cookie.HttpOnly = true;
@@ -78,11 +78,11 @@ public class Startup
             options.UseNpgsql(Program.CreateNpgsqlDataSource(connectionString));
             options.EnableSensitiveDataLogging(true);
         });
-        services.AddImageSharp(options => 
+        services.AddImageSharp(options =>
         {
         })
             .ClearProviders()
-            .AddProvider<PostgresImageProvider>(sp => 
+            .AddProvider<PostgresImageProvider>(sp =>
             {
                 return new PostgresImageProvider(sp);
             });

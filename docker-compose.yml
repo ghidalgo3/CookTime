@@ -1,0 +1,64 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: cooktime-postgres
+    environment:
+      POSTGRES_DB: KookTime
+      POSTGRES_USER: gustavo
+      POSTGRES_PASSWORD: development
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gustavo -d KookTime"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: cooktime-azurite
+    ports:
+      - "10000:10000" # Blob service
+      - "10001:10001" # Queue service
+      - "10002:10002" # Table service
+    volumes:
+      - azurite-data:/data
+    command: azurite-blob --blobHost 0.0.0.0 --blobPort 10000
+
+  api:
+    build:
+      context: src/
+      dockerfile: Dockerfile
+    container_name: cooktime-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5000
+      DATABASE_URL: "Host=postgres;Database=KookTime;Username=gustavo;Password=development"
+      Azure__BlobStorageConnectionString: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
+    ports:
+      - "5001:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      azurite:
+        condition: service_started
+
+  webapp:
+    build:
+      context: src/client-app
+      dockerfile: Dockerfile
+    container_name: cooktime-webapp
+    environment:
+      REACT_APP_API_URL: http://localhost:5001
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres-data:
+  azurite-data:

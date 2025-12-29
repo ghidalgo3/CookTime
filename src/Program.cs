@@ -1,5 +1,4 @@
 using babe_algorithms.Services;
-using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using System.Text.Json.Nodes;
@@ -8,6 +7,7 @@ using babe_algorithms.Models.Users;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using GustavoTech.Implementation;
 using SixLabors.ImageSharp.Web.DependencyInjection;
+using BabeAlgorithms.Services.Repositories;
 
 namespace babe_algorithms;
 
@@ -17,6 +17,13 @@ public class Program
 
     public static void Main(string[] args)
     {
+        // Check for export command
+        if (args.Length > 0 && args[0] == "export")
+        {
+            DatabaseExporter.ExportDatabase(args);
+            return;
+        }
+
         var builder = WebApplication.CreateBuilder(args);
         builder.Services
         .AddControllersWithViews(options =>
@@ -24,9 +31,9 @@ public class Program
             // TODO enable this.
             // options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
         })
-        .AddNewtonsoftJson(options =>
+        .AddJsonOptions(options =>
         {
-            options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         });
 
         builder.Services.AddRazorPages();
@@ -62,18 +69,28 @@ public class Program
         builder.Services.Configure<AzureOptions>(builder.Configuration.GetSection("Azure"));
         builder.Services.Configure<OpenAIOptions>(builder.Configuration.GetSection("OpenAI"));
         builder.Services.AddTransient<IEmailSender, EmailSender>();
+
+        // Configure NpgsqlDataSource for repository pattern
+        var connectionString = builder.Configuration.GetConnectionString("Postgres");
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            connectionString = System.Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres")
+                ?? System.Environment.GetEnvironmentVariable("DATABASE_URL")
+                ?? throw new NullReferenceException("Connection string was not found.");
+        }
+        var npgsqlDataSource = CreateNpgsqlDataSource(connectionString);
+        builder.Services.AddSingleton(npgsqlDataSource);
+
+        // Register repositories
+        builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
+        builder.Services.AddScoped<IIngredientRepository, IngredientRepository>();
+        builder.Services.AddScoped<IRecipeListRepository, RecipeListRepository>();
+        builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+        builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
         {
-            var connectionString = builder.Configuration.GetConnectionString("Postgres");
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                connectionString =
-                        System.Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres")
-                        ?? throw new NullReferenceException("Connection string was not found.");
-            }
-            NpgsqlDataSource dataSource = CreateNpgsqlDataSource(connectionString);
-
-            options.UseNpgsql(dataSource);
+            options.UseNpgsql(npgsqlDataSource);
             options.EnableSensitiveDataLogging(true);
         });
         builder.Services.AddImageSharp(options =>
@@ -104,7 +121,7 @@ public class Program
         app.MapRazorPages();
         app.MapFallbackToFile("index.html");
 
-        PreStartActions(app);
+        PreStartActions(app, connectionString);
 
         app.Run();
     }
@@ -118,13 +135,18 @@ public class Program
     {
         if (dataSource == null)
         {
+            Console.WriteLine("Creating new NpgsqlDataSource");
             var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
             dataSourceBuilder.MapEnum<Unit>();
             dataSource = dataSourceBuilder.Build();
             return dataSource;
         }
+        else
+        {
+            Console.WriteLine("Reusing existing NpgsqlDataSource");
+            return dataSource;
+        }
 
-        return dataSource;
     }
 
     public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -138,12 +160,103 @@ public class Program
                 webBuilder.UseStartup<Startup>();
             });
 
-    private static void PreStartActions(IHost host)
+    private static void RunMigrations(ILogger<Program> logger, string connectionString)
+    {
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            logger.LogWarning("Connection string not set, skipping migrations");
+            return;
+        }
+
+        var scriptsPath = Path.Combine(AppContext.BaseDirectory, "Scripts");
+        if (!Directory.Exists(scriptsPath))
+        {
+            logger.LogWarning("Scripts directory not found at {path}, skipping migrations", scriptsPath);
+            return;
+        }
+
+        logger.LogInformation("Running database migrations from {path}", scriptsPath);
+
+        try
+        {
+            using var dataSource = CreateNpgsqlDataSource(connectionString);
+            using var connection = dataSource.OpenConnection();
+
+            // Create migration tracker table if it doesn't exist
+            var trackerSql = File.ReadAllText(Path.Combine(scriptsPath, "000_migration_tracker.sql"));
+            using (var cmd = new NpgsqlCommand(trackerSql, connection))
+            {
+                cmd.ExecuteNonQuery();
+            }
+
+            // Find and execute all numbered SQL files in order
+            var sqlFiles = Directory.GetFiles(scriptsPath, "[0-9]*.sql")
+                .Where(f => Path.GetFileName(f) != "000_migration_tracker.sql")
+                .OrderBy(f => f)
+                .ToList();
+
+            foreach (var sqlFile in sqlFiles)
+            {
+                var filename = Path.GetFileName(sqlFile);
+
+                // Check if migration already applied
+                using var checkCmd = new NpgsqlCommand(
+                    "SELECT COUNT(*) FROM cooktime.schema_migrations WHERE script_name = @name", connection);
+                checkCmd.Parameters.AddWithValue("name", filename);
+                var count = (long)checkCmd.ExecuteScalar()!;
+
+                if (count > 0)
+                {
+                    logger.LogInformation("✓ Skipping {filename} (already applied)", filename);
+                    continue;
+                }
+
+                logger.LogInformation("→ Applying {filename}...", filename);
+
+                // Execute the migration
+                var sql = File.ReadAllText(sqlFile);
+                using (var cmd = new NpgsqlCommand(sql, connection))
+                {
+                    cmd.ExecuteNonQuery();
+                }
+
+                // Calculate checksum
+                var checksum = CalculateMD5(sqlFile);
+
+                // Record the migration
+                using var recordCmd = new NpgsqlCommand(
+                    "INSERT INTO cooktime.schema_migrations (script_name, checksum) VALUES (@name, @checksum)", connection);
+                recordCmd.Parameters.AddWithValue("name", filename);
+                recordCmd.Parameters.AddWithValue("checksum", checksum);
+                recordCmd.ExecuteNonQuery();
+
+                logger.LogInformation("✓ Applied {filename}", filename);
+            }
+
+            logger.LogInformation("All migrations complete!");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to run migrations");
+            throw;
+        }
+    }
+
+    private static string CalculateMD5(string filePath)
+    {
+        using var md5 = System.Security.Cryptography.MD5.Create();
+        using var stream = File.OpenRead(filePath);
+        var hash = md5.ComputeHash(stream);
+        return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+    }
+
+    private static void PreStartActions(IHost host, string connectionString)
     {
 
         var scope = host.Services.CreateScope();
         var services = scope.ServiceProvider;
         var logger = services.GetRequiredService<ILogger<Program>>();
+        RunMigrations(logger, connectionString);
         ConfigureDatabase(logger, services);
         logger.LogInformation("PID = {pid}", Environment.ProcessId);
     }
