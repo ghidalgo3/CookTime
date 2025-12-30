@@ -26,7 +26,7 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllersWithViews().AddNewtonsoftJson(options => 
+        services.AddControllersWithViews().AddNewtonsoftJson(options =>
         {
             options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
         });
@@ -49,7 +49,7 @@ public class Startup
         })
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
-        services.ConfigureApplicationCookie(options => 
+        services.ConfigureApplicationCookie(options =>
         {
             // Cookie settings
             options.Cookie.HttpOnly = true;
@@ -75,14 +75,16 @@ public class Startup
                     ?? throw new NullReferenceException("Connection string was not found.");
             }
 
-            options.UseNpgsql(Program.CreateNpgsqlDataSource(connectionString));
+            options.UseNpgsql(
+                Program.CreateNpgsqlDataSource(connectionString),
+                o => o.MapEnum<Unit>());
             options.EnableSensitiveDataLogging(true);
         });
-        services.AddImageSharp(options => 
+        services.AddImageSharp(options =>
         {
         })
             .ClearProviders()
-            .AddProvider<PostgresImageProvider>(sp => 
+            .AddProvider<PostgresImageProvider>(sp =>
             {
                 return new PostgresImageProvider(sp);
             });

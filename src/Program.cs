@@ -73,7 +73,8 @@ public class Program
             }
             NpgsqlDataSource dataSource = CreateNpgsqlDataSource(connectionString);
 
-            options.UseNpgsql(dataSource);
+            options.UseNpgsql(dataSource,
+                o => o.MapEnum<Unit>());
             options.EnableSensitiveDataLogging(true);
         });
         builder.Services.AddImageSharp(options =>
