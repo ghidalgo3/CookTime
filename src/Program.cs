@@ -166,8 +166,8 @@ public class Program
             }
             else
             {
-                LoadFoodData(context);
-                LabelNutrients(context);
+                // LoadFoodData(context);
+                // LabelNutrients(context);
                 // DeduplicateIngredients(context).Wait();
             }
             CreateRoles(roleManager).Wait();
