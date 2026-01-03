@@ -1,18 +1,5 @@
 import React, { useEffect, useState } from "react"
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
-import { ActionFunction, ActionFunctionArgs, Form as RouterForm, useActionData } from "react-router";
-import { IAuthenticationProvider } from "src/shared/AuthenticationProvider";
-
-export function action(
-  { sendPasswordResetEmail }: IAuthenticationProvider): ActionFunction {
-  return async (args: ActionFunctionArgs) => {
-    const { request } = args;
-    const formData = await request.formData()
-    const result = await sendPasswordResetEmail(
-      formData.get("name")!.toString());
-    return { response: result, statusCode: result.status };
-  }
-}
 
 export default function Registration() {
   return (

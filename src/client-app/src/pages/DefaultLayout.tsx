@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react"
-import { Outlet, ScrollRestoration, useLoaderData, useLocation } from "react-router";
+import { Outlet, ScrollRestoration, useLocation } from "react-router";
 import { CookTimeBanner, NavigationBar } from "src/components";
 import Footer from "src/components/Footer";
-import { getCategories, getRecipeViews } from "src/shared/CookTime";
+import { getCategories } from "src/shared/CookTime";
 import { useTitle } from "src/shared/useTitle";
-
-export async function loader({ request }: { request: Request }) {
-  const categories = await getCategories();
-  return { categories }
-}
 
 export default function DefaultLayout() {
   const location = useLocation();
-  let { categories } = useLoaderData() as { categories: string[] };
+  const [categories, setCategories] = useState<string[]>([]);
+
+  useEffect(() => {
+    getCategories().then(setCategories);
+  }, []);
 
   useTitle();
   let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'

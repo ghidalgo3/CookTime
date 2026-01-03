@@ -1,0 +1,66 @@
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+import path from "path";
+
+const target = process.env.ASPNETCORE_HTTPS_PORT
+    ? `https://localhost:${process.env.ASPNETCORE_HTTPS_PORT}`
+    : process.env.ASPNETCORE_URLS
+        ? process.env.ASPNETCORE_URLS.split(';')[0]
+        : 'https://localhost:5001';
+
+export default defineConfig({
+    plugins: [react()],
+    resolve: {
+        alias: {
+            src: path.resolve(__dirname, "./src"),
+        },
+    },
+    server: {
+        port: 3000,
+        proxy: {
+            "/Auth": {
+                target,
+                changeOrigin: true,
+                secure: false,
+            },
+            "/js": {
+                target,
+                changeOrigin: true,
+                secure: false,
+            },
+            "/lib": {
+                target,
+                changeOrigin: true,
+                secure: false,
+            },
+            "/css": {
+                target,
+                changeOrigin: true,
+                secure: false,
+            },
+            "/webfonts": {
+                target,
+                changeOrigin: true,
+                secure: false,
+            },
+            "/api": {
+                target,
+                changeOrigin: true,
+                secure: false,
+            },
+            "/image": {
+                target,
+                changeOrigin: true,
+                secure: false,
+            },
+            "/Blog": {
+                target,
+                changeOrigin: true,
+                secure: false,
+            },
+        },
+    },
+    build: {
+        outDir: "build",
+    },
+});

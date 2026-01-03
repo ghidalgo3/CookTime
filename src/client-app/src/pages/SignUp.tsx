@@ -1,29 +1,14 @@
 import React, { useEffect, useState } from "react"
 import { Alert, Col, Container, Row } from "react-bootstrap";
 import { Helmet } from "react-helmet-async";
-import { ActionFunction, ActionFunctionArgs, Form, useActionData } from "react-router";
 import SignUpForm from "src/components/Authentication/SignUpForm";
-import { IAuthenticationProvider, SignUpResult } from "src/shared/AuthenticationProvider";
+import { SignUpResult } from "src/shared/AuthenticationProvider";
 import { useTitle } from "src/shared/useTitle";
 
 export const SIGN_UP_PAGE_PATH = "signup";
 
-export function action(
-  { signUp }: IAuthenticationProvider): ActionFunction {
-  return async (args: ActionFunctionArgs) => {
-    const { request } = args;
-    const formData = await request.formData()
-    const result = await signUp(
-      formData.get("username")!.toString(),
-      formData.get("email")!.toString(),
-      formData.get("password")!.toString(),
-      formData.get("confirmPassword")!.toString());
-    return result;
-  }
-}
-
 export default function SignUp() {
-  const actionData = useActionData() as SignUpResult;
+  const [actionData, setActionData] = useState<SignUpResult>();
   useEffect(() => {
     setShowAlert(!!actionData)
   }, [actionData]);

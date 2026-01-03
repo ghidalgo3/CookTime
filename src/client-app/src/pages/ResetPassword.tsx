@@ -1,40 +1,16 @@
 import React, { useEffect, useState } from "react"
 import { Form, Card, Col, Container, Row, Button, Alert } from "react-bootstrap"
 import { Helmet } from "react-helmet-async";
-import { ActionFunction, ActionFunctionArgs, Form as RouterForm, Link, useActionData, useSearchParams } from "react-router";
-import { IAuthenticationProvider } from "src/shared/AuthenticationProvider";
+import { Link, useSearchParams } from "react-router";
 import { useTitle } from "src/shared/useTitle";
 
 export const RESET_PASSWORD_PAGE_PATH = "resetPassword";
-
-export function action(
-  { sendPasswordResetEmail, changePassword }: IAuthenticationProvider): ActionFunction {
-  return async (args: ActionFunctionArgs) => {
-    const { request, params } = args;
-    console.log(request);
-    console.log(params);
-    const formData = await request.formData()
-    if (formData.get("email")) {
-      const result = await sendPasswordResetEmail(
-        formData.get("email")!.toString());
-      return { response: result, statusCode: result.status };
-    } else if (formData.get("password")) {
-      const result = await changePassword(
-        formData.get("userId")!.toString(),
-        formData.get("token")!.toString(),
-        formData.get("password")!.toString(),
-        formData.get("confirmPassword")!.toString(),
-      );
-      return { response: result, statusCode: result.status };
-    }
-  }
-}
 
 export default function ResetPassword() {
   const [showAlert, setShowAlert] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const emailReceived = searchParams.get("token") && searchParams.get("userId");
-  const actionData = useActionData() as { response: Response, statusCode: number };
+  const [actionData, setActionData] = useState<{ response: Response, statusCode: number }>();
   useEffect(() => {
     setShowAlert(!!actionData)
   }, [actionData]);
