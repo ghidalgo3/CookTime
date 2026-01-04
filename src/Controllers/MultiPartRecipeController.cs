@@ -37,8 +37,6 @@ namespace babe_algorithms.Controllers
 
         public MultiPartRecipeController(
             ApplicationDbContext context,
-            // IRecipeArtificialIntelligence ai,
-            // IComputerVision computerVision,
             IOptions<AzureOptions> azureOptions,
             IOptions<OpenAIOptions> openAIOptions,
             ISessionManager sessionManager,

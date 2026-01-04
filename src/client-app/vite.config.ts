@@ -7,6 +7,7 @@ const target = process.env.ASPNETCORE_HTTPS_PORT
     : process.env.ASPNETCORE_URLS
         ? process.env.ASPNETCORE_URLS.split(';')[0]
         : 'https://localhost:5001';
+const port = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
 export default defineConfig({
     plugins: [reactRouter()],
@@ -16,7 +17,8 @@ export default defineConfig({
         },
     },
     server: {
-        port: 3000,
+        port: port,
+        host: true,  // Bind to 0.0.0.0 for Docker accessibility
         proxy: {
             "/Auth": {
                 target,

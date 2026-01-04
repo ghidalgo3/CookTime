@@ -40,6 +40,8 @@ services:
       ASPNETCORE_URLS: http://+:5000
       DATABASE_URL: "Host=postgres;Database=cooktime;Username=cooktime;Password=development"
       Azure__BlobStorageConnectionString: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
+      Azure__VisionKey: "Pass"
+      OpenAI__Key: "sk-Pass"
     ports:
       - "5001:5000"
     depends_on:
@@ -47,6 +49,9 @@ services:
         condition: service_healthy
       azurite:
         condition: service_started
+    volumes:
+      - ./src:/src
+    command: ["dotnet", "watch", "run"]
 
   webapp:
     platform: linux/amd64
@@ -55,14 +60,15 @@ services:
       dockerfile: Dockerfile
     container_name: cooktime-webapp
     environment:
-      REACT_APP_API_URL: http://localhost:5001
+      ASPNETCORE_URLS: http://api:5000
+      PORT: 80
     ports:
       - "3000:80"
     depends_on:
       - api
     volumes:
-      - ./src/client-app:/app
-    command: ["npm", "run", "start"]
+      - ./src/client-app/src:/app/src
+    command: ["npm", "run", "dev"]
 
 volumes:
   postgres-data:

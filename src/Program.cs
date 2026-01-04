@@ -36,7 +36,7 @@ public class Program
             options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         });
 
-        builder.Services.AddRazorPages();
+        // builder.Services.AddRazorPages();
         builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
         {
             options.Password.RequiredLength = 6;
@@ -71,12 +71,13 @@ public class Program
         builder.Services.AddTransient<IEmailSender, EmailSender>();
 
         // Configure NpgsqlDataSource for repository pattern
-        var connectionString = builder.Configuration.GetConnectionString("Postgres");
+
+        var connectionString = Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres")
+            ?? Environment.GetEnvironmentVariable("DATABASE_URL")
+            ?? throw new NullReferenceException("Connection string was not found.");
         if (string.IsNullOrEmpty(connectionString))
         {
-            connectionString = System.Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres")
-                ?? System.Environment.GetEnvironmentVariable("DATABASE_URL")
-                ?? throw new NullReferenceException("Connection string was not found.");
+            connectionString = builder.Configuration.GetConnectionString("Postgres");
         }
         var npgsqlDataSource = CreateNpgsqlDataSource(connectionString);
         builder.Services.AddSingleton(npgsqlDataSource);
@@ -106,8 +107,8 @@ public class Program
         if (!app.Environment.IsDevelopment())
         {
             app.UseHsts();
+            app.UseHttpsRedirection();
         }
-        app.UseHttpsRedirection();
         app.UseImageSharp();
         app.UseDefaultFiles();
         app.UseStaticFiles();
@@ -118,7 +119,7 @@ public class Program
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
-        app.MapRazorPages();
+        // app.MapRazorPages();
         app.MapFallbackToFile("index.html");
 
         PreStartActions(app, connectionString);
@@ -252,7 +253,6 @@ public class Program
 
     private static void PreStartActions(IHost host, string connectionString)
     {
-
         var scope = host.Services.CreateScope();
         var services = scope.ServiceProvider;
         var logger = services.GetRequiredService<ILogger<Program>>();
@@ -264,31 +264,31 @@ public class Program
     private static void ConfigureDatabase(ILogger<Program> logger, IServiceProvider services)
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-        try
-        {
-            var context = services.GetRequiredService<ApplicationDbContext>();
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-            if (context.Database.GetPendingMigrations().Any())
-            {
-                context.Database.Migrate();
-                using var conn = (NpgsqlConnection)context.Database.GetDbConnection();
-                conn.Open();
-                conn.ReloadTypes();
-                // InitializeDatabase(context);
-            }
-            else
-            {
-                LoadFoodData(context);
-                LabelNutrients(context);
-                // DeduplicateIngredients(context).Wait();
-            }
-            CreateRoles(roleManager).Wait();
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "An error occurred creating the DB.");
-            throw;
-        }
+        // try
+        // {
+        //     var context = services.GetRequiredService<ApplicationDbContext>();
+        //     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+        //     if (context.Database.GetPendingMigrations().Any())
+        //     {
+        //         context.Database.Migrate();
+        //         using var conn = (NpgsqlConnection)context.Database.GetDbConnection();
+        //         conn.Open();
+        //         conn.ReloadTypes();
+        //         // InitializeDatabase(context);
+        //     }
+        //     else
+        //     {
+        //         LoadFoodData(context);
+        //         LabelNutrients(context);
+        //         // DeduplicateIngredients(context).Wait();
+        //     }
+        //     CreateRoles(roleManager).Wait();
+        // }
+        // catch (Exception ex)
+        // {
+        //     logger.LogError(ex, "An error occurred creating the DB.");
+        //     throw;
+        // }
     }
 
     private static void LabelNutrients(ApplicationDbContext context)
