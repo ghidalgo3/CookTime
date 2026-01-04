@@ -1,7 +1,3 @@
-using System.Text.Json;
-
-#nullable enable
-
 namespace babe_algorithms.Models;
 
 public abstract class USDANutritionData

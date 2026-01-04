@@ -7,14 +7,14 @@ public class RecipeCreateDto
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 
-    [JsonPropertyName("userId")]
-    public string UserId { get; set; } = null!;
+    [JsonPropertyName("ownerId")]
+    public Guid OwnerId { get; set; }
 
-    [JsonPropertyName("prepTime")]
-    public TimeSpan? PrepTime { get; set; }
+    [JsonPropertyName("prepMinutes")]
+    public double? PrepMinutes { get; set; }
 
-    [JsonPropertyName("cookTime")]
-    public TimeSpan? CookTime { get; set; }
+    [JsonPropertyName("cookingMinutes")]
+    public double? CookingMinutes { get; set; }
 
     [JsonPropertyName("servings")]
     public int? Servings { get; set; }
@@ -25,21 +25,52 @@ public class RecipeCreateDto
     [JsonPropertyName("description")]
     public string? Description { get; set; }
 
-    [JsonPropertyName("recipeSource")]
-    public string? RecipeSource { get; set; }
+    [JsonPropertyName("source")]
+    public string? Source { get; set; }
 
     [JsonPropertyName("components")]
-    public List<ComponentDto> Components { get; set; } = new();
-
-    [JsonPropertyName("steps")]
-    public List<RecipeStepDto> Steps { get; set; } = new();
+    public List<ComponentCreateDto> Components { get; set; } = new();
 
     [JsonPropertyName("categoryIds")]
-    public List<int> CategoryIds { get; set; } = new();
+    public List<Guid> CategoryIds { get; set; } = new();
 }
 
 public class RecipeUpdateDto : RecipeCreateDto
 {
-    [JsonPropertyName("recipeId")]
-    public int RecipeId { get; set; }
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
 }
+
+public class ComponentCreateDto
+{
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
+
+    [JsonPropertyName("position")]
+    public int Position { get; set; }
+
+    [JsonPropertyName("steps")]
+    public List<string> Steps { get; set; } = new();
+
+    [JsonPropertyName("ingredients")]
+    public List<IngredientRequirementCreateDto> Ingredients { get; set; } = new();
+}
+
+public class IngredientRequirementCreateDto
+{
+    [JsonPropertyName("ingredientId")]
+    public Guid IngredientId { get; set; }
+
+    [JsonPropertyName("quantity")]
+    public double Quantity { get; set; }
+
+    [JsonPropertyName("unit")]
+    public string? Unit { get; set; }
+
+    [JsonPropertyName("position")]
+    public int Position { get; set; }
+
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
+}
+

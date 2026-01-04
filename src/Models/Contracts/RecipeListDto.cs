@@ -4,48 +4,81 @@ namespace BabeAlgorithms.Models.Contracts;
 
 public class RecipeListDto
 {
-    [JsonPropertyName("listId")]
-    public int ListId { get; set; }
-
-    [JsonPropertyName("userId")]
-    public string UserId { get; set; } = null!;
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
 
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 
-    [JsonPropertyName("state")]
-    public string State { get; set; } = null!;
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
 
-    [JsonPropertyName("createdDate")]
-    public DateTimeOffset CreatedDate { get; set; }
+    [JsonPropertyName("creationDate")]
+    public DateTimeOffset CreationDate { get; set; }
+
+    [JsonPropertyName("isPublic")]
+    public bool IsPublic { get; set; }
+
+    [JsonPropertyName("recipeCount")]
+    public int RecipeCount { get; set; }
 }
 
 public class RecipeListCreateDto
 {
-    [JsonPropertyName("userId")]
-    public string UserId { get; set; } = null!;
+    [JsonPropertyName("ownerId")]
+    public Guid OwnerId { get; set; }
 
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 
-    [JsonPropertyName("state")]
-    public string State { get; set; } = "active";
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
+
+    [JsonPropertyName("isPublic")]
+    public bool IsPublic { get; set; }
 }
 
-public class RecipeListWithRecipesDto : RecipeListDto
+public class RecipeListWithRecipesDto
 {
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = null!;
+
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
+
+    [JsonPropertyName("creationDate")]
+    public DateTimeOffset CreationDate { get; set; }
+
+    [JsonPropertyName("isPublic")]
+    public bool IsPublic { get; set; }
+
+    [JsonPropertyName("ownerId")]
+    public Guid OwnerId { get; set; }
+
     [JsonPropertyName("recipes")]
-    public List<RecipeSummaryDto> Recipes { get; set; } = new();
+    public List<RecipeListItemDto> Recipes { get; set; } = new();
 }
 
-public class RecipeRequirementDto
+public class RecipeListItemDto
 {
-    [JsonPropertyName("requirementId")]
-    public int RequirementId { get; set; }
-
     [JsonPropertyName("recipeId")]
-    public int RecipeId { get; set; }
+    public Guid RecipeId { get; set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = null!;
+
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
+
+    [JsonPropertyName("quantity")]
+    public double Quantity { get; set; }
+
+    [JsonPropertyName("cookingMinutes")]
+    public double? CookingMinutes { get; set; }
 
     [JsonPropertyName("servings")]
-    public int Servings { get; set; }
+    public int? Servings { get; set; }
 }

@@ -8,7 +8,6 @@ DECLARE
     new_recipe_id uuid;
     component_item jsonb;
     component_id uuid;
-    step_item jsonb;
     ingredient_item jsonb;
     category_item jsonb;
 BEGIN
@@ -35,7 +34,7 @@ BEGIN
         (recipe_json->>'prepMinutes')::double precision,
         (recipe_json->>'calories')::integer,
         recipe_json->>'source',
-        recipe_json->>'ownerId'
+        (recipe_json->>'ownerId')::uuid
     )
     RETURNING id INTO new_recipe_id;
     
@@ -44,29 +43,24 @@ BEGIN
     LOOP
         PERFORM cooktime.validate_component_json(component_item);
         
-        -- Insert component
+        -- Insert component with steps array
         INSERT INTO cooktime.recipe_components (
             name,
             position,
+            steps,
             recipe_id
         ) VALUES (
             component_item->>'name',
             (component_item->>'position')::integer,
+            ARRAY(SELECT jsonb_array_elements_text(
+                COALESCE(
+                    (SELECT jsonb_agg(s->>'instruction') FROM jsonb_array_elements(component_item->'steps') s),
+                    '[]'::jsonb
+                )
+            )),
             new_recipe_id
         )
         RETURNING id INTO component_id;
-        
-        -- Insert steps for this component
-        FOR step_item IN SELECT * FROM jsonb_array_elements(component_item->'steps')
-        LOOP
-            INSERT INTO cooktime.recipe_steps (
-                recipe_component_id,
-                instruction
-            ) VALUES (
-                component_id,
-                step_item->>'instruction'
-            );
-        END LOOP;
         
         -- Insert ingredient requirements for this component
         FOR ingredient_item IN SELECT * FROM jsonb_array_elements(component_item->'ingredients')
@@ -106,12 +100,11 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Update recipe from JSON
-CREATE OR REPLACE FUNCTION cooktime.update_recipe(recipe_id uuid, recipe_json jsonb)
+CREATE OR REPLACE FUNCTION cooktime.update_recipe(p_recipe_id uuid, recipe_json jsonb)
 RETURNS void AS $$
 DECLARE
     component_item jsonb;
     component_id uuid;
-    step_item jsonb;
     ingredient_item jsonb;
     category_item jsonb;
 BEGIN
@@ -119,8 +112,8 @@ BEGIN
     PERFORM cooktime.validate_recipe_json(recipe_json);
     
     -- Check recipe exists
-    IF NOT EXISTS (SELECT 1 FROM cooktime.recipes WHERE id = recipe_id) THEN
-        RAISE EXCEPTION 'Recipe with id % does not exist', recipe_id;
+    IF NOT EXISTS (SELECT 1 FROM cooktime.recipes WHERE id = p_recipe_id) THEN
+        RAISE EXCEPTION 'Recipe with id % does not exist', p_recipe_id;
     END IF;
     
     -- Update recipe fields
@@ -132,12 +125,12 @@ BEGIN
         prep_minutes = (recipe_json->>'prepMinutes')::double precision,
         calories = (recipe_json->>'calories')::integer,
         source = recipe_json->>'source'
-    WHERE id = recipe_id;
+    WHERE id = p_recipe_id;
     
-    -- Delete existing components (will cascade to steps and ingredients)
-    DELETE FROM cooktime.recipe_components WHERE recipe_id = update_recipe.recipe_id;
+    -- Delete existing components (will cascade to ingredient requirements)
+    DELETE FROM cooktime.recipe_components WHERE recipe_id = p_recipe_id;
     
-    -- Insert new components, steps, and ingredients
+    -- Insert new components and ingredients
     FOR component_item IN SELECT * FROM jsonb_array_elements(recipe_json->'components')
     LOOP
         PERFORM cooktime.validate_component_json(component_item);
@@ -145,24 +138,20 @@ BEGIN
         INSERT INTO cooktime.recipe_components (
             name,
             position,
+            steps,
             recipe_id
         ) VALUES (
             component_item->>'name',
             (component_item->>'position')::integer,
-            update_recipe.recipe_id
+            ARRAY(SELECT jsonb_array_elements_text(
+                COALESCE(
+                    (SELECT jsonb_agg(s->>'instruction') FROM jsonb_array_elements(component_item->'steps') s),
+                    '[]'::jsonb
+                )
+            )),
+            p_recipe_id
         )
         RETURNING id INTO component_id;
-        
-        FOR step_item IN SELECT * FROM jsonb_array_elements(component_item->'steps')
-        LOOP
-            INSERT INTO cooktime.recipe_steps (
-                recipe_component_id,
-                instruction
-            ) VALUES (
-                component_id,
-                step_item->>'instruction'
-            );
-        END LOOP;
         
         FOR ingredient_item IN SELECT * FROM jsonb_array_elements(component_item->'ingredients')
         LOOP
@@ -188,12 +177,12 @@ BEGIN
     
     -- Update categories if provided
     IF recipe_json ? 'categoryIds' THEN
-        DELETE FROM cooktime.category_recipe WHERE recipe_id = update_recipe.recipe_id;
+        DELETE FROM cooktime.category_recipe WHERE recipe_id = p_recipe_id;
         
         FOR category_item IN SELECT * FROM jsonb_array_elements(recipe_json->'categoryIds')
         LOOP
             INSERT INTO cooktime.category_recipe (category_id, recipe_id)
-            VALUES ((category_item#>>'{}')::uuid, update_recipe.recipe_id)
+            VALUES ((category_item#>>'{}')::uuid, p_recipe_id)
             ON CONFLICT DO NOTHING;
         END LOOP;
     END IF;
@@ -201,16 +190,16 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Delete recipe
-CREATE OR REPLACE FUNCTION cooktime.delete_recipe(recipe_id uuid)
+CREATE OR REPLACE FUNCTION cooktime.delete_recipe(p_recipe_id uuid)
 RETURNS void AS $$
 BEGIN
     -- Check recipe exists
-    IF NOT EXISTS (SELECT 1 FROM cooktime.recipes WHERE id = recipe_id) THEN
-        RAISE EXCEPTION 'Recipe with id % does not exist', recipe_id;
+    IF NOT EXISTS (SELECT 1 FROM cooktime.recipes WHERE id = p_recipe_id) THEN
+        RAISE EXCEPTION 'Recipe with id % does not exist', p_recipe_id;
     END IF;
     
     -- Delete recipe (cascades to components, steps, requirements)
-    DELETE FROM cooktime.recipes WHERE id = recipe_id;
+    DELETE FROM cooktime.recipes WHERE id = p_recipe_id;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -298,7 +287,7 @@ BEGIN
         list_json->>'name',
         list_json->>'description',
         COALESCE((list_json->>'isPublic')::boolean, false),
-        list_json->>'ownerId'
+        (list_json->>'ownerId')::uuid
     )
     RETURNING id INTO list_id;
     

@@ -25,20 +25,7 @@ BEGIN
                             'id', rc.id,
                             'name', rc.name,
                             'position', rc.position,
-                            'steps', COALESCE(
-                                (
-                                    SELECT jsonb_agg(
-                                        jsonb_build_object(
-                                            'id', rs.id,
-                                            'instruction', rs.instruction
-                                        )
-                                        ORDER BY rs.id
-                                    )
-                                    FROM cooktime.recipe_steps rs
-                                    WHERE rs.recipe_component_id = rc.id
-                                ),
-                                '[]'::jsonb
-                            ),
+                            'steps', rc.steps,
                             'ingredients', COALESCE(
                                 (
                                     SELECT jsonb_agg(
@@ -110,7 +97,7 @@ CREATE OR REPLACE FUNCTION cooktime.search_recipes_by_ingredient(ingredient_id u
 RETURNS SETOF jsonb AS $$
 BEGIN
     RETURN QUERY
-    SELECT DISTINCT jsonb_build_object(
+    SELECT jsonb_build_object(
         'id', r.id,
         'name', r.name,
         'description', r.description,
@@ -119,9 +106,12 @@ BEGIN
         'calories', r.calories
     )
     FROM cooktime.recipes r
-    JOIN cooktime.recipe_components rc ON rc.recipe_id = r.id
-    JOIN cooktime.ingredient_requirements ir ON ir.recipe_component_id = rc.id
-    WHERE ir.ingredient_id = search_recipes_by_ingredient.ingredient_id
+    WHERE r.id IN (
+        SELECT DISTINCT rc.recipe_id
+        FROM cooktime.recipe_components rc
+        JOIN cooktime.ingredient_requirements ir ON ir.recipe_component_id = rc.id
+        WHERE ir.ingredient_id = search_recipes_by_ingredient.ingredient_id
+    )
     ORDER BY r.name;
 END;
 $$ LANGUAGE plpgsql;
@@ -151,7 +141,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Get user's recipe lists
-CREATE OR REPLACE FUNCTION cooktime.get_user_recipe_lists(user_id text)
+CREATE OR REPLACE FUNCTION cooktime.get_user_recipe_lists(user_id uuid)
 RETURNS SETOF jsonb AS $$
 BEGIN
     RETURN QUERY

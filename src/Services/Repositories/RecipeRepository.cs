@@ -1,6 +1,7 @@
 using System.Text.Json;
 using BabeAlgorithms.Models.Contracts;
 using Npgsql;
+using NpgsqlTypes;
 
 namespace BabeAlgorithms.Services.Repositories;
 
@@ -13,26 +14,27 @@ public class RecipeRepository : IRecipeRepository
         _dataSource = dataSource;
     }
 
-    public async Task<int> CreateAsync(RecipeCreateDto recipe)
+    public async Task<Guid> CreateAsync(RecipeCreateDto recipe)
     {
         await using var conn = await _dataSource.OpenConnectionAsync();
-        await using var cmd = new NpgsqlCommand("SELECT cooktime.create_recipe($1)", conn);
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.create_recipe($1::jsonb)", conn);
 
-        cmd.Parameters.AddWithValue(JsonSerializer.Serialize(recipe, new JsonSerializerOptions
+        cmd.Parameters.AddWithValue(NpgsqlDbType.Jsonb, JsonSerializer.Serialize(recipe, new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         }));
 
         var result = await cmd.ExecuteScalarAsync();
-        return (int)result!;
+        return (Guid)result!;
     }
 
     public async Task UpdateAsync(RecipeUpdateDto recipe)
     {
         await using var conn = await _dataSource.OpenConnectionAsync();
-        await using var cmd = new NpgsqlCommand("SELECT cooktime.update_recipe($1)", conn);
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.update_recipe($1, $2::jsonb)", conn);
 
-        cmd.Parameters.AddWithValue(JsonSerializer.Serialize(recipe, new JsonSerializerOptions
+        cmd.Parameters.AddWithValue(recipe.Id);
+        cmd.Parameters.AddWithValue(NpgsqlDbType.Jsonb, JsonSerializer.Serialize(recipe, new JsonSerializerOptions
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         }));
@@ -40,7 +42,7 @@ public class RecipeRepository : IRecipeRepository
         await cmd.ExecuteNonQueryAsync();
     }
 
-    public async Task DeleteAsync(int recipeId)
+    public async Task DeleteAsync(Guid recipeId)
     {
         await using var conn = await _dataSource.OpenConnectionAsync();
         await using var cmd = new NpgsqlCommand("SELECT cooktime.delete_recipe($1)", conn);
@@ -50,7 +52,7 @@ public class RecipeRepository : IRecipeRepository
         await cmd.ExecuteNonQueryAsync();
     }
 
-    public async Task<RecipeDetailDto?> GetByIdAsync(int recipeId)
+    public async Task<RecipeDetailDto?> GetByIdAsync(Guid recipeId)
     {
         await using var conn = await _dataSource.OpenConnectionAsync();
         await using var cmd = new NpgsqlCommand("SELECT cooktime.get_recipe_with_details($1)", conn);
@@ -68,66 +70,80 @@ public class RecipeRepository : IRecipeRepository
         });
     }
 
-    public async Task<List<RecipeSummaryDto>> SearchByNameAsync(string searchTerm, int limit = 20, int offset = 0)
+    public async Task<List<RecipeSummaryDto>> SearchByNameAsync(string searchTerm)
     {
         await using var conn = await _dataSource.OpenConnectionAsync();
-        await using var cmd = new NpgsqlCommand("SELECT cooktime.search_recipes_by_name($1, $2, $3)", conn);
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.search_recipes_by_name($1)", conn);
 
         cmd.Parameters.AddWithValue(searchTerm);
-        cmd.Parameters.AddWithValue(limit);
-        cmd.Parameters.AddWithValue(offset);
 
-        var result = await cmd.ExecuteScalarAsync();
-        if (result == null || result == DBNull.Value)
-            return new List<RecipeSummaryDto>();
+        var results = new List<RecipeSummaryDto>();
+        await using var reader = await cmd.ExecuteReaderAsync();
 
-        var json = result.ToString()!;
-        return JsonSerializer.Deserialize<List<RecipeSummaryDto>>(json, new JsonSerializerOptions
+        while (await reader.ReadAsync())
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        }) ?? new List<RecipeSummaryDto>();
+            var json = reader.GetString(0);
+            var dto = JsonSerializer.Deserialize<RecipeSummaryDto>(json, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+            if (dto != null)
+                results.Add(dto);
+        }
+
+        return results;
     }
 
-    public async Task<List<RecipeSummaryDto>> SearchByIngredientAsync(string ingredientName, int limit = 20, int offset = 0)
+    public async Task<List<RecipeSummaryDto>> SearchByIngredientAsync(Guid ingredientId)
     {
         await using var conn = await _dataSource.OpenConnectionAsync();
-        await using var cmd = new NpgsqlCommand("SELECT cooktime.search_recipes_by_ingredient($1, $2, $3)", conn);
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.search_recipes_by_ingredient($1)", conn);
 
-        cmd.Parameters.AddWithValue(ingredientName);
-        cmd.Parameters.AddWithValue(limit);
-        cmd.Parameters.AddWithValue(offset);
+        cmd.Parameters.AddWithValue(ingredientId);
 
-        var result = await cmd.ExecuteScalarAsync();
-        if (result == null || result == DBNull.Value)
-            return new List<RecipeSummaryDto>();
+        var results = new List<RecipeSummaryDto>();
+        await using var reader = await cmd.ExecuteReaderAsync();
 
-        var json = result.ToString()!;
-        return JsonSerializer.Deserialize<List<RecipeSummaryDto>>(json, new JsonSerializerOptions
+        while (await reader.ReadAsync())
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        }) ?? new List<RecipeSummaryDto>();
+            var json = reader.GetString(0);
+            var dto = JsonSerializer.Deserialize<RecipeSummaryDto>(json, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+            if (dto != null)
+                results.Add(dto);
+        }
+
+        return results;
     }
 
-    public async Task<List<RecipeSummaryDto>> GetAllAsync(int limit = 20, int offset = 0)
+    public async Task<List<RecipeSummaryDto>> GetAllAsync(int pageSize = 50, int pageNumber = 1)
     {
         await using var conn = await _dataSource.OpenConnectionAsync();
         await using var cmd = new NpgsqlCommand("SELECT cooktime.get_recipes($1, $2)", conn);
 
-        cmd.Parameters.AddWithValue(limit);
-        cmd.Parameters.AddWithValue(offset);
+        cmd.Parameters.AddWithValue(pageSize);
+        cmd.Parameters.AddWithValue(pageNumber);
 
-        var result = await cmd.ExecuteScalarAsync();
-        if (result == null || result == DBNull.Value)
-            return new List<RecipeSummaryDto>();
+        var results = new List<RecipeSummaryDto>();
+        await using var reader = await cmd.ExecuteReaderAsync();
 
-        var json = result.ToString()!;
-        return JsonSerializer.Deserialize<List<RecipeSummaryDto>>(json, new JsonSerializerOptions
+        while (await reader.ReadAsync())
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        }) ?? new List<RecipeSummaryDto>();
+            var json = reader.GetString(0);
+            var dto = JsonSerializer.Deserialize<RecipeSummaryDto>(json, new JsonSerializerOptions
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            });
+            if (dto != null)
+                results.Add(dto);
+        }
+
+        return results;
     }
 
-    public async Task<List<string>> GetImagesAsync(int recipeId)
+    public async Task<List<string>> GetImagesAsync(Guid recipeId)
     {
         await using var conn = await _dataSource.OpenConnectionAsync();
         await using var cmd = new NpgsqlCommand("SELECT cooktime.get_recipe_images($1)", conn);

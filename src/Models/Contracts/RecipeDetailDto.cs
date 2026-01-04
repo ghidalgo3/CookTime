@@ -4,20 +4,20 @@ namespace BabeAlgorithms.Models.Contracts;
 
 public class RecipeDetailDto
 {
-    [JsonPropertyName("recipeId")]
-    public int RecipeId { get; set; }
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
 
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 
-    [JsonPropertyName("userId")]
-    public string UserId { get; set; } = null!;
+    [JsonPropertyName("ownerId")]
+    public Guid? OwnerId { get; set; }
 
-    [JsonPropertyName("prepTime")]
-    public TimeSpan? PrepTime { get; set; }
+    [JsonPropertyName("prepMinutes")]
+    public double? PrepMinutes { get; set; }
 
-    [JsonPropertyName("cookTime")]
-    public TimeSpan? CookTime { get; set; }
+    [JsonPropertyName("cookingMinutes")]
+    public double? CookingMinutes { get; set; }
 
     [JsonPropertyName("servings")]
     public int? Servings { get; set; }
@@ -28,8 +28,8 @@ public class RecipeDetailDto
     [JsonPropertyName("description")]
     public string? Description { get; set; }
 
-    [JsonPropertyName("recipeSource")]
-    public string? RecipeSource { get; set; }
+    [JsonPropertyName("source")]
+    public string? Source { get; set; }
 
     [JsonPropertyName("imageUrl")]
     public string? ImageUrl { get; set; }
@@ -43,26 +43,23 @@ public class RecipeDetailDto
     [JsonPropertyName("components")]
     public List<ComponentDetailDto> Components { get; set; } = new();
 
-    [JsonPropertyName("steps")]
-    public List<RecipeStepDto> Steps { get; set; } = new();
-
     [JsonPropertyName("categories")]
     public List<CategoryDto> Categories { get; set; } = new();
 }
 
 public class RecipeSummaryDto
 {
-    [JsonPropertyName("recipeId")]
-    public int RecipeId { get; set; }
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
 
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 
-    [JsonPropertyName("prepTime")]
-    public TimeSpan? PrepTime { get; set; }
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
 
-    [JsonPropertyName("cookTime")]
-    public TimeSpan? CookTime { get; set; }
+    [JsonPropertyName("cookingMinutes")]
+    public double? CookingMinutes { get; set; }
 
     [JsonPropertyName("servings")]
     public int? Servings { get; set; }
