@@ -10,7 +10,7 @@ export function useAuthentication() {
 
 export function AuthenticationContext({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserDetails | null>(null);
-  
+
   useEffect(() => {
     if (user == null) {
       AuthenticationProvider.getUserDetails().then(value => {
@@ -18,7 +18,7 @@ export function AuthenticationContext({ children }: { children: React.ReactNode 
       })
     }
   }, [user])
-  
+
   return (
     <AuthContext.Provider value={{
       user,

@@ -10,7 +10,7 @@ import { AuthenticationContext } from './components/Authentication/Authenticatio
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
 import '@smastrom/react-rating/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './assets/css/all.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import './assets/css/site.css';
 
 // Initialize Application Insights
@@ -42,12 +42,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 <meta name="description" content="CookTime - Discover and share delicious recipes" />
                 <link rel="apple-touch-icon" href="/logo192.png" />
                 <link rel="manifest" href="/manifest.json" />
+                <link
+                    rel="stylesheet"
+                    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"
+                    integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7"
+                    crossOrigin="anonymous"
+                />
                 <Meta />
                 <Links />
             </head>
             <body>
                 <noscript>You need to enable JavaScript to run this app.</noscript>
-                <div id="root">{children}</div>
+                {children}
                 <ScrollRestoration />
                 <Scripts />
             </body>
@@ -57,10 +63,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export function HydrateFallback() {
     return (
-        <div style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center', 
+        <div style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
             height: '100vh',
             fontFamily: 'system-ui'
         }}>

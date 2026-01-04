@@ -14,10 +14,13 @@ export default function Home() {
   const page = searchParams.get("page") ?? "1";
   const { user } = useAuthentication();
 
+  // Only access window.location.origin on the client
+  const canonicalUrl = typeof window !== 'undefined' ? `${window.location.origin}/` : '/';
+
   return (
     <>
       <Helmet>
-        <link rel="canonical" href={`${origin}/`} />
+        <link rel="canonical" href={canonicalUrl} />
       </Helmet>
       {
         !query && page === "1" &&

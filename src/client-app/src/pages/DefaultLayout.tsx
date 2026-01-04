@@ -8,13 +8,16 @@ import { useTitle } from "src/shared/useTitle";
 export default function DefaultLayout() {
   const location = useLocation();
   const [categories, setCategories] = useState<string[]>([]);
+  const [theme, setTheme] = useState<string>('light');
 
   useEffect(() => {
     getCategories().then(setCategories);
+    // Check theme preference only on client
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(prefersDark ? 'dark' : 'light');
   }, []);
 
   useTitle();
-  let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   return (
     <>
       {/* Scroll restoration is bringing the user to the top of the page in every refresh, which is desirable in most pages.

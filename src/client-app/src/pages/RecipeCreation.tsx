@@ -11,7 +11,7 @@ export const RECIPE_CREATE_PAGE_PATH = "Recipes/Create"
 export default function RecipeCreation() {
   const navigate = useNavigate();
   useTitle("New Recipe")
-  
+
   const [image, setImage] = useState<Blob>();
   const [imageSrc, setImageSrc] = useState<string>();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,19 +21,19 @@ export default function RecipeCreation() {
     e.preventDefault();
     setIsSubmitting(true);
     setError(undefined);
-    
+
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name")?.toString();
-    
+
     if (!name) {
       setError("Recipe must have a name");
       setIsSubmitting(false);
       return;
     }
-    
+
     const body = formData.get("body")?.toString();
     const result = await createRecipeWithName({ name, body });
-    
+
     if (result.ok) {
       const recipe = await result.json() as MultiPartRecipe;
       navigate(Path(recipe.id));
@@ -47,10 +47,10 @@ export default function RecipeCreation() {
     e.preventDefault();
     setIsSubmitting(true);
     setError(undefined);
-    
+
     const formData = new FormData(e.currentTarget);
     const result = await importRecipeFromImage(formData);
-    
+
     if (result.ok) {
       const recipe = await result.json() as MultiPartRecipe;
       navigate(Path(recipe.id));

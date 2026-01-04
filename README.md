@@ -1,31 +1,33 @@
-# babe-algorithms
+# CookTime
 
-Materializing all hard decisions into code.
+CookTime is a recipe management system!
+It is composed of:
+
+1. REST API
+1. Browser application
+1. PostgreSQL schemas and functions for storing and querying recipes
+
+With CookTime you can do things like:
+
+1. Store your recipes in a database
+1. Query recipes by name, ingredient, or arbitrary properties
+1. Scale recipes by servings
+1. Compute a recipe's nutrition facts
+1. Track grocery lists of ingredients to make sets of recipes
 
 ## Getting started
 
-You must have installed:
+Assuming [Docker Desktop][Docker Desktop] installed on Linux or macOS,
+use the `scripts` directory contents to get started:
 
-1. [.NET 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-1. [Node.js](https://nodejs.org/en/download) (latest LTS release)
-1. PostgreSQL
-
-## Hot Reloading Everything
-
-I have not figured out how to get `dotnet watch` to work properly with VSCode's launch configurations, instead if you want to get a hot-reload loop going then you should open 2 terminal windows and run the following:
-
-```bash
-# In the first one (do this in the csproj directory):
-dotnet watch run
-# in the second one (do this in the package.json directory):
-npm run start
+```shell
+scripts/server
 ```
 
-Remarks:
+I recommend using VSCode to develop CookTime, for that you will need to install:
 
-1. The .NET process prints its PID on startup. You should attach to this process to debug the C# code.
-1. The NPM process can be debuged from an instance of Edge that has been launched through VSCode. I suppose that's because VSCode attaches to the Edge debugger and can map breakpoints to running JavaScript but honestly (shrug).
-1. The `npm run start` call is what prints the server port, usually 44481 (but this is controlled in file`.env.development`)
+1. [.NET 10](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)
+1. [Node.js](https://nodejs.org/en/download) (latest LTS release)
 
 ## Blog
 
@@ -39,3 +41,5 @@ jekyll build -d ../wwwroot/Blog
 
 That will dump new blog contents into the static files directory `wwwroot`.
 Commit the changes after you generate the new blog post.
+
+[Docker Desktop]: <https://www.docker.com/products/docker-desktop/>

@@ -2,7 +2,7 @@ import type { RouteConfig } from "@react-router/dev/routes";
 import { index, route, layout } from "@react-router/dev/routes";
 
 export default [
-    // Main layout with recipe loader
+    // Main layout with navigation
     layout("pages/DefaultLayout.tsx", [
         index("pages/Home.tsx"),
         route("Recipes/:id", "pages/Recipe.tsx"),

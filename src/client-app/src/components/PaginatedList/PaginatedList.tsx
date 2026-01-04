@@ -16,7 +16,7 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
   const [searchParams, setSearchParams] = useSearchParams();
   const activePage = Number.parseInt(searchParams.get("page") ?? "1");
   function paramsForPage(i: number) {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(searchParams.toString());
     urlParams.set("page", i === 0 ? "" : encodeURIComponent(i));
     return urlParams;
   }

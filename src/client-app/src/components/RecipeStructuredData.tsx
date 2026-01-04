@@ -3,12 +3,12 @@ import React from "react";
 import { MultiPartRecipe, Image } from "src/shared/CookTime";
 
 type RecipeStructuredDataProps = {
-    recipe : MultiPartRecipe,
-    images : Image[]
+  recipe: MultiPartRecipe,
+  images: Image[]
 }
 
-export function RecipeStructuredData({recipe, images} : RecipeStructuredDataProps) {
-  let metadata : any = {
+export function RecipeStructuredData({ recipe, images }: RecipeStructuredDataProps) {
+  let metadata: any = {
     "@context": "https://schema.org/",
     "@type": "Recipe",
     "name": recipe.name,
@@ -17,7 +17,8 @@ export function RecipeStructuredData({recipe, images} : RecipeStructuredDataProp
       "name": recipe.owner?.userName
     },
     "image": images.map(image => {
-      return `${window.location.origin}/image/${image.id}`
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      return `${origin}/image/${image.id}`
     }),
     "recipeYield": recipe.servingsProduced,
     "cookTime": `${moment.duration(recipe.cooktimeMinutes, 'minutes').toISOString()}`,
@@ -42,8 +43,8 @@ export function RecipeStructuredData({recipe, images} : RecipeStructuredDataProp
       "@type": "AggregateRating",
       "ratingValue": recipe.averageReviews,
       "ratingCount": recipe.reviewCount,
-      "bestRating" : 5,
-      "worstRating" : 1
+      "bestRating": 5,
+      "worstRating": 1
     }
   }
 

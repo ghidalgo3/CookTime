@@ -1,4 +1,4 @@
-import react from "@vitejs/plugin-react";
+import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
 import path from "path";
 
@@ -9,7 +9,7 @@ const target = process.env.ASPNETCORE_HTTPS_PORT
         : 'https://localhost:5001';
 
 export default defineConfig({
-    plugins: [react()],
+    plugins: [reactRouter()],
     resolve: {
         alias: {
             src: path.resolve(__dirname, "./src"),
@@ -29,16 +29,6 @@ export default defineConfig({
                 secure: false,
             },
             "/lib": {
-                target,
-                changeOrigin: true,
-                secure: false,
-            },
-            "/css": {
-                target,
-                changeOrigin: true,
-                secure: false,
-            },
-            "/webfonts": {
                 target,
                 changeOrigin: true,
                 secure: false,

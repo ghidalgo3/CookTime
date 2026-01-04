@@ -1,25 +1,25 @@
-version: "3.8"
-
 services:
   postgres:
-    image: postgres:16
+    platform: linux/amd64
+    image: postgres:18.1
     container_name: cooktime-postgres
     environment:
-      POSTGRES_DB: KookTime
-      POSTGRES_USER: gustavo
+      POSTGRES_DB: cooktime
+      POSTGRES_USER: cooktime
       POSTGRES_PASSWORD: development
     ports:
       - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U gustavo -d KookTime"]
+      test: ["CMD-SHELL", "pg_isready -U cooktime -d cooktime"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   azurite:
-    image: mcr.microsoft.com/azure-storage/azurite
+    platform: linux/amd64
+    image: mcr.microsoft.com/azure-storage/azurite:3.35.0
     container_name: cooktime-azurite
     ports:
       - "10000:10000" # Blob service
@@ -30,6 +30,7 @@ services:
     command: azurite-blob --blobHost 0.0.0.0 --blobPort 10000
 
   api:
+    platform: linux/amd64
     build:
       context: src/
       dockerfile: Dockerfile
@@ -37,7 +38,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_URLS: http://+:5000
-      DATABASE_URL: "Host=postgres;Database=KookTime;Username=gustavo;Password=development"
+      DATABASE_URL: "Host=postgres;Database=cooktime;Username=cooktime;Password=development"
       Azure__BlobStorageConnectionString: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
     ports:
       - "5001:5000"
@@ -48,6 +49,7 @@ services:
         condition: service_started
 
   webapp:
+    platform: linux/amd64
     build:
       context: src/client-app
       dockerfile: Dockerfile
@@ -58,6 +60,9 @@ services:
       - "3000:80"
     depends_on:
       - api
+    volumes:
+      - ./src/client-app:/app
+    command: ["npm", "run", "start"]
 
 volumes:
   postgres-data:
