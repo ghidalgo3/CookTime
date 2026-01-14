@@ -346,3 +346,21 @@ BEGIN
     ORDER BY c.name;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Get recipe summaries by user ID (owner)
+CREATE OR REPLACE FUNCTION cooktime.get_recipes_by_user(
+    user_id uuid,
+    page_size integer DEFAULT 50,
+    page_number integer DEFAULT 1
+)
+RETURNS SETOF jsonb AS $$
+BEGIN
+    RETURN QUERY
+    SELECT cooktime.recipe_to_summary(r)
+    FROM cooktime.recipes r
+    WHERE r.owner_id = get_recipes_by_user.user_id
+    ORDER BY r.created_date DESC
+    LIMIT page_size
+    OFFSET (page_number - 1) * page_size;
+END;
+$$ LANGUAGE plpgsql;

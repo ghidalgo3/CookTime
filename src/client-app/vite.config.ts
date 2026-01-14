@@ -39,6 +39,10 @@ export default defineConfig({
                 target,
                 changeOrigin: true,
                 secure: false,
+                headers: {
+                    'X-Forwarded-Host': 'localhost:3000',
+                    'X-Forwarded-Proto': 'http',
+                },
             },
             "/image": {
                 target,

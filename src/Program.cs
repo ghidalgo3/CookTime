@@ -1,4 +1,5 @@
 
+using System.Security.Claims;
 using Azure.Storage.Blobs;
 using babe_algorithms.Models;
 using babe_algorithms.Services;
@@ -12,8 +13,13 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Postgres")!;
 builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
 builder.Services.AddSingleton<CookTimeDB>();
+builder.Services.AddGoogleAuthentication(builder.Configuration);
 
 var app = builder.Build();
+
+// Must be first middleware for OAuth to work correctly behind proxy/Docker
+app.UseForwardedHeaders();
+
 app.MapGet("/api/category/list", () => Constants.DefaultCategories);
 app.MapGet(
     "/api/multipartrecipe",
@@ -48,6 +54,16 @@ app.MapGet("/api/multipartrecipe/new", async (CookTimeDB cooktime) =>
 app.MapGet("/api/multipartrecipe/featured", async (CookTimeDB cooktime) =>
 {
     return await cooktime.GetFeaturedRecipesAsync();
+});
+app.MapGet("/api/multipartrecipe/mine", async (HttpContext context, CookTimeDB cooktime) =>
+{
+    var userIdClaim = context.User.FindFirst("db_user_id")?.Value;
+    if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+    {
+        return Results.Unauthorized();
+    }
+    var recipes = await cooktime.GetRecipesByUserAsync(userId);
+    return Results.Ok(recipes);
 });
 app.MapGet("/api/multipartrecipe/{id:guid}", async (CookTimeDB cooktime, Guid id) =>
 {
@@ -94,4 +110,7 @@ using (var scope = app.Services.CreateScope())
 
     await Loader.LoadAsync(dataSource, blobContainer, builder.Environment.ContentRootPath);
 }
+
+app.MapGoogleAuthEndpoints();
+
 app.Run();

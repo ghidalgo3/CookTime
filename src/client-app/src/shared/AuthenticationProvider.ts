@@ -15,29 +15,29 @@ export interface SignUpResult {
 export type AuthResult = "Success" | "Failure"
 
 export interface IAuthenticationProvider {
-  user : UserDetails | null,
+  user: UserDetails | null,
 
   signUp(
-    userName : string,
+    userName: string,
     email: string,
     password: string,
-    confirmPassword: string) : Promise<SignUpResult>,
-  
+    confirmPassword: string): Promise<SignUpResult>,
+
   signIn(
-    usernameOrEmail : string,
-    password : string,
-    rememberMe: boolean) : Promise<UserDetails | "Failure">,
+    usernameOrEmail: string,
+    password: string,
+    rememberMe: boolean): Promise<UserDetails | "Failure">,
 
-  signOut() : Promise<boolean>,
+  signOut(): Promise<boolean>,
 
-  getUserDetails() : Promise<UserDetails | null>,
+  getUserDetails(): Promise<UserDetails | null>,
 
-  sendPasswordResetEmail(email: string) : Promise<Response>
+  sendPasswordResetEmail(email: string): Promise<Response>
 
-  changePassword(userId : string, token: string, newPassword: string, confirmPassword: string): Promise<Response>
+  changePassword(userId: string, token: string, newPassword: string, confirmPassword: string): Promise<Response>
 }
 
-export const AuthenticationProvider : IAuthenticationProvider = {
+export const AuthenticationProvider: IAuthenticationProvider = {
   user: null,
 
   signIn: async function (usernameOrEmail: string, password: string, rememberMe: boolean): Promise<UserDetails | "Failure"> {
@@ -57,7 +57,7 @@ export const AuthenticationProvider : IAuthenticationProvider = {
 
 
   signOut: async function (): Promise<boolean> {
-    const response = await fetch("/api/account/signout");
+    const response = await fetch("/api/auth/signout");
     return response.ok;
   },
 

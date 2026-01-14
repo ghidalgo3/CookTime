@@ -134,6 +134,18 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         return await ReadRecipeSummaryListAsync(cmd);
     }
 
+    public async Task<List<RecipeSummaryDto>> GetRecipesByUserAsync(Guid userId, int pageSize = 50, int pageNumber = 1)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_recipes_by_user($1, $2, $3)", conn);
+
+        cmd.Parameters.AddWithValue(userId);
+        cmd.Parameters.AddWithValue(pageSize);
+        cmd.Parameters.AddWithValue(pageNumber);
+
+        return await ReadRecipeSummaryListAsync(cmd);
+    }
+
 
     private static async Task<List<RecipeSummaryDto>> ReadRecipeSummaryListAsync(NpgsqlCommand cmd)
     {

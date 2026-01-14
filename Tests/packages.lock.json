@@ -63,6 +63,11 @@
         "resolved": "1.0.0.8",
         "contentHash": "sFzPyg8P7YowvLuyH4xWAARLA3X5hpsI/RSFyNKVRTcPLIIhLLIw2V7aIGUnoKn9W8JoMT7S4MfaEVhsxT4tVw=="
       },
+      "Microsoft.AspNetCore.Authentication.Google": {
+        "type": "Transitive",
+        "resolved": "10.0.2",
+        "contentHash": "tls7egsHsKjn4sxYmA8wwNGM+U+acpIPh1JOqFXxjG+YYn8/HOEwyO6kdFqyaqtjV2aI2ZUhGkMqYdKtlY266A=="
+      },
       "Microsoft.AspNetCore.Cryptography.Internal": {
         "type": "Transitive",
         "resolved": "10.0.0",
@@ -472,6 +477,7 @@
         "dependencies": {
           "Azure.Storage.Blobs": "[12.26.0, )",
           "Fastenshtein": "[1.0.0.8, )",
+          "Microsoft.AspNetCore.Authentication.Google": "[10.0.2, )",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "[10.0.0, )",
           "Microsoft.AspNetCore.Identity.UI": "[10.0.0, )",
           "Microsoft.AspNetCore.Mvc.NewtonsoftJson": "[10.0.0, )",

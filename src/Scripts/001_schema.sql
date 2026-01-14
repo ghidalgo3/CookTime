@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS cooktime.users (
     provider_user_id text NOT NULL,   -- The 'sub' claim from the OAuth provider
     email text,                       -- Optional, for display/contact purposes
     display_name text,
+    roles text[] NOT NULL DEFAULT ARRAY['User'],
     created_date timestamptz DEFAULT now(),
     last_login_date timestamptz DEFAULT now(),
     UNIQUE (provider, provider_user_id)
