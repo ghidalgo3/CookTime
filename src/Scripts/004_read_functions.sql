@@ -10,15 +10,23 @@ BEGIN
             'id', r.id,
             'name', r.name,
             'description', r.description,
-            'cookingMinutes', r.cooking_minutes,
-            'servings', r.servings,
-            'prepMinutes', r.prep_minutes,
-            'calories', r.calories,
+            'owner', CASE 
+                WHEN r.owner_id IS NOT NULL THEN
+                    jsonb_build_object('id', r.owner_id, 'userName', '')
+                ELSE NULL
+            END,
+            'cooktimeMinutes', r.cooking_minutes,
+            'caloriesPerServing', r.calories,
+            'servingsProduced', r.servings,
             'source', r.source,
-            'createdDate', r.created_date,
-            'lastModifiedDate', r.last_modified_date,
-            'ownerId', r.owner_id,
-            'components', COALESCE(
+            'staticImage', (
+                SELECT i.static_image_name
+                FROM cooktime.images i
+                WHERE i.recipe_id = r.id
+                ORDER BY i.uploaded_date DESC
+                LIMIT 1
+            ),
+            'recipeComponents', COALESCE(
                 (
                     SELECT jsonb_agg(
                         jsonb_build_object(
@@ -31,15 +39,22 @@ BEGIN
                                     SELECT jsonb_agg(
                                         jsonb_build_object(
                                             'id', ir.id,
-                                            'ingredientId', ir.ingredient_id,
+                                            'ingredient', jsonb_build_object(
+                                                'id', ing.id,
+                                                'name', ing.name,
+                                                'isNew', false,
+                                                -- will compute this later!
+                                                'densityKgPerL', null
+                                            ),
+                                            'text', ir.description,
                                             'unit', ir.unit::text,
                                             'quantity', ir.quantity,
-                                            'position', ir.position,
-                                            'description', ir.description
+                                            'position', ir.position
                                         )
                                         ORDER BY ir.position
                                     )
                                     FROM cooktime.ingredient_requirements ir
+                                    LEFT JOIN cooktime.ingredients ing ON ing.id = ir.ingredient_id
                                     WHERE ir.recipe_component_id = rc.id
                                 ),
                                 '[]'::jsonb
@@ -65,7 +80,17 @@ BEGIN
                     WHERE cr.recipe_id = r.id
                 ),
                 '[]'::jsonb
-            )
+            ),
+            'reviewCount', COALESCE((
+                SELECT COUNT(*)::int
+                FROM cooktime.reviews rv
+                WHERE rv.recipe_id = r.id
+            ), 0),
+            'averageReviews', COALESCE((
+                SELECT AVG(rv.rating)::double precision
+                FROM cooktime.reviews rv
+                WHERE rv.recipe_id = r.id
+            ), 0)
         )
         FROM cooktime.recipes r
         WHERE r.id = get_recipe_with_details.recipe_id

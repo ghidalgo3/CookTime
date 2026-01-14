@@ -4,9 +4,9 @@ namespace BabeAlgorithms.Models.Contracts;
 
 public class RecipeStepDto
 {
-    [JsonPropertyName("position")]
-    public int Position { get; set; }
+    [JsonPropertyName("id")]
+    public string Id { get; set; } = null!;
 
-    [JsonPropertyName("instruction")]
-    public string Instruction { get; set; } = null!;
+    [JsonPropertyName("text")]
+    public string Text { get; set; } = null!;
 }

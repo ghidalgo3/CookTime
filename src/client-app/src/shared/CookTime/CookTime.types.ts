@@ -74,11 +74,6 @@ export type CartIngredient = {
     checked: boolean
 }
 
-export type RecipeStep = {
-    text: string,
-    id: string
-}
-
 export type Image = {
     name: string,
     id: string
@@ -110,7 +105,7 @@ export type RecipeComponent = {
     id: string,
     name: string,
     ingredients: IngredientRequirement[] | undefined,
-    steps: RecipeStep[] | undefined,
+    steps: string[] | undefined,
     position: number
 }
 

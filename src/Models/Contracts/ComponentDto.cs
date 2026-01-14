@@ -12,10 +12,13 @@ public class ComponentDto
 
     [JsonPropertyName("ingredients")]
     public List<IngredientRequirementDto> Ingredients { get; set; } = new();
+
+    [JsonPropertyName("steps")]
+    public List<string>? Steps { get; set; }
 }
 
 public class ComponentDetailDto : ComponentDto
 {
-    [JsonPropertyName("componentId")]
-    public int ComponentId { get; set; }
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
 }

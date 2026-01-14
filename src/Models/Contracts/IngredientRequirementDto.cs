@@ -4,24 +4,36 @@ namespace BabeAlgorithms.Models.Contracts;
 
 public class IngredientRequirementDto
 {
-    [JsonPropertyName("ingredientId")]
-    public int IngredientId { get; set; }
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
 
-    [JsonPropertyName("ingredientName")]
-    public string? IngredientName { get; set; }
+    [JsonPropertyName("ingredient")]
+    public IngredientRefDto? Ingredient { get; set; }
+
+    [JsonPropertyName("text")]
+    public string? Text { get; set; }
 
     [JsonPropertyName("quantity")]
-    public decimal? Quantity { get; set; }
+    public double? Quantity { get; set; }
 
     [JsonPropertyName("unit")]
     public string? Unit { get; set; }
 
     [JsonPropertyName("position")]
     public int Position { get; set; }
+}
 
-    [JsonPropertyName("preparation")]
-    public string? Preparation { get; set; }
+public class IngredientRefDto
+{
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
 
-    [JsonPropertyName("optional")]
-    public bool Optional { get; set; }
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = null!;
+
+    [JsonPropertyName("isNew")]
+    public bool IsNew { get; set; }
+
+    [JsonPropertyName("densityKgPerL")]
+    public double? DensityKgPerL { get; set; }
 }

@@ -8,41 +8,47 @@ public class RecipeDetailDto
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 
-    [JsonPropertyName("ownerId")]
-    public Guid? OwnerId { get; set; }
-
-    [JsonPropertyName("prepMinutes")]
-    public double? PrepMinutes { get; set; }
-
-    [JsonPropertyName("cookingMinutes")]
-    public double? CookingMinutes { get; set; }
-
-    [JsonPropertyName("servings")]
-    public int? Servings { get; set; }
-
-    [JsonPropertyName("calories")]
-    public int? Calories { get; set; }
-
     [JsonPropertyName("description")]
-    public string? Description { get; set; }
+    public string Description { get; set; } = null!;
+
+    [JsonPropertyName("owner")]
+    public OwnerDto? Owner { get; set; }
+
+    [JsonPropertyName("cooktimeMinutes")]
+    public double? CooktimeMinutes { get; set; }
+
+    [JsonPropertyName("caloriesPerServing")]
+    public int? CaloriesPerServing { get; set; }
+
+    [JsonPropertyName("servingsProduced")]
+    public int? ServingsProduced { get; set; }
 
     [JsonPropertyName("source")]
     public string? Source { get; set; }
 
-    [JsonPropertyName("imageUrl")]
-    public string? ImageUrl { get; set; }
+    [JsonPropertyName("staticImage")]
+    public string? StaticImage { get; set; }
 
-    [JsonPropertyName("createdDate")]
-    public DateTimeOffset CreatedDate { get; set; }
-
-    [JsonPropertyName("lastModifiedDate")]
-    public DateTimeOffset LastModifiedDate { get; set; }
-
-    [JsonPropertyName("components")]
-    public List<ComponentDetailDto> Components { get; set; } = new();
+    [JsonPropertyName("recipeComponents")]
+    public List<ComponentDetailDto> RecipeComponents { get; set; } = new();
 
     [JsonPropertyName("categories")]
     public List<CategoryDto> Categories { get; set; } = new();
+
+    [JsonPropertyName("reviewCount")]
+    public int ReviewCount { get; set; }
+
+    [JsonPropertyName("averageReviews")]
+    public double AverageReviews { get; set; }
+}
+
+public class OwnerDto
+{
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+
+    [JsonPropertyName("userName")]
+    public string UserName { get; set; } = null!;
 }
 
 public class RecipeSummaryDto

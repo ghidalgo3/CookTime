@@ -5,6 +5,7 @@ using Npgsql;
 [TestClass]
 public class TestRecipes
 {
+    private const string TEST_INGREDIENT_NAME = "Test Ingredient";
     private static NpgsqlDataSource _dataSource = null!;
     private static CookTimeDB _db = null!;
     private static Guid _testUserId;
@@ -36,7 +37,7 @@ public class TestRecipes
         await using var ingredientCmd = new NpgsqlCommand(
             "INSERT INTO cooktime.ingredients (id, name) VALUES ($1, $2)", conn);
         ingredientCmd.Parameters.AddWithValue(_testIngredientId);
-        ingredientCmd.Parameters.AddWithValue("Test Ingredient");
+        ingredientCmd.Parameters.AddWithValue(TEST_INGREDIENT_NAME);
         await ingredientCmd.ExecuteNonQueryAsync();
     }
 
@@ -133,13 +134,13 @@ public class TestRecipes
         Assert.AreEqual(recipeId, result.Id);
         Assert.AreEqual("Recipe for GetById Test", result.Name);
         Assert.AreEqual("Testing GetByIdAsync", result.Description);
-        Assert.AreEqual(2, result.Servings);
+        Assert.AreEqual(2, result.ServingsProduced);
     }
 
     [TestMethod]
     public async Task SearchByNameAsync_ReturnsEmptyList_WhenNoMatch()
     {
-        var result = await _db.SearchRecipesByNameAsync("xyznonexistentrecipename123");
+        var result = await _db.SearchRecipesAsync("xyznonexistentrecipename123");
 
         Assert.IsNotNull(result);
         Assert.AreEqual(0, result.Count);
@@ -164,7 +165,7 @@ public class TestRecipes
         await _db.CreateRecipeAsync(createDto1);
         await _db.CreateRecipeAsync(createDto2);
 
-        var result = await _db.SearchRecipesByNameAsync("chocolate");
+        var result = await _db.SearchRecipesAsync("chocolate");
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.Count >= 2, "Expected at least 2 chocolate recipes");
@@ -243,7 +244,7 @@ public class TestRecipes
         Assert.IsNotNull(result);
         Assert.AreEqual("Recipe After Update", result.Name);
         Assert.AreEqual("Updated description", result.Description);
-        Assert.AreEqual(8, result.Servings);
+        Assert.AreEqual(8, result.ServingsProduced);
     }
 
     [TestMethod]
@@ -276,7 +277,7 @@ public class TestRecipes
         };
         await _db.CreateRecipeAsync(createDto);
 
-        var result = await _db.SearchRecipesByIngredientAsync(_testIngredientId);
+        var result = await _db.SearchRecipesAsync(TEST_INGREDIENT_NAME);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.Count >= 1);
