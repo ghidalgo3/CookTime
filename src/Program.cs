@@ -1,5 +1,6 @@
 
 using Azure.Storage.Blobs;
+using babe_algorithms.Models;
 using babe_algorithms.Services;
 using babe_algorithms.ViewComponents;
 using BabeAlgorithms.Models.Contracts;
@@ -47,6 +48,32 @@ app.MapGet("/api/multipartrecipe/new", async (CookTimeDB cooktime) =>
 app.MapGet("/api/multipartrecipe/featured", async (CookTimeDB cooktime) =>
 {
     return await cooktime.GetFeaturedRecipesAsync();
+});
+app.MapGet("/api/multipartrecipe/{id:guid}", async (CookTimeDB cooktime, Guid id) =>
+{
+    var recipe = await cooktime.GetRecipeByIdAsync(id);
+    if (recipe == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(recipe);
+});
+app.MapGet("/api/recipe/units", () =>
+{
+    var allUnits = Enum.GetValues<Unit>();
+    var body = allUnits.Select(unit =>
+    {
+        string siType = "Count";
+        if ((int)unit < 1000)
+        {
+            siType = "Volume";
+        }
+        else if ((int)unit >= 2000)
+        {
+            siType = "Weight";
+        }
+        return new { Name = unit.ToString(), SIType = siType, siValue = unit.GetSIValue() };
+    });
 });
 
 // var recipes = app.MapGroup("/api/recipes");
