@@ -542,3 +542,72 @@ BEGIN
     END;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
+
+-- Helper function to map string unit names to enum values
+CREATE OR REPLACE FUNCTION cooktime.map_unit_name(unit_name text)
+RETURNS cooktime.unit AS $$
+BEGIN
+    RETURN CASE lower(unit_name)
+        WHEN 'tablespoon' THEN 'tablespoon'::cooktime.unit
+        WHEN 'teaspoon' THEN 'teaspoon'::cooktime.unit
+        WHEN 'milliliter' THEN 'milliliter'::cooktime.unit
+        WHEN 'cup' THEN 'cup'::cooktime.unit
+        WHEN 'fluid_ounce' THEN 'fluid_ounce'::cooktime.unit
+        WHEN 'pint' THEN 'pint'::cooktime.unit
+        WHEN 'quart' THEN 'quart'::cooktime.unit
+        WHEN 'gallon' THEN 'gallon'::cooktime.unit
+        WHEN 'liter' THEN 'liter'::cooktime.unit
+        WHEN 'count' THEN 'count'::cooktime.unit
+        WHEN 'ounce' THEN 'ounce'::cooktime.unit
+        WHEN 'pound' THEN 'pound'::cooktime.unit
+        WHEN 'milligram' THEN 'milligram'::cooktime.unit
+        WHEN 'gram' THEN 'gram'::cooktime.unit
+        WHEN 'kilogram' THEN 'kilogram'::cooktime.unit
+        ELSE NULL
+    END;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+-- Import ingredient requirement with existing IDs
+CREATE OR REPLACE FUNCTION cooktime.import_ingredient_requirement(req_json jsonb)
+RETURNS uuid AS $$
+DECLARE
+    req_id uuid;
+    component_id uuid;
+    ingredient_id uuid;
+BEGIN
+    component_id := (req_json->>'RecipeComponentId')::uuid;
+    ingredient_id := (req_json->>'IngredientId')::uuid;
+    
+    -- Skip if component or ingredient doesn't exist
+    IF NOT EXISTS (SELECT 1 FROM cooktime.recipe_components WHERE id = component_id) THEN
+        RETURN NULL;
+    END IF;
+    
+    IF NOT EXISTS (SELECT 1 FROM cooktime.ingredients WHERE id = ingredient_id) THEN
+        RETURN NULL;
+    END IF;
+    
+    INSERT INTO cooktime.ingredient_requirements (
+        id,
+        recipe_component_id,
+        ingredient_id,
+        unit,
+        quantity,
+        position,
+        description
+    ) VALUES (
+        (req_json->>'Id')::uuid,
+        component_id,
+        ingredient_id,
+        cooktime.map_unit_name(req_json->>'Unit'),
+        (req_json->>'Quantity')::double precision,
+        COALESCE((req_json->>'Position')::integer, 0),
+        req_json->>'Text'
+    )
+    ON CONFLICT (id) DO NOTHING
+    RETURNING id INTO req_id;
+    
+    RETURN req_id;
+END;
+$$ LANGUAGE plpgsql;

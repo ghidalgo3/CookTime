@@ -16,6 +16,7 @@ public static class Loader
     {
         var ingredientsPath = Path.Combine(dataDirectory, "ingredients.ndjson");
         var recipesPath = Path.Combine(dataDirectory, "recipes.ndjson");
+        var ingredientRequirementsPath = Path.Combine(dataDirectory, "ingredient_requirements.ndjson");
         var imagesPath = Path.Combine(dataDirectory, "images.ndjson");
         var imagesDirectory = Path.Combine(dataDirectory, "images");
 
@@ -29,12 +30,17 @@ public static class Loader
         var ingredientCount = await LoadIngredientsAsync(conn, ingredientsPath);
         Console.WriteLine($"  Loaded {ingredientCount} ingredients");
 
-        // 2. Load recipes (includes categories)
+        // 2. Load recipes (includes categories and components)
         Console.WriteLine("Loading recipes...");
         var recipeCount = await LoadRecipesAsync(conn, recipesPath);
         Console.WriteLine($"  Loaded {recipeCount} recipes");
 
-        // 3. Upload images and insert image records
+        // 3. Load ingredient requirements (links ingredients to recipe components)
+        Console.WriteLine("Loading ingredient requirements...");
+        var ingredientReqCount = await LoadIngredientRequirementsAsync(conn, ingredientRequirementsPath);
+        Console.WriteLine($"  Loaded {ingredientReqCount} ingredient requirements");
+
+        // 4. Upload images and insert image records
         Console.WriteLine("Loading images...");
         var imageCount = await LoadImagesAsync(conn, blobContainer, imagesPath, imagesDirectory);
         Console.WriteLine($"  Loaded {imageCount} images");
@@ -83,6 +89,35 @@ public static class Loader
                 Console.WriteLine($"  ERROR on line {lineNumber}: {ex.Message}");
                 Console.WriteLine($"  Line content: {line}");
                 throw;
+            }
+        }
+
+        return count;
+    }
+
+    private static async Task<int> LoadIngredientRequirementsAsync(NpgsqlConnection conn, string filePath)
+    {
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine($"  Warning: {filePath} not found, skipping ingredient requirements");
+            return 0;
+        }
+
+        var count = 0;
+        await foreach (var line in File.ReadLinesAsync(filePath))
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+
+            await using var cmd = new NpgsqlCommand("SELECT cooktime.import_ingredient_requirement($1::jsonb)", conn);
+            cmd.Parameters.AddWithValue(NpgsqlDbType.Jsonb, line);
+
+            var result = await cmd.ExecuteScalarAsync();
+            if (result != null && result != DBNull.Value)
+            {
+                count++;
             }
         }
 

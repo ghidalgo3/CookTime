@@ -89,11 +89,11 @@ export class RecipeStepList extends React.Component<RecipeStepListProps, {}> {
                 return (
                     <Row>
                         <Col className="step-number">{index + 1}</Col>
-                        <Col className="margin-bottom-12" key={step.text}>
+                        <Col className="margin-bottom-12" key={index}>
                             <Step
                                 multipart={this.props.multipart}
                                 recipe={this.props.recipe}
-                                recipeStep={step}
+                                stepText={step}
                                 newServings={this.props.newServings} />
                         </Col>
                     </Row>
@@ -104,11 +104,11 @@ export class RecipeStepList extends React.Component<RecipeStepListProps, {}> {
                 return (
                     <Row>
                         <Col className="step-number">{index + 1}</Col>
-                        <Col className="margin-bottom-12" key={step.text}>
+                        <Col className="margin-bottom-12" key={index}>
                             <Step
                                 multipart={this.props.multipart}
                                 recipe={this.props.recipe}
-                                recipeStep={step}
+                                stepText={step}
                                 component={this.props.component}
                                 newServings={this.props.newServings} />
                         </Col>
