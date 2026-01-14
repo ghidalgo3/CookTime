@@ -12,14 +12,8 @@ public static class Migrations
         return dataSourceBuilder.Build();
     }
 
-    public static void RunMigrations(ILogger<Program> logger, string connectionString)
+    public static void RunMigrations(ILogger<Program> logger, NpgsqlDataSource dataSource)
     {
-        if (string.IsNullOrEmpty(connectionString))
-        {
-            logger.LogInformation("Connection string not set, skipping migrations");
-            return;
-        }
-
         var scriptsPath = Path.Combine(AppContext.BaseDirectory, "Scripts");
         if (!Directory.Exists(scriptsPath))
         {
@@ -31,7 +25,6 @@ public static class Migrations
 
         try
         {
-            using var dataSource = CreateNpgsqlDataSource(connectionString);
             using var connection = dataSource.OpenConnection();
 
             // First, unconditionally run the migration tracker setup

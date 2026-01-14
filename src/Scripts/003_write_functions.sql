@@ -344,3 +344,201 @@ BEGIN
     RETURN category_id;
 END;
 $$ LANGUAGE plpgsql;
+
+-- =============================================================================
+-- Import Functions (preserve existing IDs for data migration)
+-- Note: NDJSON files use PascalCase keys (Id, Name, etc.)
+-- =============================================================================
+
+-- Import ingredient with existing ID
+CREATE OR REPLACE FUNCTION cooktime.import_ingredient(ingredient_json jsonb)
+RETURNS uuid AS $$
+DECLARE
+    ingredient_id uuid;
+BEGIN
+    INSERT INTO cooktime.ingredients (
+        id,
+        name,
+        expected_unit_mass_kg
+    ) VALUES (
+        (ingredient_json->>'Id')::uuid,
+        ingredient_json->>'Name',
+        COALESCE((ingredient_json->>'ExpectedUnitMass')::double precision, 0.1)
+    )
+    ON CONFLICT (id) DO NOTHING
+    RETURNING id INTO ingredient_id;
+    
+    RETURN ingredient_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Import category with existing ID
+CREATE OR REPLACE FUNCTION cooktime.import_category(category_json jsonb)
+RETURNS uuid AS $$
+DECLARE
+    cat_id uuid;
+BEGIN
+    INSERT INTO cooktime.categories (id, name)
+    VALUES (
+        (category_json->>'Id')::uuid,
+        category_json->>'Name'
+    )
+    ON CONFLICT (id) DO NOTHING
+    RETURNING id INTO cat_id;
+    
+    RETURN cat_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Import recipe with existing IDs (recipe, components, ingredient requirements)
+CREATE OR REPLACE FUNCTION cooktime.import_recipe(recipe_json jsonb)
+RETURNS uuid AS $$
+DECLARE
+    recipe_id uuid;
+    component_item jsonb;
+    component_id uuid;
+    ingredient_item jsonb;
+    category_id uuid;
+BEGIN
+    -- Insert recipe with provided ID
+    INSERT INTO cooktime.recipes (
+        id,
+        name,
+        cooking_minutes,
+        servings,
+        source
+    ) VALUES (
+        (recipe_json->>'Id')::uuid,
+        recipe_json->>'Name',
+        (recipe_json->>'CooktimeMinutes')::double precision,
+        (recipe_json->>'ServingsProduced')::integer,
+        recipe_json->>'Source'
+    )
+    ON CONFLICT (id) DO NOTHING
+    RETURNING id INTO recipe_id;
+    
+    -- If recipe already exists, return null
+    IF recipe_id IS NULL THEN
+        RETURN NULL;
+    END IF;
+    
+    -- Link categories
+    FOR category_id IN SELECT (cat->>'Id')::uuid FROM jsonb_array_elements(recipe_json->'Categories') cat
+    LOOP
+        INSERT INTO cooktime.category_recipe (category_id, recipe_id)
+        VALUES (category_id, recipe_id)
+        ON CONFLICT DO NOTHING;
+    END LOOP;
+    
+    -- Insert components
+    FOR component_item IN SELECT * FROM jsonb_array_elements(recipe_json->'RecipeComponents')
+    LOOP
+        INSERT INTO cooktime.recipe_components (
+            id,
+            name,
+            position,
+            steps,
+            recipe_id
+        ) VALUES (
+            (component_item->>'Id')::uuid,
+            component_item->>'Name',
+            (component_item->>'Position')::integer,
+            ARRAY(SELECT jsonb_array_elements_text(
+                COALESCE(
+                    (SELECT jsonb_agg(s->>'Text') FROM jsonb_array_elements(component_item->'Steps') s),
+                    '[]'::jsonb
+                )
+            )),
+            recipe_id
+        )
+        ON CONFLICT (id) DO NOTHING
+        RETURNING id INTO component_id;
+        
+        -- Skip ingredient requirements if component already exists
+        IF component_id IS NULL THEN
+            CONTINUE;
+        END IF;
+        
+        -- Insert ingredient requirements (only if ingredient exists)
+        FOR ingredient_item IN SELECT * FROM jsonb_array_elements(component_item->'Ingredients')
+        LOOP
+            -- Skip if ingredient doesn't exist
+            IF NOT EXISTS (
+                SELECT 1 FROM cooktime.ingredients 
+                WHERE id = (ingredient_item->>'Id')::uuid
+            ) THEN
+                CONTINUE;
+            END IF;
+
+            INSERT INTO cooktime.ingredient_requirements (
+                ingredient_id,
+                recipe_component_id,
+                unit,
+                quantity,
+                position,
+                description
+            ) VALUES (
+                (ingredient_item->>'Id')::uuid,
+                component_id,
+                cooktime.map_unit_code((ingredient_item->>'Unit')::integer),
+                (ingredient_item->>'Quantity')::double precision,
+                (ingredient_item->>'Position')::integer,
+                ingredient_item->>'Text'
+            )
+            ON CONFLICT DO NOTHING;
+        END LOOP;
+    END LOOP;
+    
+    RETURN recipe_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Import image with existing ID
+CREATE OR REPLACE FUNCTION cooktime.import_image(image_json jsonb)
+RETURNS uuid AS $$
+DECLARE
+    image_id uuid;
+BEGIN
+    INSERT INTO cooktime.images (
+        id,
+        storage_url,
+        uploaded_date
+    ) VALUES (
+        (image_json->>'Id')::uuid,
+        image_json->>'StorageUrl',
+        COALESCE((image_json->>'UploadedDate')::timestamptz, now())
+    )
+    ON CONFLICT (id) DO NOTHING
+    RETURNING id INTO image_id;
+    
+    RETURN image_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Helper function to map integer unit codes to enum values
+CREATE OR REPLACE FUNCTION cooktime.map_unit_code(unit_code integer)
+RETURNS cooktime.unit AS $$
+BEGIN
+    RETURN CASE unit_code
+        -- Volumetric
+        WHEN 100 THEN 'tablespoon'::cooktime.unit
+        WHEN 101 THEN 'teaspoon'::cooktime.unit
+        WHEN 102 THEN 'milliliter'::cooktime.unit
+        WHEN 103 THEN 'cup'::cooktime.unit
+        WHEN 104 THEN 'fluid_ounce'::cooktime.unit
+        WHEN 105 THEN 'pint'::cooktime.unit
+        WHEN 106 THEN 'quart'::cooktime.unit
+        WHEN 107 THEN 'gallon'::cooktime.unit
+        WHEN 108 THEN 'liter'::cooktime.unit
+        -- Count
+        WHEN 1000 THEN 'count'::cooktime.unit
+        -- Mass
+        WHEN 2000 THEN 'ounce'::cooktime.unit
+        WHEN 2001 THEN 'pound'::cooktime.unit
+        WHEN 2002 THEN 'milligram'::cooktime.unit
+        WHEN 2003 THEN 'gram'::cooktime.unit
+        WHEN 2004 THEN 'kilogram'::cooktime.unit
+        ELSE NULL
+    END;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;

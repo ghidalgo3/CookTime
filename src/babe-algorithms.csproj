@@ -13,6 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.26.0" />
     <PackageReference Include="Fastenshtein" Version="1.0.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="10.0.0" />
@@ -34,7 +35,6 @@
 
   <ItemGroup>
     <!-- Include SQL migration scripts in publish output -->
-    <None Include="Scripts\**\*.sql" CopyToOutputDirectory="PreserveNewest"
-      CopyToPublishDirectory="PreserveNewest" />
+    <None Include="Scripts\**\*.sql" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

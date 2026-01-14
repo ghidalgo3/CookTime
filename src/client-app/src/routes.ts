@@ -3,7 +3,7 @@ import { index, route, layout } from "@react-router/dev/routes";
 
 export default [
     // Main layout with navigation
-    layout("pages/DefaultLayout.tsx", [
+    layout("pages/DefaultLayout.tsx", { id: "defaultLayout" }, [
         index("pages/Home.tsx"),
         route("Recipes/:id", "pages/Recipe.tsx"),
         route("Recipes/Favorites", "pages/Favorites.tsx"),

@@ -1,21 +1,26 @@
-import React, { useEffect, useState } from "react"
-import { Outlet, ScrollRestoration, useLocation } from "react-router";
+import React, { useState } from "react"
+import { Outlet, ScrollRestoration, useLocation, useRouteLoaderData } from "react-router";
+import type { Route } from "./+types/DefaultLayout";
 import { CookTimeBanner, NavigationBar } from "src/components";
 import Footer from "src/components/Footer";
 import { getCategories } from "src/shared/CookTime";
 import { useTitle } from "src/shared/useTitle";
 
-export default function DefaultLayout() {
-  const location = useLocation();
-  const [categories, setCategories] = useState<string[]>([]);
-  const [theme, setTheme] = useState<string>('light');
+export async function clientLoader() {
+  const categories = await getCategories();
+  return { categories };
+}
 
-  useEffect(() => {
-    getCategories().then(setCategories);
+export default function DefaultLayout({ loaderData }: Route.ComponentProps) {
+  const location = useLocation();
+  const { categories } = loaderData;
+  const [theme] = useState<string>(() => {
     // Check theme preference only on client
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    setTheme(prefersDark ? 'dark' : 'light');
-  }, []);
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return 'light';
+  });
 
   useTitle();
   return (
@@ -31,7 +36,7 @@ export default function DefaultLayout() {
             location.key;
         }}
       />
-      <NavigationBar categories={categories as string[]} />
+      <NavigationBar categories={categories} />
 
       <main data-bs-theme={theme} role="main" className="pb-3">
         <div className="container margin-top-30">

@@ -3,15 +3,10 @@ namespace babe_algorithms.ViewComponents;
 using System;
 using System.Collections.Generic;
 
-public class PagedResult<T> : PagedResultBase
+public class PagedResult<T>
     where T : class
 {
-    public PagedResult()
-    {
-        this.Results = new List<T>();
-    }
-
-    public List<T> Results { get; set; }
+    public required List<T> Results { get; set; }
 
     public PagedResult<T2> To<T2>(Func<T, T2> mapper)
         where T2 : class
@@ -25,17 +20,14 @@ public class PagedResult<T> : PagedResultBase
             PageSize = this.PageSize,
         };
     }
-}
 
-public abstract class PagedResultBase
-{
-    public int CurrentPage { get; set; }
+    public required int CurrentPage { get; set; }
 
-    public int PageCount { get; set; }
+    public required int PageCount { get; set; }
 
-    public int PageSize { get; set; }
+    public required int PageSize { get; set; }
 
-    public int RowCount { get; set; }
+    public required int RowCount { get; set; }
 
     public int FirstRowOnPage => (this.CurrentPage - 1) * this.PageSize + 1;
 

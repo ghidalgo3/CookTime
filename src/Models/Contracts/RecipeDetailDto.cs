@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace BabeAlgorithms.Models.Contracts;
 
 public class RecipeDetailDto
@@ -55,18 +53,27 @@ public class RecipeSummaryDto
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 
-    [JsonPropertyName("description")]
-    public string? Description { get; set; }
+    [JsonPropertyName("images")]
+    public List<ImageDto> Images { get; set; } = new();
 
-    [JsonPropertyName("cookingMinutes")]
-    public double? CookingMinutes { get; set; }
+    [JsonPropertyName("categories")]
+    public List<string> Categories { get; set; } = new();
 
-    [JsonPropertyName("servings")]
-    public int? Servings { get; set; }
+    [JsonPropertyName("averageReviews")]
+    public double AverageReviews { get; set; }
 
-    [JsonPropertyName("calories")]
-    public int? Calories { get; set; }
+    [JsonPropertyName("reviewCount")]
+    public int ReviewCount { get; set; }
 
-    [JsonPropertyName("imageUrl")]
-    public string? ImageUrl { get; set; }
+    [JsonPropertyName("isFavorite")]
+    public bool? IsFavorite { get; set; }
+}
+
+public class ImageDto
+{
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = null!;
 }
