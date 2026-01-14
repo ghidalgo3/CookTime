@@ -59,22 +59,14 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         return JsonSerializer.Deserialize<RecipeDetailDto>(result.ToString()!, JsonOptions);
     }
 
-    public async Task<List<RecipeSummaryDto>> SearchRecipesByNameAsync(string searchTerm)
+    public async Task<List<RecipeSummaryDto>> SearchRecipesAsync(string searchTerm, int pageSize = 50, int pageNumber = 1)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
-        await using var cmd = new NpgsqlCommand("SELECT cooktime.search_recipes_by_name($1)", conn);
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.search_recipes($1, $2, $3)", conn);
 
         cmd.Parameters.AddWithValue(searchTerm);
-
-        return await ReadRecipeSummaryListAsync(cmd);
-    }
-
-    public async Task<List<RecipeSummaryDto>> SearchRecipesByIngredientAsync(Guid ingredientId)
-    {
-        await using var conn = await dataSource.OpenConnectionAsync();
-        await using var cmd = new NpgsqlCommand("SELECT cooktime.search_recipes_by_ingredient($1)", conn);
-
-        cmd.Parameters.AddWithValue(ingredientId);
+        cmd.Parameters.AddWithValue(pageSize);
+        cmd.Parameters.AddWithValue(pageNumber);
 
         return await ReadRecipeSummaryListAsync(cmd);
     }

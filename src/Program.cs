@@ -14,17 +14,30 @@ builder.Services.AddSingleton<CookTimeDB>();
 
 var app = builder.Build();
 app.MapGet("/api/category/list", () => Constants.DefaultCategories);
-app.MapGet("/api/multipartrecipe", async (CookTimeDB cooktime, int page = 1, int pageSize = 30) =>
+app.MapGet(
+    "/api/multipartrecipe",
+    async (CookTimeDB cooktime, string? search, int page = 1, int pageSize = 30) =>
 {
-    var recipes = await cooktime.GetRecipesAsync(pageSize, pageNumber: page);
-    var totalCount = await cooktime.GetRecipeCountAsync();
+    List<RecipeSummaryDto> queried_recipes;
+    long total_count;
+
+    if (!string.IsNullOrWhiteSpace(search))
+    {
+        queried_recipes = await cooktime.SearchRecipesAsync(search, pageSize, page);
+        total_count = queried_recipes.Count;
+    }
+    else
+    {
+        queried_recipes = await cooktime.GetRecipesAsync(pageSize, page);
+        total_count = await cooktime.GetRecipeCountAsync();
+    }
     return new PagedResult<RecipeSummaryDto>
     {
-        Results = recipes,
+        Results = queried_recipes,
         CurrentPage = page,
-        PageCount = (int)Math.Ceiling((double)totalCount / pageSize),
+        PageCount = (int)Math.Ceiling((double)total_count / pageSize),
         PageSize = pageSize,
-        RowCount = (int)totalCount
+        RowCount = (int)total_count
     };
 });
 app.MapGet("/api/multipartrecipe/new", async (CookTimeDB cooktime) =>

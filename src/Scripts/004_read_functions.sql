@@ -73,46 +73,32 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Search recipes by name using full-text search
-CREATE OR REPLACE FUNCTION cooktime.search_recipes_by_name(search_term text)
+-- Unified search for recipes by name, description, category, or ingredient
+CREATE OR REPLACE FUNCTION cooktime.search_recipes(
+    search_term text,
+    page_size integer DEFAULT 50,
+    page_number integer DEFAULT 1
+)
 RETURNS SETOF jsonb AS $$
 BEGIN
     RETURN QUERY
-    SELECT jsonb_build_object(
-        'id', r.id,
-        'name', r.name,
-        'description', r.description,
-        'cookingMinutes', r.cooking_minutes,
-        'servings', r.servings,
-        'calories', r.calories
-    )
+    SELECT DISTINCT ON (r.id) cooktime.recipe_to_summary(r)
     FROM cooktime.recipes r
-    WHERE r.search_vector @@ plainto_tsquery('english', search_term)
-    ORDER BY ts_rank(r.search_vector, plainto_tsquery('english', search_term)) DESC;
-END;
-$$ LANGUAGE plpgsql;
-
--- Search recipes by ingredient
-CREATE OR REPLACE FUNCTION cooktime.search_recipes_by_ingredient(ingredient_id uuid)
-RETURNS SETOF jsonb AS $$
-BEGIN
-    RETURN QUERY
-    SELECT jsonb_build_object(
-        'id', r.id,
-        'name', r.name,
-        'description', r.description,
-        'cookingMinutes', r.cooking_minutes,
-        'servings', r.servings,
-        'calories', r.calories
-    )
-    FROM cooktime.recipes r
-    WHERE r.id IN (
-        SELECT DISTINCT rc.recipe_id
-        FROM cooktime.recipe_components rc
-        JOIN cooktime.ingredient_requirements ir ON ir.recipe_component_id = rc.id
-        WHERE ir.ingredient_id = search_recipes_by_ingredient.ingredient_id
-    )
-    ORDER BY r.name;
+    LEFT JOIN cooktime.category_recipe cr ON cr.recipe_id = r.id
+    LEFT JOIN cooktime.categories c ON c.id = cr.category_id
+    LEFT JOIN cooktime.recipe_components rc ON rc.recipe_id = r.id
+    LEFT JOIN cooktime.ingredient_requirements ir ON ir.recipe_component_id = rc.id
+    LEFT JOIN cooktime.ingredients i ON i.id = ir.ingredient_id
+    WHERE 
+        -- Match recipe name/description via full-text search
+        r.search_vector @@ plainto_tsquery('english', search_term)
+        -- Or match category name
+        OR c.name ILIKE '%' || search_term || '%'
+        -- Or match ingredient name
+        OR i.name ILIKE '%' || search_term || '%'
+    ORDER BY r.id, ts_rank(r.search_vector, plainto_tsquery('english', search_term)) DESC
+    LIMIT page_size
+    OFFSET (page_number - 1) * page_size;
 END;
 $$ LANGUAGE plpgsql;
 
