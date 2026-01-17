@@ -115,16 +115,17 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
               let newValue = parseFloat(e.target.value);
               if (Number.isNaN(newValue)) {
                 newValue = 0.0
-              } 
-              this.props.updateIngredientRequirement(ir, ir => { ir.quantity = newValue; return ir; })}
+              }
+              this.props.updateIngredientRequirement(ir, ir => { ir.quantity = newValue; return ir; })
+            }
             }
             placeholder={"0"}
             // https://react.dev/reference/react-dom/components/input#im-getting-an-error-a-component-is-changing-an-uncontrolled-input-to-be-controlled
             // Never set this to undefined
             value={ir.quantity === 0.0 ? "" : ir.quantity}
-            >
+          >
 
-            </Form.Control>
+          </Form.Control>
         </Col>
         <Col key={`${id}unit`} xs={3} className="ingredient-col-middle">
           <Form.Select
@@ -159,7 +160,7 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
         </Col>
         <Col key={`${id}delete`} xs={1} className="">
           <Button className="float-end" variant="danger">
-            <i onClick={(_) => this.props.onDelete(ir)} className="fas fa-trash-alt"></i>
+            <i onClick={(_) => this.props.onDelete(ir)} className="bi bi-trash"></i>
           </Button>
         </Col>
       </Row>

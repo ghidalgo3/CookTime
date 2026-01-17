@@ -24,7 +24,7 @@ export class RecipeStepList extends React.Component<RecipeStepListProps, {}> {
         return (
             <Row>
                 <Col className="col d-flex align-items-center get-smaller">
-                    <i className="margin-right-10 drag-handle fas fa-solid fa-grip-vertical"></i>
+                    <i className="margin-right-10 drag-handle bi bi-grip-vertical"></i>
                     <FormControl
                         as="textarea"
                         rows={4}
@@ -48,7 +48,7 @@ export class RecipeStepList extends React.Component<RecipeStepListProps, {}> {
                 </Col>
                 <Col xs={1}>
                     <Button className="float-end" variant="danger">
-                        <i onClick={(_) => this.props.onDeleteStep(idx, this.props.component)} className="fas fa-trash-alt"></i>
+                        <i onClick={(_) => this.props.onDeleteStep(idx, this.props.component)} className="bi bi-trash"></i>
                     </Button>
                 </Col>
             </Row>

@@ -7,11 +7,10 @@ import {
 } from "react-router";
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthenticationContext } from './components/Authentication/AuthenticationContext';
+import { FavoritesProvider } from './components/Favorites/FavoritesContext';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
 import '@smastrom/react-rating/style.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import '@fortawesome/fontawesome-free/css/all.min.css';
-import './assets/css/site.css';
+import siteStyles from './assets/css/site.css?url';
 
 // Initialize Application Insights
 const appInsights = new ApplicationInsights({
@@ -28,9 +27,21 @@ appInsights.loadAppInsights();
 appInsights.trackPageView();
 
 export function Layout({ children }: { children: React.ReactNode }) {
+    // Detect color scheme for Bootstrap 5.3+ dark mode
+    const colorSchemeScript = `
+        (function() {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.setAttribute('data-bs-theme', prefersDark ? 'dark' : 'light');
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+                document.documentElement.setAttribute('data-bs-theme', e.matches ? 'dark' : 'light');
+            });
+        })();
+    `;
+
     return (
         <html lang="en">
             <head>
+                <script dangerouslySetInnerHTML={{ __html: colorSchemeScript }} />
                 <script
                     async
                     src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6004231239349931"
@@ -48,6 +59,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7"
                     crossOrigin="anonymous"
                 />
+                <link
+                    rel="stylesheet"
+                    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
+                />
+                <link rel="stylesheet" href={siteStyles} />
                 <Meta />
                 <Links />
             </head>
@@ -79,7 +95,9 @@ export default function Root() {
     return (
         <HelmetProvider>
             <AuthenticationContext>
-                <Outlet />
+                <FavoritesProvider>
+                    <Outlet />
+                </FavoritesProvider>
             </AuthenticationContext>
         </HelmetProvider>
     );

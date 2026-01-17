@@ -11,31 +11,31 @@ type CardImageProps = {
 
 type CardImageState = {
     isFavorite?: boolean | undefined | null,
-    operationInProgress : boolean
+    operationInProgress: boolean
 }
 
 
 type ReviewDisplayProps = {
-    averageReviews : number,
-    reviewCount : number
+    averageReviews: number,
+    reviewCount: number
 }
 
 class ReviewDisplay extends React.Component<ReviewDisplayProps, {}> {
-    constructor(props : ReviewDisplayProps) {
+    constructor(props: ReviewDisplayProps) {
         super(props);
     }
 
     render() {
         return (
-          <div className="margin-top-8">
-            <Rating
-              initialRating={this.props.averageReviews}
-              readonly
-              emptySymbol="far fa-star"
-              fullSymbol="fas fa-star"
-              fractions={2} />
-            {"   "} ({this.props.reviewCount})
-          </div>
+            <div className="margin-top-8">
+                <Rating
+                    initialRating={this.props.averageReviews}
+                    readonly
+                    emptySymbol="bi bi-star"
+                    fullSymbol="bi bi-star-fill"
+                    fractions={2} />
+                {"   "} ({this.props.reviewCount})
+            </div>
         )
     }
 }
@@ -65,7 +65,7 @@ recipeCards.forEach(recipeCard => {
             <CardImage
                 recipeId={recipeId}
                 initialFavorite={isFavorite == '' ? null : isFavorite == "True"}
-                images={[{id: imageId, name: ""}]} />,
+                images={[{ id: imageId, name: "" }]} />,
             imageTarget)
     }
 });

@@ -117,7 +117,7 @@ export type Recipe = {
     servingsProduced: number,
     source: string,
     ingredients: IngredientRequirement[] | undefined,
-    steps: RecipeStep[] | undefined,
+    steps: string[] | undefined,
     categories: { name: string, id: string, isNew: boolean }[],
     staticImage: string
 }
@@ -161,8 +161,26 @@ export type RecipeView = {
     images: Image[],
     categories: string[],
     averageReviews: number,
-    reviewCount: number,
-    isFavorite: boolean | undefined
+    reviewCount: number
+}
+
+export type RecipeList = {
+    id: string,
+    name: string,
+    description: string | null,
+    creationDate: string,
+    isPublic: boolean,
+    recipeCount: number
+}
+
+export type RecipeListWithRecipes = {
+    id: string,
+    name: string,
+    description: string | null,
+    creationDate: string,
+    isPublic: boolean,
+    ownerId: string,
+    recipes: RecipeView[]
 }
 
 export type PagedResult<T> = {

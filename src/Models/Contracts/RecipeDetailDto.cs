@@ -70,9 +70,6 @@ public class RecipeSummaryDto
 
     [JsonPropertyName("reviewCount")]
     public int ReviewCount { get; set; }
-
-    [JsonPropertyName("isFavorite")]
-    public bool? IsFavorite { get; set; }
 }
 
 public class ImageDto

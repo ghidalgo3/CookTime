@@ -36,8 +36,7 @@ type RecipeEditState = {
   nutritionFacts: RecipeNutritionFacts | undefined
 }
 
-export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState>
-{
+export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState> {
   constructor(props: RecipeEditProps) {
     super(props);
     this.state = {
@@ -291,7 +290,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
               {this.state.recipe.reviewCount > 0 ?
                 <Stack direction="horizontal" className="margin-bottom-8">
                   <Rating
-                    style={{maxWidth: 150}}
+                    style={{ maxWidth: 150 }}
                     value={this.state.recipe.averageReviews}
                     readOnly />{" "}({this.state.recipe.reviewCount})
                 </Stack>
@@ -312,7 +311,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
                   onDelete={() => this.onDelete()}
                   onToggleEdit={() => this.setState({ edit: !this.state.edit })}
                   onAddtoCard={() => this.onAddtoCard()}
-              />}
+                />}
             </AuthContext.Consumer>
           </>
         </Row>
@@ -351,7 +350,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
                         this.setState({ newServings: this.state.newServings - 1 })
                       }
                     }}>
-                    <i className="fas fa-regular fa-minus"></i>
+                    <i className="bi bi-dash"></i>
                   </Button>
                   <Form.Control
                     onChange={(e) => {
@@ -369,7 +368,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
                     variant="success"
                     className="plus-counter-button"
                     onClick={(_) => this.setState({ newServings: this.state.newServings + 1 })}>
-                    <i className="fas fa-solid fa-plus"></i>
+                    <i className="bi bi-plus"></i>
                   </Button>
                 </div>
               }
@@ -603,7 +602,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
             iron={Math.round(iron / this.state.recipe.servingsProduced)}
           />
         </>
-        )
+      )
     } else {
       return null;
     }
@@ -624,7 +623,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
       let allFats = saturatedFats + monoUnsaturatedFats + polyUnsaturatedFats;
       rightColContents =
         <div>
-          {Math.round(this.state.nutritionFacts!.recipe.calories / this.state.recipe.servingsProduced)} kcal <i className="fas fa-solid fa-calculator"></i>
+          {Math.round(this.state.nutritionFacts!.recipe.calories / this.state.recipe.servingsProduced)} kcal <i className="bi bi-calculator"></i>
         </div>
     } else if (!this.state.edit
       && this.state.recipe.caloriesPerServing !== 0) {
@@ -743,7 +742,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
                       className="float-end"
                       variant="danger"
                       onClick={(_) => this.deleteComponent(recipe, componentIndex)}>
-                      <i className="fas fa-trash-alt"></i>
+                      <i className="bi bi-trash"></i>
                     </Button>
                   </Col>
                   : null

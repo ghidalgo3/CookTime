@@ -40,9 +40,6 @@ export default function DefaultLayout({ loaderData }: Route.ComponentProps) {
 
       <main data-bs-theme={theme} role="main" className="pb-3">
         <div className="container margin-top-30">
-          {/* TODO don't render this always  */}
-          {location.pathname === "/" && location.search === "" &&
-            <CookTimeBanner />}
           <Outlet />
         </div>
       </main>

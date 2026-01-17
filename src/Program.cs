@@ -55,16 +55,6 @@ app.MapGet("/api/multipartrecipe/featured", async (CookTimeDB cooktime) =>
 {
     return await cooktime.GetFeaturedRecipesAsync();
 });
-app.MapGet("/api/multipartrecipe/mine", async (HttpContext context, CookTimeDB cooktime) =>
-{
-    var userIdClaim = context.User.FindFirst("db_user_id")?.Value;
-    if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
-    {
-        return Results.Unauthorized();
-    }
-    var recipes = await cooktime.GetRecipesByUserAsync(userId);
-    return Results.Ok(recipes);
-});
 app.MapGet("/api/multipartrecipe/{id:guid}", async (CookTimeDB cooktime, Guid id) =>
 {
     var recipe = await cooktime.GetRecipeByIdAsync(id);
@@ -74,6 +64,94 @@ app.MapGet("/api/multipartrecipe/{id:guid}", async (CookTimeDB cooktime, Guid id
     }
     return Results.Ok(recipe);
 });
+
+var authenticatedApi = app.MapGroup("/api")
+    .AddEndpointFilter(async (context, next) =>
+    {
+        var httpContext = context.HttpContext;
+        var userIdClaim = httpContext.User.FindFirst("db_user_id")?.Value;
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            return Results.Unauthorized();
+        }
+        httpContext.Items["UserId"] = userId;
+        return await next(context);
+    });
+
+// List routes
+authenticatedApi.MapGet("/lists", async (HttpContext context, CookTimeDB cooktime) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+    var lists = await cooktime.GetRecipeListsAsync(userId);
+    return Results.Ok(lists);
+});
+
+authenticatedApi.MapGet("/lists/{listName}", async (HttpContext context, CookTimeDB cooktime, string listName) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+    
+    // Try to parse as GUID first for listId lookup
+    if (Guid.TryParse(listName, out var listId))
+    {
+        var listById = await cooktime.GetRecipeListWithRecipesAsync(listId);
+        if (listById != null && listById.OwnerId == userId)
+        {
+            return Results.Ok(listById);
+        }
+        return Results.NotFound();
+    }
+    
+    // Otherwise filter by name
+    var lists = await cooktime.GetRecipeListsAsync(userId, filter: listName);
+    if (lists.Count == 0)
+    {
+        return Results.NotFound();
+    }
+    
+    var listWithRecipes = await cooktime.GetRecipeListWithRecipesAsync(lists[0].Id);
+    return Results.Ok(listWithRecipes);
+});
+
+authenticatedApi.MapPut("/lists/{listName}/{recipeId:guid}", async (HttpContext context, CookTimeDB cooktime, string listName, Guid recipeId) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+    var lists = await cooktime.GetRecipeListsAsync(userId, filter: listName);
+    
+    Guid listId;
+    if (lists.Count == 0)
+    {
+        // Create the list if it doesn't exist
+        listId = await cooktime.CreateRecipeListAsync(new RecipeListCreateDto
+        {
+            OwnerId = userId,
+            Name = listName,
+            Description = $"My {listName} list",
+            IsPublic = false
+        });
+    }
+    else
+    {
+        listId = lists[0].Id;
+    }
+
+    await cooktime.AddRecipeToListAsync(listId, recipeId, 1);
+    return Results.Ok();
+});
+
+authenticatedApi.MapDelete("/lists/{listName}/{recipeId:guid}", async (HttpContext context, CookTimeDB cooktime, string listName, Guid recipeId) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+    var lists = await cooktime.GetRecipeListsAsync(userId, filter: listName);
+    
+    if (lists.Count == 0)
+    {
+        return Results.NotFound();
+    }
+
+    await cooktime.RemoveRecipeFromListAsync(lists[0].Id, recipeId);
+    return Results.Ok();
+});
+
 app.MapGet("/api/recipe/units", () =>
 {
     var allUnits = Enum.GetValues<Unit>();

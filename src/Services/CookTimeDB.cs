@@ -180,12 +180,13 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         return (Guid)result!;
     }
 
-    public async Task<List<RecipeListDto>> GetRecipeListsByUserIdAsync(Guid userId)
+    public async Task<List<RecipeListDto>> GetRecipeListsAsync(Guid userId, string? filter = null)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
-        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_user_recipe_lists($1)", conn);
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_user_recipe_lists($1, $2)", conn);
 
         cmd.Parameters.AddWithValue(userId);
+        cmd.Parameters.AddWithValue(filter ?? (object)DBNull.Value);
 
         var results = new List<RecipeListDto>();
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -195,7 +196,9 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
             var json = reader.GetString(0);
             var dto = JsonSerializer.Deserialize<RecipeListDto>(json, JsonOptions);
             if (dto != null)
+            {
                 results.Add(dto);
+            }
         }
 
         return results;

@@ -43,7 +43,7 @@ BEGIN
                                                 'id', ing.id,
                                                 'name', ing.name,
                                                 'isNew', false,
-                                                -- will compute this later!
+!
                                                 'densityKgPerL', null
                                             ),
                                             'text', ir.description,
@@ -151,8 +151,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Get user's recipe lists
-CREATE OR REPLACE FUNCTION cooktime.get_user_recipe_lists(user_id uuid)
+-- Get user's recipe lists with optional name filter
+CREATE OR REPLACE FUNCTION cooktime.get_user_recipe_lists(user_id uuid, name_filter text DEFAULT NULL)
 RETURNS SETOF jsonb AS $$
 BEGIN
     RETURN QUERY
@@ -170,6 +170,7 @@ BEGIN
     )
     FROM cooktime.recipe_lists rl
     WHERE rl.owner_id = get_user_recipe_lists.user_id
+      AND (name_filter IS NULL OR rl.name ILIKE '%' || name_filter || '%')
     ORDER BY rl.creation_date DESC;
 END;
 $$ LANGUAGE plpgsql;
@@ -188,16 +189,7 @@ BEGIN
             'ownerId', rl.owner_id,
             'recipes', COALESCE(
                 (
-                    SELECT jsonb_agg(
-                        jsonb_build_object(
-                            'recipeId', r.id,
-                            'name', r.name,
-                            'description', r.description,
-                            'quantity', rr.quantity,
-                            'cookingMinutes', r.cooking_minutes,
-                            'servings', r.servings
-                        )
-                    )
+                    SELECT jsonb_agg(cooktime.recipe_to_summary(r))
                     FROM cooktime.recipe_requirements rr
                     JOIN cooktime.recipes r ON r.id = rr.recipe_id
                     WHERE rr.recipe_list_id = rl.id

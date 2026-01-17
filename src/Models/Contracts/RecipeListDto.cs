@@ -59,26 +59,5 @@ public class RecipeListWithRecipesDto
     public Guid OwnerId { get; set; }
 
     [JsonPropertyName("recipes")]
-    public List<RecipeListItemDto> Recipes { get; set; } = new();
-}
-
-public class RecipeListItemDto
-{
-    [JsonPropertyName("recipeId")]
-    public Guid RecipeId { get; set; }
-
-    [JsonPropertyName("name")]
-    public string Name { get; set; } = null!;
-
-    [JsonPropertyName("description")]
-    public string? Description { get; set; }
-
-    [JsonPropertyName("quantity")]
-    public double Quantity { get; set; }
-
-    [JsonPropertyName("cookingMinutes")]
-    public double? CookingMinutes { get; set; }
-
-    [JsonPropertyName("servings")]
-    public int? Servings { get; set; }
+    public List<RecipeSummaryDto> Recipes { get; set; } = new();
 }
