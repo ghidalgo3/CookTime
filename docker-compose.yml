@@ -1,0 +1,78 @@
+services:
+  postgres:
+    platform: linux/amd64
+    image: postgres:18.1
+    container_name: cooktime-postgres
+    environment:
+      POSTGRES_DB: cooktime
+      POSTGRES_USER: cooktime
+      POSTGRES_PASSWORD: development
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cooktime -d cooktime"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  azurite:
+    platform: linux/amd64
+    image: mcr.microsoft.com/azure-storage/azurite:3.35.0
+    container_name: cooktime-azurite
+    ports:
+      - "10000:10000" # Blob service
+      - "10001:10001" # Queue service
+      - "10002:10002" # Table service
+    volumes:
+      - azurite-data:/data
+    command: azurite-blob --blobHost 0.0.0.0 --blobPort 10000
+
+  api:
+    platform: linux/amd64
+    build:
+      context: src/
+      dockerfile: Dockerfile
+    container_name: cooktime-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:5000
+      ConnectionStrings__Postgres: "Host=postgres;Database=cooktime;Username=cooktime;Password=development;Include Error Detail=true"
+      DATABASE_URL: "Host=postgres;Database=cooktime;Username=cooktime;Password=development"
+      ConnectionStrings__AzureBlobStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
+      Azure__VisionKey: "Pass"
+      OpenAI__Key: "sk-Pass"
+    ports:
+      - "5001:5000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      azurite:
+        condition: service_started
+    volumes:
+      - ./src:/src
+      - /src/obj # Shadow obj/ so container writes don't affect host intellisense
+      - /src/bin # Shadow bin/ so container writes don't affect host intellisense
+    command: ["dotnet", "watch", "run", "--non-interactive"]
+
+  webapp:
+    platform: linux/amd64
+    build:
+      context: src/client-app
+      dockerfile: Dockerfile
+    container_name: cooktime-webapp
+    environment:
+      ASPNETCORE_URLS: http://api:5000
+      PORT: 80
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    volumes:
+      - ./src/client-app/src:/app/src
+    command: ["npm", "run", "dev"]
+
+volumes:
+  postgres-data:
+  azurite-data:

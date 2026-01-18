@@ -83,7 +83,7 @@ export class ShoppingCart extends React.Component<{}, CartState> {
                   }
                 }
                 }>
-                <i className="fas fa-regular fa-minus"></i>
+                <i className="bi bi-dash"></i>
               </Button>
               <Form.Control
                 onChange={(e) => {
@@ -102,7 +102,7 @@ export class ShoppingCart extends React.Component<{}, CartState> {
                 variant="success"
                 className="plus-counter-button"
                 onClick={(_) => this.addToRecipeRequirement(rIndex, 1)}>
-                <i className="fas fa-solid fa-plus"></i>
+                <i className="bi bi-plus"></i>
               </Button>
             </div>
             <div id="cart-recipe-item" className="form-control input-field-style margin-left-20 margin-right-10 do-not-overflow-text" key={recipe.id}>
@@ -112,7 +112,7 @@ export class ShoppingCart extends React.Component<{}, CartState> {
               className="float-end height-38"
               variant="danger"
               onClick={(_) => this.onDeleteRecipe(rIndex)}>
-              <i className="fas fa-trash-alt"></i>
+              <i className="bi bi-trash"></i>
             </Button>
           </Col>
         </Row>
@@ -232,8 +232,8 @@ export class ShoppingCart extends React.Component<{}, CartState> {
         <div onClick={(_) => onClickFn()} className="cart-ingredients-list">
           {
             unchecked ?
-              <i className="far fa-circle padding-right-10"></i> :
-              <i className="far fa-check-circle padding-right-10"></i>
+              <i className="bi bi-circle padding-right-10"></i> :
+              <i className="bi bi-check-circle padding-right-10"></i>
           }
           <IngredientDisplay ingredientRequirement={ir} strikethrough={!unchecked} />
         </div>

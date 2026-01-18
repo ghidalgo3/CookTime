@@ -1,328 +1,250 @@
+
+using System.Security.Claims;
+using Azure.Storage.Blobs;
+using babe_algorithms.Models;
 using babe_algorithms.Services;
-using System.Text.Json;
-using Microsoft.EntityFrameworkCore;
+using babe_algorithms.ViewComponents;
+using BabeAlgorithms.Models.Contracts;
+using BabeAlgorithms.Routes;
+using BabeAlgorithms.Services;
 using Npgsql;
-using System.Text.Json.Nodes;
-using Microsoft.AspNetCore.Identity;
-using babe_algorithms.Models.Users;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using GustavoTech.Implementation;
-using SixLabors.ImageSharp.Web.DependencyInjection;
 
-namespace babe_algorithms;
+var builder = WebApplication.CreateBuilder(args);
 
-public class Program
+var connectionString = builder.Configuration.GetConnectionString("Postgres")!;
+builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
+builder.Services.AddSingleton<CookTimeDB>();
+builder.Services.AddSingleton<NutritionService>();
+builder.Services.AddGoogleAuthentication(builder.Configuration);
+
+var app = builder.Build();
+
+// Must be first middleware for OAuth to work correctly behind proxy/Docker
+app.UseForwardedHeaders();
+
+app.UseStaticFiles();
+
+app.MapGet("/api/category/list", () => Constants.DefaultCategories);
+app.MapGet("/api/recipe/tags", async (CookTimeDB cooktime, string? query) =>
 {
-    private static NpgsqlDataSource dataSource;
-
-    public static void Main(string[] args)
+    if (string.IsNullOrWhiteSpace(query))
     {
-        var builder = WebApplication.CreateBuilder(args);
-        builder.Services
-        .AddControllersWithViews(options =>
-        {
-            // TODO enable this.
-            // options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-        })
-        .AddNewtonsoftJson(options =>
-        {
-            options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-        });
+        return await cooktime.GetAllCategoriesWithIdsAsync();
+    }
+    return await cooktime.SearchCategoriesAsync(query);
+});
+app.MapGet("/api/recipe/ingredients", async (CookTimeDB cooktime, string? name) =>
+{
+    if (string.IsNullOrWhiteSpace(name))
+    {
+        return Results.Ok(Array.Empty<IngredientAutosuggestDto>());
+    }
+    var results = await cooktime.SearchIngredientsAsync(name);
+    return Results.Ok(results);
+});
+app.MapGet(
+    "/api/multipartrecipe",
+    async (CookTimeDB cooktime, string? search, int page = 1, int pageSize = 30) =>
+{
+    List<RecipeSummaryDto> queried_recipes;
+    long total_count;
 
-        builder.Services.AddRazorPages();
-        builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-        {
-            options.Password.RequiredLength = 6;
-            options.Password.RequiredUniqueChars = 1;
-            options.Password.RequireNonAlphanumeric = false;
-            options.Password.RequireDigit = false;
-            options.Password.RequireLowercase = false;
-            options.Password.RequireUppercase = false;
-            options.SignIn.RequireConfirmedEmail = true;
-            options.User.RequireUniqueEmail = !builder.Environment.IsDevelopment();
-        })
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
+    if (!string.IsNullOrWhiteSpace(search))
+    {
+        queried_recipes = await cooktime.SearchRecipesAsync(search, pageSize, page);
+        total_count = queried_recipes.Count;
+    }
+    else
+    {
+        queried_recipes = await cooktime.GetRecipesAsync(pageSize, page);
+        total_count = await cooktime.GetRecipeCountAsync();
+    }
+    return new PagedResult<RecipeSummaryDto>
+    {
+        Results = queried_recipes,
+        CurrentPage = page,
+        PageCount = (int)Math.Ceiling((double)total_count / pageSize),
+        PageSize = pageSize,
+        RowCount = (int)total_count
+    };
+});
+app.MapGet("/api/multipartrecipe/new", async (CookTimeDB cooktime) =>
+{
+    return await cooktime.GetNewRecipesAsync();
+});
+app.MapGet("/api/multipartrecipe/featured", async (CookTimeDB cooktime) =>
+{
+    return await cooktime.GetFeaturedRecipesAsync();
+});
+app.MapGet("/api/multipartrecipe/{id:guid}", async (CookTimeDB cooktime, NutritionService nutrition, Guid id) =>
+{
+    var recipe = await cooktime.GetRecipeByIdAsync(id);
+    if (recipe == null)
+    {
+        return Results.NotFound();
+    }
+    recipe = await nutrition.EnrichWithDensitiesAsync(recipe);
+    return Results.Ok(recipe);
+});
 
-        builder.Services.ConfigureApplicationCookie(options =>
-        {
-            // Cookie settings
-            options.Cookie.HttpOnly = true;
-            options.ExpireTimeSpan = TimeSpan.FromDays(7);
-            options.LoginPath = "/SignIn";
-            options.AccessDeniedPath = "/SignIn";
-            options.SlidingExpiration = true;
-        });
+app.MapGet("/api/multipartrecipe/{id:guid}/reviews", async (CookTimeDB cooktime, Guid id) =>
+{
+    var reviews = await cooktime.GetReviewsByRecipeIdAsync(id);
+    return Results.Ok(reviews);
+});
 
-        builder.Services.AddScoped<ISignInManager, SignInManager>();
-        builder.Services.AddScoped<IUserService, UserService>();
-        builder.Services.AddScoped<ISessionManager, SessionManager>();
-        builder.Services.AddScoped<IEmailSender, EmailSender>();
-        builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
-        builder.Services.Configure<AzureOptions>(builder.Configuration.GetSection("Azure"));
-        builder.Services.Configure<OpenAIOptions>(builder.Configuration.GetSection("OpenAI"));
-        builder.Services.AddTransient<IEmailSender, EmailSender>();
-        builder.Services.AddDbContext<ApplicationDbContext>(options =>
-        {
-            var connectionString = builder.Configuration.GetConnectionString("Postgres");
-            if (string.IsNullOrEmpty(connectionString))
-            {
-                connectionString =
-                        System.Environment.GetEnvironmentVariable("POSTGRESQLCONNSTR_Postgres")
-                        ?? throw new NullReferenceException("Connection string was not found.");
-            }
-            NpgsqlDataSource dataSource = CreateNpgsqlDataSource(connectionString);
+app.MapGet("/api/multipartrecipe/{id:guid}/images", async (CookTimeDB cooktime, Guid id) =>
+{
+    var images = await cooktime.GetImagesByRecipeIdAsync(id);
+    return Results.Ok(images);
+});
 
-            options.UseNpgsql(dataSource,
-                o => o.MapEnum<Unit>());
-            options.EnableSensitiveDataLogging(true);
-        });
-        builder.Services.AddImageSharp(options =>
-        {
-        })
-            .ClearProviders()
-            .AddProvider<PostgresImageProvider>(sp =>
-            {
-                return new PostgresImageProvider(sp);
-            });
-        var app = builder.Build();
+app.MapGet("/api/multipartrecipe/{id:guid}/nutritionData", async (NutritionService nutrition, Guid id) =>
+{
+    var nutritionFacts = await nutrition.GetRecipeNutritionFactsAsync(id);
+    if (nutritionFacts == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(nutritionFacts);
+});
 
-        if (!app.Environment.IsDevelopment())
+// Admin-only routes (require Administrator role)
+var adminApi = app.MapGroup("/api")
+    .AddEndpointFilter(async (context, next) =>
+    {
+        var httpContext = context.HttpContext;
+        if (!httpContext.User.IsInRole("Administrator"))
         {
-            app.UseHsts();
+            return Results.Forbid();
         }
-        app.UseHttpsRedirection();
-        app.UseImageSharp();
-        app.UseDefaultFiles();
-        app.UseStaticFiles();
-        app.UseCookiePolicy();
-        app.UseRouting();
-        app.UseAuthentication();
-        app.UseAuthorization();
-        app.MapControllerRoute(
-            name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
-        app.MapRazorPages();
-        app.MapFallbackToFile("index.html");
+        return await next(context);
+    });
 
-        PreStartActions(app);
+adminApi.MapGet("/ingredient/internalUpdate", async (CookTimeDB cooktime) =>
+{
+    var ingredients = await cooktime.GetIngredientsForAdminAsync();
+    return Results.Ok(ingredients);
+});
 
-        app.Run();
+adminApi.MapPost("/ingredient/internalupdate", async (CookTimeDB cooktime, IngredientInternalUpdateDto update) =>
+{
+    var result = await cooktime.UpdateIngredientInternalAsync(update);
+    if (result == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(result);
+});
+
+var authenticatedApi = app.MapGroup("/api")
+    .AddEndpointFilter(async (context, next) =>
+    {
+        var httpContext = context.HttpContext;
+        var userIdClaim = httpContext.User.FindFirst("db_user_id")?.Value;
+        if (userIdClaim == null || !Guid.TryParse(userIdClaim, out var userId))
+        {
+            return Results.Unauthorized();
+        }
+        httpContext.Items["UserId"] = userId;
+        return await next(context);
+    })
+    .MapListRoutes();
+
+authenticatedApi.MapGet("/multipartrecipe/mine", async (HttpContext context, CookTimeDB cooktime, int page = 1, int pageSize = 30) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+    var recipes = await cooktime.GetRecipesByUserAsync(userId, pageSize, page);
+    return Results.Ok(new PagedResult<RecipeSummaryDto>
+    {
+        Results = recipes,
+        CurrentPage = page,
+        PageCount = (int)Math.Ceiling((double)recipes.Count / pageSize),
+        PageSize = pageSize,
+        RowCount = recipes.Count
+    });
+});
+
+authenticatedApi.MapPost("/multipartrecipe/create", async (HttpContext context, CookTimeDB cooktime, RecipeCreateRequest request) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+    var recipeId = await cooktime.CreateRecipeAsync(new RecipeCreateDto
+    {
+        Name = request.Name,
+        OwnerId = userId
+    });
+    return Results.Ok(new { id = recipeId });
+});
+
+authenticatedApi.MapPut("/multipartrecipe/{recipeId:guid}", async (HttpContext context, CookTimeDB cooktime, Guid recipeId, RecipeUpdateDto recipe) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+
+    // Verify the user owns this recipe or is an administrator
+    var existingRecipe = await cooktime.GetRecipeByIdAsync(recipeId);
+    if (existingRecipe == null)
+    {
+        return Results.NotFound();
+    }
+    var isAdmin = context.User.IsInRole("Administrator");
+    if (existingRecipe.Owner?.Id != userId && !isAdmin)
+    {
+        return Results.Forbid();
     }
 
-    /// <summary>
-    /// Creates an Npgsql data source. You must only create one instance of NpgsqlDataSource
-    /// for each connection string otherwise EF complains that you're creating too many ServiceProviders.
-    /// See here: https://github.com/npgsql/efcore.pg/issues/2720
-    /// </summary>
-    public static NpgsqlDataSource CreateNpgsqlDataSource(string connectionString)
+    recipe.Id = recipeId;
+    await cooktime.UpdateRecipeAsync(recipe);
+    return Results.Ok();
+});
+
+authenticatedApi.MapPut("/multipartrecipe/{recipeId:guid}/review", async (HttpContext context, CookTimeDB cooktime, Guid recipeId, ReviewCreateRequest request) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+    var reviewId = await cooktime.CreateReviewAsync(recipeId, userId, request.Rating, request.Text);
+    return Results.Ok(new { id = reviewId });
+});
+
+app.MapGet("/api/recipe/units", () =>
+{
+    var allUnits = Enum.GetValues<Unit>();
+    var body = allUnits.Select(unit =>
     {
-        if (dataSource == null)
+        string siType = "count";
+        if ((int)unit < 1000)
         {
-            var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-            dataSourceBuilder.MapEnum<Unit>();
-            dataSource = dataSourceBuilder.Build();
-            return dataSource;
+            siType = "volume";
         }
-
-        return dataSource;
-    }
-
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureLogging(logging =>
-            {
-                logging.AddAzureWebAppDiagnostics();
-            })
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
-
-    private static void PreStartActions(IHost host)
-    {
-
-        var scope = host.Services.CreateScope();
-        var services = scope.ServiceProvider;
-        var logger = services.GetRequiredService<ILogger<Program>>();
-        ConfigureDatabase(logger, services);
-        logger.LogInformation("PID = {pid}", Environment.ProcessId);
-    }
-
-    private static void ConfigureDatabase(ILogger<Program> logger, IServiceProvider services)
-    {
-        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-        try
+        else if ((int)unit >= 2000)
         {
-            var context = services.GetRequiredService<ApplicationDbContext>();
-            var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-            if (context.Database.GetPendingMigrations().Any())
-            {
-                context.Database.Migrate();
-                using var conn = (NpgsqlConnection)context.Database.GetDbConnection();
-                conn.Open();
-                conn.ReloadTypes();
-                // InitializeDatabase(context);
-            }
-            else
-            {
-                // LoadFoodData(context);
-                // LabelNutrients(context);
-                // DeduplicateIngredients(context).Wait();
-            }
-            CreateRoles(roleManager).Wait();
+            siType = "weight";
         }
-        catch (Exception ex)
+        return new
         {
-            logger.LogError(ex, "An error occurred creating the DB.");
-            throw;
-        }
-    }
+            Name = unit.ToString().ToLowerInvariant(),
+            SIType = siType,
+            siValue = unit.GetSIValue()
+        };
+    });
+    return body;
+});
 
-    private static void LabelNutrients(ApplicationDbContext context)
-    {
-        var allIngredients = context
-            .Ingredients
-            .Include(i => i.NutritionData)
-            .Include(i => i.BrandedNutritionData)
-            .ToList();
-        foreach (var ingredient in allIngredients)
-        {
-            if (ingredient.BrandedNutritionData == null)
-            {
-                ingredient.NutritionData = context.SearchSRNutritionData(ingredient.Name);
-            }
-        }
-        context.SaveChanges();
-    }
 
-    public static async Task CreateRoles(RoleManager<IdentityRole> roleManager)
-    {
-        string[] roleNames = Enum.GetValues(typeof(Role)).Cast<Role>().Select(r => r.ToString()).ToArray();
-        foreach (var roleName in roleNames)
-        {
-            // creating the roles and seeding them to the database
-            var roleExist = await roleManager.RoleExistsAsync(roleName);
-            if (!roleExist)
-            {
-                await roleManager.CreateAsync(new IdentityRole(roleName));
-            }
-        }
-    }
+using (var scope = app.Services.CreateScope())
+{
+    var dataSource = scope.ServiceProvider.GetRequiredService<NpgsqlDataSource>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    Migrations.RunMigrations(logger, dataSource);
 
-    public static async Task DeduplicateIngredients(ApplicationDbContext context)
-    {
-        var allIngredients = await context.Ingredients.ToListAsync();
-        var freq = new Dictionary<Ingredient, List<Ingredient>>();
-        // The dictionary should be the size of the ingredients table
-        // Entry _values_ are the duplicates, but later we will choose to keep
-        // one of them
-        foreach (var ingredient in allIngredients)
-        {
-            if (freq.ContainsKey(ingredient))
-            {
-                freq[ingredient].Add(ingredient);
-            }
-            else
-            {
-                freq[ingredient] = new List<Ingredient>();
-            }
-        }
-        var duplicateIngredientFrequencies = freq.Where(kvpPair => kvpPair.Value.Count > 0);
-        var duplicateIngredients = duplicateIngredientFrequencies.Select(kvPair => kvPair.Key);
-        // fix up recipes so they only reference one of the duplicate ingredients
-        foreach (var duplicateIngredient in duplicateIngredients)
-        {
-            // var toKeep = SelectIngredientToKeep(
-            //     duplicateIngredientFrequencies.FirstOrDefault(i => i.Equals(duplicateIngredient)));
-            // all these recipes contain a duplicate ingredient
-            var recipes = context.GetRecipesWithIngredient(duplicateIngredient.Name).ToList();
-            foreach (var recipe in recipes)
-            {
-                recipe.ReplaceIngredient(
-                    i => i.Equals(duplicateIngredient) && i.Id != duplicateIngredient.Id,
-                    duplicateIngredient);
-            }
-        }
-        context.SaveChanges();
-        // one of the duplicates is "priviledged", the others will be removed.
-        foreach (var ingredient in duplicateIngredients)
-        {
-            var toRemove = allIngredients.Where(ing => ing.Equals(ingredient) && ing.Id != ingredient.Id);
-            foreach (var ingredientToRemove in toRemove)
-            {
-                context.Ingredients.Remove(ingredientToRemove);
-            }
-        }
-        context.SaveChanges();
-    }
+    var blobConnectionString = builder.Configuration.GetConnectionString("AzureBlobStorage");
+    var blobServiceClient = new BlobServiceClient(blobConnectionString);
+    var blobContainer = blobServiceClient.GetBlobContainerClient("images");
 
-    private static void LoadFoodData(ApplicationDbContext context)
-    {
-        LoadSrLegacy(context);
-        LoadBrandedFoods(context);
-    }
-
-    private static void LoadBrandedFoods(ApplicationDbContext context)
-    {
-        var fileName = "FoodData_Central_branded_food_json_2021-10-28.json";
-        // var fileName = "Small.json";
-        int i = 0;
-        if (File.Exists(fileName) && !context.BrandedNutritionData.Any())
-        {
-            foreach (var line in File.ReadLines(fileName))
-            {
-                try
-                {
-                    var food = JsonNode.Parse(line.TrimEnd(','));
-                    var foodData = new BrandedNutritionData()
-                    {
-                        GtinUpc = food["gtinUpc"].GetValue<string>(),
-                        Ingredients = food["ingredients"].GetValue<string>(),
-                        ServingSize = food["servingSize"].GetValue<double>(),
-                        ServingSizeUnit = food["servingSizeUnit"].GetValue<string>(),
-                        FdcId = food["fdcId"].GetValue<int>(),
-                        Description = food["description"].GetValue<string>(),
-                        BrandedFoodCategory = food["brandedFoodCategory"].GetValue<string>(),
-                        FoodNutrients = JsonDocument.Parse(food["foodNutrients"].ToJsonString()),
-                        LabelNutrients = JsonDocument.Parse(food["labelNutrients"].ToJsonString()),
-                    };
-                    context.BrandedNutritionData.Add(foodData);
-                    i++;
-                    if (i >= 100)
-                    {
-                        context.SaveChanges();
-                        i = 0;
-                    }
-                }
-                catch
-                {
-                }
-            }
-        }
-    }
-
-    private static void LoadSrLegacy(ApplicationDbContext context)
-    {
-        var fileName = "FoodData_Central_sr_legacy_food_json_2021-10-28.json";
-        if (File.Exists(fileName) && !context.SRNutritionData.Any())
-        {
-            var foods = JsonNode.Parse(File.ReadAllText(fileName));
-            foreach (var food in foods["SRLegacyFoods"].AsArray())
-            {
-                var foodData = new StandardReferenceNutritionData()
-                {
-                    NdbNumber = food["ndbNumber"].GetValue<int>(),
-                    FdcId = food["fdcId"].GetValue<int>(),
-                    Description = food["description"].GetValue<string>(),
-                    FoodNutrients = JsonDocument.Parse(food["foodNutrients"].ToJsonString()),
-                    NutrientConversionFactors = JsonDocument.Parse(food["nutrientConversionFactors"].ToJsonString()),
-                    FoodCategory = JsonDocument.Parse(food["foodCategory"].ToJsonString()),
-                    FoodPortions = JsonDocument.Parse(food["foodPortions"].ToJsonString()),
-                };
-                context.SRNutritionData.Add(foodData);
-            }
-            context.SaveChanges();
-        }
-    }
+    // await Loader.LoadAsync(dataSource, blobContainer, builder.Environment.ContentRootPath);
 }
+
+app.MapGoogleAuthEndpoints();
+
+// SPA fallback - serve index.html for any unmatched routes
+app.MapFallbackToFile("index.html");
+
+app.Run();

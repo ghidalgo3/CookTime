@@ -8,7 +8,7 @@ import { useAuthentication } from "../Authentication/AuthenticationContext";
 
 interface RecipeListProps {
   title: string
-  type: "Featured" | "New" | "Query" | "Mine" | "Favorites"
+  type: "Featured" | "New" | "Query" | "Favorites" | "Mine"
   query?: URLSearchParams
   hideIfEmpty?: boolean
 }
@@ -32,8 +32,9 @@ export default function RecipeList({ title, query, type, hideIfEmpty }: RecipeLi
         const result = await getFavoriteRecipeViews();
         setRecipes(toPagedResult(result));
       } else if (type === "Mine") {
-        const result = await getMyRecipes();
-        setRecipes(toPagedResult(result));
+        const page = query?.get("page") ?? "1";
+        const result = await getMyRecipes({ page: Number.parseInt(page) });
+        setRecipes(result);
       }
     }
     loadData();
@@ -54,7 +55,7 @@ export default function RecipeList({ title, query, type, hideIfEmpty }: RecipeLi
           user &&
           <Col className="margin-bottom-20 text-end" xs={2}>
             <Link to="/Recipes/Create">
-              <i className="fas fa-plus-circle themePrimary-color fa-2x"></i>
+              <i className="bi bi-plus-circle themePrimary-color fs-3"></i>
             </Link>
           </Col>
         }

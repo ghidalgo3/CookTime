@@ -16,7 +16,7 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
   const [searchParams, setSearchParams] = useSearchParams();
   const activePage = Number.parseInt(searchParams.get("page") ?? "1");
   function paramsForPage(i: number) {
-    const urlParams = new URLSearchParams(window.location.search);
+    const urlParams = new URLSearchParams(searchParams.toString());
     urlParams.set("page", i === 0 ? "" : encodeURIComponent(i));
     return urlParams;
   }
@@ -24,21 +24,21 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
     setSearchParams(paramsForPage(i));
   }
 
-  let elementInner = (item: T, idx: number) => {
+  let elementInner = (item: T | null, idx: number) => {
     if (idx === props.inFeedAdIndex) {
       return (
         <RecipeCardInFeedAd />
       )
     } else {
-      return element(item);
+      return element(item as T);
     }
   }
-  let itemsWithAd = items.results;
-  if (props.inFeedAdIndex && props.inFeedAdIndex < items.results.length) {
-    let itemsWithAd = [
-      ...items.results.slice(0, props.inFeedAdIndex),
+  var itemsWithAd: (T | null)[] = items.results;
+  if (props.inFeedAdIndex && itemsWithAd.length > 0 && props.inFeedAdIndex < itemsWithAd.length) {
+    itemsWithAd = [
+      ...itemsWithAd.slice(0, props.inFeedAdIndex),
       null,
-      ...items.results.slice(props.inFeedAdIndex)];
+      ...itemsWithAd.slice(props.inFeedAdIndex)];
   }
   return (
     <>
@@ -53,7 +53,6 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
                 {elementInner(item, idx)}
               </Col>
             )
-            return elementInner(item, idx)
           })
           //     if (props.inFeedAdIndex && idx > props.inFeedAdIndex) {
           //   idx--;

@@ -1,8 +1,0 @@
-@model ValueTuple<string, string>
-@{ var (text, classs) = Model; string boostrapClass = $"alert-{classs}"; }
-
-<div class="alert @boostrapClass alert-dismissible fade show" role="alert">
-    @text
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
-    </button>
-</div>

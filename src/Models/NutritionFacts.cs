@@ -6,18 +6,12 @@ namespace babe_algorithms.Models;
 /// DTO for presenting nutrition information
 /// about a recipe.
 /// </summary>
-public class RecipeNutritionFacts
+public record RecipeNutritionFacts
 {
-    public RecipeNutritionFacts()
-    {
-        Components = new List<NutritionFactVector>();
-        DietDetails = new List<DietDetail>();
-    }
-
-    public NutritionFactVector Recipe { get; set; }
-    public List<NutritionFactVector> Components { get; set; }
-    public List<DietDetail> DietDetails { get; set; }
-    public List<IngredientNutritionDescription> Ingredients { get; set; }
+    public required NutritionFactVector Recipe { get; set; }
+    public List<NutritionFactVector> Components { get; set; } = [];
+    public List<DietDetail> DietDetails { get; set; } = [];
+    public List<IngredientNutritionDescription> Ingredients { get; set; } = [];
 }
 
 public enum DietOpinion
@@ -41,7 +35,7 @@ public class DietDetail
     /// For example, TodaysTen is a valid value here.
     /// </summary>
     /// <value></value>
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
     public DietOpinion Opinion { get; set; } = DietOpinion.Neutral;
 
@@ -50,18 +44,18 @@ public class DietDetail
     /// and make sure it's JSON serializable.
     /// </summary>
     /// <value></value>
-    public object Details { get; set; }
+    public required object Details { get; set; }
 }
 
 public class IngredientNutritionDescription
 {
-    public string NutritionDatabaseId { get; set; }
-    public string NutritionDatabaseDescriptor { get; set; }
-    public string Name { get; set; }
-    public string Unit { get; set; }
-    public double Quantity { get; set; }
-    public string Modifier { get; set; }
-    public double CaloriesPerServing { get; set; }
+    public required string NutritionDatabaseId { get; set; }
+    public required string NutritionDatabaseDescriptor { get; set; }
+    public required string Name { get; set; }
+    public required string Unit { get; set; }
+    public required double Quantity { get; set; }
+    public required string Modifier { get; set; }
+    public required double CaloriesPerServing { get; set; }
 }
 
 public class NutritionFactVector
@@ -95,9 +89,33 @@ public class NutritionFactVector
             Calcium = this.Calcium + nf.Calcium,
             Potassium = this.Potassium + nf.Potassium
         };
-    
+
     public static NutritionFactVector operator +(
         NutritionFactVector a,
         NutritionFactVector b) =>
             a.Combine(b);
+
+    public static NutritionFactVector operator /(NutritionFactVector a, double divisor)
+    {
+        if (divisor == 0)
+        {
+            divisor = 1;
+        }
+
+        return new NutritionFactVector
+        {
+            Calories = a.Calories / divisor,
+            Carbohydrates = a.Carbohydrates / divisor,
+            SaturatedFats = a.SaturatedFats / divisor,
+            MonoUnsaturatedFats = a.MonoUnsaturatedFats / divisor,
+            PolyUnsaturatedFats = a.PolyUnsaturatedFats / divisor,
+            TransFats = a.TransFats / divisor,
+            Proteins = a.Proteins / divisor,
+            Sugars = a.Sugars / divisor,
+            Iron = a.Iron / divisor,
+            VitaminD = a.VitaminD / divisor,
+            Calcium = a.Calcium / divisor,
+            Potassium = a.Potassium / divisor
+        };
+    }
 }

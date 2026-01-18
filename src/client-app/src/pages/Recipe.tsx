@@ -11,7 +11,7 @@ export function Path(id: string) {
 
 export default function Recipe() {
   const [searchParams] = useSearchParams();
-  const origin = window.location.origin;
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const recipeId = searchParams.get("id");
   return (
     recipeId ?

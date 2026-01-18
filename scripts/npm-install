@@ -1,0 +1,11 @@
+#!/bin/bash
+# Regenerate package-lock.json inside an Alpine Linux container
+# to ensure Linux-specific dependencies are included for Docker builds
+
+set -e
+
+cd "$(dirname "$0")/../src/client-app"
+
+echo "Regenerating package-lock.json for Linux..."
+docker run --rm -v "$(pwd)":/app -w /app node:24-alpine sh -c "rm -f package-lock.json && npm install"
+echo "Done! package-lock.json is now compatible with Linux/Alpine."

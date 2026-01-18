@@ -3,12 +3,12 @@ import React from "react";
 import { MultiPartRecipe, Image } from "src/shared/CookTime";
 
 type RecipeStructuredDataProps = {
-    recipe : MultiPartRecipe,
-    images : Image[]
+  recipe: MultiPartRecipe,
+  images: Image[]
 }
 
-export function RecipeStructuredData({recipe, images} : RecipeStructuredDataProps) {
-  let metadata : any = {
+export function RecipeStructuredData({ recipe, images }: RecipeStructuredDataProps) {
+  let metadata: any = {
     "@context": "https://schema.org/",
     "@type": "Recipe",
     "name": recipe.name,
@@ -16,9 +16,7 @@ export function RecipeStructuredData({recipe, images} : RecipeStructuredDataProp
       "@type": "Person",
       "name": recipe.owner?.userName
     },
-    "image": images.map(image => {
-      return `${window.location.origin}/image/${image.id}`
-    }),
+    "image": images.map(image => image.url),
     "recipeYield": recipe.servingsProduced,
     "cookTime": `${moment.duration(recipe.cooktimeMinutes, 'minutes').toISOString()}`,
     "recipeIngredient": recipe.recipeComponents.flatMap(component => {
@@ -31,7 +29,7 @@ export function RecipeStructuredData({recipe, images} : RecipeStructuredDataProp
       return component.steps?.map(step => {
         return {
           "@type": "HowToStep",
-          "text": step.text
+          "text": step
         }
       })
     }),
@@ -42,8 +40,8 @@ export function RecipeStructuredData({recipe, images} : RecipeStructuredDataProp
       "@type": "AggregateRating",
       "ratingValue": recipe.averageReviews,
       "ratingCount": recipe.reviewCount,
-      "bestRating" : 5,
-      "worstRating" : 1
+      "bestRating": 5,
+      "worstRating": 1
     }
   }
 

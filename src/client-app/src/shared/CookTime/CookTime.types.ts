@@ -7,13 +7,13 @@ export type Autosuggestable = {
 }
 
 export type DietDetail = {
-    name : string,
+    name: string,
     opinion: string
-    details : TodaysTenDetails | any
+    details: TodaysTenDetails | any
 }
 
 export type TodaysTenDetails = {
-    hasFruits : boolean,
+    hasFruits: boolean,
     hasVegetables: boolean,
     hasCruciferousVegetables: boolean,
     hasBeans: boolean,
@@ -26,46 +26,46 @@ export type TodaysTenDetails = {
 }
 
 export type Review = {
-    id : string,
-    createdAt : string,
-    owner : Owner,
-    rating : number,
-    text : string
+    id: string,
+    createdAt: string,
+    owner: Owner,
+    rating: number,
+    text: string
 }
 
 export type MeasureUnit = {
-   name: string,
-   siType : string
-   siValue: number
+    name: string,
+    siType: string
+    siValue: number
 }
 
 export type Cart = {
-    id : string,
+    id: string,
     recipeRequirement: RecipeRequirement[],
-    CreateAt : string,
-    active : boolean
-    ingredientState : CartIngredient[],
-    dietDetails : DietDetail[]
+    CreateAt: string,
+    active: boolean
+    ingredientState: CartIngredient[],
+    dietDetails: DietDetail[]
 }
 
 export type RecipeRequirement = {
-    recipe : Recipe,
-    multiPartRecipe : MultiPartRecipe,
-    quantity : number,
+    recipe: Recipe,
+    multiPartRecipe: MultiPartRecipe,
+    quantity: number,
     id: string
 }
 
 export type IngredientRequirement = {
-    ingredient : Ingredient,
-    text : string,
-    unit : string,
-    quantity : number,
+    ingredient: Ingredient,
+    text: string,
+    unit: string,
+    quantity: number,
     id: string
-    position : number
+    position: number
 }
 
 export type Ingredient = Autosuggestable & {
-    densityKgPerL : number | undefined
+    densityKgPerL: number | undefined
 }
 
 export type CartIngredient = {
@@ -74,124 +74,203 @@ export type CartIngredient = {
     checked: boolean
 }
 
-export type RecipeStep = {
-    text : string,
-    id: string
-}
-
 export type Image = {
-    name : string,
-    id : string
+    id: string,
+    url: string
 }
 
 export type Category = Autosuggestable
 
 export type Owner = {
-    userName : string,
+    userName: string,
     id: string
 }
 
 export type MultiPartRecipe = {
-    id : string,
-    name : string,
+    id: string,
+    name: string,
     owner: Owner | null,
-    cooktimeMinutes : number | undefined,
-    caloriesPerServing : number,
-    servingsProduced : number,
+    cooktimeMinutes: number | undefined,
+    caloriesPerServing: number,
+    servingsProduced: number,
     source: string,
-    categories : Category[],
-    staticImage : string
+    categories: Category[],
+    staticImage: string
     recipeComponents: RecipeComponent[],
     reviewCount: number,
     averageReviews: number
 }
 
 export type RecipeComponent = {
-    id : string,
-    name : string,
-    ingredients : IngredientRequirement[] | undefined,
-    steps : RecipeStep[] | undefined,
-    position : number
+    id: string,
+    name: string,
+    ingredients: IngredientRequirement[] | undefined,
+    steps: string[] | undefined,
+    position: number
 }
 
 export type Recipe = {
-    id : string,
-    name : string,
-    cooktimeMinutes : number | undefined,
-    caloriesPerServing : number,
-    servingsProduced : number,
+    id: string,
+    name: string,
+    cooktimeMinutes: number | undefined,
+    caloriesPerServing: number,
+    servingsProduced: number,
     source: string,
-    ingredients : IngredientRequirement[] | undefined,
-    steps : RecipeStep[] | undefined,
-    categories : {name: string, id: string, isNew: boolean}[],
-    staticImage : string
+    ingredients: IngredientRequirement[] | undefined,
+    steps: string[] | undefined,
+    categories: { name: string, id: string, isNew: boolean }[],
+    staticImage: string
 }
 
 export type NutritionFactVector = {
-    calories : number,
-    carbohydrates : number,
-    saturatedFats : number,
-    transFats : number,
-    monoUnsaturatedFats : number,
-    polyUnsaturatedFats : number,
-    proteins : number,
-    sugars : number,
-    iron : number,
-    vitaminD : number,
-    calcium : number,
-    potassium : number,
+    calories: number,
+    carbohydrates: number,
+    saturatedFats: number,
+    transFats: number,
+    monoUnsaturatedFats: number,
+    polyUnsaturatedFats: number,
+    proteins: number,
+    sugars: number,
+    iron: number,
+    vitaminD: number,
+    calcium: number,
+    potassium: number,
 }
 
 export type RecipeNutritionFacts = {
-    recipe : NutritionFactVector,
-    components : NutritionFactVector[]
+    recipe: NutritionFactVector,
+    components: NutritionFactVector[]
     ingredients: IngredientNutritionDescription[]
-    dietDetails : DietDetail[]
+    dietDetails: DietDetail[]
 }
 
 export type IngredientNutritionDescription = {
-    nutritionDatabaseId : string,
-    nutritionDatabaseDescriptor : string,
-    name : string,
-    unit : string,
-    modifier : string,
-    quantity : number,
-    caloriesPerServing : number,
+    nutritionDatabaseId: string,
+    nutritionDatabaseDescriptor: string,
+    name: string,
+    unit: string,
+    modifier: string,
+    quantity: number,
+    caloriesPerServing: number,
 }
 
+// TODO rename this to RecipeSummary to match server
 export type RecipeView = {
-  name : string,
-  id: string,
-  images: Image[],
-  categories: string[],
-  averageReviews: number,
-  reviewCount: number,
-  isFavorite: boolean | undefined
+    name: string,
+    id: string,
+    images: Image[],
+    categories: string[],
+    averageReviews: number,
+    reviewCount: number
+}
+
+export type RecipeList = {
+    id: string,
+    name: string,
+    description: string | null,
+    creationDate: string,
+    isPublic: boolean,
+    recipeCount: number
+}
+
+export type RecipeListWithRecipes = {
+    id: string,
+    name: string,
+    description: string | null,
+    creationDate: string,
+    isPublic: boolean,
+    ownerId: string,
+    recipes: RecipeView[]
 }
 
 export type PagedResult<T> = {
-  results : T[],
-  currentPage: number,
-  pageCount: number,
-  pageSize: number,
-  rowCount: number,
-  firstRowOnPage: number,
-  lastRowOnPage: number
+    results: T[],
+    currentPage: number,
+    pageCount: number,
+    pageSize: number,
+    rowCount: number,
+    firstRowOnPage: number,
+    lastRowOnPage: number
 }
 
 export type IngredientInternalUpdate = {
-  ingredientId: string,
-  ndbNumber: number,
-  ingredientNames: string,
-  gtinUpc: string,
-  countRegex: string,
-  expectedUnitMass: string,
-  nutritionDescription: string
+    ingredientId: string,
+    ndbNumber: number,
+    ingredientNames: string,
+    gtinUpc: string,
+    countRegex: string,
+    expectedUnitMass: string,
+    nutritionDescription: string
 }
 
 export type IngredientReplacementRequest = {
-  replacedId: string,
-  name: string,
-  usage: number,
-  keptId: string,
+    replacedId: string,
+    name: string,
+    usage: number,
+    keptId: string,
+}
+
+// DTOs for create/update operations (match backend RecipeCreateDto/RecipeUpdateDto)
+export type IngredientRequirementCreateDto = {
+    ingredientId: string,
+    quantity: number,
+    unit: string | null,
+    position: number,
+    description: string | null
+}
+
+export type ComponentCreateDto = {
+    name: string | null,
+    position: number,
+    steps: string[],
+    ingredients: IngredientRequirementCreateDto[]
+}
+
+export type RecipeCreateDto = {
+    name: string,
+    ownerId: string,
+    prepMinutes: number | null,
+    cookingMinutes: number | null,
+    servings: number | null,
+    calories: number | null,
+    description: string | null,
+    source: string | null,
+    components: ComponentCreateDto[],
+    categoryIds: string[]
+}
+
+export type RecipeUpdateDto = RecipeCreateDto & {
+    id: string
+}
+
+// Conversion function from MultiPartRecipe to RecipeUpdateDto
+export function toRecipeUpdateDto(recipe: MultiPartRecipe): RecipeUpdateDto {
+    return {
+        id: recipe.id,
+        name: recipe.name,
+        ownerId: recipe.owner?.id ?? '',
+        prepMinutes: null,
+        cookingMinutes: recipe.cooktimeMinutes ?? null,
+        servings: recipe.servingsProduced ?? null,
+        calories: recipe.caloriesPerServing ?? null,
+        description: null,
+        source: recipe.source ?? null,
+        components: recipe.recipeComponents.map((component, index) => ({
+            name: component.name ?? null,
+            position: component.position ?? index,
+            steps: (component.steps ?? []).filter(s => s != null && s.trim() !== ''),
+            ingredients: (component.ingredients ?? [])
+                .filter(i => i.ingredient?.id)
+                .map((ing, ingIndex) => ({
+                    ingredientId: ing.ingredient.id,
+                    quantity: ing.quantity ?? 0,
+                    unit: ing.unit ?? null,
+                    position: ing.position ?? ingIndex,
+                    description: ing.text ?? null
+                }))
+        })),
+        categoryIds: recipe.categories
+            .filter(c => c?.id != null)
+            .map(c => c.id)
+    };
 }
