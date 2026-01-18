@@ -19,17 +19,15 @@ export function AuthenticationContext({ children }: { children: React.ReactNode 
     }
   }, [user])
 
+  const refreshUser = async () => {
+    const userDetails = await AuthenticationProvider.getUserDetails();
+    setUser(userDetails);
+    return userDetails;
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
-      signIn:
-        async (usernameOrEmail, password, rememberMe) => {
-          const userDetails = await AuthenticationProvider.signIn(usernameOrEmail, password, rememberMe);
-          if (userDetails != "Failure") {
-            setUser(userDetails);
-          }
-          return userDetails;
-        },
       signOut: async () => {
         const didSignOut = await AuthenticationProvider.signOut();
         if (didSignOut) {
@@ -37,10 +35,14 @@ export function AuthenticationContext({ children }: { children: React.ReactNode 
         }
         return didSignOut;
       },
-      signUp: AuthenticationProvider.signUp,
-      getUserDetails: AuthenticationProvider.getUserDetails,
-      sendPasswordResetEmail: AuthenticationProvider.sendPasswordResetEmail,
-      changePassword: AuthenticationProvider.changePassword
+      getUserDetails: refreshUser,
+      updateDisplayName: async (displayName: string) => {
+        const result = await AuthenticationProvider.updateDisplayName(displayName);
+        if (result.ok) {
+          await refreshUser();
+        }
+        return result;
+      },
     }}>
       {children}
     </AuthContext.Provider>

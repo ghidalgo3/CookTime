@@ -75,8 +75,8 @@ export type CartIngredient = {
 }
 
 export type Image = {
-    name: string,
-    id: string
+    id: string,
+    url: string
 }
 
 export type Category = Autosuggestable
@@ -208,4 +208,69 @@ export type IngredientReplacementRequest = {
     name: string,
     usage: number,
     keptId: string,
+}
+
+// DTOs for create/update operations (match backend RecipeCreateDto/RecipeUpdateDto)
+export type IngredientRequirementCreateDto = {
+    ingredientId: string,
+    quantity: number,
+    unit: string | null,
+    position: number,
+    description: string | null
+}
+
+export type ComponentCreateDto = {
+    name: string | null,
+    position: number,
+    steps: string[],
+    ingredients: IngredientRequirementCreateDto[]
+}
+
+export type RecipeCreateDto = {
+    name: string,
+    ownerId: string,
+    prepMinutes: number | null,
+    cookingMinutes: number | null,
+    servings: number | null,
+    calories: number | null,
+    description: string | null,
+    source: string | null,
+    components: ComponentCreateDto[],
+    categoryIds: string[]
+}
+
+export type RecipeUpdateDto = RecipeCreateDto & {
+    id: string
+}
+
+// Conversion function from MultiPartRecipe to RecipeUpdateDto
+export function toRecipeUpdateDto(recipe: MultiPartRecipe): RecipeUpdateDto {
+    return {
+        id: recipe.id,
+        name: recipe.name,
+        ownerId: recipe.owner?.id ?? '',
+        prepMinutes: null,
+        cookingMinutes: recipe.cooktimeMinutes ?? null,
+        servings: recipe.servingsProduced ?? null,
+        calories: recipe.caloriesPerServing ?? null,
+        description: null,
+        source: recipe.source ?? null,
+        components: recipe.recipeComponents.map((component, index) => ({
+            name: component.name ?? null,
+            position: component.position ?? index,
+            steps: (component.steps ?? []).filter(s => s != null && s.trim() !== ''),
+            ingredients: (component.ingredients ?? [])
+                .filter(i => i.ingredient?.id)
+                .map((ing, ingIndex) => ({
+                    ingredientId: ing.ingredient.id,
+                    quantity: ing.quantity ?? 0,
+                    unit: ing.unit ?? null,
+                    position: ing.position ?? ingIndex,
+                    description: ing.text ?? null
+                }))
+        })),
+        categoryIds: recipe.categories
+            .filter(c => c?.id != null)
+            .map(c => c.id)
+    };
 }

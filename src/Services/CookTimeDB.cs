@@ -270,19 +270,18 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         return JsonSerializer.Deserialize<IngredientDto>(result.ToString()!, JsonOptions);
     }
 
-    public async Task<List<IngredientDto>> SearchIngredientsAsync(string searchTerm, int limit = 20)
+    public async Task<List<IngredientAutosuggestDto>> SearchIngredientsAsync(string searchTerm)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
-        await using var cmd = new NpgsqlCommand("SELECT cooktime.search_ingredients($1, $2)", conn);
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.search_ingredients($1)", conn);
 
         cmd.Parameters.AddWithValue(searchTerm);
-        cmd.Parameters.AddWithValue(limit);
 
         var result = await cmd.ExecuteScalarAsync();
         if (result == null || result == DBNull.Value)
             return [];
 
-        return JsonSerializer.Deserialize<List<IngredientDto>>(result.ToString()!, JsonOptions) ?? [];
+        return JsonSerializer.Deserialize<List<IngredientAutosuggestDto>>(result.ToString()!, JsonOptions) ?? [];
     }
 
     public async Task<List<string>> GetIngredientImagesAsync(int ingredientId)
@@ -326,11 +325,36 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         return JsonSerializer.Deserialize<List<CategoryDto>>(result.ToString()!, JsonOptions) ?? [];
     }
 
+    public async Task<List<CategoryWithIdDto>> SearchCategoriesAsync(string query)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.search_categories($1)", conn);
+        cmd.Parameters.AddWithValue(query);
+
+        var result = await cmd.ExecuteScalarAsync();
+        if (result == null || result == DBNull.Value)
+            return [];
+
+        return JsonSerializer.Deserialize<List<CategoryWithIdDto>>(result.ToString()!, JsonOptions) ?? [];
+    }
+
+    public async Task<List<CategoryWithIdDto>> GetAllCategoriesWithIdsAsync()
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_all_categories()", conn);
+
+        var result = await cmd.ExecuteScalarAsync();
+        if (result == null || result == DBNull.Value)
+            return [];
+
+        return JsonSerializer.Deserialize<List<CategoryWithIdDto>>(result.ToString()!, JsonOptions) ?? [];
+    }
+
     #endregion
 
     #region Reviews
 
-    public async Task<List<ReviewDto>> GetReviewsByRecipeIdAsync(int recipeId)
+    public async Task<List<ReviewViewDto>> GetReviewsByRecipeIdAsync(Guid recipeId)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
         await using var cmd = new NpgsqlCommand("SELECT cooktime.get_recipe_reviews($1)", conn);
@@ -339,9 +363,45 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
 
         var result = await cmd.ExecuteScalarAsync();
         if (result == null || result == DBNull.Value)
+        {
             return [];
+        }
 
-        return JsonSerializer.Deserialize<List<ReviewDto>>(result.ToString()!, JsonOptions) ?? [];
+        return JsonSerializer.Deserialize<List<ReviewViewDto>>(result.ToString()!, JsonOptions) ?? [];
+    }
+
+    public async Task<Guid> CreateReviewAsync(Guid recipeId, Guid ownerId, int rating, string? text)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.create_review($1, $2, $3, $4)", conn);
+
+        cmd.Parameters.AddWithValue(recipeId);
+        cmd.Parameters.AddWithValue(ownerId);
+        cmd.Parameters.AddWithValue(rating);
+        cmd.Parameters.AddWithValue(text ?? (object)DBNull.Value);
+
+        var result = await cmd.ExecuteScalarAsync();
+        return (Guid)result!;
+    }
+
+    #endregion
+
+    #region Images
+
+    public async Task<List<ImageDto>> GetImagesByRecipeIdAsync(Guid recipeId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_recipe_images($1)", conn);
+
+        cmd.Parameters.AddWithValue(recipeId);
+
+        var result = await cmd.ExecuteScalarAsync();
+        if (result == null || result == DBNull.Value)
+        {
+            return [];
+        }
+
+        return JsonSerializer.Deserialize<List<ImageDto>>(result.ToString()!, JsonOptions) ?? [];
     }
 
     #endregion

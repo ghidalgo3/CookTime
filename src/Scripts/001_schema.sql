@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS cooktime.users (
 
 CREATE INDEX IF NOT EXISTS idx_users_provider_user_id ON cooktime.users(provider, provider_user_id);
 CREATE INDEX IF NOT EXISTS idx_users_email ON cooktime.users(email);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_users_display_name_unique ON cooktime.users(display_name) WHERE display_name IS NOT NULL;
 
 -- Create unit enum type
 DO $$ BEGIN

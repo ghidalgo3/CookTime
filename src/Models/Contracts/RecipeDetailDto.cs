@@ -77,6 +77,6 @@ public class ImageDto
     [JsonPropertyName("id")]
     public Guid Id { get; set; }
 
-    [JsonPropertyName("name")]
-    public string Name { get; set; } = null!;
+    [JsonPropertyName("url")]
+    public string Url { get; set; } = null!;
 }

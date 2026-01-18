@@ -52,12 +52,7 @@ BEGIN
         ) VALUES (
             component_item->>'name',
             (component_item->>'position')::integer,
-            ARRAY(SELECT jsonb_array_elements_text(
-                COALESCE(
-                    (SELECT jsonb_agg(s->>'instruction') FROM jsonb_array_elements(component_item->'steps') s),
-                    '[]'::jsonb
-                )
-            )),
+            ARRAY(SELECT jsonb_array_elements_text(COALESCE(component_item->'steps', '[]'::jsonb))),
             new_recipe_id
         )
         RETURNING id INTO component_id;
@@ -143,12 +138,7 @@ BEGIN
         ) VALUES (
             component_item->>'name',
             (component_item->>'position')::integer,
-            ARRAY(SELECT jsonb_array_elements_text(
-                COALESCE(
-                    (SELECT jsonb_agg(s->>'instruction') FROM jsonb_array_elements(component_item->'steps') s),
-                    '[]'::jsonb
-                )
-            )),
+            ARRAY(SELECT jsonb_array_elements_text(COALESCE(component_item->'steps', '[]'::jsonb))),
             p_recipe_id
         )
         RETURNING id INTO component_id;
@@ -406,13 +396,15 @@ BEGIN
         name,
         cooking_minutes,
         servings,
-        source
+        source,
+        owner_id
     ) VALUES (
         (recipe_json->>'Id')::uuid,
         recipe_json->>'Name',
         (recipe_json->>'CooktimeMinutes')::double precision,
         (recipe_json->>'ServingsProduced')::integer,
-        recipe_json->>'Source'
+        recipe_json->>'Source',
+        (recipe_json->>'OwnerId')::uuid
     )
     ON CONFLICT (id) DO NOTHING
     RETURNING id INTO recipe_id;
@@ -502,11 +494,15 @@ BEGIN
     INSERT INTO cooktime.images (
         id,
         storage_url,
-        uploaded_date
+        uploaded_date,
+        static_image_name,
+        recipe_id
     ) VALUES (
         (image_json->>'Id')::uuid,
         image_json->>'StorageUrl',
-        COALESCE((image_json->>'UploadedDate')::timestamptz, now())
+        COALESCE((image_json->>'UploadedDate')::timestamptz, now()),
+        image_json->>'Name',
+        (image_json->>'RecipeId')::uuid
     )
     ON CONFLICT (id) DO NOTHING
     RETURNING id INTO image_id;
@@ -609,5 +605,91 @@ BEGIN
     RETURNING id INTO req_id;
     
     RETURN req_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Import user from AspNetUsers table
+CREATE OR REPLACE FUNCTION cooktime.import_user(user_json jsonb)
+RETURNS uuid AS $$
+DECLARE
+    user_id uuid;
+BEGIN
+    INSERT INTO cooktime.users (
+        id,
+        provider,
+        provider_user_id,
+        email,
+        display_name,
+        roles
+    ) VALUES (
+        (user_json->>'Id')::uuid,
+        'cooktime',
+        user_json->>'Id',
+        user_json->>'Email',
+        COALESCE(user_json->>'UserName', user_json->>'Email', 'User'),
+        ARRAY['User']
+    )
+    ON CONFLICT (id) DO NOTHING
+    RETURNING id INTO user_id;
+    
+    RETURN user_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Import review from Reviews table
+CREATE OR REPLACE FUNCTION cooktime.import_review(review_json jsonb)
+RETURNS uuid AS $$
+DECLARE
+    review_id uuid;
+BEGIN
+    INSERT INTO cooktime.reviews (
+        id,
+        created_date,
+        last_modified_date,
+        owner_id,
+        recipe_id,
+        rating,
+        comment
+    ) VALUES (
+        (review_json->>'Id')::uuid,
+        (review_json->>'CreatedAt')::timestamptz,
+        (review_json->>'LastModified')::timestamptz,
+        (review_json->>'OwnerId')::uuid,
+        (review_json->>'RecipeId')::uuid,
+        (review_json->>'Rating')::integer,
+        review_json->>'Text'
+    )
+    ON CONFLICT (id) DO NOTHING
+    RETURNING id INTO review_id;
+    
+    RETURN review_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create a new review
+CREATE OR REPLACE FUNCTION cooktime.create_review(
+    p_recipe_id uuid,
+    p_owner_id uuid,
+    p_rating integer,
+    p_text text
+)
+RETURNS uuid AS $$
+DECLARE
+    review_id uuid;
+BEGIN
+    INSERT INTO cooktime.reviews (
+        recipe_id,
+        owner_id,
+        rating,
+        comment
+    ) VALUES (
+        p_recipe_id,
+        p_owner_id,
+        p_rating,
+        p_text
+    )
+    RETURNING id INTO review_id;
+    
+    RETURN review_id;
 END;
 $$ LANGUAGE plpgsql;

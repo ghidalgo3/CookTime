@@ -2,6 +2,24 @@ using System.Text.Json.Serialization;
 
 namespace BabeAlgorithms.Models.Contracts;
 
+public record ReviewViewDto
+{
+    [JsonPropertyName("id")]
+    public Guid Id { get; init; }
+
+    [JsonPropertyName("createdAt")]
+    public DateTimeOffset CreatedAt { get; init; }
+
+    [JsonPropertyName("owner")]
+    public OwnerDto Owner { get; init; } = null!;
+
+    [JsonPropertyName("rating")]
+    public int Rating { get; init; }
+
+    [JsonPropertyName("text")]
+    public string? Text { get; init; }
+}
+
 public class ReviewDto
 {
     [JsonPropertyName("reviewId")]
@@ -37,3 +55,8 @@ public class ReviewCreateDto
     [JsonPropertyName("comment")]
     public string? Comment { get; set; }
 }
+
+public record ReviewCreateRequest(
+    [property: JsonPropertyName("rating")] int Rating,
+    [property: JsonPropertyName("text")] string? Text
+);

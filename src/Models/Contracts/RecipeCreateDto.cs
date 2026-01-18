@@ -74,3 +74,4 @@ public class IngredientRequirementCreateDto
     public string? Description { get; set; }
 }
 
+public record RecipeCreateRequest(string Name);

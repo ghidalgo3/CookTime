@@ -1,8 +1,10 @@
 import React from "react";
 import { Button, Col, Form, FormControl, Row } from "react-bootstrap";
 import { Step } from "./RecipeStep";
-import ReactSortable from "react-sortablejs";
-import { MultiPartRecipe, Recipe, RecipeComponent, RecipeStep } from "src/shared/CookTime";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { MultiPartRecipe, Recipe, RecipeComponent } from "src/shared/CookTime";
 
 type RecipeStepListProps = {
     recipe: Recipe | MultiPartRecipe,
@@ -10,111 +12,155 @@ type RecipeStepListProps = {
     multipart: boolean,
     component?: RecipeComponent,
     onDeleteStep: (i: number, component?: RecipeComponent) => void,
-    onChange: (newSteps: RecipeStep[]) => void,
+    onChange: (newSteps: string[]) => void,
     onNewStep: () => void,
     edit: boolean
 }
 
-export class RecipeStepList extends React.Component<RecipeStepListProps, {}> {
-    constructor(props: RecipeStepListProps) {
-        super(props);
-    }
+type SortableStepProps = {
+    id: string,
+    index: number,
+    stepText: string,
+    onTextChange: (index: number, value: string) => void,
+    onDelete: (index: number) => void
+}
 
-    stepEditRow(i: RecipeStep, idx: number): any {
-        return (
+function SortableStep({ id, index, stepText, onTextChange, onDelete }: SortableStepProps) {
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
+    return (
+        <div ref={setNodeRef} style={style}>
             <Row>
                 <Col className="col d-flex align-items-center get-smaller">
-                    <i className="margin-right-10 drag-handle bi bi-grip-vertical"></i>
+                    <i
+                        className="margin-right-10 drag-handle bi bi-grip-vertical"
+                        style={{ cursor: 'grab' }}
+                        {...attributes}
+                        {...listeners}
+                    />
                     <FormControl
                         as="textarea"
                         rows={4}
                         className="margin-bottom-8"
-                        key={idx}
                         type="text"
                         placeholder="Recipe step"
-                        value={i.text}
-                        onChange={e => {
-                            if (!this.props.multipart) {
-                                let newSteps = Array.from((this.props.recipe as Recipe).steps ?? []);
-                                newSteps[idx].text = e.target.value;
-                                this.props.onChange(newSteps);
-                            } else {
-                                let newSteps = Array.from((this.props.component!).steps ?? []);
-                                newSteps[idx].text = e.target.value;
-                                this.props.onChange(newSteps);
-                            }
-                        }}>
-                    </FormControl>
+                        value={stepText}
+                        onChange={e => onTextChange(index, e.target.value)}
+                    />
                 </Col>
                 <Col xs={1}>
                     <Button className="float-end" variant="danger">
-                        <i onClick={(_) => this.props.onDeleteStep(idx, this.props.component)} className="bi bi-trash"></i>
+                        <i onClick={() => onDelete(index)} className="bi bi-trash"></i>
                     </Button>
                 </Col>
             </Row>
-        )
+        </div>
+    );
+}
+
+export function RecipeStepList(props: RecipeStepListProps) {
+    const { recipe, multipart, component, newServings, edit, onChange, onDeleteStep, onNewStep } = props;
+
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
+
+    const steps = multipart ? (component?.steps ?? []) : ((recipe as Recipe).steps ?? []);
+
+    // Create stable IDs for sortable items (using index as fallback since steps are strings)
+    const itemIds = steps.map((_, idx) => `step-${idx}`);
+
+    function handleDragEnd(event: DragEndEvent) {
+        const { active, over } = event;
+        if (over && active.id !== over.id) {
+            const oldIndex = itemIds.indexOf(active.id as string);
+            const newIndex = itemIds.indexOf(over.id as string);
+            const newSteps = arrayMove([...steps], oldIndex, newIndex);
+            onChange(newSteps);
+        }
     }
 
-    stepEdit(): React.ReactNode {
+    function handleTextChange(index: number, value: string) {
+        const newSteps = [...steps];
+        newSteps[index] = value;
+        onChange(newSteps);
+    }
+
+    function handleDelete(index: number) {
+        onDeleteStep(index, component);
+    }
+
+    if (edit) {
         return (
             <Form>
-
-                <ReactSortable
-                    list={this.props.component!.steps!}
-                    setList={newSteps => {
-                        this.props.onChange(newSteps);
-                        // this.props.component!.steps! = newSteps
-                    }}
-                    handle=".drag-handle"
+                <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
                 >
-                    {this.props.multipart ?
-                        this.props.component!.steps?.map((i, idx) => this.stepEditRow(i, idx)) :
-                        (this.props.recipe as Recipe).steps?.map((i, idx) => this.stepEditRow(i, idx))}
-                </ReactSortable>
+                    <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
+                        {steps.map((stepText, idx) => (
+                            <SortableStep
+                                key={itemIds[idx]}
+                                id={itemIds[idx]}
+                                index={idx}
+                                stepText={stepText}
+                                onTextChange={handleTextChange}
+                                onDelete={handleDelete}
+                            />
+                        ))}
+                    </SortableContext>
+                </DndContext>
                 <Col xs={12}>
                     <Button
                         variant="outline-primary"
                         className="width-100 margin-bottom-10"
-                        onClick={(_) => this.props.onNewStep()}>New step</Button>
+                        onClick={() => onNewStep()}>New step</Button>
                 </Col>
             </Form>
-        )
-    }
-
-    render() {
-        if (this.props.edit) {
-            return this.stepEdit();
-        } else if (!this.props.multipart) {
-            return (this.props.recipe as Recipe).steps?.map((step, index) => {
-                return (
-                    <Row>
+        );
+    } else if (!multipart) {
+        return (
+            <>
+                {(recipe as Recipe).steps?.map((step, index) => (
+                    <Row key={index}>
                         <Col className="step-number">{index + 1}</Col>
-                        <Col className="margin-bottom-12" key={index}>
+                        <Col className="margin-bottom-12">
                             <Step
-                                multipart={this.props.multipart}
-                                recipe={this.props.recipe}
+                                multipart={multipart}
+                                recipe={recipe}
                                 stepText={step}
-                                newServings={this.props.newServings} />
+                                newServings={newServings} />
                         </Col>
                     </Row>
-                )
-            });
-        } else {
-            return (this.props.component?.steps?.map((step, index) => {
-                return (
-                    <Row>
+                ))}
+            </>
+        );
+    } else {
+        return (
+            <>
+                {component?.steps?.map((step, index) => (
+                    <Row key={index}>
                         <Col className="step-number">{index + 1}</Col>
-                        <Col className="margin-bottom-12" key={index}>
+                        <Col className="margin-bottom-12">
                             <Step
-                                multipart={this.props.multipart}
-                                recipe={this.props.recipe}
+                                multipart={multipart}
+                                recipe={recipe}
                                 stepText={step}
-                                component={this.props.component}
-                                newServings={this.props.newServings} />
+                                component={component}
+                                newServings={newServings} />
                         </Col>
                     </Row>
-                )
-            }));
-        }
+                ))}
+            </>
+        );
     }
 }

@@ -56,9 +56,9 @@ export function RecipeCard({
   }
 
   function CardImage() {
-    let image = (images.length === 0 || images[0].id === "null") ?
+    let image = (images.length === 0 || !images[0].url) ?
       imgs.placeholder :
-      `/image/${images[0].id}?width=300`;
+      images[0].url;
     return (
       <div className="cr-image-parent">
         <Link to={`/Recipes/Details?id=${id}`}>

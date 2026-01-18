@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
 import { IngredientRequirementList } from './IngredientRequirementList';
 import { Rating } from "@smastrom/react-rating";
-import { MeasureUnit, MultiPartRecipe, Image, RecipeNutritionFacts, Recipe, IngredientRequirement, RecipeComponent, RecipeStep } from 'src/shared/CookTime';
+import { MeasureUnit, MultiPartRecipe, Image, RecipeNutritionFacts, Recipe, IngredientRequirement, RecipeComponent, toRecipeUpdateDto } from 'src/shared/CookTime';
 import { RecipeStructuredData } from '../RecipeStructuredData';
 import { RecipeStepList } from './RecipeStepList';
 import { NutritionFacts } from '../NutritionFacts';
@@ -223,7 +223,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
   appendNewStepForComponent(componentIndex: number, component: RecipeComponent): void {
     if (this.props.multipart) {
       var newSteps = Array.from(component.steps ?? [])
-      newSteps.push({ text: '', id: uuidv4() })
+      newSteps.push('')
       component.steps = newSteps;
       let newComponents = Array.from((this.state.recipe as MultiPartRecipe).recipeComponents);
       this.setState({
@@ -235,7 +235,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
     }
   }
 
-  changeOrReorder(componentIndex: number, component: RecipeComponent, newSteps: RecipeStep[]): void {
+  changeOrReorder(componentIndex: number, component: RecipeComponent, newSteps: string[]): void {
     if (this.props.multipart) {
       component.steps = newSteps;
       let newComponents = Array.from((this.state.recipe as MultiPartRecipe).recipeComponents);
@@ -806,10 +806,10 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
   private image() {
     if (this.state.newImageSrc != null && this.state.newImageSrc != '') {
       return <img className="recipe-image" src={this.state.newImageSrc} />
-    } else if (this.state.recipeImages.length > 0) {
+    } else if (this.state.recipeImages.length > 0 && this.state.recipeImages[0].url) {
       return <img
         className="recipe-image"
-        src={`/image/${this.state.recipeImages[0].id}`} />
+        src={this.state.recipeImages[0].url} />
     } else {
       return (this.state.recipe.staticImage === null) ?
         <img className="recipe-image" src={`/placeholder.jpg`} />
@@ -880,7 +880,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
     var recipe = this.state.recipe as MultiPartRecipe;
     for (let i = 0; i < recipe.recipeComponents.length; i++) {
       const component = recipe.recipeComponents[i];
-      component.steps = Array.from(component.steps ?? []).filter(step => step.text != null && step.text != '');
+      component.steps = Array.from(component.steps ?? []).filter(step => step != null && step.trim() !== '');
       component.ingredients = Array.from(component.ingredients ?? []).filter(ingredient => ingredient.ingredient.name != null && ingredient.ingredient.name != '');
     }
 
@@ -892,9 +892,11 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
       recipe.servingsProduced = 1
     }
 
+    const updateDto = toRecipeUpdateDto(recipe);
+
     fetch(`/api/MultiPartRecipe/${this.props.recipeId}`, {
       method: 'PUT',
-      body: JSON.stringify(recipe),
+      body: JSON.stringify(updateDto),
       headers: {
         'Content-Type': 'application/json'
       }

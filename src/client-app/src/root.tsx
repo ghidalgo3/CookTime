@@ -9,7 +9,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { AuthenticationContext } from './components/Authentication/AuthenticationContext';
 import { FavoritesProvider } from './components/Favorites/FavoritesContext';
 import { ApplicationInsights } from '@microsoft/applicationinsights-web';
-import '@smastrom/react-rating/style.css';
+import ratingStyles from '@smastrom/react-rating/style.css?url';
 import siteStyles from './assets/css/site.css?url';
 
 // Initialize Application Insights
@@ -64,6 +64,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
                 />
                 <link rel="stylesheet" href={siteStyles} />
+                <link rel="stylesheet" href={ratingStyles} />
                 <Meta />
                 <Links />
             </head>

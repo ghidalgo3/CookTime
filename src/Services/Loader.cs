@@ -14,16 +14,23 @@ public static class Loader
         BlobContainerClient blobContainer,
         string dataDirectory)
     {
+        var usersPath = Path.Combine(dataDirectory, "users.ndjson");
         var ingredientsPath = Path.Combine(dataDirectory, "ingredients.ndjson");
         var recipesPath = Path.Combine(dataDirectory, "recipes.ndjson");
         var ingredientRequirementsPath = Path.Combine(dataDirectory, "ingredient_requirements.ndjson");
         var imagesPath = Path.Combine(dataDirectory, "images.ndjson");
+        var reviewsPath = Path.Combine(dataDirectory, "reviews.ndjson");
         var imagesDirectory = Path.Combine(dataDirectory, "images");
 
-        // Ensure blob container exists
-        await blobContainer.CreateIfNotExistsAsync();
+        // Ensure blob container exists with public access for images
+        await blobContainer.CreateIfNotExistsAsync(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
 
         await using var conn = await dataSource.OpenConnectionAsync();
+
+        // 0. Load users first (recipes depend on owner_id)
+        Console.WriteLine("Loading users...");
+        var userCount = await LoadUsersAsync(conn, usersPath);
+        Console.WriteLine($"  Loaded {userCount} users");
 
         // 1. Load ingredients
         Console.WriteLine("Loading ingredients...");
@@ -45,7 +52,41 @@ public static class Loader
         var imageCount = await LoadImagesAsync(conn, blobContainer, imagesPath, imagesDirectory);
         Console.WriteLine($"  Loaded {imageCount} images");
 
+        // 5. Load reviews
+        Console.WriteLine("Loading reviews...");
+        var reviewCount = await LoadReviewsAsync(conn, reviewsPath);
+        Console.WriteLine($"  Loaded {reviewCount} reviews");
+
         Console.WriteLine("Data loading complete!");
+    }
+
+    private static async Task<int> LoadUsersAsync(NpgsqlConnection conn, string filePath)
+    {
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine($"  Warning: {filePath} not found, skipping users");
+            return 0;
+        }
+
+        var count = 0;
+        await foreach (var line in File.ReadLinesAsync(filePath))
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+
+            await using var cmd = new NpgsqlCommand("SELECT cooktime.import_user($1::jsonb)", conn);
+            cmd.Parameters.AddWithValue(NpgsqlDbType.Jsonb, line);
+
+            var result = await cmd.ExecuteScalarAsync();
+            if (result != null && result != DBNull.Value)
+            {
+                count++;
+            }
+        }
+
+        return count;
     }
 
     private static async Task<int> LoadIngredientsAsync(NpgsqlConnection conn, string filePath)
@@ -185,6 +226,35 @@ public static class Loader
         return count;
     }
 
+    private static async Task<int> LoadReviewsAsync(NpgsqlConnection conn, string filePath)
+    {
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine($"  Warning: {filePath} not found, skipping reviews");
+            return 0;
+        }
+
+        var count = 0;
+        await foreach (var line in File.ReadLinesAsync(filePath))
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+
+            await using var cmd = new NpgsqlCommand("SELECT cooktime.import_review($1::jsonb)", conn);
+            cmd.Parameters.AddWithValue(NpgsqlDbType.Jsonb, line);
+
+            var result = await cmd.ExecuteScalarAsync();
+            if (result != null && result != DBNull.Value)
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
     private static async Task<int> LoadImagesAsync(
         NpgsqlConnection conn,
         BlobContainerClient blobContainer,
@@ -211,8 +281,8 @@ public static class Loader
                 continue;
             }
 
-            // Find the image file
-            var imageFileName = $"{image.Name}.jpg";
+            // Find the image file (files are named by ID)
+            var imageFileName = $"{image.Id}.jpg";
             var imagePath = Path.Combine(imagesDirectory, imageFileName);
 
             if (!File.Exists(imagePath))
@@ -221,7 +291,7 @@ public static class Loader
                 continue;
             }
 
-            // Upload to blob storage
+            // Upload to blob storage (use ID as blob name)
             var blobClient = blobContainer.GetBlobClient(imageFileName);
 
             if (!await blobClient.ExistsAsync())
@@ -230,14 +300,17 @@ public static class Loader
                 await blobClient.UploadAsync(stream, overwrite: false);
             }
 
-            var storageUrl = blobClient.Uri.ToString();
+            // Use localhost instead of 127.0.0.1 for Azurite URLs
+            var storageUrl = blobClient.Uri.ToString().Replace("azurite", "localhost");
 
             // Insert image record using import function (PascalCase keys to match SQL function)
             var imageJson = JsonSerializer.Serialize(new
             {
                 Id = image.Id,
                 StorageUrl = storageUrl,
-                UploadedDate = image.LastModifiedAt ?? DateTimeOffset.UtcNow
+                UploadedDate = image.LastModifiedAt ?? DateTimeOffset.UtcNow,
+                Name = image.Name,
+                RecipeId = image.RecipeId
             });
 
             await using var cmd = new NpgsqlCommand("SELECT cooktime.import_image($1::jsonb)", conn);
@@ -274,6 +347,7 @@ file record ImageImport
     public Guid Id { get; init; }
     public DateTimeOffset? LastModifiedAt { get; init; }
     public string Name { get; init; } = null!;
+    public Guid? RecipeId { get; init; }
 }
 
 #endregion

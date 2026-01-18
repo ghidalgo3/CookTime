@@ -31,8 +31,7 @@ export default function RecipeCreation() {
       return;
     }
 
-    const body = formData.get("body")?.toString();
-    const result = await createRecipeWithName({ name, body });
+    const result = await createRecipeWithName({ name });
 
     if (result.ok) {
       const recipe = await result.json() as MultiPartRecipe;
@@ -71,18 +70,6 @@ export default function RecipeCreation() {
               <Form.Group className="margin-bottom-8">
                 <Form.Control required placeholder="Name" type="text" name="name"></Form.Control>
                 {error && <Form.Text className="text-danger">{error}</Form.Text>}
-              </Form.Group>
-              <Form.Group className="margin-bottom-8">
-                <Form.Label>
-                  Tips for recipe writing:
-                  <ul>
-                    <li> List your ingredients first, then the steps. </li>
-                    <li> Write ingredients like this: quantity unit name (example: 2 tablespoons salt)</li>
-                    <li> Write steps one line at a time </li>
-                  </ul>
-                  The AI may get it wrong. It's ok! You can edit it later.
-                </Form.Label>
-                <Form.Control as="textarea" rows={7} placeholder="Recipe text" type="textarea" name="body"></Form.Control>
               </Form.Group>
               <Form.Group>
                 <Button

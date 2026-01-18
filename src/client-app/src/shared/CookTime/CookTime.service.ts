@@ -11,15 +11,13 @@ export async function getMultiPartRecipe(id: string) {
   return await response.json();
 }
 
-export async function createRecipeWithName(recipeCreationArgs: { name: string, body?: string }) {
-  const form = new FormData();
-  form.set("name", recipeCreationArgs.name);
-  if (recipeCreationArgs.body) {
-    form.set("body", recipeCreationArgs.body);
-  }
+export async function createRecipeWithName(recipeCreationArgs: { name: string }) {
   const response = await fetch("/api/multipartrecipe/create", {
-    method: "post",
-    body: form
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(recipeCreationArgs)
   });
   return response;
 }
@@ -74,6 +72,15 @@ export async function getFeaturedRecipeViews() {
 export async function getNewRecipeViews() {
   const response = await fetch("/api/multipartrecipe/new")
   return (await response.json()) as RecipeView[];
+}
+
+export async function getMyRecipes(args?: { page?: number }): Promise<PagedResult<RecipeView>> {
+  let query = "";
+  if (args?.page) {
+    query = `?page=${encodeURIComponent(args.page)}`;
+  }
+  const response = await fetch("/api/multipartrecipe/mine" + query);
+  return (await response.json()) as PagedResult<RecipeView>;
 }
 
 // Generic list API functions

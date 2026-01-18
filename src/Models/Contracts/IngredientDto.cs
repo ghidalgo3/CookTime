@@ -26,3 +26,16 @@ public class IngredientCreateDto
     [JsonPropertyName("pluralName")]
     public string? PluralName { get; set; }
 }
+
+// Matches the Autosuggestable type on the frontend
+public class IngredientAutosuggestDto
+{
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = null!;
+
+    [JsonPropertyName("isNew")]
+    public bool IsNew { get; set; } = false;
+}

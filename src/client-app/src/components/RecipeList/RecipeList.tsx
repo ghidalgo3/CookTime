@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react"
 import { Col, Row } from "react-bootstrap";
 import { RecipeCard } from "../RecipeCard/RecipeCard";
-import { getFavoriteRecipeViews, getFeaturedRecipeViews, getNewRecipeViews, getRecipeViews, PagedResult, RecipeView, toPagedResult } from "src/shared/CookTime"
+import { getFavoriteRecipeViews, getFeaturedRecipeViews, getMyRecipes, getNewRecipeViews, getRecipeViews, PagedResult, RecipeView, toPagedResult } from "src/shared/CookTime"
 import { Link } from "react-router";
 import PaginatedList from "../PaginatedList/PaginatedList";
 import { useAuthentication } from "../Authentication/AuthenticationContext";
 
 interface RecipeListProps {
   title: string
-  type: "Featured" | "New" | "Query" | "Favorites"
+  type: "Featured" | "New" | "Query" | "Favorites" | "Mine"
   query?: URLSearchParams
   hideIfEmpty?: boolean
 }
@@ -31,6 +31,10 @@ export default function RecipeList({ title, query, type, hideIfEmpty }: RecipeLi
       } else if (type === "Favorites") {
         const result = await getFavoriteRecipeViews();
         setRecipes(toPagedResult(result));
+      } else if (type === "Mine") {
+        const page = query?.get("page") ?? "1";
+        const result = await getMyRecipes({ page: Number.parseInt(page) });
+        setRecipes(result);
       }
     }
     loadData();

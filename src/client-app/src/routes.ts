@@ -18,9 +18,7 @@ export default [
     // Plain layout for auth pages
     layout("pages/PlainLayout/PlainLayout.tsx", [
         route("signin", "pages/SignIn.tsx"),
-        route("signup", "pages/SignUp.tsx"),
-        route("resetpassword", "pages/ResetPassword.tsx"),
-        route("registration", "pages/Registration.tsx"),
+        route("profile/setup", "pages/ProfileSetup.tsx"),
     ]),
 
     // Catch-all redirect

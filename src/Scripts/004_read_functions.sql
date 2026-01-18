@@ -12,7 +12,7 @@ BEGIN
             'description', r.description,
             'owner', CASE 
                 WHEN r.owner_id IS NOT NULL THEN
-                    jsonb_build_object('id', r.owner_id, 'userName', '')
+                    jsonb_build_object('id', r.owner_id, 'userName', COALESCE(u.display_name, u.email, 'User'))
                 ELSE NULL
             END,
             'cooktimeMinutes', r.cooking_minutes,
@@ -43,7 +43,6 @@ BEGIN
                                                 'id', ing.id,
                                                 'name', ing.name,
                                                 'isNew', false,
-!
                                                 'densityKgPerL', null
                                             ),
                                             'text', ir.description,
@@ -93,6 +92,7 @@ BEGIN
             ), 0)
         )
         FROM cooktime.recipes r
+        LEFT JOIN cooktime.users u ON u.id = r.owner_id
         WHERE r.id = get_recipe_with_details.recipe_id
     );
 END;
@@ -204,19 +204,20 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Get recipe images
-CREATE OR REPLACE FUNCTION cooktime.get_recipe_images(recipe_id uuid)
-RETURNS SETOF jsonb AS $$
+CREATE OR REPLACE FUNCTION cooktime.get_recipe_images(p_recipe_id uuid)
+RETURNS jsonb AS $$
 BEGIN
-    RETURN QUERY
-    SELECT jsonb_build_object(
-        'id', i.id,
-        'storageUrl', i.storage_url,
-        'uploadedDate', i.uploaded_date,
-        'staticImageName', i.static_image_name
-    )
-    FROM cooktime.images i
-    WHERE i.recipe_id = get_recipe_images.recipe_id
-    ORDER BY i.uploaded_date DESC;
+    RETURN COALESCE(
+        (SELECT jsonb_agg(
+            jsonb_build_object(
+                'id', i.id,
+                'url', i.storage_url
+            ) ORDER BY i.uploaded_date DESC
+        )
+        FROM cooktime.images i
+        WHERE i.recipe_id = p_recipe_id),
+        '[]'::jsonb
+    );
 END;
 $$ LANGUAGE plpgsql;
 
@@ -254,37 +255,47 @@ $$ LANGUAGE plpgsql;
 
 -- Search ingredients by name (fuzzy matching with trigrams)
 CREATE OR REPLACE FUNCTION cooktime.search_ingredients(search_term text)
-RETURNS SETOF jsonb AS $$
+RETURNS jsonb AS $$
 BEGIN
-    RETURN QUERY
-    SELECT jsonb_build_object(
-        'id', i.id,
-        'name', i.name,
-        'defaultServingSizeUnit', i.default_serving_size_unit
-    )
-    FROM cooktime.ingredients i
-    WHERE similarity(i.name, search_term) > 0.3
-    ORDER BY similarity(i.name, search_term) DESC
-    LIMIT 20;
+    RETURN COALESCE(
+        (
+            SELECT jsonb_agg(row_to_json(sub))
+            FROM (
+                SELECT i.id, i.name
+                FROM cooktime.ingredients i
+                WHERE i.name ILIKE '%' || search_term || '%'
+                   OR similarity(i.name, search_term) > 0.2
+                ORDER BY similarity(i.name, search_term) DESC
+                LIMIT 20
+            ) sub
+        ),
+        '[]'::jsonb
+    );
 END;
 $$ LANGUAGE plpgsql;
 
 -- Get recipe reviews
-CREATE OR REPLACE FUNCTION cooktime.get_recipe_reviews(recipe_id uuid)
-RETURNS SETOF jsonb AS $$
+CREATE OR REPLACE FUNCTION cooktime.get_recipe_reviews(p_recipe_id uuid)
+RETURNS jsonb AS $$
 BEGIN
-    RETURN QUERY
-    SELECT jsonb_build_object(
-        'id', rev.id,
-        'rating', rev.rating,
-        'comment', rev.comment,
-        'createdDate', rev.created_date,
-        'lastModifiedDate', rev.last_modified_date,
-        'ownerId', rev.owner_id
-    )
-    FROM cooktime.reviews rev
-    WHERE rev.recipe_id = get_recipe_reviews.recipe_id
-    ORDER BY rev.created_date DESC;
+    RETURN COALESCE(
+        (SELECT jsonb_agg(
+            jsonb_build_object(
+                'id', rev.id,
+                'rating', rev.rating,
+                'text', rev.comment,
+                'createdAt', rev.created_date,
+                'owner', jsonb_build_object(
+                    'id', u.id,
+                    'userName', u.display_name
+                )
+            ) ORDER BY rev.created_date DESC
+        )
+        FROM cooktime.reviews rev
+        JOIN cooktime.users u ON u.id = rev.owner_id
+        WHERE rev.recipe_id = p_recipe_id),
+        '[]'::jsonb
+    );
 END;
 $$ LANGUAGE plpgsql;
 
@@ -296,7 +307,7 @@ BEGIN
         'id', r.id,
         'name', r.name,
         'images', COALESCE((
-            SELECT jsonb_agg(jsonb_build_object('id', i.id, 'name', i.static_image_name))
+            SELECT jsonb_agg(jsonb_build_object('id', i.id, 'url', i.storage_url))
             FROM cooktime.images i
             WHERE i.recipe_id = r.id
         ), '[]'::jsonb),
@@ -336,6 +347,43 @@ BEGIN
     )
     FROM cooktime.categories c
     ORDER BY c.name;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Search categories by name
+CREATE OR REPLACE FUNCTION cooktime.search_categories(search_term text)
+RETURNS jsonb AS $$
+BEGIN
+    RETURN COALESCE(
+        (
+            SELECT jsonb_agg(row_to_json(sub))
+            FROM (
+                SELECT c.id, c.name
+                FROM cooktime.categories c
+                WHERE c.name ILIKE '%' || search_term || '%'
+                LIMIT 10
+            ) sub
+        ),
+        '[]'::jsonb
+    );
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get all categories
+CREATE OR REPLACE FUNCTION cooktime.get_all_categories()
+RETURNS jsonb AS $$
+BEGIN
+    RETURN COALESCE(
+        (
+            SELECT jsonb_agg(row_to_json(sub))
+            FROM (
+                SELECT c.id, c.name
+                FROM cooktime.categories c
+                ORDER BY c.name
+            ) sub
+        ),
+        '[]'::jsonb
+    );
 END;
 $$ LANGUAGE plpgsql;
 

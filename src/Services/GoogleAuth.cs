@@ -6,6 +6,8 @@ using Npgsql;
 
 namespace babe_algorithms.Services;
 
+public record UpdateProfileRequest(string DisplayName);
+
 public static class GoogleAuth
 {
     public static IServiceCollection AddGoogleAuthentication(this IServiceCollection services, IConfiguration configuration)
@@ -92,38 +94,69 @@ public static class GoogleAuth
             }
 
             // Upsert user in database
+            // First, try to claim a migrated cooktime user by email (converts them to google auth)
+            // Then fall back to normal google user upsert
             await using var conn = await dataSource.OpenConnectionAsync();
-            await using var cmd = new NpgsqlCommand(@"
-                INSERT INTO cooktime.users (provider, provider_user_id, email, display_name, last_login_date)
-                VALUES ('google', $1, $2, $3, now())
-                ON CONFLICT (provider, provider_user_id) 
-                DO UPDATE SET email = $2, display_name = $3, last_login_date = now()
-                RETURNING id, roles", conn);
+            await using var claimMigratedCmd = new NpgsqlCommand(@"
+                UPDATE cooktime.users 
+                SET provider = 'google', provider_user_id = $1, last_login_date = now()
+                WHERE email = $2 AND provider = 'cooktime'
+                RETURNING id, roles, display_name", conn);
 
-            cmd.Parameters.AddWithValue(googleId);
-            cmd.Parameters.AddWithValue(email ?? (object)DBNull.Value);
-            cmd.Parameters.AddWithValue(name ?? "Google User");
+            claimMigratedCmd.Parameters.AddWithValue(googleId);
+            claimMigratedCmd.Parameters.AddWithValue(email ?? (object)DBNull.Value);
 
-            Guid dbUserId;
+            Guid dbUserId = Guid.Empty;
             string[] roles = ["User"];
-            await using (var reader = await cmd.ExecuteReaderAsync())
+            string? displayName = null;
+            bool foundUser = false;
+
+            await using (var reader = await claimMigratedCmd.ExecuteReaderAsync())
             {
                 if (await reader.ReadAsync())
                 {
                     dbUserId = reader.GetGuid(0);
                     roles = reader.GetFieldValue<string[]>(1);
+                    displayName = reader.IsDBNull(2) ? null : reader.GetString(2);
+                    foundUser = true;
                 }
-                else
+            }
+
+            // If no migrated user was claimed, do normal google upsert
+            if (!foundUser)
+            {
+                // For new users, don't set display_name - they'll be prompted to choose one
+                // For returning users, preserve their existing display_name
+                await using var upsertCmd = new NpgsqlCommand(@"
+                    INSERT INTO cooktime.users (provider, provider_user_id, email, last_login_date)
+                    VALUES ('google', $1, $2, now())
+                    ON CONFLICT (provider, provider_user_id) 
+                    DO UPDATE SET email = $2, last_login_date = now()
+                    RETURNING id, roles, display_name", conn);
+
+                upsertCmd.Parameters.AddWithValue(googleId);
+                upsertCmd.Parameters.AddWithValue(email ?? (object)DBNull.Value);
+
+                await using var reader = await upsertCmd.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
                 {
-                    return Results.Redirect("/signin");
+                    dbUserId = reader.GetGuid(0);
+                    roles = reader.GetFieldValue<string[]>(1);
+                    displayName = reader.IsDBNull(2) ? null : reader.GetString(2);
+                    foundUser = true;
                 }
+            }
+
+            if (!foundUser)
+            {
+                return Results.Redirect("/signin");
             }
 
             // Sign in with a new identity that includes the database user ID and roles
             var claims = new List<System.Security.Claims.Claim>
             {
                 new("db_user_id", dbUserId.ToString()),
-                new(System.Security.Claims.ClaimTypes.Name, name ?? "Google User"),
+                new(System.Security.Claims.ClaimTypes.Name, displayName ?? name ?? "Google User"),
                 new(System.Security.Claims.ClaimTypes.Email, email ?? ""),
             };
             foreach (var role in roles)
@@ -135,6 +168,12 @@ public static class GoogleAuth
 
             await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
+            // Redirect to profile setup if they haven't set a display name yet
+            if (string.IsNullOrEmpty(displayName))
+            {
+                return Results.Redirect("/profile/setup");
+            }
+
             return Results.Redirect("/");
         });
 
@@ -144,25 +183,88 @@ public static class GoogleAuth
             return Results.Redirect("/");
         });
 
-        app.MapGet("/api/account/profile", (HttpContext context) =>
+        app.MapGet("/api/account/profile", async (HttpContext context, NpgsqlDataSource dataSource) =>
         {
             if (context.User.Identity?.IsAuthenticated != true)
             {
                 return Results.Unauthorized();
             }
 
-            var name = context.User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
             var email = context.User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
             var id = context.User.FindFirst("db_user_id")?.Value;
-            var roles = context.User.FindAll(System.Security.Claims.ClaimTypes.Role).Select(c => c.Value).ToArray();
+
+            // Fetch display_name and roles from database
+            string[] roles = ["User"];
+            string? displayName = null;
+            if (Guid.TryParse(id, out var userId))
+            {
+                await using var conn = await dataSource.OpenConnectionAsync();
+                await using var cmd = new NpgsqlCommand("SELECT display_name, roles FROM cooktime.users WHERE id = $1", conn);
+                cmd.Parameters.AddWithValue(userId);
+                await using var reader = await cmd.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                {
+                    displayName = reader.IsDBNull(0) ? null : reader.GetString(0);
+                    roles = reader.GetFieldValue<string[]>(1);
+                }
+            }
 
             return Results.Ok(new
             {
-                name = name ?? email ?? "User",
+                name = displayName ?? email ?? "User",
                 id = id,
                 csrfToken = "",
-                roles = roles.Length > 0 ? roles : new[] { "User" }
+                roles = roles.Length > 0 ? roles : new[] { "User" },
+                needsProfileSetup = string.IsNullOrEmpty(displayName)
             });
+        });
+
+        app.MapPut("/api/account/profile", async (HttpContext context, NpgsqlDataSource dataSource) =>
+        {
+            if (context.User.Identity?.IsAuthenticated != true)
+            {
+                return Results.Unauthorized();
+            }
+
+            var id = context.User.FindFirst("db_user_id")?.Value;
+            if (!Guid.TryParse(id, out var userId))
+            {
+                return Results.BadRequest("Invalid user ID");
+            }
+
+            var body = await context.Request.ReadFromJsonAsync<UpdateProfileRequest>();
+            if (body == null || string.IsNullOrWhiteSpace(body.DisplayName))
+            {
+                return Results.BadRequest("Display name is required");
+            }
+
+            var displayName = body.DisplayName.Trim();
+            if (displayName.Length < 2 || displayName.Length > 50)
+            {
+                return Results.BadRequest("Display name must be between 2 and 50 characters");
+            }
+
+            await using var conn = await dataSource.OpenConnectionAsync();
+
+            // Check if display name is already taken
+            await using var checkCmd = new NpgsqlCommand(
+                "SELECT id FROM cooktime.users WHERE display_name = $1 AND id != $2", conn);
+            checkCmd.Parameters.AddWithValue(displayName);
+            checkCmd.Parameters.AddWithValue(userId);
+            var existing = await checkCmd.ExecuteScalarAsync();
+            if (existing != null)
+            {
+                return Results.Conflict(new { message = "This username is already taken" });
+            }
+
+            // Update the display name
+            await using var updateCmd = new NpgsqlCommand(
+                "UPDATE cooktime.users SET display_name = $1 WHERE id = $2", conn);
+            updateCmd.Parameters.AddWithValue(displayName);
+            updateCmd.Parameters.AddWithValue(userId);
+            await updateCmd.ExecuteNonQueryAsync();
+
+            return Results.Ok(new { displayName });
         });
 
         return app;

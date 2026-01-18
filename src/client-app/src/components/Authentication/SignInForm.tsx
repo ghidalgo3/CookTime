@@ -1,6 +1,6 @@
 import React, { useEffect } from "react"
-import { Button, Form } from "react-bootstrap";
-import { Form as RouterForm, Link, useLocation, useNavigate } from "react-router";
+import { Button } from "react-bootstrap";
+import { useLocation, useNavigate } from "react-router";
 import { useAuthentication } from "./AuthenticationContext";
 
 function GoogleIcon() {
@@ -15,18 +15,15 @@ function GoogleIcon() {
 }
 
 export function SignInForm() {
-  const { user, signIn } = useAuthentication();
+  const { user } = useAuthentication();
   const navigate = useNavigate();
   const { state } = useLocation();
+
   useEffect(() => {
     if (user) {
       if (state?.redirectTo) {
         navigate(state.redirectTo, { replace: true });
       } else if (window.history.length === 2) {
-        // when you initiate a password reset flow, the flow is:
-        // 1. Reset
-        // 2. Sign In
-        // Which is a special case!
         navigate("/", { replace: true });
       } else {
         navigate(-1);
@@ -35,7 +32,6 @@ export function SignInForm() {
   }, [user, navigate, state?.redirectTo]);
 
   const handleGoogleSignIn = () => {
-    // Redirect to backend OAuth endpoint
     window.location.href = "/api/auth/google";
   };
 
@@ -45,44 +41,13 @@ export function SignInForm() {
 
       <Button
         variant="outline-dark"
-        className="width-100 margin-bottom-8 d-flex align-items-center justify-content-center"
+        className="width-100 d-flex align-items-center justify-content-center"
+        style={{ padding: '12px' }}
         onClick={handleGoogleSignIn}
       >
         <GoogleIcon />
         Sign in with Google
       </Button>
-
-      <div className="d-flex align-items-center my-3">
-        <hr className="flex-grow-1" />
-        <span className="mx-3 text-muted">or</span>
-        <hr className="flex-grow-1" />
-      </div>
-
-      <RouterForm method="post" action="/signin">
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          {/* <Form.Label>Email address</Form.Label> */}
-          <Form.Control type="text" placeholder="Username or email" name="usernameOrEmail" />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="formBasicPassword">
-          {/* <Form.Label>Password</Form.Label> */}
-          <Form.Control type="password" placeholder="Password" name="password" />
-        </Form.Group>
-
-        <Button
-          disabled={user !== null}
-          className="width-100 margin-bottom-8"
-          variant="primary"
-          type="submit">
-          Sign in
-        </Button>
-      </RouterForm>
-      <div className="createAccount">
-        New to CookTime? <Link to="/SignUp">Create an account.</Link>
-      </div>
-      <div className="createAccount">
-        <Link to="/ResetPassword">Forgot your password?</Link>
-      </div>
     </>
   );
 }

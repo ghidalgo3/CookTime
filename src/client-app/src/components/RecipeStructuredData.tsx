@@ -16,10 +16,7 @@ export function RecipeStructuredData({ recipe, images }: RecipeStructuredDataPro
       "@type": "Person",
       "name": recipe.owner?.userName
     },
-    "image": images.map(image => {
-      const origin = typeof window !== 'undefined' ? window.location.origin : '';
-      return `${origin}/image/${image.id}`
-    }),
+    "image": images.map(image => image.url),
     "recipeYield": recipe.servingsProduced,
     "cookTime": `${moment.duration(recipe.cooktimeMinutes, 'minutes').toISOString()}`,
     "recipeIngredient": recipe.recipeComponents.flatMap(component => {
@@ -32,7 +29,7 @@ export function RecipeStructuredData({ recipe, images }: RecipeStructuredDataPro
       return component.steps?.map(step => {
         return {
           "@type": "HowToStep",
-          "text": step.text
+          "text": step
         }
       })
     }),
