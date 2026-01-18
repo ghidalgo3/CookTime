@@ -197,6 +197,26 @@ authenticatedApi.MapPut("/multipartrecipe/{recipeId:guid}", async (HttpContext c
     return Results.Ok();
 });
 
+authenticatedApi.MapDelete("/multipartrecipe/{recipeId:guid}", async (HttpContext context, CookTimeDB cooktime, Guid recipeId) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+
+    // Verify the user owns this recipe or is an administrator
+    var existingRecipe = await cooktime.GetRecipeByIdAsync(recipeId);
+    if (existingRecipe == null)
+    {
+        return Results.NotFound();
+    }
+    var isAdmin = context.User.IsInRole("Administrator");
+    if (existingRecipe.Owner?.Id != userId && !isAdmin)
+    {
+        return Results.Forbid();
+    }
+
+    await cooktime.DeleteRecipeAsync(recipeId);
+    return Results.NoContent();
+});
+
 authenticatedApi.MapPut("/multipartrecipe/{recipeId:guid}/review", async (HttpContext context, CookTimeDB cooktime, Guid recipeId, ReviewCreateRequest request) =>
 {
     var userId = (Guid)context.Items["UserId"]!;
