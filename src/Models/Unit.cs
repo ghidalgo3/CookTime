@@ -1,4 +1,3 @@
-// [JsonConverter(typeof(StringEnumConverter))]
 namespace babe_algorithms.Models;
 
 public enum Unit

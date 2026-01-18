@@ -5,7 +5,7 @@ type IngredientDisplayProps = {
     ingredientRequirement: IngredientRequirement
     strikethrough?: boolean,
     showAlternatUnit?: boolean
-    units? : MeasureUnit[]
+    units?: MeasureUnit[]
 }
 export class IngredientDisplay extends React.Component<IngredientDisplayProps, {}> {
     // constructor(props: IngredientDisplayProps) {
@@ -18,14 +18,14 @@ export class IngredientDisplay extends React.Component<IngredientDisplayProps, {
         // var unitName = (this.props.ingredientRequirement.unit == "Count" ? "" : this.props.ingredientRequirement.unit).toLowerCase()
         var unitName = ""
         switch (this.props.ingredientRequirement.unit) {
-            case "Count":
+            case "count":
                 unitName = ""
                 break;
 
-            case "FluidOunce":
+            case "fluidounce":
                 unitName = "fluid ounce"
                 break;
-        
+
             default:
                 unitName = this.props.ingredientRequirement.unit.toLowerCase()
                 break;
@@ -41,9 +41,9 @@ export class IngredientDisplay extends React.Component<IngredientDisplayProps, {
             text = <s>{text}</s>
         }
         return (
-        <div className="display-inline actual-display-inline">
-            {text}
-        </div>)
+            <div className="display-inline actual-display-inline">
+                {text}
+            </div>)
     }
 
     private Fraction(numb: number) {
@@ -102,7 +102,7 @@ export class IngredientDisplay extends React.Component<IngredientDisplayProps, {
         return quantity;
     }
 
-    getAlternateUnit() : any {
+    getAlternateUnit(): any {
         let currentUnitType = this.props.units?.find(unit => unit.name === this.props.ingredientRequirement.unit)
         if (currentUnitType == null) {
             return "";
@@ -110,11 +110,11 @@ export class IngredientDisplay extends React.Component<IngredientDisplayProps, {
         if (this.props.ingredientRequirement.ingredient.densityKgPerL == null) {
             return ""
         }
-        if (currentUnitType?.siType == "Volume") {
+        if (currentUnitType?.siType == "volume") {
             let currentQuantityLiter = this.props.ingredientRequirement.quantity * currentUnitType.siValue;
             let grams = currentQuantityLiter * (this.props.ingredientRequirement.ingredient.densityKgPerL ?? 1.0) * 1000;
             return `(${Math.round(grams)} grams)`
-        } else if (currentUnitType.siType == "Weight") {
+        } else if (currentUnitType.siType == "weight") {
             let currentQuantityKg = this.props.ingredientRequirement.quantity * currentUnitType.siValue;
             let milliliters = currentQuantityKg / (this.props.ingredientRequirement.ingredient.densityKgPerL ?? 1.0) * 1000
             // 45 ml is approximately the cutoff of 3 tablespoons.
@@ -126,7 +126,7 @@ export class IngredientDisplay extends React.Component<IngredientDisplayProps, {
                 let millisPerTablespoon = 14.7868
                 return <>({this.Fraction(milliliters / millisPerTablespoon)} Tbsp)</>
                 // 3785 ml is about one gallon, don't measure 
-            } else if (milliliters < 3785) {
+            } else if (milliliters < 3785) {
                 let millisPerCup = 236.588
                 return <>({this.Fraction(milliliters / millisPerCup)} cups)</>
             } else {

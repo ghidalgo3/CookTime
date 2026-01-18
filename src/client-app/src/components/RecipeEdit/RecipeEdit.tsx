@@ -543,9 +543,9 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
       var lis = this.state.nutritionFacts?.ingredients.map((description, i) => {
         return (
           <div className="nbi-table-entry" key={i}>
-            <div>{description.quantity} {description.unit == "Count" ? "" : description.unit.toLowerCase()} {description.name}</div>
+            <div>{description.quantity} {description.unit == "count" ? "" : description.unit.toLowerCase()} {description.name}</div>
             <div className="nbi-table-source">
-              {description.quantity} {description.unit == "Count" ? "" : description.unit.toLowerCase()} {description.nutritionDatabaseId !== null ? <a target="_blank" href={`https://fdc.nal.usda.gov/fdc-app.html#/food-details/${description.nutritionDatabaseId}/nutrients`}>{description.nutritionDatabaseDescriptor}</a> : description.nutritionDatabaseDescriptor} | {Math.round(description.caloriesPerServing)} calories per serving</div>
+              {description.quantity} {description.unit == "count" ? "" : description.unit.toLowerCase()} {description.nutritionDatabaseId !== null ? <a target="_blank" href={`https://fdc.nal.usda.gov/fdc-app.html#/food-details/${description.nutritionDatabaseId}/nutrients`}>{description.nutritionDatabaseDescriptor}</a> : description.nutritionDatabaseDescriptor} | {Math.round(description.caloriesPerServing)} calories per serving</div>
           </div>);
       })
       return (

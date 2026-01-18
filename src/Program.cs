@@ -74,13 +74,14 @@ app.MapGet("/api/multipartrecipe/featured", async (CookTimeDB cooktime) =>
 {
     return await cooktime.GetFeaturedRecipesAsync();
 });
-app.MapGet("/api/multipartrecipe/{id:guid}", async (CookTimeDB cooktime, Guid id) =>
+app.MapGet("/api/multipartrecipe/{id:guid}", async (CookTimeDB cooktime, NutritionService nutrition, Guid id) =>
 {
     var recipe = await cooktime.GetRecipeByIdAsync(id);
     if (recipe == null)
     {
         return Results.NotFound();
     }
+    recipe = await nutrition.EnrichWithDensitiesAsync(recipe);
     return Results.Ok(recipe);
 });
 
@@ -206,25 +207,26 @@ app.MapGet("/api/recipe/units", () =>
     var allUnits = Enum.GetValues<Unit>();
     var body = allUnits.Select(unit =>
     {
-        string siType = "Count";
+        string siType = "count";
         if ((int)unit < 1000)
         {
-            siType = "Volume";
+            siType = "volume";
         }
         else if ((int)unit >= 2000)
         {
-            siType = "Weight";
+            siType = "weight";
         }
-        return new { Name = unit.ToString(), SIType = siType, siValue = unit.GetSIValue() };
+        return new
+        {
+            Name = unit.ToString().ToLowerInvariant(),
+            SIType = siType,
+            siValue = unit.GetSIValue()
+        };
     });
+    return body;
 });
 
-// var recipes = app.MapGroup("/api/recipes");
-// recipes.MapGet("/searchByName", async (string name, int limit, int offset, RecipeRepository repo) =>
-// {
-//     var results = await repo.SearchByNameAsync(name, limit, offset);
-//     return Results.Ok(results);
-// });
+
 using (var scope = app.Services.CreateScope())
 {
     var dataSource = scope.ServiceProvider.GetRequiredService<NpgsqlDataSource>();

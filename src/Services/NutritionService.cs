@@ -1,4 +1,5 @@
 using babe_algorithms.Models;
+using BabeAlgorithms.Models.Contracts;
 using Npgsql;
 
 namespace babe_algorithms.Services;
@@ -9,6 +10,51 @@ public class NutritionService(NpgsqlDataSource dataSource)
     {
         PropertyNameCaseInsensitive = true
     };
+
+    /// <summary>
+    /// Enriches a recipe's ingredient data with computed densities from USDA nutrition data.
+    /// </summary>
+    public async Task<RecipeDetailDto> EnrichWithDensitiesAsync(RecipeDetailDto recipe)
+    {
+        var nutritionData = await GetRecipeNutritionDataAsync(recipe.Id);
+        if (nutritionData == null)
+        {
+            return recipe;
+        }
+
+        // Build a lookup of ingredient ID -> computed density
+        var densityLookup = new Dictionary<Guid, double>();
+        foreach (var component in nutritionData.Components)
+        {
+            foreach (var ingredient in component.Ingredients)
+            {
+                if (ingredient.IngredientId == null)
+                {
+                    continue;
+                }
+
+                var usdaData = DeserializeNutritionData(ingredient.NutritionFacts);
+                if (usdaData != null)
+                {
+                    densityLookup[ingredient.IngredientId.Value] = usdaData.CalculateDensity();
+                }
+            }
+        }
+
+        // Apply densities to the recipe DTO
+        foreach (var component in recipe.RecipeComponents ?? [])
+        {
+            foreach (var ingredientReq in component.Ingredients ?? [])
+            {
+                if (ingredientReq.Ingredient != null && densityLookup.TryGetValue(ingredientReq.Ingredient.Id, out var density))
+                {
+                    ingredientReq.Ingredient.DensityKgPerL = density;
+                }
+            }
+        }
+
+        return recipe;
+    }
 
     public async Task<RecipeNutritionFacts?> GetRecipeNutritionFactsAsync(Guid recipeId)
     {
@@ -44,8 +90,8 @@ public class NutritionService(NpgsqlDataSource dataSource)
         // Divide by servings to get per-serving values
         return new RecipeNutritionFacts
         {
-            Recipe = totalNutrition / servings,
-            Components = componentNutrition.Select(c => c / servings).ToList(),
+            Recipe = totalNutrition,
+            Components = componentNutrition.ToList(),
             Ingredients = ingredientDescriptions,
             DietDetails = [] // TODO: Implement diet analysis
         };
