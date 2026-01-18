@@ -351,10 +351,10 @@ MigrationBackup/
 
 .DS_Store
 *.g.*
-wwwroot/*
 src/wwwroot/is-cache/*
 src/wwwroot/assets/
 src/wwwroot/.vite/
+src/wwwroot/*
 src/wwwroot/index.html
 FoodData_Central_sr_legacy_food_json_2021-10-28.json
 FoodData_Central_branded_food_json_2021-10-28.json
