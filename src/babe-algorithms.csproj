@@ -9,6 +9,7 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <!-- <TreatWarningsAsErrors>true</TreatWarningsAsErrors> -->
     <IsPackable>false</IsPackable>
+    <SpaRoot>client-app\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
   </PropertyGroup>
 
@@ -36,6 +37,13 @@
 
   <ItemGroup>
     <!-- Include SQL migration scripts in publish output -->
-    <None Include="Scripts\**\*.sql" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="Scripts\**\*.sql" CopyToOutputDirectory="PreserveNewest"
+      CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
+
+  <!-- Frontend build target - run with: dotnet build -t:BuildFrontend -->
+  <Target Name="BuildFrontend" BeforeTargets="Build" Condition="'$(BuildFrontend)' == 'true'">
+    <Message Importance="high" Text="Building frontend SPA..." />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
+  </Target>
 </Project>
