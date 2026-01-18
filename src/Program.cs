@@ -22,6 +22,8 @@ var app = builder.Build();
 // Must be first middleware for OAuth to work correctly behind proxy/Docker
 app.UseForwardedHeaders();
 
+app.UseStaticFiles();
+
 app.MapGet("/api/category/list", () => Constants.DefaultCategories);
 app.MapGet("/api/recipe/tags", async (CookTimeDB cooktime, string? query) =>
 {
@@ -237,9 +239,12 @@ using (var scope = app.Services.CreateScope())
     var blobServiceClient = new BlobServiceClient(blobConnectionString);
     var blobContainer = blobServiceClient.GetBlobContainerClient("images");
 
-    await Loader.LoadAsync(dataSource, blobContainer, builder.Environment.ContentRootPath);
+    // await Loader.LoadAsync(dataSource, blobContainer, builder.Environment.ContentRootPath);
 }
 
 app.MapGoogleAuthEndpoints();
+
+// SPA fallback - serve index.html for any unmatched routes
+app.MapFallbackToFile("index.html");
 
 app.Run();

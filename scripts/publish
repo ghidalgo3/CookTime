@@ -1,8 +1,17 @@
 #!/bin/bash
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 OUTPUT_PATH=${1:-"./publish"}
 
-echo "Publishing to $OUTPUT_PATH..."
-cd src
+echo "Building frontend..."
+cd "$ROOT_DIR/src/client-app"
+npm run build
+
+echo "Copying frontend to wwwroot..."
+cp -r build/client/* "$ROOT_DIR/src/wwwroot/"
+
+echo "Publishing backend to $OUTPUT_PATH..."
+cd "$ROOT_DIR/src"
 dotnet publish --configuration Release --verbosity normal --output "$OUTPUT_PATH"
