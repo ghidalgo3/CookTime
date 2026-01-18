@@ -4,7 +4,12 @@ import { Link, Outlet } from "react-router";
 import imgs from "src/assets";
 
 export default function PlainLayout() {
-  let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  const [theme, setTheme] = useState('light');
+
+  useEffect(() => {
+    setTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  }, []);
+
   return (
     <>
       <div data-bs-theme={theme}>

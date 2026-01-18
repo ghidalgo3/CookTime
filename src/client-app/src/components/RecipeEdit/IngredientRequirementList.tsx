@@ -33,7 +33,7 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
     if (ir.ingredient.id === '' || ir.ingredient.id === '00000000-0000-0000-0000-000000000000') {
       id = idx.toString()
     }
-    var massOptions = this.props.units.filter(u => u.siType === "Weight").map(unit => {
+    var massOptions = this.props.units.filter(u => u.siType === "weight").map(unit => {
       var printable = ""
       switch (unit.name) {
         case "Ounce":
@@ -54,50 +54,50 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
       }
       return <option key={unit.name} value={unit.name}>{printable}</option>
     })
-    var volumeOptions = this.props.units.filter(u => u.siType === "Volume").map(unit => {
+    var volumeOptions = this.props.units.filter(u => u.siType === "volume").map(unit => {
       var printable = ""
-      switch (unit.name) {
-        case "Tablespoon":
+      switch (unit.name.toLowerCase()) {
+        case "tablespoon":
           printable = "Tbps";
           break;
-        case "Teaspoon":
+        case "teaspoon":
           printable = "tsp";
           break;
-        case "Milliliter":
+        case "milliliter":
           printable = "mL";
           break;
-        case "Cup":
+        case "cup":
           printable = "cup";
           break;
-        case "FluidOunce":
+        case "fluidounce":
           printable = "fl oz";
           break;
-        case "Pint":
+        case "pint":
           printable = "pint";
           break;
-        case "Quart":
+        case "quart":
           printable = "quart";
           break;
-        case "Gallon":
+        case "gallon":
           printable = "gallon";
           break;
-        case "Liter":
+        case "liter":
           printable = "L";
           break;
       }
       return <option key={unit.name} value={unit.name}>{printable}</option>
     })
-    var countOptions = this.props.units.filter(u => u.siType === "Count").map(unit => {
+    var countOptions = this.props.units.filter(u => u.siType === "count").map(unit => {
       var printable = "";
-      if (unit.name == "Count") {
+      if (unit.name == "count") {
         printable = "unit";
       }
       return <option key={unit.name} value={unit.name}>{printable}</option>
     })
     var innerSelect = ([
-      { group: "Count", options: countOptions },
-      { group: "Weight", options: massOptions },
-      { group: "Volume", options: volumeOptions }
+      { group: "count", options: countOptions },
+      { group: "weight", options: massOptions },
+      { group: "volume", options: volumeOptions }
     ].map((x, idx) => {
       return (<optgroup key={idx} label={x.group}>{x.options}</optgroup>)
     }))
@@ -115,16 +115,17 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
               let newValue = parseFloat(e.target.value);
               if (Number.isNaN(newValue)) {
                 newValue = 0.0
-              } 
-              this.props.updateIngredientRequirement(ir, ir => { ir.quantity = newValue; return ir; })}
+              }
+              this.props.updateIngredientRequirement(ir, ir => { ir.quantity = newValue; return ir; })
+            }
             }
             placeholder={"0"}
             // https://react.dev/reference/react-dom/components/input#im-getting-an-error-a-component-is-changing-an-uncontrolled-input-to-be-controlled
             // Never set this to undefined
             value={ir.quantity === 0.0 ? "" : ir.quantity}
-            >
+          >
 
-            </Form.Control>
+          </Form.Control>
         </Col>
         <Col key={`${id}unit`} xs={3} className="ingredient-col-middle">
           <Form.Select
@@ -159,7 +160,7 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
         </Col>
         <Col key={`${id}delete`} xs={1} className="">
           <Button className="float-end" variant="danger">
-            <i onClick={(_) => this.props.onDelete(ir)} className="fas fa-trash-alt"></i>
+            <i onClick={(_) => this.props.onDelete(ir)} className="bi bi-trash"></i>
           </Button>
         </Col>
       </Row>

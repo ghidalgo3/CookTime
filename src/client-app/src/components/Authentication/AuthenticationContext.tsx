@@ -9,38 +9,40 @@ export function useAuthentication() {
 }
 
 export function AuthenticationContext({ children }: { children: React.ReactNode }) {
-  const { signUp, signIn, signOut, getUserDetails, sendPasswordResetEmail, changePassword } = useAuthentication();
   const [user, setUser] = useState<UserDetails | null>(null);
+
   useEffect(() => {
     if (user == null) {
-      getUserDetails().then(value => {
-        console.log(user)
+      AuthenticationProvider.getUserDetails().then(value => {
         setUser(value)
       })
     }
   }, [user])
+
+  const refreshUser = async () => {
+    const userDetails = await AuthenticationProvider.getUserDetails();
+    setUser(userDetails);
+    return userDetails;
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
-      signIn:
-        async (usernameOrEmail, password, rememberMe) => {
-          const userDetails = await signIn(usernameOrEmail, password, rememberMe);
-          if (userDetails != "Failure") {
-            setUser(userDetails);
-          }
-          return userDetails;
-        },
       signOut: async () => {
-        const didSignOut = await signOut();
+        const didSignOut = await AuthenticationProvider.signOut();
         if (didSignOut) {
           setUser(null);
         }
         return didSignOut;
       },
-      signUp,
-      getUserDetails,
-      sendPasswordResetEmail,
-      changePassword
+      getUserDetails: refreshUser,
+      updateDisplayName: async (displayName: string) => {
+        const result = await AuthenticationProvider.updateDisplayName(displayName);
+        if (result.ok) {
+          await refreshUser();
+        }
+        return result;
+      },
     }}>
       {children}
     </AuthContext.Provider>

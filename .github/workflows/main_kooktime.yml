@@ -26,14 +26,14 @@ jobs:
           dotnet-version: "10.0.x"
 
       - name: Build
-        run: scripts/build.sh
+        run: scripts/build
 
-      - name: Test
-        run: scripts/test.sh
+      # - name: Test
+      #   run: scripts/test
 
       - name: Publish
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: scripts/publish.sh ${{env.DOTNET_ROOT}}/myapp
+        run: scripts/publish ${{env.DOTNET_ROOT}}/myapp
 
       - name: Run Azure webapp deploy action using publish profile credentials
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

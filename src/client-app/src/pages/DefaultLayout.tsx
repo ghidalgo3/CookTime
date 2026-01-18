@@ -1,21 +1,28 @@
-import React, { useEffect, useState } from "react"
-import { Outlet, ScrollRestoration, useLoaderData, useLocation } from "react-router";
+import React, { useState } from "react"
+import { Outlet, ScrollRestoration, useLocation, useRouteLoaderData } from "react-router";
+import type { Route } from "./+types/DefaultLayout";
 import { CookTimeBanner, NavigationBar } from "src/components";
 import Footer from "src/components/Footer";
-import { getCategories, getRecipeViews } from "src/shared/CookTime";
+import { getCategories } from "src/shared/CookTime";
 import { useTitle } from "src/shared/useTitle";
 
-export async function loader({ request }: { request: Request }) {
+export async function clientLoader() {
   const categories = await getCategories();
-  return { categories }
+  return { categories };
 }
 
-export default function DefaultLayout() {
+export default function DefaultLayout({ loaderData }: Route.ComponentProps) {
   const location = useLocation();
-  let { categories } = useLoaderData() as { categories: string[] };
+  const { categories } = loaderData;
+  const [theme] = useState<string>(() => {
+    // Check theme preference only on client
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return 'light';
+  });
 
   useTitle();
-  let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   return (
     <>
       {/* Scroll restoration is bringing the user to the top of the page in every refresh, which is desirable in most pages.
@@ -29,13 +36,10 @@ export default function DefaultLayout() {
             location.key;
         }}
       />
-      <NavigationBar categories={categories as string[]} />
+      <NavigationBar categories={categories} />
 
       <main data-bs-theme={theme} role="main" className="pb-3">
         <div className="container margin-top-30">
-          {/* TODO don't render this always  */}
-          {location.pathname === "/" && location.search === "" &&
-            <CookTimeBanner />}
           <Outlet />
         </div>
       </main>
