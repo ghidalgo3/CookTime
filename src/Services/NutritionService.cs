@@ -75,12 +75,20 @@ public class NutritionService(NpgsqlDataSource dataSource)
 
         var json = nutritionData.GetRawText();
 
-        return nutritionFacts.Dataset switch
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+        USDANutritionData result = nutritionFacts.Dataset switch
         {
             "usda_sr_legacy" => JsonSerializer.Deserialize<StandardReferenceNutritionData>(json, JsonOptions),
             "usda_branded" => JsonSerializer.Deserialize<BrandedNutritionData>(json, JsonOptions),
-            _ => null
+            _ => throw new NotSupportedException($"Unsupported nutrition dataset: {nutritionFacts.Dataset}")
         };
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
+        if (result is StandardReferenceNutritionData srData)
+        {
+            srData.CountRegex = nutritionFacts.CountRegex;
+        }
+        return result;
+
     }
 
     private static NutritionFactVector CalculateIngredientNutrition(IngredientNutritionDto ingredient)
@@ -233,6 +241,7 @@ internal class NutritionFactsDto
     public double? Density { get; set; }
     public string? Dataset { get; set; }
     public JsonElement? NutritionData { get; set; }
+    public string? CountRegex { get; set; }
 }
 
 #endregion

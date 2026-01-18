@@ -1,53 +1,20 @@
 using BabeAlgorithms.Models.Contracts;
-using BabeAlgorithms.Services;
 using Npgsql;
+using Tests;
 
 [TestClass]
-public class TestRecipeLists
+public class TestRecipeLists : TestBase
 {
-    private static NpgsqlDataSource _dataSource = null!;
-    private static CookTimeDB _db = null!;
-    private static Guid _testUserId;
-
     [ClassInitialize]
     public static async Task ClassInitialize(TestContext context)
     {
-        var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__Postgres")
-            ?? "Host=localhost;Database=cooktime;Username=cooktime;Password=development;Include Error Detail=true";
-
-        _dataSource = NpgsqlDataSource.Create(connectionString);
-        _db = new CookTimeDB(_dataSource);
-
-        // Create a test user
-        _testUserId = Guid.NewGuid();
-        await using var conn = await _dataSource.OpenConnectionAsync();
-        await using var cmd = new NpgsqlCommand(
-            "INSERT INTO cooktime.users (id, provider, provider_user_id, email, display_name) VALUES ($1, $2, $3, $4, $5)", conn);
-        cmd.Parameters.AddWithValue(_testUserId);
-        cmd.Parameters.AddWithValue("test");
-        cmd.Parameters.AddWithValue(_testUserId.ToString());
-        cmd.Parameters.AddWithValue($"test-{_testUserId}@test.com");
-        cmd.Parameters.AddWithValue("Test User");
-        await cmd.ExecuteNonQueryAsync();
+        await InitializeAsync(nameof(TestRecipeLists));
     }
 
     [ClassCleanup]
     public static async Task ClassCleanup()
     {
-        // Clean up test data - recipe_lists cascade deletes recipe_requirements
-        await using var conn = await _dataSource.OpenConnectionAsync();
-
-        await using var deleteListsCmd = new NpgsqlCommand(
-            "DELETE FROM cooktime.recipe_lists WHERE owner_id = $1", conn);
-        deleteListsCmd.Parameters.AddWithValue(_testUserId);
-        await deleteListsCmd.ExecuteNonQueryAsync();
-
-        await using var deleteUserCmd = new NpgsqlCommand(
-            "DELETE FROM cooktime.users WHERE id = $1", conn);
-        deleteUserCmd.Parameters.AddWithValue(_testUserId);
-        await deleteUserCmd.ExecuteNonQueryAsync();
-
-        await _dataSource.DisposeAsync();
+        await CleanupAsync();
     }
 
     [TestMethod]
@@ -55,11 +22,11 @@ public class TestRecipeLists
     {
         var createDto = new RecipeListCreateDto
         {
-            OwnerId = _testUserId,
+            OwnerId = TestUserId,
             Name = "Test List"
         };
 
-        var listId = await _db.CreateRecipeListAsync(createDto);
+        var listId = await Db.CreateRecipeListAsync(createDto);
 
         Assert.AreNotEqual(Guid.Empty, listId, "Expected a valid list ID");
     }
@@ -67,31 +34,18 @@ public class TestRecipeLists
     [TestMethod]
     public async Task GetByUserIdAsync_ReturnsEmptyList_WhenNoLists()
     {
-        // Create a user with no lists
-        var emptyUserId = Guid.NewGuid();
-        await using var conn = await _dataSource.OpenConnectionAsync();
-        await using var cmd = new NpgsqlCommand(
-            "INSERT INTO cooktime.users (id, provider, provider_user_id, email, display_name) VALUES ($1, $2, $3, $4, $5)", conn);
-        cmd.Parameters.AddWithValue(emptyUserId);
-        cmd.Parameters.AddWithValue("test");
-        cmd.Parameters.AddWithValue(emptyUserId.ToString());
-        cmd.Parameters.AddWithValue($"empty-{emptyUserId}@test.com");
-        cmd.Parameters.AddWithValue("Empty User");
-        await cmd.ExecuteNonQueryAsync();
+        var emptyUserId = await CreateTestUserAsync("Empty");
 
         try
         {
-            var lists = await _db.GetRecipeListsByUserIdAsync(emptyUserId);
+            var lists = await Db.GetRecipeListsAsync(emptyUserId);
 
             Assert.IsNotNull(lists);
             Assert.AreEqual(0, lists.Count);
         }
         finally
         {
-            await using var deleteCmd = new NpgsqlCommand(
-                "DELETE FROM cooktime.users WHERE id = $1", conn);
-            deleteCmd.Parameters.AddWithValue(emptyUserId);
-            await deleteCmd.ExecuteNonQueryAsync();
+            await DeleteTestUserAsync(emptyUserId);
         }
     }
 
@@ -100,12 +54,12 @@ public class TestRecipeLists
     {
         var createDto = new RecipeListCreateDto
         {
-            OwnerId = _testUserId,
+            OwnerId = TestUserId,
             Name = "My Recipe List"
         };
-        await _db.CreateRecipeListAsync(createDto);
+        await Db.CreateRecipeListAsync(createDto);
 
-        var lists = await _db.GetRecipeListsByUserIdAsync(_testUserId);
+        var lists = await Db.GetRecipeListsAsync(TestUserId);
 
         Assert.IsNotNull(lists);
         Assert.IsTrue(lists.Count >= 1);
@@ -117,7 +71,7 @@ public class TestRecipeLists
     {
         var nonExistentId = Guid.NewGuid();
 
-        var result = await _db.GetRecipeListWithRecipesAsync(nonExistentId);
+        var result = await Db.GetRecipeListWithRecipesAsync(nonExistentId);
 
         Assert.IsNull(result);
     }
@@ -127,12 +81,12 @@ public class TestRecipeLists
     {
         var createDto = new RecipeListCreateDto
         {
-            OwnerId = _testUserId,
+            OwnerId = TestUserId,
             Name = "Empty List"
         };
-        var listId = await _db.CreateRecipeListAsync(createDto);
+        var listId = await Db.CreateRecipeListAsync(createDto);
 
-        var result = await _db.GetRecipeListWithRecipesAsync(listId);
+        var result = await Db.GetRecipeListWithRecipesAsync(listId);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(listId, result.Id);
@@ -154,16 +108,16 @@ public class TestRecipeLists
 
         var createDto = new RecipeListCreateDto
         {
-            OwnerId = _testUserId,
+            OwnerId = TestUserId,
             Name = "List With Recipe"
         };
-        var listId = await _db.CreateRecipeListAsync(createDto);
+        var listId = await Db.CreateRecipeListAsync(createDto);
 
-        await _db.AddRecipeToListAsync(listId, recipeId.Value, 2.0);
+        await Db.AddRecipeToListAsync(listId, recipeId.Value, 2.0);
 
-        var result = await _db.GetRecipeListWithRecipesAsync(listId);
+        var result = await Db.GetRecipeListWithRecipesAsync(listId);
         Assert.IsNotNull(result);
-        Assert.IsTrue(result.Recipes.Any(r => r.RecipeId == recipeId.Value));
+        Assert.IsTrue(result.Recipes.Any(r => r.Id == recipeId.Value));
     }
 
     [TestMethod]
@@ -178,22 +132,22 @@ public class TestRecipeLists
 
         var createDto = new RecipeListCreateDto
         {
-            OwnerId = _testUserId,
+            OwnerId = TestUserId,
             Name = "List For Removal Test"
         };
-        var listId = await _db.CreateRecipeListAsync(createDto);
-        await _db.AddRecipeToListAsync(listId, recipeId.Value, 1.0);
+        var listId = await Db.CreateRecipeListAsync(createDto);
+        await Db.AddRecipeToListAsync(listId, recipeId.Value, 1.0);
 
-        await _db.RemoveRecipeFromListAsync(listId, recipeId.Value);
+        await Db.RemoveRecipeFromListAsync(listId, recipeId.Value);
 
-        var result = await _db.GetRecipeListWithRecipesAsync(listId);
+        var result = await Db.GetRecipeListWithRecipesAsync(listId);
         Assert.IsNotNull(result);
-        Assert.IsFalse(result.Recipes.Any(r => r.RecipeId == recipeId.Value));
+        Assert.IsFalse(result.Recipes.Any(r => r.Id == recipeId.Value));
     }
 
     private static async Task<Guid?> GetFirstRecipeId()
     {
-        await using var conn = await _dataSource.OpenConnectionAsync();
+        await using var conn = await DataSource.OpenConnectionAsync();
         await using var cmd = new NpgsqlCommand(
             "SELECT id FROM cooktime.recipes LIMIT 1", conn);
         var result = await cmd.ExecuteScalarAsync();

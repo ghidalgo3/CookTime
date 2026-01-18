@@ -6,31 +6,31 @@ namespace CookTimeTests;
 [TestClass]
 public class TestRecipeSerialization
 {
-    private static readonly JsonSerializerOptions JsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        WriteIndented = true
-    };
+  private static readonly JsonSerializerOptions JsonOptions = new()
+  {
+    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    WriteIndented = true
+  };
 
-    [TestMethod]
-    public void RecipeDetailDto_SerializesToExpectedJson()
+  [TestMethod]
+  public void RecipeDetailDto_SerializesToExpectedJson()
+  {
+    var recipe = new RecipeDetailDto
     {
-        var recipe = new RecipeDetailDto
-        {
-            Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
-            Name = "Chocolate Chip Cookies",
-            Description = "Classic homemade chocolate chip cookies",
-            Owner = new OwnerDto
-            {
-                Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
-                UserName = "baker123"
-            },
-            CooktimeMinutes = 12,
-            CaloriesPerServing = 150,
-            ServingsProduced = 24,
-            Source = "https://example.com/cookies",
-            StaticImage = "chocolate-chip-cookies.jpg",
-            RecipeComponents = new List<ComponentDetailDto>
+      Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
+      Name = "Chocolate Chip Cookies",
+      Description = "Classic homemade chocolate chip cookies",
+      Owner = new OwnerDto
+      {
+        Id = Guid.Parse("22222222-2222-2222-2222-222222222222"),
+        UserName = "baker123"
+      },
+      CooktimeMinutes = 12,
+      CaloriesPerServing = 150,
+      ServingsProduced = 24,
+      Source = "https://example.com/cookies",
+      StaticImage = "chocolate-chip-cookies.jpg",
+      RecipeComponents = new List<ComponentDetailDto>
             {
                 new()
                 {
@@ -91,21 +91,21 @@ public class TestRecipeSerialization
                     }
                 }
             },
-            Categories = new List<CategoryDto>
+      Categories = new List<CategoryDto>
             {
                 new() { CategoryId = 1, Name = "Dessert", Slug = "dessert" },
                 new() { CategoryId = 2, Name = "Baking", Slug = "baking" }
             },
-            ReviewCount = 42,
-            AverageReviews = 4.7
-        };
+      ReviewCount = 42,
+      AverageReviews = 4.7
+    };
 
-        var json = JsonSerializer.Serialize(recipe, JsonOptions);
+    var json = JsonSerializer.Serialize(recipe, JsonOptions);
 
-        Console.WriteLine("RecipeDetailDto JSON:");
-        Console.WriteLine(json);
+    Console.WriteLine("RecipeDetailDto JSON:");
+    Console.WriteLine(json);
 
-        var expected = """
+    var expected = """
             {
               "id": "11111111-1111-1111-1111-111111111111",
               "name": "Chocolate Chip Cookies",
@@ -191,52 +191,51 @@ public class TestRecipeSerialization
             }
             """;
 
-        Assert.AreEqual(expected, json);
-    }
+    Assert.AreEqual(expected, json);
+  }
 
-    [TestMethod]
-    public void RecipeSummaryDto_SerializesToExpectedJson()
+  [TestMethod]
+  public void RecipeSummaryDto_SerializesToExpectedJson()
+  {
+    var summary = new RecipeSummaryDto
     {
-        var summary = new RecipeSummaryDto
-        {
-            Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
-            Name = "Vegetable Stir Fry",
-            Images = new List<ImageDto>
+      Id = Guid.Parse("33333333-3333-3333-3333-333333333333"),
+      Name = "Vegetable Stir Fry",
+      Images = new List<ImageDto>
             {
                 new()
                 {
                     Id = Guid.Parse("44444444-4444-4444-4444-444444444444"),
-                    Name = "stir-fry-main.jpg"
+                    Url = "https://example.com/stir-fry-main.jpg"
                 },
                 new()
                 {
                     Id = Guid.Parse("55555555-5555-5555-5555-555555555555"),
-                    Name = "stir-fry-closeup.jpg"
+                    Url = "https://example.com/stir-fry-closeup.jpg"
                 }
             },
-            Categories = new List<string> { "Dinner", "Healthy", "Quick" },
-            AverageReviews = 4.2,
-            ReviewCount = 15,
-            IsFavorite = true
-        };
+      Categories = new List<string> { "Dinner", "Healthy", "Quick" },
+      AverageReviews = 4.2,
+      ReviewCount = 15
+    };
 
-        var json = JsonSerializer.Serialize(summary, JsonOptions);
+    var json = JsonSerializer.Serialize(summary, JsonOptions);
 
-        Console.WriteLine("RecipeSummaryDto JSON:");
-        Console.WriteLine(json);
+    Console.WriteLine("RecipeSummaryDto JSON:");
+    Console.WriteLine(json);
 
-        var expected = """
+    var expected = """
             {
               "id": "33333333-3333-3333-3333-333333333333",
               "name": "Vegetable Stir Fry",
               "images": [
                 {
                   "id": "44444444-4444-4444-4444-444444444444",
-                  "name": "stir-fry-main.jpg"
+                  "url": "https://example.com/stir-fry-main.jpg"
                 },
                 {
                   "id": "55555555-5555-5555-5555-555555555555",
-                  "name": "stir-fry-closeup.jpg"
+                  "url": "https://example.com/stir-fry-closeup.jpg"
                 }
               ],
               "categories": [
@@ -245,18 +244,17 @@ public class TestRecipeSerialization
                 "Quick"
               ],
               "averageReviews": 4.2,
-              "reviewCount": 15,
-              "isFavorite": true
+              "reviewCount": 15
             }
             """;
 
-        Assert.AreEqual(expected, json);
-    }
+    Assert.AreEqual(expected, json);
+  }
 
-    [TestMethod]
-    public void RecipeDetailDto_DeserializesFromJson()
-    {
-        var json = """
+  [TestMethod]
+  public void RecipeDetailDto_DeserializesFromJson()
+  {
+    var json = """
         {
             "id": "11111111-1111-1111-1111-111111111111",
             "name": "Test Recipe",
@@ -277,45 +275,43 @@ public class TestRecipeSerialization
         }
         """;
 
-        var recipe = JsonSerializer.Deserialize<RecipeDetailDto>(json, JsonOptions);
+    var recipe = JsonSerializer.Deserialize<RecipeDetailDto>(json, JsonOptions);
 
-        Assert.IsNotNull(recipe);
-        Assert.AreEqual("Test Recipe", recipe.Name);
-        Assert.AreEqual(30, recipe.CooktimeMinutes);
-        Assert.AreEqual(200, recipe.CaloriesPerServing);
-        Assert.AreEqual(4, recipe.ServingsProduced);
-        Assert.AreEqual("test.jpg", recipe.StaticImage);
-        Assert.AreEqual(5, recipe.ReviewCount);
-        Assert.AreEqual(3.5, recipe.AverageReviews);
-        Assert.IsNotNull(recipe.Owner);
-        Assert.AreEqual("testuser", recipe.Owner.UserName);
-    }
+    Assert.IsNotNull(recipe);
+    Assert.AreEqual("Test Recipe", recipe.Name);
+    Assert.AreEqual(30, recipe.CooktimeMinutes);
+    Assert.AreEqual(200, recipe.CaloriesPerServing);
+    Assert.AreEqual(4, recipe.ServingsProduced);
+    Assert.AreEqual("test.jpg", recipe.StaticImage);
+    Assert.AreEqual(5, recipe.ReviewCount);
+    Assert.AreEqual(3.5, recipe.AverageReviews);
+    Assert.IsNotNull(recipe.Owner);
+    Assert.AreEqual("testuser", recipe.Owner.UserName);
+  }
 
-    [TestMethod]
-    public void RecipeSummaryDto_DeserializesFromJson()
-    {
-        var json = """
+  [TestMethod]
+  public void RecipeSummaryDto_DeserializesFromJson()
+  {
+    var json = """
         {
             "id": "33333333-3333-3333-3333-333333333333",
             "name": "Quick Salad",
             "images": [
-                { "id": "44444444-4444-4444-4444-444444444444", "name": "salad.jpg" }
+                { "id": "44444444-4444-4444-4444-444444444444", "url": "https://example.com/salad.jpg" }
             ],
             "categories": ["Lunch", "Healthy"],
             "averageReviews": 4.0,
-            "reviewCount": 10,
-            "isFavorite": false
+            "reviewCount": 10
         }
         """;
 
-        var summary = JsonSerializer.Deserialize<RecipeSummaryDto>(json, JsonOptions);
+    var summary = JsonSerializer.Deserialize<RecipeSummaryDto>(json, JsonOptions);
 
-        Assert.IsNotNull(summary);
-        Assert.AreEqual("Quick Salad", summary.Name);
-        Assert.AreEqual(1, summary.Images.Count);
-        Assert.AreEqual("salad.jpg", summary.Images[0].Name);
-        Assert.AreEqual(2, summary.Categories.Count);
-        Assert.IsTrue(summary.Categories.Contains("Lunch"));
-        Assert.AreEqual(false, summary.IsFavorite);
-    }
+    Assert.IsNotNull(summary);
+    Assert.AreEqual("Quick Salad", summary.Name);
+    Assert.AreEqual(1, summary.Images.Count);
+    Assert.AreEqual("https://example.com/salad.jpg", summary.Images[0].Url);
+    Assert.AreEqual(2, summary.Categories.Count);
+    Assert.IsTrue(summary.Categories.Contains("Lunch"));
+  }
 }

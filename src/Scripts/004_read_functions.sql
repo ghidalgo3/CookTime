@@ -240,7 +240,8 @@ BEGIN
                             'names', nf.names,
                             'unitMass', nf.unit_mass,
                             'density', nf.density,
-                            'nutritionData', nf.nutrition_data
+                            'nutritionData', nf.nutrition_data,
+                            'countRegex', nf.count_regex
                         )
                         FROM cooktime.nutrition_facts nf
                         WHERE nf.id = i.nutrition_facts_id
@@ -439,7 +440,8 @@ BEGIN
                                                     'unitMass', nf.unit_mass,
                                                     'density', nf.density,
                                                     'dataset', nf.dataset,
-                                                    'nutritionData', nf.nutrition_data
+                                                    'nutritionData', nf.nutrition_data,
+                                                    'countRegex', nf.count_regex
                                                 )
                                                 FROM cooktime.nutrition_facts nf
                                                 WHERE nf.id = i.nutrition_facts_id
