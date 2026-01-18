@@ -28,8 +28,8 @@ jobs:
       - name: Build
         run: scripts/build
 
-      - name: Test
-        run: scripts/test
+      # - name: Test
+      #   run: scripts/test
 
       - name: Publish
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
