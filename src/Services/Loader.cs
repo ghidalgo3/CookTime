@@ -30,55 +30,55 @@ public static class Loader
 
         await using var conn = await dataSource.OpenConnectionAsync();
 
-        // 0. Load users first (recipes depend on owner_id)
-        Console.WriteLine("Loading users...");
-        var userCount = await LoadUsersAsync(conn, usersPath);
-        Console.WriteLine($"  Loaded {userCount} users");
+        // // 0. Load users first (recipes depend on owner_id)
+        // Console.WriteLine("Loading users...");
+        // var userCount = await LoadUsersAsync(conn, usersPath);
+        // Console.WriteLine($"  Loaded {userCount} users");
 
-        // 1. Load ingredients
-        Console.WriteLine("Loading ingredients...");
-        var ingredientCount = await LoadIngredientsAsync(conn, ingredientsPath);
-        Console.WriteLine($"  Loaded {ingredientCount} ingredients");
+        // // 1. Load ingredients
+        // Console.WriteLine("Loading ingredients...");
+        // var ingredientCount = await LoadIngredientsAsync(conn, ingredientsPath);
+        // Console.WriteLine($"  Loaded {ingredientCount} ingredients");
 
-        // 2. Load recipes (includes categories and components)
-        Console.WriteLine("Loading recipes...");
-        var recipeCount = await LoadRecipesAsync(conn, recipesPath);
-        Console.WriteLine($"  Loaded {recipeCount} recipes");
+        // // 2. Load recipes (includes categories and components)
+        // Console.WriteLine("Loading recipes...");
+        // var recipeCount = await LoadRecipesAsync(conn, recipesPath);
+        // Console.WriteLine($"  Loaded {recipeCount} recipes");
 
-        // 3. Load ingredient requirements (links ingredients to recipe components)
-        Console.WriteLine("Loading ingredient requirements...");
-        var ingredientReqCount = await LoadIngredientRequirementsAsync(conn, ingredientRequirementsPath);
-        Console.WriteLine($"  Loaded {ingredientReqCount} ingredient requirements");
+        // // 3. Load ingredient requirements (links ingredients to recipe components)
+        // Console.WriteLine("Loading ingredient requirements...");
+        // var ingredientReqCount = await LoadIngredientRequirementsAsync(conn, ingredientRequirementsPath);
+        // Console.WriteLine($"  Loaded {ingredientReqCount} ingredient requirements");
 
-        // 4. Upload images and insert image records
-        Console.WriteLine("Loading images...");
-        var imageCount = await LoadImagesAsync(conn, blobContainer, imagesPath, imagesDirectory);
-        Console.WriteLine($"  Loaded {imageCount} images");
+        // // 4. Upload images and insert image records
+        // Console.WriteLine("Loading images...");
+        // var imageCount = await LoadImagesAsync(conn, blobContainer, imagesPath, imagesDirectory);
+        // Console.WriteLine($"  Loaded {imageCount} images");
 
-        // 5. Load reviews
-        Console.WriteLine("Loading reviews...");
-        var reviewCount = await LoadReviewsAsync(conn, reviewsPath);
-        Console.WriteLine($"  Loaded {reviewCount} reviews");
+        // // 5. Load reviews
+        // Console.WriteLine("Loading reviews...");
+        // var reviewCount = await LoadReviewsAsync(conn, reviewsPath);
+        // Console.WriteLine($"  Loaded {reviewCount} reviews");
 
         // 6. Load USDA nutrition data (SR Legacy)
         Console.WriteLine("Loading USDA SR Legacy nutrition data...");
-        var srLegacyCount = await LoadNutritionFactsAsync(conn, srLegacyPath, "usda_sr_legacy");
+        var srLegacyCount = await LoadNutritionFactsAsync(dataSource, srLegacyPath, "usda_sr_legacy");
         Console.WriteLine($"  Loaded {srLegacyCount} SR Legacy nutrition facts");
 
         // 7. Load USDA nutrition data (Branded)
         Console.WriteLine("Loading USDA Branded nutrition data...");
-        var brandedCount = await LoadNutritionFactsAsync(conn, brandedPath, "usda_branded");
+        var brandedCount = await LoadNutritionFactsAsync(dataSource, brandedPath, "usda_branded");
         Console.WriteLine($"  Loaded {brandedCount} Branded nutrition facts");
 
         // 8. Compute and update density values for nutrition facts
         Console.WriteLine("Computing density values for nutrition facts...");
-        var densityCount = await ComputeNutritionFactsDensityAsync(conn);
+        var densityCount = await ComputeNutritionFactsDensityAsync(dataSource);
         Console.WriteLine($"  Updated {densityCount} nutrition facts with density values");
 
         // 9. Associate ingredients with nutrition facts
         var ingredientsSimplePath = Path.Combine(dataDirectory, "ingredients_simple.json");
         Console.WriteLine("Associating ingredients with nutrition facts...");
-        var associationCount = await AssociateIngredientsWithNutritionFactsAsync(conn, ingredientsSimplePath);
+        var associationCount = await AssociateIngredientsWithNutritionFactsAsync(dataSource, ingredientsSimplePath);
         Console.WriteLine($"  Associated {associationCount} ingredients with nutrition facts");
 
         Console.WriteLine("Data loading complete!");
@@ -350,7 +350,7 @@ public static class Loader
         return count;
     }
 
-    private static async Task<int> LoadNutritionFactsAsync(NpgsqlConnection conn, string filePath, string dataset)
+    private static async Task<int> LoadNutritionFactsAsync(NpgsqlDataSource dataSource, string filePath, string dataset)
     {
         if (!File.Exists(filePath))
         {
@@ -358,9 +358,10 @@ public static class Loader
             return 0;
         }
 
-        var count = 0;
+        var totalCount = 0;
         var lineNumber = 0;
-        const int maxRecords = 10000;
+        const int batchSize = 500;
+        var batch = new List<string>(batchSize);
 
         await foreach (var line in File.ReadLinesAsync(filePath))
         {
@@ -380,9 +381,64 @@ public static class Loader
 
             // Remove trailing comma if present (NDJSON-style from JSON array)
             var jsonLine = line.TrimEnd().TrimEnd(',');
+            batch.Add(jsonLine);
 
+            // Process batch when full
+            if (batch.Count >= batchSize)
+            {
+                var imported = await ImportNutritionBatchAsync(dataSource, batch, dataset);
+                totalCount += imported;
+                batch.Clear();
+
+                Console.WriteLine($"  Loaded {totalCount} {dataset} records...");
+            }
+        }
+
+        // Process remaining batch
+        if (batch.Count > 0)
+        {
+            var imported = await ImportNutritionBatchAsync(dataSource, batch, dataset);
+            totalCount += imported;
+            Console.WriteLine($"  Loaded {totalCount} {dataset} records (final batch)");
+        }
+
+        return totalCount;
+    }
+
+    private static async Task<int> ImportNutritionBatchAsync(NpgsqlDataSource dataSource, List<string> batch, string dataset)
+    {
+        try
+        {
+            await using var conn = await dataSource.OpenConnectionAsync();
+
+            // Build a JSON array from the batch
+            var jsonArray = "[" + string.Join(",", batch) + "]";
+
+            await using var cmd = new NpgsqlCommand(
+                "SELECT imported_count FROM cooktime.batch_import_nutrition_facts($1::jsonb, $2)",
+                conn);
+            cmd.Parameters.AddWithValue(NpgsqlDbType.Jsonb, jsonArray);
+            cmd.Parameters.AddWithValue(NpgsqlDbType.Text, dataset);
+
+            var result = await cmd.ExecuteScalarAsync();
+            return result is int count ? count : 0;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"  ERROR importing batch: {ex.Message}");
+            // Fall back to individual imports
+            return await ImportNutritionIndividuallyAsync(dataSource, batch, dataset);
+        }
+    }
+
+    private static async Task<int> ImportNutritionIndividuallyAsync(NpgsqlDataSource dataSource, List<string> batch, string dataset)
+    {
+        var count = 0;
+        foreach (var jsonLine in batch)
+        {
             try
             {
+                await using var conn = await dataSource.OpenConnectionAsync();
                 await using var cmd = new NpgsqlCommand("SELECT cooktime.import_nutrition_facts($1::jsonb, $2)", conn);
                 cmd.Parameters.AddWithValue(NpgsqlDbType.Jsonb, jsonLine);
                 cmd.Parameters.AddWithValue(NpgsqlDbType.Text, dataset);
@@ -392,31 +448,16 @@ public static class Loader
                 {
                     count++;
                 }
-
-                // Log progress every 1000 items
-                if (count % 1000 == 0)
-                {
-                    Console.WriteLine($"  Loaded {count} {dataset} records...");
-                }
-
-                // Stop after maxRecords
-                if (count >= maxRecords)
-                {
-                    Console.WriteLine($"  Reached limit of {maxRecords} records");
-                    break;
-                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"  ERROR on line {lineNumber}: {ex.Message}");
-                // Continue with next line instead of failing completely
+                Console.WriteLine($"  ERROR on individual record: {ex.Message}");
             }
         }
-
         return count;
     }
 
-    private static async Task<int> AssociateIngredientsWithNutritionFactsAsync(NpgsqlConnection conn, string filePath)
+    private static async Task<int> AssociateIngredientsWithNutritionFactsAsync(NpgsqlDataSource dataSource, string filePath)
     {
         if (!File.Exists(filePath))
         {
@@ -439,6 +480,8 @@ public static class Loader
                 {
                     continue;
                 }
+
+                await using var conn = await dataSource.OpenConnectionAsync();
 
                 // Try SR Legacy first (by NDB number)
                 if (ingredient.NutritionDataNdbNumber.HasValue)
@@ -480,16 +523,17 @@ public static class Loader
         return count;
     }
 
-    private static async Task<int> ComputeNutritionFactsDensityAsync(NpgsqlConnection conn)
+    private static async Task<int> ComputeNutritionFactsDensityAsync(NpgsqlDataSource dataSource)
     {
-        // Fetch all nutrition_facts records that don't have density computed
-        var selectCmd = new NpgsqlCommand(
-            "SELECT id, nutrition_data, dataset FROM cooktime.nutrition_facts WHERE density IS NULL", conn);
-
         var updates = new List<(Guid Id, double Density)>();
 
-        await using (var reader = await selectCmd.ExecuteReaderAsync())
+        // Fetch all nutrition_facts records that don't have density computed
+        await using (var conn = await dataSource.OpenConnectionAsync())
         {
+            var selectCmd = new NpgsqlCommand(
+                "SELECT id, nutrition_data, dataset FROM cooktime.nutrition_facts WHERE density IS NULL", conn);
+
+            await using var reader = await selectCmd.ExecuteReaderAsync();
             while (await reader.ReadAsync())
             {
                 var id = reader.GetGuid(0);
@@ -526,14 +570,28 @@ public static class Loader
             }
         }
 
-        // Update the density values
-        foreach (var (id, density) in updates)
+        // Update the density values in batches
+        const int batchSize = 100;
+        var updated = 0;
+        for (var i = 0; i < updates.Count; i += batchSize)
         {
-            await using var updateCmd = new NpgsqlCommand(
-                "SELECT cooktime.update_nutrition_facts_density($1, $2)", conn);
-            updateCmd.Parameters.AddWithValue(id);
-            updateCmd.Parameters.AddWithValue(density);
-            await updateCmd.ExecuteNonQueryAsync();
+            var batch = updates.Skip(i).Take(batchSize).ToList();
+            await using var conn = await dataSource.OpenConnectionAsync();
+
+            foreach (var (id, density) in batch)
+            {
+                await using var updateCmd = new NpgsqlCommand(
+                    "SELECT cooktime.update_nutrition_facts_density($1, $2)", conn);
+                updateCmd.Parameters.AddWithValue(id);
+                updateCmd.Parameters.AddWithValue(density);
+                await updateCmd.ExecuteNonQueryAsync();
+                updated++;
+            }
+
+            if (updated % 1000 == 0)
+            {
+                Console.WriteLine($"  Updated {updated} density values...");
+            }
         }
 
         return updates.Count;
