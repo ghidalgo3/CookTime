@@ -6,6 +6,7 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
 echo "Building frontend..."
 cd "$ROOT_DIR/src/client-app"
+npm ci
 npm run build
 
 echo "Copying frontend to wwwroot..."
