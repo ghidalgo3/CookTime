@@ -176,10 +176,13 @@ CREATE TABLE IF NOT EXISTS cooktime.nutrition_facts (
     names text[] NOT NULL,
     unit_mass double precision,
     density double precision,
-    nutrition_data jsonb NOT NULL
+    nutrition_data jsonb NOT NULL,
+    count_regex text,
+    dataset text NOT NULL  -- 'usda_sr_legacy' or 'usda_branded'
 );
 
 CREATE INDEX IF NOT EXISTS idx_nutrition_facts_source_ids ON cooktime.nutrition_facts USING gin(source_ids);
+CREATE INDEX IF NOT EXISTS idx_nutrition_facts_dataset ON cooktime.nutrition_facts(dataset);
 
 -- Add foreign key from ingredients to nutrition_facts (only if not exists)
 DO $$ BEGIN

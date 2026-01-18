@@ -39,3 +39,28 @@ public class IngredientAutosuggestDto
     [JsonPropertyName("isNew")]
     public bool IsNew { get; set; } = false;
 }
+
+// DTO for admin ingredient internal update view
+public class IngredientInternalUpdateDto
+{
+    [JsonPropertyName("ingredientId")]
+    public Guid IngredientId { get; set; }
+
+    [JsonPropertyName("ingredientNames")]
+    public string IngredientNames { get; set; } = null!;
+
+    [JsonPropertyName("ndbNumber")]
+    public int NdbNumber { get; set; }
+
+    [JsonPropertyName("gtinUpc")]
+    public string? GtinUpc { get; set; }
+
+    [JsonPropertyName("countRegex")]
+    public string? CountRegex { get; set; }
+
+    [JsonPropertyName("expectedUnitMass")]
+    public string ExpectedUnitMass { get; set; } = "0.1";
+
+    [JsonPropertyName("nutritionDescription")]
+    public string? NutritionDescription { get; set; }
+}

@@ -211,7 +211,9 @@ BEGIN
             names = ARRAY(SELECT jsonb_array_elements_text(nutrition_json->'names')),
             unit_mass = (nutrition_json->>'unitMass')::double precision,
             density = (nutrition_json->>'density')::double precision,
-            nutrition_data = nutrition_json->'nutritionData'
+            nutrition_data = nutrition_json->'nutritionData',
+            count_regex = nutrition_json->>'countRegex',
+            dataset = nutrition_json->>'dataset'
         WHERE id = existing_id;
         
         RETURN existing_id;
@@ -222,18 +224,235 @@ BEGIN
             names,
             unit_mass,
             density,
-            nutrition_data
+            nutrition_data,
+            count_regex,
+            dataset
         ) VALUES (
             nutrition_json->'sourceIds',
             ARRAY(SELECT jsonb_array_elements_text(nutrition_json->'names')),
             (nutrition_json->>'unitMass')::double precision,
             (nutrition_json->>'density')::double precision,
-            nutrition_json->'nutritionData'
+            nutrition_json->'nutritionData',
+            nutrition_json->>'countRegex',
+            nutrition_json->>'dataset'
         )
         RETURNING id INTO nutrition_id;
         
         RETURN nutrition_id;
     END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Import nutrition facts from USDA data (SR Legacy or Branded)
+CREATE OR REPLACE FUNCTION cooktime.import_nutrition_facts(nutrition_json jsonb, p_dataset text)
+RETURNS uuid AS $$
+DECLARE
+    nutrition_id uuid;
+    existing_id uuid;
+    v_source_ids jsonb;
+BEGIN
+    -- Build source_ids based on dataset
+    IF p_dataset = 'usda_sr_legacy' THEN
+        v_source_ids = jsonb_build_object(
+            'ndbNumber', nutrition_json->>'ndbNumber',
+            'fdcId', nutrition_json->>'fdcId'
+        );
+    ELSIF p_dataset = 'usda_branded' THEN
+        v_source_ids = jsonb_build_object(
+            'gtinUpc', nutrition_json->>'gtinUpc',
+            'fdcId', nutrition_json->>'fdcId'
+        );
+    ELSE
+        RAISE EXCEPTION 'Unknown dataset: %', p_dataset;
+    END IF;
+    
+    -- Check if nutrition data with same source_ids exists
+    SELECT id INTO existing_id
+    FROM cooktime.nutrition_facts
+    WHERE source_ids = v_source_ids;
+    
+    IF existing_id IS NOT NULL THEN
+        RETURN existing_id;  -- Already exists, skip
+    END IF;
+    
+    -- Insert new
+    INSERT INTO cooktime.nutrition_facts (
+        source_ids,
+        names,
+        unit_mass,
+        density,
+        nutrition_data,
+        count_regex,
+        dataset
+    ) VALUES (
+        v_source_ids,
+        ARRAY[nutrition_json->>'description'],
+        NULL,  -- Will be calculated later if needed
+        NULL,  -- Will be calculated later if needed
+        nutrition_json,  -- Store the whole USDA record as nutrition_data
+        NULL,
+        p_dataset
+    )
+    RETURNING id INTO nutrition_id;
+    
+    RETURN nutrition_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Update the density value for a nutrition_facts record
+CREATE OR REPLACE FUNCTION cooktime.update_nutrition_facts_density(
+    p_nutrition_facts_id uuid,
+    p_density double precision
+)
+RETURNS void AS $$
+BEGIN
+    UPDATE cooktime.nutrition_facts
+    SET density = p_density
+    WHERE id = p_nutrition_facts_id;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Associate ingredient with USDA SR Legacy nutrition facts by NDB number
+CREATE OR REPLACE FUNCTION cooktime.associate_ingredient_sr_legacy(
+    p_ingredient_id uuid,
+    p_ndb_number integer
+)
+RETURNS boolean AS $$
+DECLARE
+    v_nutrition_facts_id uuid;
+BEGIN
+    -- Find the nutrition_facts record with matching ndbNumber
+    SELECT id INTO v_nutrition_facts_id
+    FROM cooktime.nutrition_facts
+    WHERE dataset = 'usda_sr_legacy'
+      AND (source_ids->>'ndbNumber')::integer = p_ndb_number;
+    
+    -- If not found, return false
+    IF v_nutrition_facts_id IS NULL THEN
+        RETURN false;
+    END IF;
+    
+    -- Update the ingredient with the nutrition_facts_id
+    UPDATE cooktime.ingredients
+    SET nutrition_facts_id = v_nutrition_facts_id
+    WHERE id = p_ingredient_id;
+    
+    RETURN true;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Associate ingredient with USDA Branded nutrition facts by GTIN/UPC
+CREATE OR REPLACE FUNCTION cooktime.associate_ingredient_branded(
+    p_ingredient_id uuid,
+    p_gtin_upc text
+)
+RETURNS boolean AS $$
+DECLARE
+    v_nutrition_facts_id uuid;
+BEGIN
+    -- Find the nutrition_facts record with matching gtinUpc
+    SELECT id INTO v_nutrition_facts_id
+    FROM cooktime.nutrition_facts
+    WHERE dataset = 'usda_branded'
+      AND source_ids->>'gtinUpc' = p_gtin_upc;
+    
+    -- If not found, return false
+    IF v_nutrition_facts_id IS NULL THEN
+        RETURN false;
+    END IF;
+    
+    -- Update the ingredient with the nutrition_facts_id
+    UPDATE cooktime.ingredients
+    SET nutrition_facts_id = v_nutrition_facts_id
+    WHERE id = p_ingredient_id;
+    
+    RETURN true;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Update ingredient from admin internal update view
+-- This function handles updating ingredient name, expected unit mass, and nutrition association
+CREATE OR REPLACE FUNCTION cooktime.update_ingredient_internal(
+    p_ingredient_id uuid,
+    p_ingredient_names text,
+    p_expected_unit_mass double precision,
+    p_ndb_number integer,
+    p_gtin_upc text,
+    p_count_regex text
+)
+RETURNS jsonb AS $$
+DECLARE
+    v_nutrition_facts_id uuid;
+    v_nutrition_description text;
+    v_actual_ndb integer;
+    v_actual_gtin text;
+BEGIN
+    -- Update ingredient name and expected unit mass
+    UPDATE cooktime.ingredients
+    SET name = p_ingredient_names,
+        expected_unit_mass_kg = p_expected_unit_mass
+    WHERE id = p_ingredient_id;
+    
+    -- Try to associate with nutrition facts by NDB number first
+    IF p_ndb_number IS NOT NULL AND p_ndb_number > 0 THEN
+        SELECT id INTO v_nutrition_facts_id
+        FROM cooktime.nutrition_facts
+        WHERE dataset = 'usda_sr_legacy'
+          AND (source_ids->>'ndbNumber')::integer = p_ndb_number;
+        
+        IF v_nutrition_facts_id IS NOT NULL THEN
+            UPDATE cooktime.ingredients
+            SET nutrition_facts_id = v_nutrition_facts_id
+            WHERE id = p_ingredient_id;
+            
+            -- Update count_regex on nutrition_facts if provided
+            IF p_count_regex IS NOT NULL AND p_count_regex <> '' THEN
+                UPDATE cooktime.nutrition_facts
+                SET count_regex = p_count_regex
+                WHERE id = v_nutrition_facts_id;
+            END IF;
+        END IF;
+    -- Try GTIN/UPC if NDB not provided or not found
+    ELSIF p_gtin_upc IS NOT NULL AND p_gtin_upc <> '' THEN
+        SELECT id INTO v_nutrition_facts_id
+        FROM cooktime.nutrition_facts
+        WHERE dataset = 'usda_branded'
+          AND source_ids->>'gtinUpc' = p_gtin_upc;
+        
+        IF v_nutrition_facts_id IS NOT NULL THEN
+            UPDATE cooktime.ingredients
+            SET nutrition_facts_id = v_nutrition_facts_id
+            WHERE id = p_ingredient_id;
+            
+            -- Update count_regex on nutrition_facts if provided
+            IF p_count_regex IS NOT NULL AND p_count_regex <> '' THEN
+                UPDATE cooktime.nutrition_facts
+                SET count_regex = p_count_regex
+                WHERE id = v_nutrition_facts_id;
+            END IF;
+        END IF;
+    END IF;
+    
+    -- Get the current state for the response
+    SELECT 
+        i.nutrition_facts_id,
+        nf.nutrition_data->>'description',
+        COALESCE((nf.source_ids->>'ndbNumber')::integer, 0),
+        COALESCE(nf.source_ids->>'gtinUpc', '')
+    INTO v_nutrition_facts_id, v_nutrition_description, v_actual_ndb, v_actual_gtin
+    FROM cooktime.ingredients i
+    LEFT JOIN cooktime.nutrition_facts nf ON nf.id = i.nutrition_facts_id
+    WHERE i.id = p_ingredient_id;
+    
+    RETURN jsonb_build_object(
+        'ingredientId', p_ingredient_id,
+        'ingredientNames', p_ingredient_names,
+        'expectedUnitMass', p_expected_unit_mass::text,
+        'ndbNumber', v_actual_ndb,
+        'gtinUpc', v_actual_gtin,
+        'countRegex', COALESCE(p_count_regex, ''),
+        'nutritionDescription', COALESCE(v_nutrition_description, '')
+    );
 END;
 $$ LANGUAGE plpgsql;
 

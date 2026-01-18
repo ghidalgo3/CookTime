@@ -14,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Postgres")!;
 builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
 builder.Services.AddSingleton<CookTimeDB>();
+builder.Services.AddSingleton<NutritionService>();
 builder.Services.AddGoogleAuthentication(builder.Configuration);
 
 var app = builder.Build();
@@ -93,6 +94,44 @@ app.MapGet("/api/multipartrecipe/{id:guid}/images", async (CookTimeDB cooktime, 
 {
     var images = await cooktime.GetImagesByRecipeIdAsync(id);
     return Results.Ok(images);
+});
+
+app.MapGet("/api/multipartrecipe/{id:guid}/nutritionData", async (NutritionService nutrition, Guid id) =>
+{
+    var nutritionFacts = await nutrition.GetRecipeNutritionFactsAsync(id);
+    if (nutritionFacts == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(nutritionFacts);
+});
+
+// Admin-only routes (require Administrator role)
+var adminApi = app.MapGroup("/api")
+    .AddEndpointFilter(async (context, next) =>
+    {
+        var httpContext = context.HttpContext;
+        if (!httpContext.User.IsInRole("Administrator"))
+        {
+            return Results.Forbid();
+        }
+        return await next(context);
+    });
+
+adminApi.MapGet("/ingredient/internalUpdate", async (CookTimeDB cooktime) =>
+{
+    var ingredients = await cooktime.GetIngredientsForAdminAsync();
+    return Results.Ok(ingredients);
+});
+
+adminApi.MapPost("/ingredient/internalupdate", async (CookTimeDB cooktime, IngredientInternalUpdateDto update) =>
+{
+    var result = await cooktime.UpdateIngredientInternalAsync(update);
+    if (result == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(result);
 });
 
 var authenticatedApi = app.MapGroup("/api")

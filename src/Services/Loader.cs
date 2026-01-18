@@ -1,4 +1,5 @@
 using Azure.Storage.Blobs;
+using babe_algorithms.Models;
 using Npgsql;
 using NpgsqlTypes;
 
@@ -21,6 +22,8 @@ public static class Loader
         var imagesPath = Path.Combine(dataDirectory, "images.ndjson");
         var reviewsPath = Path.Combine(dataDirectory, "reviews.ndjson");
         var imagesDirectory = Path.Combine(dataDirectory, "images");
+        var srLegacyPath = Path.Combine(dataDirectory, "FoodData_Central_sr_legacy_food_json_2021-10-28.json");
+        var brandedPath = Path.Combine(dataDirectory, "FoodData_Central_branded_food_json_2025-12-18.json");
 
         // Ensure blob container exists with public access for images
         await blobContainer.CreateIfNotExistsAsync(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
@@ -56,6 +59,27 @@ public static class Loader
         Console.WriteLine("Loading reviews...");
         var reviewCount = await LoadReviewsAsync(conn, reviewsPath);
         Console.WriteLine($"  Loaded {reviewCount} reviews");
+
+        // 6. Load USDA nutrition data (SR Legacy)
+        Console.WriteLine("Loading USDA SR Legacy nutrition data...");
+        var srLegacyCount = await LoadNutritionFactsAsync(conn, srLegacyPath, "usda_sr_legacy");
+        Console.WriteLine($"  Loaded {srLegacyCount} SR Legacy nutrition facts");
+
+        // 7. Load USDA nutrition data (Branded)
+        Console.WriteLine("Loading USDA Branded nutrition data...");
+        var brandedCount = await LoadNutritionFactsAsync(conn, brandedPath, "usda_branded");
+        Console.WriteLine($"  Loaded {brandedCount} Branded nutrition facts");
+
+        // 8. Compute and update density values for nutrition facts
+        Console.WriteLine("Computing density values for nutrition facts...");
+        var densityCount = await ComputeNutritionFactsDensityAsync(conn);
+        Console.WriteLine($"  Updated {densityCount} nutrition facts with density values");
+
+        // 9. Associate ingredients with nutrition facts
+        var ingredientsSimplePath = Path.Combine(dataDirectory, "ingredients_simple.json");
+        Console.WriteLine("Associating ingredients with nutrition facts...");
+        var associationCount = await AssociateIngredientsWithNutritionFactsAsync(conn, ingredientsSimplePath);
+        Console.WriteLine($"  Associated {associationCount} ingredients with nutrition facts");
 
         Console.WriteLine("Data loading complete!");
     }
@@ -325,6 +349,195 @@ public static class Loader
 
         return count;
     }
+
+    private static async Task<int> LoadNutritionFactsAsync(NpgsqlConnection conn, string filePath, string dataset)
+    {
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine($"  Warning: {filePath} not found, skipping {dataset} nutrition facts");
+            return 0;
+        }
+
+        var count = 0;
+        var lineNumber = 0;
+        const int maxRecords = 10000;
+
+        await foreach (var line in File.ReadLinesAsync(filePath))
+        {
+            lineNumber++;
+
+            // Skip first line (opening JSON array) and last line (closing JSON array)
+            if (lineNumber == 1)
+            {
+                continue;
+            }
+
+            // Skip empty lines or the closing bracket
+            if (string.IsNullOrWhiteSpace(line) || line.Trim() == "]}" || line.Trim() == "]")
+            {
+                continue;
+            }
+
+            // Remove trailing comma if present (NDJSON-style from JSON array)
+            var jsonLine = line.TrimEnd().TrimEnd(',');
+
+            try
+            {
+                await using var cmd = new NpgsqlCommand("SELECT cooktime.import_nutrition_facts($1::jsonb, $2)", conn);
+                cmd.Parameters.AddWithValue(NpgsqlDbType.Jsonb, jsonLine);
+                cmd.Parameters.AddWithValue(NpgsqlDbType.Text, dataset);
+
+                var result = await cmd.ExecuteScalarAsync();
+                if (result != null && result != DBNull.Value)
+                {
+                    count++;
+                }
+
+                // Log progress every 1000 items
+                if (count % 1000 == 0)
+                {
+                    Console.WriteLine($"  Loaded {count} {dataset} records...");
+                }
+
+                // Stop after maxRecords
+                if (count >= maxRecords)
+                {
+                    Console.WriteLine($"  Reached limit of {maxRecords} records");
+                    break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  ERROR on line {lineNumber}: {ex.Message}");
+                // Continue with next line instead of failing completely
+            }
+        }
+
+        return count;
+    }
+
+    private static async Task<int> AssociateIngredientsWithNutritionFactsAsync(NpgsqlConnection conn, string filePath)
+    {
+        if (!File.Exists(filePath))
+        {
+            Console.WriteLine($"  Warning: {filePath} not found, skipping ingredient associations");
+            return 0;
+        }
+
+        var count = 0;
+        await foreach (var line in File.ReadLinesAsync(filePath))
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+
+            try
+            {
+                var ingredient = JsonSerializer.Deserialize<IngredientSimpleImport>(line, JsonOptions);
+                if (ingredient == null)
+                {
+                    continue;
+                }
+
+                // Try SR Legacy first (by NDB number)
+                if (ingredient.NutritionDataNdbNumber.HasValue)
+                {
+                    await using var srCmd = new NpgsqlCommand(
+                        "SELECT cooktime.associate_ingredient_sr_legacy($1, $2)", conn);
+                    srCmd.Parameters.AddWithValue(ingredient.Id);
+                    srCmd.Parameters.AddWithValue(ingredient.NutritionDataNdbNumber.Value);
+
+                    var srResult = await srCmd.ExecuteScalarAsync();
+                    if (srResult is true)
+                    {
+                        count++;
+                        continue; // Successfully associated with SR Legacy
+                    }
+                }
+
+                // Try Branded (by GTIN/UPC)
+                if (!string.IsNullOrEmpty(ingredient.BrandedNutritionDataGtinUpc))
+                {
+                    await using var brandedCmd = new NpgsqlCommand(
+                        "SELECT cooktime.associate_ingredient_branded($1, $2)", conn);
+                    brandedCmd.Parameters.AddWithValue(ingredient.Id);
+                    brandedCmd.Parameters.AddWithValue(ingredient.BrandedNutritionDataGtinUpc);
+
+                    var brandedResult = await brandedCmd.ExecuteScalarAsync();
+                    if (brandedResult is true)
+                    {
+                        count++;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  ERROR associating ingredient: {ex.Message}");
+            }
+        }
+
+        return count;
+    }
+
+    private static async Task<int> ComputeNutritionFactsDensityAsync(NpgsqlConnection conn)
+    {
+        // Fetch all nutrition_facts records that don't have density computed
+        var selectCmd = new NpgsqlCommand(
+            "SELECT id, nutrition_data, dataset FROM cooktime.nutrition_facts WHERE density IS NULL", conn);
+
+        var updates = new List<(Guid Id, double Density)>();
+
+        await using (var reader = await selectCmd.ExecuteReaderAsync())
+        {
+            while (await reader.ReadAsync())
+            {
+                var id = reader.GetGuid(0);
+                var nutritionDataJson = reader.GetString(1);
+                var dataset = reader.GetString(2);
+
+                try
+                {
+                    double density = 1.0;
+
+                    if (dataset == "usda_sr_legacy")
+                    {
+                        var srData = JsonSerializer.Deserialize<StandardReferenceNutritionData>(nutritionDataJson, JsonOptions);
+                        if (srData != null)
+                        {
+                            density = srData.CalculateDensity();
+                        }
+                    }
+                    else if (dataset == "usda_branded")
+                    {
+                        var brandedData = JsonSerializer.Deserialize<BrandedNutritionData>(nutritionDataJson, JsonOptions);
+                        if (brandedData != null)
+                        {
+                            density = brandedData.CalculateDensity();
+                        }
+                    }
+
+                    updates.Add((id, density));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"  ERROR computing density for {id}: {ex.Message}");
+                }
+            }
+        }
+
+        // Update the density values
+        foreach (var (id, density) in updates)
+        {
+            await using var updateCmd = new NpgsqlCommand(
+                "SELECT cooktime.update_nutrition_facts_density($1, $2)", conn);
+            updateCmd.Parameters.AddWithValue(id);
+            updateCmd.Parameters.AddWithValue(density);
+            await updateCmd.ExecuteNonQueryAsync();
+        }
+
+        return updates.Count;
+    }
 }
 
 #region Import DTOs
@@ -348,6 +561,15 @@ file record ImageImport
     public DateTimeOffset? LastModifiedAt { get; init; }
     public string Name { get; init; } = null!;
     public Guid? RecipeId { get; init; }
+}
+
+file record IngredientSimpleImport
+{
+    public Guid Id { get; init; }
+    public string Name { get; init; } = null!;
+    public int? NutritionDataNdbNumber { get; init; }
+    public string? BrandedNutritionDataGtinUpc { get; init; }
+    public double? ExpectedUnitMass { get; init; }
 }
 
 #endregion

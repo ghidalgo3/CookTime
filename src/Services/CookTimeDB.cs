@@ -298,6 +298,38 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         return JsonSerializer.Deserialize<List<string>>(result.ToString()!, JsonOptions) ?? [];
     }
 
+    public async Task<List<IngredientInternalUpdateDto>> GetIngredientsForAdminAsync()
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_ingredients_for_admin()", conn);
+
+        var result = await cmd.ExecuteScalarAsync();
+        if (result == null || result == DBNull.Value)
+            return [];
+
+        return JsonSerializer.Deserialize<List<IngredientInternalUpdateDto>>(result.ToString()!, JsonOptions) ?? [];
+    }
+
+    public async Task<IngredientInternalUpdateDto?> UpdateIngredientInternalAsync(IngredientInternalUpdateDto update)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand(
+            "SELECT cooktime.update_ingredient_internal($1, $2, $3, $4, $5, $6)", conn);
+
+        cmd.Parameters.AddWithValue(update.IngredientId);
+        cmd.Parameters.AddWithValue(update.IngredientNames);
+        cmd.Parameters.AddWithValue(double.TryParse(update.ExpectedUnitMass, out var mass) ? mass : 0.1);
+        cmd.Parameters.AddWithValue(update.NdbNumber);
+        cmd.Parameters.AddWithValue(update.GtinUpc ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue(update.CountRegex ?? (object)DBNull.Value);
+
+        var result = await cmd.ExecuteScalarAsync();
+        if (result == null || result == DBNull.Value)
+            return null;
+
+        return JsonSerializer.Deserialize<IngredientInternalUpdateDto>(result.ToString()!, JsonOptions);
+    }
+
     #endregion
 
     #region Categories

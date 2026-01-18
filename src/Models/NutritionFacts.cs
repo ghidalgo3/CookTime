@@ -94,4 +94,28 @@ public class NutritionFactVector
         NutritionFactVector a,
         NutritionFactVector b) =>
             a.Combine(b);
+
+    public static NutritionFactVector operator /(NutritionFactVector a, double divisor)
+    {
+        if (divisor == 0)
+        {
+            divisor = 1;
+        }
+
+        return new NutritionFactVector
+        {
+            Calories = a.Calories / divisor,
+            Carbohydrates = a.Carbohydrates / divisor,
+            SaturatedFats = a.SaturatedFats / divisor,
+            MonoUnsaturatedFats = a.MonoUnsaturatedFats / divisor,
+            PolyUnsaturatedFats = a.PolyUnsaturatedFats / divisor,
+            TransFats = a.TransFats / divisor,
+            Proteins = a.Proteins / divisor,
+            Sugars = a.Sugars / divisor,
+            Iron = a.Iron / divisor,
+            VitaminD = a.VitaminD / divisor,
+            Calcium = a.Calcium / divisor,
+            Potassium = a.Potassium / divisor
+        };
+    }
 }

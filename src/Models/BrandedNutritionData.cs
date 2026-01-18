@@ -3,7 +3,6 @@ namespace babe_algorithms.Models;
 
 public class BrandedNutritionData : USDANutritionData
 {
-    [Key]
     public required string GtinUpc { get; set; }
 
     public required string Ingredients { get; set; }
@@ -12,8 +11,7 @@ public class BrandedNutritionData : USDANutritionData
 
     public required string ServingSizeUnit { get; set; }
 
-    [JsonIgnore]
-    public required JsonDocument LabelNutrients { get; set; }
+    public JsonDocument? LabelNutrients { get; set; }
 
     public required string BrandedFoodCategory { get; set; }
 

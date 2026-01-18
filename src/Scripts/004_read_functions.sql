@@ -43,7 +43,7 @@ BEGIN
                                                 'id', ing.id,
                                                 'name', ing.name,
                                                 'isNew', false,
-                                                'densityKgPerL', null
+                                                'densityKgPerL', nf.density
                                             ),
                                             'text', ir.description,
                                             'unit', ir.unit::text,
@@ -54,6 +54,7 @@ BEGIN
                                     )
                                     FROM cooktime.ingredient_requirements ir
                                     LEFT JOIN cooktime.ingredients ing ON ing.id = ir.ingredient_id
+                                    LEFT JOIN cooktime.nutrition_facts nf ON nf.id = ing.nutrition_facts_id
                                     WHERE ir.recipe_component_id = rc.id
                                 ),
                                 '[]'::jsonb
@@ -402,5 +403,88 @@ BEGIN
     ORDER BY r.created_date DESC
     LIMIT page_size
     OFFSET (page_number - 1) * page_size;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get nutrition data for a recipe (all ingredients with their nutrition facts)
+CREATE OR REPLACE FUNCTION cooktime.get_recipe_nutrition_data(p_recipe_id uuid)
+RETURNS jsonb AS $$
+BEGIN
+    RETURN (
+        SELECT jsonb_build_object(
+            'recipeId', r.id,
+            'servings', r.servings,
+            'components', (
+                SELECT COALESCE(jsonb_agg(
+                    jsonb_build_object(
+                        'componentId', rc.id,
+                        'componentName', rc.name,
+                        'position', rc.position,
+                        'ingredients', (
+                            SELECT COALESCE(jsonb_agg(
+                                jsonb_build_object(
+                                    'ingredientRequirementId', ir.id,
+                                    'ingredientId', i.id,
+                                    'ingredientName', i.name,
+                                    'quantity', ir.quantity,
+                                    'unit', ir.unit,
+                                    'position', ir.position,
+                                    'expectedUnitMassKg', i.expected_unit_mass_kg,
+                                    'nutritionFacts', CASE 
+                                        WHEN i.nutrition_facts_id IS NOT NULL THEN
+                                            (
+                                                SELECT jsonb_build_object(
+                                                    'id', nf.id,
+                                                    'sourceIds', nf.source_ids,
+                                                    'unitMass', nf.unit_mass,
+                                                    'density', nf.density,
+                                                    'dataset', nf.dataset,
+                                                    'nutritionData', nf.nutrition_data
+                                                )
+                                                FROM cooktime.nutrition_facts nf
+                                                WHERE nf.id = i.nutrition_facts_id
+                                            )
+                                        ELSE NULL
+                                    END
+                                )
+                                ORDER BY ir.position
+                            ), '[]'::jsonb)
+                            FROM cooktime.ingredient_requirements ir
+                            LEFT JOIN cooktime.ingredients i ON i.id = ir.ingredient_id
+                            WHERE ir.recipe_component_id = rc.id
+                        )
+                    )
+                    ORDER BY rc.position
+                ), '[]'::jsonb)
+                FROM cooktime.recipe_components rc
+                WHERE rc.recipe_id = r.id
+            )
+        )
+        FROM cooktime.recipes r
+        WHERE r.id = p_recipe_id
+    );
+END;
+$$ LANGUAGE plpgsql;
+
+-- Get all ingredients for admin editing (internal update view)
+CREATE OR REPLACE FUNCTION cooktime.get_ingredients_for_admin()
+RETURNS jsonb AS $$
+BEGIN
+    RETURN (
+        SELECT COALESCE(jsonb_agg(
+            jsonb_build_object(
+                'ingredientId', i.id,
+                'ingredientNames', i.name,
+                'expectedUnitMass', COALESCE(i.expected_unit_mass_kg, 0.1)::text,
+                'ndbNumber', COALESCE((nf.source_ids->>'ndbNumber')::integer, 0),
+                'gtinUpc', COALESCE(nf.source_ids->>'gtinUpc', ''),
+                'countRegex', COALESCE(nf.count_regex, ''),
+                'nutritionDescription', COALESCE(nf.nutrition_data->>'description', '')
+            )
+            ORDER BY i.name
+        ), '[]'::jsonb)
+        FROM cooktime.ingredients i
+        LEFT JOIN cooktime.nutrition_facts nf ON nf.id = i.nutrition_facts_id
+    );
 END;
 $$ LANGUAGE plpgsql;
