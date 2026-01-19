@@ -1,0 +1,33 @@
+.section-divider {
+  display: flex;
+  align-items: center;
+  margin: 2rem 0;
+  gap: 1rem;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background-color: #ccc;
+}
+
+@media (prefers-color-scheme: dark) {
+  .section-divider::before,
+  .section-divider::after {
+    background-color: #666;
+  }
+}
+
+.section-divider span {
+  color: #666;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@media (prefers-color-scheme: dark) {
+  .section-divider span {
+    color: #aaa;
+  }
+}

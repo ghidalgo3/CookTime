@@ -4,6 +4,7 @@ import { Button, Col, Container, Form, Row, Spinner } from "react-bootstrap";
 import { createRecipeWithName, importRecipeFromImage, MultiPartRecipe } from "src/shared/CookTime";
 import { Path } from "./Recipe";
 import { useTitle } from "src/shared/useTitle";
+import "./RecipeCreation.css";
 
 const SIMPLE_CREATE = "Simple create";
 const IMPORT = "Import from image";
@@ -65,7 +66,9 @@ export default function RecipeCreation() {
         <Row className="justify-content-md-center" >
           <Col style={{ maxWidth: "540px" }}>
 
-            <h1>Create recipe</h1>
+            <h1>Create Recipe</h1>
+            <br></br>
+            <h3>✏️ From Scratch</h3>
             <Form onSubmit={handleSimpleCreate}>
               <Form.Group className="margin-bottom-8">
                 <Form.Control required placeholder="Name" type="text" name="name"></Form.Control>
@@ -81,10 +84,12 @@ export default function RecipeCreation() {
               </Form.Group>
             </Form>
 
-            <br />
+            <div className="section-divider">
+              <span>or</span>
+            </div>
 
-            <h2>🪄 New! 🪄</h2>
-            <p>Take a picture of a recipe and CookTime will use AI to import the content for you</p>
+            <h3>🪄 Picture Upload</h3>
+            <p>Take a picture of a recipe and CookTime AI will import the content for you</p>
 
             <Form onSubmit={handleImport} encType="multipart/form-data">
               <Form.Group controlId="formFile" className="image-selector margin-bottom-8">
