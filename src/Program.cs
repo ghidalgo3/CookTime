@@ -16,13 +16,15 @@ builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
 builder.Services.AddSingleton<CookTimeDB>();
 builder.Services.AddSingleton<NutritionService>();
 builder.Services.AddGoogleAuthentication(builder.Configuration);
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+
 
 // Must be first middleware for OAuth to work correctly behind proxy/Docker
 app.UseForwardedHeaders();
 
-app.UseStaticFiles();
 
 app.MapGet("/api/category/list", () => Constants.DefaultCategories);
 app.MapGet("/api/recipe/tags", async (CookTimeDB cooktime, string? query) =>
@@ -247,7 +249,19 @@ app.MapGet("/api/recipe/units", () =>
     });
     return body;
 });
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "CookTime API");
+    });
+}
 
+app.UseStaticFiles();
+app.MapGoogleAuthEndpoints();
+// SPA fallback - serve index.html for any unmatched routes
+app.MapFallbackToFile("index.html");
 
 using (var scope = app.Services.CreateScope())
 {
@@ -261,10 +275,4 @@ using (var scope = app.Services.CreateScope())
 
     // await Loader.LoadAsync(dataSource, blobContainer, builder.Environment.ContentRootPath);
 }
-
-app.MapGoogleAuthEndpoints();
-
-// SPA fallback - serve index.html for any unmatched routes
-app.MapFallbackToFile("index.html");
-
 app.Run();

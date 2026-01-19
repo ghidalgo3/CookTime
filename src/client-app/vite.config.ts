@@ -54,6 +54,11 @@ export default defineConfig({
                 changeOrigin: true,
                 secure: false,
             },
+            "/openapi": {
+                target,
+                changeOrigin: true,
+                secure: false,
+            },
         },
     },
     build: {
