@@ -1,0 +1,137 @@
+{
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "The name of the recipe"
+        },
+        "description": {
+            "type": [
+                "string",
+                "null"
+            ],
+            "description": "A brief 1-2 sentence description of the dish"
+        },
+        "servings": {
+            "type": [
+                "integer",
+                "null"
+            ],
+            "description": "Number of servings the recipe produces"
+        },
+        "prepMinutes": {
+            "type": [
+                "number",
+                "null"
+            ],
+            "description": "Preparation time in minutes"
+        },
+        "cookingMinutes": {
+            "type": [
+                "number",
+                "null"
+            ],
+            "description": "Cooking time in minutes"
+        },
+        "components": {
+            "type": "array",
+            "description": "Recipe components (e.g., main dish, sauce, frosting)",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "description": "Component name (null for single-component recipes)"
+                    },
+                    "position": {
+                        "type": "integer",
+                        "description": "Order of the component (0-indexed)"
+                    },
+                    "ingredients": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "Ingredient name as it appears in the recipe"
+                                },
+                                "quantity": {
+                                    "type": "number",
+                                    "description": "Numeric quantity (use decimals, e.g., 0.5 for half)"
+                                },
+                                "unit": {
+                                    "type": "string",
+                                    "description": "Unit of measurement",
+                                    "enum": [
+                                        "tablespoon",
+                                        "teaspoon",
+                                        "milliliter",
+                                        "cup",
+                                        "fluidounce",
+                                        "pint",
+                                        "quart",
+                                        "gallon",
+                                        "liter",
+                                        "count",
+                                        "ounce",
+                                        "pound",
+                                        "milligram",
+                                        "gram",
+                                        "kilogram"
+                                    ]
+                                },
+                                "position": {
+                                    "type": "integer",
+                                    "description": "Order of the ingredient within the component (0-indexed)"
+                                },
+                                "description": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "description": "Preparation notes (e.g., 'finely chopped', 'at room temperature')"
+                                }
+                            },
+                            "required": [
+                                "name",
+                                "quantity",
+                                "unit",
+                                "position",
+                                "description"
+                            ],
+                            "additionalProperties": false
+                        }
+                    },
+                    "steps": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "description": "A single cooking instruction step"
+                        },
+                        "description": "Ordered list of cooking steps for this component"
+                    }
+                },
+                "required": [
+                    "name",
+                    "position",
+                    "ingredients",
+                    "steps"
+                ],
+                "additionalProperties": false
+            }
+        }
+    },
+    "required": [
+        "name",
+        "description",
+        "servings",
+        "prepMinutes",
+        "cookingMinutes",
+        "components"
+    ],
+    "additionalProperties": false
+}

@@ -27,6 +27,7 @@ var connectionString = builder.Configuration.GetConnectionString("Postgres")!;
 builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
 builder.Services.AddSingleton<CookTimeDB>();
 builder.Services.AddSingleton<NutritionService>();
+builder.Services.AddSingleton<AIRecipeService>();
 builder.Services.AddGoogleAuthentication(builder.Configuration);
 builder.Services.AddOpenApi();
 
@@ -163,7 +164,8 @@ var authenticatedApi = app.MapGroup("/api")
         httpContext.Items["UserId"] = userId;
         return await next(context);
     })
-    .MapListRoutes();
+    .MapListRoutes()
+    .MapRecipeGenerationRoutes();
 
 authenticatedApi.MapGet("/multipartrecipe/mine", async (HttpContext context, CookTimeDB cooktime, int page = 1, int pageSize = 30) =>
 {

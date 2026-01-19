@@ -36,19 +36,19 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
     var massOptions = this.props.units.filter(u => u.siType === "weight").map(unit => {
       var printable = ""
       switch (unit.name) {
-        case "Ounce":
+        case "ounce":
           printable = "oz";
           break;
-        case "Pound":
+        case "pound":
           printable = "lb";
           break;
-        case "Milligram":
+        case "milligram":
           printable = "mg";
           break;
-        case "Gram":
+        case "gram":
           printable = "g";
           break;
-        case "Kilogram":
+        case "kilogram":
           printable = "kg";
           break;
       }

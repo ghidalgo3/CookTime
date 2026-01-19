@@ -1,4 +1,4 @@
-import { IngredientInternalUpdate, PagedResult, RecipeList, RecipeListWithRecipes, RecipeView, Review } from "./CookTime.types";
+import { IngredientInternalUpdate, PagedResult, RecipeGenerationResult, RecipeList, RecipeListWithRecipes, RecipeView, Review } from "./CookTime.types";
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
 
@@ -28,6 +28,42 @@ export async function importRecipeFromImage(recipeCreationArgs: FormData) {
     body: recipeCreationArgs
   });
   return response;
+}
+
+export async function generateRecipeFromImages(files: File[]): Promise<{ ok: boolean; data?: RecipeGenerationResult; error?: string }> {
+  const formData = new FormData();
+  files.forEach(file => formData.append("files", file));
+
+  const response = await fetch("/api/recipe/generate-from-image", {
+    method: "POST",
+    body: formData
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ error: "Failed to generate recipe" }));
+    return { ok: false, error: errorData.error || "Failed to generate recipe" };
+  }
+
+  const data = await response.json() as RecipeGenerationResult;
+  return { ok: true, data };
+}
+
+export async function generateRecipeFromText(text: string): Promise<{ ok: boolean; data?: RecipeGenerationResult; error?: string }> {
+  const response = await fetch("/api/recipe/generate-from-text", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ text })
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ error: "Failed to generate recipe" }));
+    return { ok: false, error: errorData.error || "Failed to generate recipe" };
+  }
+
+  const data = await response.json() as RecipeGenerationResult;
+  return { ok: true, data };
 }
 
 export async function generateRecipeImage(id: string) {

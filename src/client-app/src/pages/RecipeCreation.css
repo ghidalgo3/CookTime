@@ -14,6 +14,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
+
   .section-divider::before,
   .section-divider::after {
     background-color: #666;
@@ -29,5 +30,48 @@
 @media (prefers-color-scheme: dark) {
   .section-divider span {
     color: #aaa;
+  }
+}
+
+/* Image preview styles */
+.image-preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.image-preview-item {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #dee2e6;
+}
+
+.image-preview-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-preview-item .remove-image-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 16px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  .image-preview-item {
+    border-color: #495057;
   }
 }

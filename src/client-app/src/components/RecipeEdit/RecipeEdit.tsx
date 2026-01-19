@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
 import { IngredientRequirementList } from './IngredientRequirementList';
 import { Rating } from "@smastrom/react-rating";
-import { MeasureUnit, MultiPartRecipe, Image, RecipeNutritionFacts, Recipe, IngredientRequirement, RecipeComponent, toRecipeUpdateDto } from 'src/shared/CookTime';
+import { MeasureUnit, MultiPartRecipe, Image, RecipeNutritionFacts, Recipe, IngredientRequirement, RecipeComponent, toRecipeUpdateDto, RecipeGenerationResult, IngredientMatch } from 'src/shared/CookTime';
 import { RecipeStructuredData } from '../RecipeStructuredData';
 import { RecipeStepList } from './RecipeStepList';
 import { NutritionFacts } from '../NutritionFacts';
@@ -21,6 +21,7 @@ import { RecipeEditButtons } from './RecipeEditButtons';
 type RecipeEditProps = {
   recipeId: string,
   multipart: boolean,
+  generatedRecipe?: RecipeGenerationResult,
 }
 
 type RecipeEditState = {
@@ -34,7 +35,8 @@ type RecipeEditState = {
   error: boolean,
   operationInProgress: boolean,
   nutritionFacts: RecipeNutritionFacts | undefined,
-  showDeleteConfirm: boolean
+  showDeleteConfirm: boolean,
+  ingredientMatches: IngredientMatch[],
 }
 
 export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState> {
@@ -49,6 +51,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
       newImageSrc: undefined,
       nutritionFacts: undefined,
       recipeImages: [],
+      ingredientMatches: [],
       recipe: {
         id: '',
         name: '',
@@ -89,9 +92,21 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
               const element = r.recipeComponents[i];
               element.ingredients?.sort((a, b) => a.position - b.position);
             }
-            this.setState({
-              recipe: r,
-            })
+
+            // Apply generated recipe data if present
+            if (this.props.generatedRecipe) {
+              r = this.applyGeneratedRecipe(r, this.props.generatedRecipe);
+              // Enter edit mode and store ingredient matches for UI
+              this.setState({
+                recipe: r,
+                edit: true,
+                ingredientMatches: this.props.generatedRecipe.ingredientMatches,
+              })
+            } else {
+              this.setState({
+                recipe: r,
+              })
+            }
           }
         )
       fetch(`/api/MultiPartRecipe/${this.props.recipeId}/images`)
@@ -131,6 +146,45 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
 
   }
 
+  /**
+   * Maps AI-generated recipe data onto the existing MultiPartRecipe structure.
+   * Creates ingredient requirements from the generation result, using matched IDs where available.
+   */
+  private applyGeneratedRecipe(baseRecipe: MultiPartRecipe, generated: RecipeGenerationResult): MultiPartRecipe {
+    const { recipe: genRecipe } = generated;
+
+    // Map components from generated recipe to MultiPartRecipe format
+    // The generated data already has the proper nested ingredient structure
+    const recipeComponents: RecipeComponent[] = genRecipe.components.map((component, componentIndex) => {
+      const ingredients: IngredientRequirement[] = component.ingredients.map((genIng, ingIndex) => {
+        return {
+          id: genIng.id || uuidv4(),
+          ingredient: genIng.ingredient,
+          quantity: genIng.quantity,
+          unit: genIng.unit ?? 'Count',
+          text: genIng.text ?? '',
+          position: genIng.position ?? ingIndex
+        };
+      });
+
+      return {
+        id: uuidv4(),
+        name: component.name ?? '',
+        position: component.position ?? componentIndex,
+        steps: component.steps,
+        ingredients: ingredients
+      };
+    });
+
+    return {
+      ...baseRecipe,
+      name: genRecipe.name || baseRecipe.name,
+      servingsProduced: genRecipe.servings ?? baseRecipe.servingsProduced,
+      cooktimeMinutes: genRecipe.cookingMinutes ?? baseRecipe.cooktimeMinutes,
+      source: genRecipe.source ?? baseRecipe.source,
+      recipeComponents: recipeComponents.length > 0 ? recipeComponents : baseRecipe.recipeComponents
+    };
+  }
 
   private getNutritionData() {
     fetch(`/api/MultiPartRecipe/${this.props.recipeId}/nutritionData`)

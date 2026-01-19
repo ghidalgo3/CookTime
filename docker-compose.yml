@@ -34,14 +34,15 @@ services:
     build:
       context: src/
       dockerfile: Dockerfile
+      target: build
     container_name: cooktime-api
+    working_dir: /src
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      ASPNETCORE_URLS: http://+:5000
+      ASPNETCORE_URLS: http://+:5001
       ConnectionStrings__Postgres: "Host=postgres;Database=cooktime;Username=cooktime;Password=development;Include Error Detail=true"
       ConnectionStrings__AzureBlobStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
       Azure__VisionKey: "Pass"
-      OpenAI__Key: "sk-Pass"
     ports:
       - "5001:5000"
     depends_on:

@@ -212,11 +212,12 @@ export type IngredientReplacementRequest = {
 
 // DTOs for create/update operations (match backend RecipeCreateDto/RecipeUpdateDto)
 export type IngredientRequirementCreateDto = {
-    ingredientId: string,
+    id: string,
+    ingredient: Ingredient,
     quantity: number,
     unit: string | null,
     position: number,
-    description: string | null
+    text: string | null
 }
 
 export type ComponentCreateDto = {
@@ -262,15 +263,36 @@ export function toRecipeUpdateDto(recipe: MultiPartRecipe): RecipeUpdateDto {
             ingredients: (component.ingredients ?? [])
                 .filter(i => i.ingredient?.id)
                 .map((ing, ingIndex) => ({
-                    ingredientId: ing.ingredient.id,
+                    id: ing.id,
+                    ingredient: ing.ingredient,
                     quantity: ing.quantity ?? 0,
                     unit: ing.unit ?? null,
                     position: ing.position ?? ingIndex,
-                    description: ing.text ?? null
+                    text: ing.text ?? null
                 }))
         })),
         categoryIds: recipe.categories
             .filter(c => c?.id != null)
             .map(c => c.id)
     };
+}
+
+// AI Recipe Generation types
+export type RecipeGenerationResult = {
+    recipe: RecipeCreateDto;
+    ingredientMatches: IngredientMatch[];
+}
+
+export type IngredientMatch = {
+    originalText: string;
+    matchedIngredientId: string | null;
+    matchedIngredientName: string | null;
+    confidence: number | null;
+    candidates: IngredientCandidate[];
+}
+
+export type IngredientCandidate = {
+    id: string;
+    name: string;
+    confidence: number;
 }

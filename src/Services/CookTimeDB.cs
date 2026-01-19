@@ -284,6 +284,27 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         return JsonSerializer.Deserialize<List<IngredientAutosuggestDto>>(result.ToString()!, JsonOptions) ?? [];
     }
 
+    /// <summary>
+    /// Batch search for ingredients by multiple names. Returns a dictionary where keys are the original
+    /// search terms and values are lists of matches with confidence scores.
+    /// </summary>
+    public async Task<Dictionary<string, List<IngredientMatchResultDto>>> SearchIngredientsBatchAsync(List<string> searchTerms)
+    {
+        if (searchTerms.Count == 0)
+            return [];
+
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.search_ingredients_batch($1)", conn);
+
+        cmd.Parameters.AddWithValue(searchTerms.ToArray());
+
+        var result = await cmd.ExecuteScalarAsync();
+        if (result == null || result == DBNull.Value)
+            return [];
+
+        return JsonSerializer.Deserialize<Dictionary<string, List<IngredientMatchResultDto>>>(result.ToString()!, JsonOptions) ?? [];
+    }
+
     public async Task<List<string>> GetIngredientImagesAsync(int ingredientId)
     {
         await using var conn = await dataSource.OpenConnectionAsync();

@@ -58,8 +58,11 @@ public class ComponentCreateDto
 
 public class IngredientRequirementCreateDto
 {
-    [JsonPropertyName("ingredientId")]
-    public Guid IngredientId { get; set; }
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+
+    [JsonPropertyName("ingredient")]
+    public IngredientRefDto Ingredient { get; set; } = null!;
 
     [JsonPropertyName("quantity")]
     public double Quantity { get; set; }
@@ -70,8 +73,8 @@ public class IngredientRequirementCreateDto
     [JsonPropertyName("position")]
     public int Position { get; set; }
 
-    [JsonPropertyName("description")]
-    public string? Description { get; set; }
+    [JsonPropertyName("text")]
+    public string? Text { get; set; }
 }
 
 public record RecipeCreateRequest(string Name);
