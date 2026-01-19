@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 namespace BabeAlgorithms.Models.Contracts;
 
 public class IngredientRequirementDto

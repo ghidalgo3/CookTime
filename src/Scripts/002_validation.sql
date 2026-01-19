@@ -70,6 +70,16 @@ BEGIN
         RAISE EXCEPTION 'Ingredient requirement JSON must contain "quantity" and "position" fields';
     END IF;
     
+    -- Check for nested ingredient object
+    IF NOT (requirement_json ? 'ingredient') THEN
+        RAISE EXCEPTION 'Ingredient requirement JSON must contain "ingredient" object';
+    END IF;
+    
+    -- Check ingredient object has required fields
+    IF NOT (requirement_json->'ingredient' ? 'id' AND requirement_json->'ingredient' ? 'name') THEN
+        RAISE EXCEPTION 'Ingredient object must contain "id" and "name" fields';
+    END IF;
+    
     -- Check quantity is a number
     IF jsonb_typeof(requirement_json->'quantity') != 'number' THEN
         RAISE EXCEPTION 'Ingredient requirement "quantity" must be a number';
@@ -81,11 +91,42 @@ BEGIN
     END IF;
     
     -- Check unit if provided
-    IF requirement_json ? 'unit' AND jsonb_typeof(requirement_json->'unit') != 'string' THEN
+    IF requirement_json ? 'unit' AND requirement_json->>'unit' IS NOT NULL AND jsonb_typeof(requirement_json->'unit') != 'string' THEN
         RAISE EXCEPTION 'Ingredient requirement "unit" must be a string';
     END IF;
     
     RETURN true;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Helper function to ensure ingredient exists (creates if isNew=true)
+CREATE OR REPLACE FUNCTION cooktime.ensure_ingredient_exists(ingredient_json jsonb)
+RETURNS uuid AS $$
+DECLARE
+    v_ingredient_id uuid;
+    v_is_new boolean;
+BEGIN
+    v_ingredient_id := (ingredient_json->>'id')::uuid;
+    v_is_new := COALESCE((ingredient_json->>'isNew')::boolean, false);
+    
+    -- Check if ingredient exists
+    IF EXISTS (SELECT 1 FROM cooktime.ingredients WHERE id = v_ingredient_id) THEN
+        RETURN v_ingredient_id;
+    END IF;
+    
+    -- If ingredient doesn't exist and isNew is true, create it
+    IF v_is_new THEN
+        INSERT INTO cooktime.ingredients (id, name, density_kg_per_l)
+        VALUES (
+            v_ingredient_id,
+            ingredient_json->>'name',
+            COALESCE((ingredient_json->>'densityKgPerL')::double precision, 1.0)
+        );
+        RETURN v_ingredient_id;
+    ELSE
+        -- Ingredient doesn't exist and isNew is false - this is an error
+        RAISE EXCEPTION 'Ingredient with id % does not exist and isNew is false', v_ingredient_id;
+    END IF;
 END;
 $$ LANGUAGE plpgsql;
 

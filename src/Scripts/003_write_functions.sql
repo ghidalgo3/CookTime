@@ -10,11 +10,10 @@ DECLARE
     component_id uuid;
     ingredient_item jsonb;
     category_item jsonb;
+    v_ingredient_id uuid;
 BEGIN
     -- Validate input
     PERFORM cooktime.validate_recipe_json(recipe_json);
-    
-    -- Begin transaction (implicit in function)
     
     -- Insert recipe
     INSERT INTO cooktime.recipes (
@@ -62,6 +61,9 @@ BEGIN
         LOOP
             PERFORM cooktime.validate_ingredient_requirement_json(ingredient_item);
             
+            -- Ensure ingredient exists (creates if isNew=true)
+            v_ingredient_id := cooktime.ensure_ingredient_exists(ingredient_item->'ingredient');
+            
             INSERT INTO cooktime.ingredient_requirements (
                 ingredient_id,
                 recipe_component_id,
@@ -70,12 +72,12 @@ BEGIN
                 position,
                 description
             ) VALUES (
-                (ingredient_item->>'ingredientId')::uuid,
+                v_ingredient_id,
                 component_id,
                 (ingredient_item->>'unit')::cooktime.unit,
                 (ingredient_item->>'quantity')::double precision,
                 (ingredient_item->>'position')::integer,
-                ingredient_item->>'description'
+                ingredient_item->>'text'
             );
         END LOOP;
     END LOOP;
@@ -102,6 +104,7 @@ DECLARE
     component_id uuid;
     ingredient_item jsonb;
     category_item jsonb;
+    v_ingredient_id uuid;
 BEGIN
     -- Validate input
     PERFORM cooktime.validate_recipe_json(recipe_json);
@@ -147,6 +150,9 @@ BEGIN
         LOOP
             PERFORM cooktime.validate_ingredient_requirement_json(ingredient_item);
             
+            -- Ensure ingredient exists (creates if isNew=true)
+            v_ingredient_id := cooktime.ensure_ingredient_exists(ingredient_item->'ingredient');
+            
             INSERT INTO cooktime.ingredient_requirements (
                 ingredient_id,
                 recipe_component_id,
@@ -155,12 +161,12 @@ BEGIN
                 position,
                 description
             ) VALUES (
-                (ingredient_item->>'ingredientId')::uuid,
+                v_ingredient_id,
                 component_id,
                 (ingredient_item->>'unit')::cooktime.unit,
                 (ingredient_item->>'quantity')::double precision,
                 (ingredient_item->>'position')::integer,
-                ingredient_item->>'description'
+                ingredient_item->>'text'
             );
         END LOOP;
     END LOOP;

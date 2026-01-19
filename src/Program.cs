@@ -28,6 +28,16 @@ builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
 builder.Services.AddSingleton<CookTimeDB>();
 builder.Services.AddSingleton<NutritionService>();
 builder.Services.AddSingleton<AIRecipeService>();
+
+// Azure Blob Storage
+var blobConnectionString = builder.Configuration.GetConnectionString("AzureBlobStorage");
+if (!string.IsNullOrEmpty(blobConnectionString))
+{
+    var blobServiceClient = new BlobServiceClient(blobConnectionString);
+    var blobContainer = blobServiceClient.GetBlobContainerClient("images");
+    builder.Services.AddSingleton(blobContainer);
+}
+
 builder.Services.AddGoogleAuthentication(builder.Configuration);
 builder.Services.AddOpenApi();
 
@@ -233,6 +243,86 @@ authenticatedApi.MapDelete("/multipartrecipe/{recipeId:guid}", async (HttpContex
     return Results.NoContent();
 });
 
+authenticatedApi.MapPut("/multipartrecipe/{recipeId:guid}/image", async (
+    HttpContext context,
+    CookTimeDB cooktime,
+    BlobContainerClient blobContainer,
+    ILogger<Program> logger,
+    Guid recipeId) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+
+    // Verify the user owns this recipe or is an administrator
+    var existingRecipe = await cooktime.GetRecipeByIdAsync(recipeId);
+    if (existingRecipe == null)
+    {
+        return Results.NotFound();
+    }
+    var isAdmin = context.User.IsInRole("Administrator");
+    if (existingRecipe.Owner?.Id != userId && !isAdmin)
+    {
+        return Results.Forbid();
+    }
+
+    // Parse multipart form data
+    var form = await context.Request.ReadFormAsync();
+    var file = form.Files.GetFile("files");
+    if (file == null || file.Length == 0)
+    {
+        return Results.BadRequest(new { error = "No file provided" });
+    }
+
+    // Validate file type
+    var allowedTypes = new[] { "image/jpeg", "image/png", "image/webp" };
+    if (!allowedTypes.Contains(file.ContentType))
+    {
+        return Results.BadRequest(new { error = "Invalid file type. Allowed: JPEG, PNG, WebP" });
+    }
+
+    // Validate file size (5MB max)
+    if (file.Length > 5 * 1024 * 1024)
+    {
+        return Results.BadRequest(new { error = "File too large. Maximum size is 5MB" });
+    }
+
+    try
+    {
+        // Generate unique blob name
+        var imageId = Guid.NewGuid();
+        var extension = Path.GetExtension(file.FileName);
+        if (string.IsNullOrEmpty(extension))
+        {
+            extension = file.ContentType switch
+            {
+                "image/jpeg" => ".jpg",
+                "image/png" => ".png",
+                "image/webp" => ".webp",
+                _ => ".jpg"
+            };
+        }
+        var blobName = $"{imageId}{extension}";
+
+        // Upload to blob storage
+        var blobClient = blobContainer.GetBlobClient(blobName);
+        await using var stream = file.OpenReadStream();
+        await blobClient.UploadAsync(stream, overwrite: true);
+
+        // Get the storage URL (replace azurite with localhost for local dev)
+        var storageUrl = blobClient.Uri.ToString().Replace("azurite", "localhost");
+
+        // Create image record in database
+        await cooktime.CreateImageAsync(imageId, storageUrl, recipeId);
+
+        logger.LogInformation("Uploaded image {ImageId} for recipe {RecipeId}", imageId, recipeId);
+        return Results.Ok(new { id = imageId, url = storageUrl });
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Failed to upload image for recipe {RecipeId}", recipeId);
+        return Results.Problem("Failed to upload image");
+    }
+}).DisableAntiforgery();
+
 authenticatedApi.MapPut("/multipartrecipe/{recipeId:guid}/review", async (HttpContext context, CookTimeDB cooktime, Guid recipeId, ReviewCreateRequest request) =>
 {
     var userId = (Guid)context.Items["UserId"]!;
@@ -283,9 +373,12 @@ using (var scope = app.Services.CreateScope())
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     Migrations.RunMigrations(logger, dataSource);
 
-    var blobConnectionString = builder.Configuration.GetConnectionString("AzureBlobStorage");
-    var blobServiceClient = new BlobServiceClient(blobConnectionString);
-    var blobContainer = blobServiceClient.GetBlobContainerClient("images");
+    // Ensure blob container exists
+    var blobContainer = scope.ServiceProvider.GetService<BlobContainerClient>();
+    if (blobContainer != null)
+    {
+        await blobContainer.CreateIfNotExistsAsync(Azure.Storage.Blobs.Models.PublicAccessType.Blob);
+    }
 
     // await Loader.LoadAsync(dataSource, blobContainer, builder.Environment.ContentRootPath);
 }

@@ -457,5 +457,19 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         return JsonSerializer.Deserialize<List<ImageDto>>(result.ToString()!, JsonOptions) ?? [];
     }
 
+    public async Task CreateImageAsync(Guid imageId, string storageUrl, Guid recipeId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand(
+            "INSERT INTO cooktime.images (id, storage_url, recipe_id) VALUES ($1, $2, $3)",
+            conn);
+
+        cmd.Parameters.AddWithValue(imageId);
+        cmd.Parameters.AddWithValue(storageUrl);
+        cmd.Parameters.AddWithValue(recipeId);
+
+        await cmd.ExecuteNonQueryAsync();
+    }
+
     #endregion
 }
