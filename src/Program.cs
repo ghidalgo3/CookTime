@@ -1,5 +1,6 @@
 
 using System.Security.Claims;
+using Azure.Identity;
 using Azure.Storage.Blobs;
 using babe_algorithms.Models;
 using babe_algorithms.Services;
@@ -10,6 +11,17 @@ using BabeAlgorithms.Services;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
+
+if (!builder.Environment.IsDevelopment())
+{
+    var keyVaultName = builder.Configuration["KeyVaultName"];
+    if (!string.IsNullOrEmpty(keyVaultName))
+    {
+        builder.Configuration.AddAzureKeyVault(
+            new Uri($"https://{keyVaultName}.vault.azure.net/"),
+            new DefaultAzureCredential());
+    }
+}
 
 var connectionString = builder.Configuration.GetConnectionString("Postgres")!;
 builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
