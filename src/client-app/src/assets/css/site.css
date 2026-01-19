@@ -463,10 +463,25 @@ html {
 .favorite-button {
   position: relative;
   top: -180px;
-  height: 60px;
-  width: 60px;
-  padding-left: 10px;
-  padding-bottom: 4px;
+  padding: 5px 10px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: inline-block;
+  transition: transform 0.2s ease-in-out;
+}
+
+.favorite-button:hover {
+  transform: scale(1.2);
+}
+
+.favorite-button i {
+  transition: color 0.2s ease-in-out;
+  color: var(--themePrimary);
+}
+
+.heart-outline {
+  -webkit-text-stroke: 1px var(--themePrimary);
 }
 
 /* RULE OF THUMB IS TO PLAN TO DESIGN FOR 320PX AS THE SMALLEST SCREEN A USER WOULD HAVE*/
@@ -499,10 +514,16 @@ html {
   .favorite-button {
     position: relative;
     top: -140px;
-    height: 60px;
-    width: 60px;
-    padding-left: 10px;
-    padding-bottom: 4px;
+    padding: 5px 10px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    display: inline-block;
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .favorite-button:hover {
+    transform: scale(1.2);
   }
 
   .get-smaller {
