@@ -27,7 +27,7 @@ export function RecipeCard({
     if (favorite) {
       heartClass = "bi bi-heart-fill fs-4"
     } else {
-      heartClass = "bi bi-heart fs-4"
+      heartClass = "bi bi-heart fs-4 heart-outline"
     }
     const handleToggle = async () => {
       setSubmitting(true);

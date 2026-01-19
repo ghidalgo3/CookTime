@@ -5,6 +5,7 @@ import { getFavoriteRecipeViews, getFeaturedRecipeViews, getMyRecipes, getNewRec
 import { Link } from "react-router";
 import PaginatedList from "../PaginatedList/PaginatedList";
 import { useAuthentication } from "../Authentication/AuthenticationContext";
+import "./RecipeList.css";
 
 interface RecipeListProps {
   title: string
@@ -52,9 +53,9 @@ export default function RecipeList({ title, query, type, hideIfEmpty }: RecipeLi
           <h1>{title}</h1>
         </Col>
         {
-          user &&
+          user && type === "Featured" &&
           <Col className="margin-bottom-20 text-end" xs={2}>
-            <Link to="/Recipes/Create">
+            <Link to="/Recipes/Create" className="create-recipe-link">
               <i className="bi bi-plus-circle themePrimary-color fs-3"></i>
             </Link>
           </Col>

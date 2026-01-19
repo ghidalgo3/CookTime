@@ -29,10 +29,6 @@ export default function Home() {
             title="Featured Recipes"
             type="Featured"
             hideIfEmpty />
-          <RecipeList
-            title="New Recipes!"
-            type="New"
-            hideIfEmpty />
         </>
       }
       {query && <p>Searching for '{query}'</p>}
