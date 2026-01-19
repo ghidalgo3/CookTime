@@ -54,6 +54,7 @@ services:
       - ./src:/src
       - /src/obj # Shadow obj/ so container writes don't affect host intellisense
       - /src/bin # Shadow bin/ so container writes don't affect host intellisense
+      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
     command: ["dotnet", "watch", "run", "--non-interactive"]
 
   webapp:

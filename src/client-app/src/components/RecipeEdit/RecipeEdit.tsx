@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-globals */
 import * as React from 'react';
-import { Alert, Button, Col, Form, Row, Spinner, Stack } from 'react-bootstrap';
+import { Alert, Button, Col, Form, Modal, Row, Spinner, Stack } from 'react-bootstrap';
 import { v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
 import { IngredientRequirementList } from './IngredientRequirementList';
@@ -33,7 +33,8 @@ type RecipeEditState = {
   newServings: number,
   error: boolean,
   operationInProgress: boolean,
-  nutritionFacts: RecipeNutritionFacts | undefined
+  nutritionFacts: RecipeNutritionFacts | undefined,
+  showDeleteConfirm: boolean
 }
 
 export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState> {
@@ -43,6 +44,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
       error: false,
       edit: false,
       units: [],
+      showDeleteConfirm: false,
       newImage: undefined,
       newImageSrc: undefined,
       nutritionFacts: undefined,
@@ -275,6 +277,22 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
   render() {
     return (
       <div>
+        <Modal show={this.state.showDeleteConfirm} onHide={() => this.setState({ showDeleteConfirm: false })}>
+          <Modal.Header closeButton>
+            <Modal.Title>Delete Recipe</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Are you sure you want to delete "{this.state.recipe.name}"? This action cannot be undone!
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => this.setState({ showDeleteConfirm: false })}>
+              Cancel
+            </Button>
+            <Button variant="danger" onClick={() => this.onConfirmDelete()}>
+              Delete
+            </Button>
+          </Modal.Footer>
+        </Modal>
         <RecipeStructuredData recipe={this.state.recipe} images={this.state.recipeImages} />
         <Row>
           <>
@@ -844,6 +862,11 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
   }
 
   onDelete(): void {
+    this.setState({ showDeleteConfirm: true });
+  }
+
+  onConfirmDelete(): void {
+    this.setState({ showDeleteConfirm: false });
     if (!this.props.multipart) {
       fetch(`/api/Recipe/${this.props.recipeId}`, {
         method: 'DELETE',
