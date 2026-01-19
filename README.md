@@ -24,6 +24,8 @@ use the `scripts` directory contents to get started:
 scripts/server
 ```
 
+Then open <http://localhost:3000> to get started!
+
 I recommend using VSCode to develop CookTime, for that you will need to install:
 
 1. [.NET 10](https://dotnet.microsoft.com/en-us/download/dotnet/10.0)

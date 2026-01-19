@@ -31,6 +31,17 @@ RUN dotnet publish "babe-algorithms.csproj" -c Release -o /app/publish /p:UseApp
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
+# Install Azure CLI
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    curl \
+    apt-transport-https \
+    lsb-release \
+    gnupg && \
+    curl -sL https://aka.ms/InstallAzureCLIDeb | bash && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY --from=publish /app/publish .
 
 # Ensure Scripts directory is available
