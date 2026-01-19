@@ -105,7 +105,7 @@ public class TestNutrition : TestBase
         var createDto = SimpleRecipe(1, [
             new IngredientRequirementCreateDto
             {
-                IngredientId = _testIngredientId,
+                Ingredient = new IngredientRefDto { Id = _testIngredientId, Name = "White bread" },
                 Quantity = 100,
                 Unit = "gram",
                 Position = 1
@@ -132,7 +132,7 @@ public class TestNutrition : TestBase
         var createDto = SimpleRecipe(1, [
             new IngredientRequirementCreateDto
             {
-                IngredientId = _testIngredientId,
+                Ingredient = new IngredientRefDto { Id = _testIngredientId, Name = "White bread" },
                 Quantity = 1,
                 Unit = "count",
                 Position = 1

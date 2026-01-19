@@ -43,7 +43,7 @@ public class TestRecipes : TestBase
                     {
                         new IngredientRequirementCreateDto
                         {
-                            IngredientId = _testIngredientId,
+                            Ingredient = new IngredientRefDto { Id = _testIngredientId, Name = TEST_INGREDIENT_NAME },
                             Quantity = 1.0,
                             Unit = "cup",
                             Position = 1
@@ -220,7 +220,7 @@ public class TestRecipes : TestBase
                     {
                         new IngredientRequirementCreateDto
                         {
-                            IngredientId = _testIngredientId,
+                            Ingredient = new IngredientRefDto { Id = _testIngredientId, Name = TEST_INGREDIENT_NAME },
                             Quantity = 2.0,
                             Unit = "tablespoon",
                             Position = 1
