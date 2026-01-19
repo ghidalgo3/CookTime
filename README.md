@@ -18,7 +18,7 @@ With CookTime you can do things like:
 ## Getting started
 
 Assuming [Docker Desktop][Docker Desktop] installed on Linux or macOS,
-use the `scripts` directory contents to get started:
+use the `scripts` directory contents to get started from in /babe-algorithms:
 
 ```shell
 scripts/server

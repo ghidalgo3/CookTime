@@ -2,6 +2,7 @@ import React, { useEffect } from "react"
 import { Button } from "react-bootstrap";
 import { useLocation, useNavigate } from "react-router";
 import { useAuthentication } from "./AuthenticationContext";
+import "./SignInForm.css";
 
 function GoogleIcon() {
   return (
@@ -41,7 +42,7 @@ export function SignInForm() {
 
       <Button
         variant="outline-dark"
-        className="width-100 d-flex align-items-center justify-content-center"
+        className="width-100 d-flex align-items-center justify-content-center google-signin-btn"
         style={{ padding: '12px' }}
         onClick={handleGoogleSignIn}
       >

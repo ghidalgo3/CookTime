@@ -1,0 +1,28 @@
+.google-signin-btn {
+  border-color: #ccc;
+  color: #323232;
+}
+
+.google-signin-btn:hover {
+  border-color: #999;
+  background-color: #f5f5f5;
+}
+
+@media (prefers-color-scheme: dark) {
+  .google-signin-btn {
+    border-color: #e0e0e0;
+    color: #e0e0e0;
+    background-color: #424242;
+  }
+
+  .google-signin-btn:hover {
+    border-color: #fff;
+    color: #fff;
+    background-color: #616161;
+  }
+
+  .google-signin-btn:focus {
+    border-color: #fff;
+    box-shadow: 0 0 0 0.25rem rgba(224, 224, 224, 0.25);
+  }
+}
