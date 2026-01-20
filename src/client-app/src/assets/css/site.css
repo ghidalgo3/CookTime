@@ -361,11 +361,23 @@ hr {
   font-variant: small-caps;
 }
 
+.nav-pills .nav-link {
+  color: var(--primary-text);
+}
+
 .nav-pills .nav-link.active,
 .nav-pills .show>.nav-link {
-  color: var(--light-grey);
-  background-color: var(--deep-water-highlight);
-  border-color: var(--deep-water-highlight-border);
+  color: var(--white);
+  background-color: var(--themePrimary);
+  border-color: var(--themePrimary);
+}
+
+.nav-tabs .nav-link {
+  color: var(--primary-text);
+}
+
+.nav-tabs .nav-link.active {
+  color: var(--primary-text);
 }
 
 .troubled-water-color {

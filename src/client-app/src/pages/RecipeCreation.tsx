@@ -146,32 +146,17 @@ export default function RecipeCreation() {
           <h1>Create Recipe</h1>
           <br />
 
-          <h3>✏️ From Scratch</h3>
-          <Form onSubmit={handleSimpleCreate}>
-            <Form.Group className="margin-bottom-8">
-              <Form.Control required placeholder="Name" type="text" name="name" />
-            </Form.Group>
-            <Form.Group>
-              <Button
-                className="width-100"
-                type="submit"
-                disabled={isSubmitting}>
-                {isSubmitting ? <Spinner size="sm" /> : "Create"}
-              </Button>
-            </Form.Group>
-          </Form>
-
-          <div className="section-divider">
-            <span>or</span>
-          </div>
-
-          <h3>🪄 AI Import</h3>
-          <p>Let CookTime AI extract the recipe from images or text</p>
+          {/* <div className="section-divider">
+            <span>Choose a method</span>
+          </div> */}
 
           {error && <Alert variant="danger" dismissible onClose={() => setError(undefined)}>{error}</Alert>}
 
-          <Tab.Container defaultActiveKey="images">
+          <Tab.Container defaultActiveKey="scratch">
             <Nav variant="tabs" className="mb-3">
+              <Nav.Item>
+                <Nav.Link eventKey="scratch">✏️ From Scratch</Nav.Link>
+              </Nav.Item>
               <Nav.Item>
                 <Nav.Link eventKey="images">📷 From Images</Nav.Link>
               </Nav.Item>
@@ -181,9 +166,25 @@ export default function RecipeCreation() {
             </Nav>
 
             <Tab.Content>
+              <Tab.Pane eventKey="scratch">
+                <Form onSubmit={handleSimpleCreate}>
+                  <Form.Group className="margin-bottom-8">
+                    <Form.Label>Start by giving your recipe a name:</Form.Label>
+                    <Form.Control required placeholder="Recipe name" type="text" name="name" />
+                  </Form.Group>
+                  <Form.Group>
+                    <Button
+                      className="width-100"
+                      type="submit"
+                      disabled={isSubmitting}>
+                      {isSubmitting ? <Spinner size="sm" /> : "Continue to Recipe Editor"}
+                    </Button>
+                  </Form.Group>
+                </Form>
+              </Tab.Pane>
               <Tab.Pane eventKey="images">
                 <Form.Group controlId="formFileMultiple" className="mb-3">
-                  <Form.Label>Upload up to 3 images of a recipe</Form.Label>
+                  <Form.Label>Let CookTime AI extract the recipe from your photo. Upload up to 3 images of a recipe.</Form.Label>
                   <Form.Control
                     type="file"
                     accept=".jpg,.jpeg,.png,.webp"
@@ -232,17 +233,17 @@ export default function RecipeCreation() {
 
               <Tab.Pane eventKey="text">
                 <Form.Group className="mb-3">
-                  <Form.Label>Paste or type a recipe</Form.Label>
+                  <Form.Label>Let CookTime AI extract the recipe from your text.</Form.Label>
                   <Form.Control
                     as="textarea"
                     rows={10}
-                    placeholder="Paste a recipe here... Include ingredients, quantities, and instructions."
+                    placeholder="Paste a recipe here. Include ingredients, quantities, and instructions."
                     value={recipeText}
                     onChange={(e) => setRecipeText(e.target.value)}
                   />
-                  <Form.Text className="text-muted">
+                  {/* <Form.Text className="text-muted">
                     Include ingredient names, quantities, units, and cooking steps
-                  </Form.Text>
+                  </Form.Text> */}
                 </Form.Group>
 
                 <Button
