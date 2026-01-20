@@ -970,6 +970,8 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
     }
 
     const updateDto = toRecipeUpdateDto(recipe);
+    console.log('Categories before save:', recipe.categories);
+    console.log('CategoryIds in DTO:', updateDto.categoryIds);
 
     fetch(`/api/MultiPartRecipe/${this.props.recipeId}`, {
       method: 'PUT',

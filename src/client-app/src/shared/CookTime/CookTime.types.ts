@@ -3,7 +3,8 @@
 export type Autosuggestable = {
     name: string,
     id: string,
-    isNew: boolean
+    isNew: boolean,
+    slug?: string
 }
 
 export type DietDetail = {

@@ -1,7 +1,6 @@
 import * as React from "react";
 import Autosuggest from "react-autosuggest";
 import { Autosuggestable } from "src/shared/CookTime";
-import { stringify, v4 as uuidv4 } from 'uuid';
 import { TagList } from "./TagList";
 
 // const theme = require('../wwwroot/autosuggest.css');
@@ -49,37 +48,23 @@ export class Tags extends React.Component<TagsProps, TagsState> {
   }
 
   onChange = (event: any, { newValue, method }: any) => {
-    switch (method) {
-      case 'enter':
-        let newTag = {
-          name: this.state.value,
-          id: uuidv4(),
-          isNew: false,
-        }
-        let newTags = [...this.state.tags, newTag];
-        this.setState({
-          tags: newTags,
-          value: ''
-        });
-        this.props.tagsChanged(newTags);
-        break;
-
-      default:
-        this.setState({
-          value: newValue
-        });
-        break;
+    // Only allow typing to filter suggestions, not creating new tags
+    if (method !== 'enter') {
+      this.setState({
+        value: newValue
+      });
     }
   };
 
   onSuggestionSelected = (event: any, { suggestion, suggestionValue }: any) => {
-    console.log(suggestionValue)
+    console.log('Tag selected:', suggestionValue, 'ID:', suggestion.id)
     let newTag = {
       name: suggestionValue,
-      id: uuidv4(),
-      isNew: true,
+      id: suggestion.id,
+      isNew: false,
     }
     let newTags = [...this.state.tags, newTag]
+    console.log('All tags after selection:', newTags);
     this.setState({
       tags: newTags,
       value: ''
@@ -89,7 +74,7 @@ export class Tags extends React.Component<TagsProps, TagsState> {
 
   // Autosuggest will call this function every time you need to update suggestions.
   // You already implemented this logic above, so just use it.
-  onSuggestionsFetchRequested = ({ value } : any) => {
+  onSuggestionsFetchRequested = ({ value }: any) => {
     // primitive primitive rate limiting, should do this server side too
     this.fetchRequestCount = (this.fetchRequestCount + 1) % 2;
     if (this.fetchRequestCount === 0) {
@@ -114,7 +99,7 @@ export class Tags extends React.Component<TagsProps, TagsState> {
     });
   };
 
-  onDelete = (index : number) => {
+  onDelete = (index: number) => {
     let newTags = this.state.tags.filter((_, i) => { return i !== index });
     this.setState({
       tags: newTags
@@ -124,30 +109,9 @@ export class Tags extends React.Component<TagsProps, TagsState> {
   };
 
   onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    switch (event.keyCode) {
-      case 13: { //ENTER key
-        event.preventDefault();
-        let { value, tags } = this.state
-        let valueIsEmpty = value.trim() === ""
-        let valueExists = -1 !== tags.findIndex((val) => {
-          return value.toUpperCase() === val.name.toUpperCase()
-        });
-        if (!valueExists && !valueIsEmpty) {
-          let newTag = {
-            name: value,
-            id: uuidv4(),
-            isNew: true,
-          }
-          let newTags = [...tags, newTag];
-          this.setState({
-            tags: newTags,
-            value: ''
-          });
-          // console.log("ENTER KEY PRESSED: ")
-          console.log(newTag)
-          this.props.tagsChanged(newTags);
-        }
-      }
+    // Prevent Enter key from doing anything - users must select from suggestions
+    if (event.keyCode === 13) {
+      event.preventDefault();
     }
   };
 

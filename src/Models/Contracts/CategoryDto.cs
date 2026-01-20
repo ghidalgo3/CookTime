@@ -2,8 +2,8 @@ namespace BabeAlgorithms.Models.Contracts;
 
 public class CategoryDto
 {
-    [JsonPropertyName("categoryId")]
-    public int CategoryId { get; set; }
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
 
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;

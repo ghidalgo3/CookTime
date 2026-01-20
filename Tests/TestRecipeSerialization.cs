@@ -93,8 +93,8 @@ public class TestRecipeSerialization
             },
       Categories = new List<CategoryDto>
             {
-                new() { CategoryId = 1, Name = "Dessert", Slug = "dessert" },
-                new() { CategoryId = 2, Name = "Baking", Slug = "baking" }
+                new() { Id = Guid.Parse("11111111-1111-1111-1111-111111111111"), Name = "Dessert", Slug = "dessert" },
+                new() { Id = Guid.Parse("22222222-2222-2222-2222-222222222222"), Name = "Baking", Slug = "baking" }
             },
       ReviewCount = 42,
       AverageReviews = 4.7
