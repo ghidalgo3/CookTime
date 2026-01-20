@@ -125,6 +125,13 @@ Background color = #fafafa */
   border: solid 1px var(--btn-outline-primary-border);
 }
 
+@media (prefers-color-scheme: dark) {
+  #search-bar::placeholder {
+    color: #999;
+    opacity: 1;
+  }
+}
+
 #cart-recipe-item {
   border: solid 1px var(--btn-outline-primary-border);
 }
