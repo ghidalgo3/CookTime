@@ -1,3 +1,4 @@
+using babe_algorithms.Services;
 using BabeAlgorithms.Models.Contracts;
 using BabeAlgorithms.Services;
 
@@ -22,6 +23,7 @@ public static class RecipeGenerationRoutes
     private static async Task<IResult> GenerateFromImageAsync(
         HttpContext context,
         AIRecipeService aiRecipeService,
+        CookTimeDB cooktime,
         ILogger<AIRecipeService> logger)
     {
         var userId = (Guid)context.Items["UserId"]!;
@@ -70,6 +72,12 @@ public static class RecipeGenerationRoutes
         try
         {
             var result = await aiRecipeService.GenerateFromImagesAsync(images, userId);
+
+            // Save the generated recipe to the database
+            var recipeId = await cooktime.CreateRecipeAsync(result.Recipe);
+            result.Recipe.Id = recipeId;
+
+            logger.LogInformation("Created recipe {RecipeId} from image generation for user {UserId}", recipeId, userId);
             return Results.Ok(result);
         }
         catch (Exception ex)
@@ -82,6 +90,7 @@ public static class RecipeGenerationRoutes
     private static async Task<IResult> GenerateFromTextAsync(
         HttpContext context,
         AIRecipeService aiRecipeService,
+        CookTimeDB cooktime,
         GenerateFromTextRequest request,
         ILogger<AIRecipeService> logger)
     {
@@ -101,6 +110,12 @@ public static class RecipeGenerationRoutes
         try
         {
             var result = await aiRecipeService.GenerateFromTextAsync(request.Text, userId);
+
+            // Save the generated recipe to the database
+            var recipeId = await cooktime.CreateRecipeAsync(result.Recipe);
+            result.Recipe.Id = recipeId;
+
+            logger.LogInformation("Created recipe {RecipeId} from text generation for user {UserId}", recipeId, userId);
             return Results.Ok(result);
         }
         catch (Exception ex)

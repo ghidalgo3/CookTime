@@ -4,6 +4,9 @@ namespace BabeAlgorithms.Models.Contracts;
 
 public class RecipeCreateDto
 {
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 
@@ -37,8 +40,6 @@ public class RecipeCreateDto
 
 public class RecipeUpdateDto : RecipeCreateDto
 {
-    [JsonPropertyName("id")]
-    public Guid Id { get; set; }
 }
 
 public class ComponentCreateDto
