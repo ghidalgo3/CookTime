@@ -213,9 +213,21 @@ a:active {
 .btn:first-child:active,
 .btn-primary:hover,
 .btn-primary:focus,
-.btn-primary:active {
+.btn-primary:active,
+.btn-primary:focus-visible,
+.btn-primary.active,
+.btn-primary.show > .dropdown-toggle {
   color: var(--btn-primary-text);
   background-color: var(--btn-primary-bg-color-hover);
+  border-color: var(--btn-primary-bg-color-hover) !important;
+  box-shadow: none !important;
+}
+
+:not(.btn-check)+.btn-primary:active {
+  color: var(--btn-primary-text);
+  background-color: var(--btn-primary-bg-color-hover);
+  border-color: var(--btn-primary-bg-color-hover) !important;
+  box-shadow: none !important;
 }
 
 .btn-outline-primary {

@@ -16,6 +16,7 @@ export default function RecipeCreation() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string>();
+  const [recipeName, setRecipeName] = useState("");
 
   // Image upload state
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -152,36 +153,20 @@ export default function RecipeCreation() {
 
           {error && <Alert variant="danger" dismissible onClose={() => setError(undefined)}>{error}</Alert>}
 
-          <Tab.Container defaultActiveKey="scratch">
+          <Tab.Container defaultActiveKey="images">
             <Nav variant="tabs" className="mb-3">
-              <Nav.Item>
-                <Nav.Link eventKey="scratch">✏️ From Scratch</Nav.Link>
-              </Nav.Item>
               <Nav.Item>
                 <Nav.Link eventKey="images">📷 From Images</Nav.Link>
               </Nav.Item>
               <Nav.Item>
                 <Nav.Link eventKey="text">📝 From Text</Nav.Link>
               </Nav.Item>
+              <Nav.Item>
+                <Nav.Link eventKey="scratch">✏️ From Scratch</Nav.Link>
+              </Nav.Item>
             </Nav>
 
             <Tab.Content>
-              <Tab.Pane eventKey="scratch">
-                <Form onSubmit={handleSimpleCreate}>
-                  <Form.Group className="margin-bottom-8">
-                    <Form.Label>Start by giving your recipe a name:</Form.Label>
-                    <Form.Control required placeholder="Recipe name" type="text" name="name" />
-                  </Form.Group>
-                  <Form.Group>
-                    <Button
-                      className="width-100"
-                      type="submit"
-                      disabled={isSubmitting}>
-                      {isSubmitting ? <Spinner size="sm" /> : "Continue to Recipe Editor"}
-                    </Button>
-                  </Form.Group>
-                </Form>
-              </Tab.Pane>
               <Tab.Pane eventKey="images">
                 <Form.Group controlId="formFileMultiple" className="mb-3">
                   <Form.Label>Let CookTime AI extract the recipe from your photo. Upload up to 3 images of a recipe.</Form.Label>
@@ -216,6 +201,7 @@ export default function RecipeCreation() {
                 )}
 
                 <Button
+                  variant="primary"
                   className="width-100"
                   onClick={handleGenerateFromImages}
                   disabled={isSubmitting || selectedFiles.length === 0}
@@ -247,6 +233,7 @@ export default function RecipeCreation() {
                 </Form.Group>
 
                 <Button
+                  variant="primary"
                   className="width-100"
                   onClick={handleGenerateFromText}
                   disabled={isSubmitting || !recipeText.trim()}
@@ -261,6 +248,31 @@ export default function RecipeCreation() {
                   )}
                 </Button>
               </Tab.Pane>
+
+              <Tab.Pane eventKey="scratch">
+                <Form onSubmit={handleSimpleCreate}>
+                  <Form.Group className="margin-bottom-8">
+                    <Form.Label>Start by giving your recipe a name:</Form.Label>
+                    <Form.Control 
+                      required 
+                      placeholder="Recipe name" 
+                      type="text" 
+                      name="name"
+                      value={recipeName}
+                      onChange={(e) => setRecipeName(e.target.value)}
+                    />
+                  </Form.Group>
+                  <Form.Group>
+                    <Button
+                      className="width-100"
+                      type="submit"
+                      disabled={isSubmitting || !recipeName.trim()}>
+                      {isSubmitting ? <Spinner size="sm" /> : "Continue to Recipe Editor"}
+                    </Button>
+                  </Form.Group>
+                </Form>
+              </Tab.Pane>
+
             </Tab.Content>
           </Tab.Container>
 
