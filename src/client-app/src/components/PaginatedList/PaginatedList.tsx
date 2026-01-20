@@ -9,7 +9,6 @@ interface PaginatedListProps<T> {
   element: (item: T) => React.ReactNode
   items: PagedResult<T>
   colClassName?: string
-  inFeedAdIndex?: number
 }
 export default function PaginatedList<T>(props: PaginatedListProps<T>) {
   const { items, element, colClassName } = props;
@@ -25,21 +24,9 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
   }
 
   let elementInner = (item: T | null, idx: number) => {
-    if (idx === props.inFeedAdIndex) {
-      return (
-        <RecipeCardInFeedAd />
-      )
-    } else {
-      return element(item as T);
-    }
+    return element(item as T);
   }
   var itemsWithAd: (T | null)[] = items.results;
-  if (props.inFeedAdIndex && itemsWithAd.length > 0 && props.inFeedAdIndex < itemsWithAd.length) {
-    itemsWithAd = [
-      ...itemsWithAd.slice(0, props.inFeedAdIndex),
-      null,
-      ...itemsWithAd.slice(props.inFeedAdIndex)];
-  }
   return (
     <>
       <Row>
