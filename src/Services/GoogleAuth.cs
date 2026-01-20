@@ -29,12 +29,28 @@ public static class GoogleAuth
         {
             options.LoginPath = "/signin";
             options.LogoutPath = "/api/auth/signout";
+            options.Cookie.SameSite = SameSiteMode.Lax;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
         })
         .AddGoogle(options =>
         {
             options.ClientId = configuration["Google:ClientId"] ?? "";
             options.ClientSecret = configuration["Google:ClientSecret"] ?? "";
             options.CallbackPath = "/api/auth/google-callback";
+
+            // Fix correlation cookie for OAuth redirect
+            // Use Lax for local HTTP development, None+Secure for production HTTPS
+            var isDevelopment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+            if (isDevelopment)
+            {
+                options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            }
+            else
+            {
+                options.CorrelationCookie.SameSite = SameSiteMode.None;
+                options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+            }
 
             // Override redirect URI for Docker/proxy scenarios
             var baseUrl = configuration["Google:BaseUrl"];
