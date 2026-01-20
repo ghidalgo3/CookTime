@@ -312,6 +312,18 @@ a:active {
 .navbar {
   background-color: var(--primary-background);
   margin-bottom: 0px !important;
+  display: flex;
+  align-items: center;
+}
+
+.navbar .navbar-brand,
+.navbar .nav-link {
+  display: flex;
+  align-items: center;
+}
+
+.navbar .nav-link.dropdown-toggle {
+  margin-top: 3px;
 }
 
 .recipe-name-input {
@@ -667,6 +679,9 @@ body {
   padding-left: 4px;
 }
 
+.padding-left-10 {
+  padding-left: 10px;
+}
 .padding-left-12 {
   padding-left: 12px;
 }
@@ -681,6 +696,10 @@ body {
 
 .padding-right-10 {
   padding-right: 10px;
+}
+
+.padding-bottom-2 {
+  padding-bottom: 2px;
 }
 
 .margin-10 {

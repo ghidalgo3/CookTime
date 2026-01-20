@@ -54,7 +54,7 @@ export function NavigationBar({ categories }: { categories: string[] }) {
                 height="30"
                 className="d-inline-block align-middle"
               />{' '}
-              <div className="d-inline-block align-middle">CookTime</div>
+              <div className="d-inline-block align-middle padding-bottom-2 padding-left-10">CookTime</div>
             </Navbar.Brand>
           </Link>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
