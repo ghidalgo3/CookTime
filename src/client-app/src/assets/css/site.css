@@ -514,8 +514,15 @@ html {
   transition: transform 0.2s ease-in-out;
 }
 
-.favorite-button:hover {
+.favorite-button:hover,
+.favorite-button:active,
+.favorite-button:focus,
+.favorite-button:focus-visible {
   transform: scale(1.2);
+  background: none !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 .favorite-button i {
@@ -565,8 +572,15 @@ html {
     transition: transform 0.2s ease-in-out;
   }
 
-  .favorite-button:hover {
+  .favorite-button:hover,
+  .favorite-button:active,
+  .favorite-button:focus,
+  .favorite-button:focus-visible {
     transform: scale(1.2);
+    background: none !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   .get-smaller {
