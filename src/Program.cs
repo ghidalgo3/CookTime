@@ -223,7 +223,12 @@ authenticatedApi.MapPut("/multipartrecipe/{recipeId:guid}", async (HttpContext c
     return Results.Ok();
 });
 
-authenticatedApi.MapDelete("/multipartrecipe/{recipeId:guid}", async (HttpContext context, CookTimeDB cooktime, Guid recipeId) =>
+authenticatedApi.MapDelete("/multipartrecipe/{recipeId:guid}", async (
+    HttpContext context,
+    CookTimeDB cooktime,
+    BlobContainerClient blobContainer,
+    ILogger<Program> logger,
+    Guid recipeId) =>
 {
     var userId = (Guid)context.Items["UserId"]!;
 
@@ -237,6 +242,29 @@ authenticatedApi.MapDelete("/multipartrecipe/{recipeId:guid}", async (HttpContex
     if (existingRecipe.Owner?.Id != userId && !isAdmin)
     {
         return Results.Forbid();
+    }
+
+    // Delete images from blob storage before deleting the recipe
+    var images = await cooktime.GetImagesByRecipeIdAsync(recipeId);
+    foreach (var image in images)
+    {
+        try
+        {
+            // Extract blob name from URL (last segment of the path)
+            var uri = new Uri(image.Url);
+            var blobName = uri.Segments.LastOrDefault()?.TrimStart('/');
+            if (!string.IsNullOrEmpty(blobName))
+            {
+                var blobClient = blobContainer.GetBlobClient(blobName);
+                await blobClient.DeleteIfExistsAsync();
+                logger.LogInformation("Deleted image blob {BlobName} for recipe {RecipeId}", blobName, recipeId);
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Failed to delete image blob for recipe {RecipeId}", recipeId);
+            // Continue deleting other images even if one fails
+        }
     }
 
     await cooktime.DeleteRecipeAsync(recipeId);
