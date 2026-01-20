@@ -136,15 +136,7 @@ CREATE OR REPLACE FUNCTION cooktime.get_recipes(
 RETURNS SETOF jsonb AS $$
 BEGIN
     RETURN QUERY
-    SELECT jsonb_build_object(
-        'id', r.id,
-        'name', r.name,
-        'description', r.description,
-        'cookingMinutes', r.cooking_minutes,
-        'servings', r.servings,
-        'calories', r.calories,
-        'createdDate', r.created_date
-    )
+    SELECT cooktime.recipe_to_summary(r)
     FROM cooktime.recipes r
     ORDER BY r.created_date DESC
     LIMIT page_size
