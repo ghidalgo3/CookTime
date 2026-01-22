@@ -161,7 +161,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
           id: genIng.id || uuidv4(),
           ingredient: genIng.ingredient,
           quantity: genIng.quantity,
-          unit: genIng.unit ?? 'Count',
+          unit: genIng.unit ?? 'count',
           text: genIng.text ?? '',
           position: genIng.position ?? ingIndex
         };
@@ -215,7 +215,7 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
     if (this.props.multipart) {
       var ir: IngredientRequirement = {
         ingredient: { name: '', id: uuidv4(), isNew: false, densityKgPerL: 1 },
-        unit: 'Count',
+        unit: 'count',
         quantity: 0,
         id: uuidv4(),
         text: "",

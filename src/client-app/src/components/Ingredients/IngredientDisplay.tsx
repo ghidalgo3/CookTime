@@ -8,21 +8,16 @@ type IngredientDisplayProps = {
     units?: MeasureUnit[]
 }
 export class IngredientDisplay extends React.Component<IngredientDisplayProps, {}> {
-    // constructor(props: IngredientDisplayProps) {
-    //     super(props);
-    // }
-
 
     render() {
         let ingredient = this.props.ingredientRequirement.ingredient
-        // var unitName = (this.props.ingredientRequirement.unit == "Count" ? "" : this.props.ingredientRequirement.unit).toLowerCase()
         var unitName = ""
         switch (this.props.ingredientRequirement.unit) {
             case "count":
                 unitName = ""
                 break;
 
-            case "fluidounce":
+            case "fluid_ounce":
                 unitName = "fluid ounce"
                 break;
 

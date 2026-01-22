@@ -69,8 +69,9 @@ export class IngredientRequirementList extends React.Component<IngredientRequire
         case "cup":
           printable = "cup";
           break;
-        case "fluidounce":
+        case "fluid_ounce":
           printable = "fl oz";
+          unit.name = "fluid_ounce"
           break;
         case "pint":
           printable = "pint";

@@ -127,7 +127,7 @@ public class StandardReferenceNutritionData : USDANutritionData
         {
             // Volume
             case "FL OZ":
-                unit = Unit.FluidOunce;
+                unit = Unit.Fluid_Ounce;
                 return true;
             case "QUART":
                 unit = Unit.Quart;
