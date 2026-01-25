@@ -145,26 +145,27 @@ export default function RecipeCreation() {
           <Tab.Container defaultActiveKey="images">
             <Nav variant="tabs" className="mb-3">
               <Nav.Item>
-                <Nav.Link eventKey="images">📷 From Images</Nav.Link>
+                <Nav.Link eventKey="images">📷 Images</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="text">📝 From Text</Nav.Link>
+                <Nav.Link eventKey="text">📝 Text</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="scratch">✏️ From Scratch</Nav.Link>
+                <Nav.Link eventKey="scratch">✏️ Scratch</Nav.Link>
               </Nav.Item>
             </Nav>
 
             <Tab.Content>
               <Tab.Pane eventKey="images">
                 <Form.Group controlId="formFileMultiple" className="mb-3">
-                  <Form.Label>Let CookTime AI extract the recipe from your photo. Upload up to 3 images of a recipe.</Form.Label>
+                  <Form.Label>Let CookTime AI extract the recipe from your photos. Upload up to 3 images of a recipe.</Form.Label>
                   <Form.Control
                     type="file"
                     accept=".jpg,.jpeg,.png,.webp"
                     multiple
                     onChange={handleFileSelect}
                     disabled={selectedFiles.length >= 3}
+                    style={{ border: "1px solid #434343" }}
                   />
                   <Form.Text className="text-muted">
                     Supported formats: JPEG, PNG, WebP (max 5MB each)
@@ -198,7 +199,7 @@ export default function RecipeCreation() {
                   {isSubmitting ? (
                     <>
                       <Spinner size="sm" className="me-2" />
-                      Analyzing images...
+                      Analyzing...
                     </>
                   ) : (
                     "Generate Recipe"
@@ -230,7 +231,7 @@ export default function RecipeCreation() {
                   {isSubmitting ? (
                     <>
                       <Spinner size="sm" className="me-2" />
-                      Processing text...
+                      Processing...
                     </>
                   ) : (
                     "Generate Recipe"
