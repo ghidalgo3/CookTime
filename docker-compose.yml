@@ -34,7 +34,6 @@ services:
     build:
       context: src/
       dockerfile: Dockerfile
-      target: build
     container_name: cooktime-api
     working_dir: /src
     environment:
