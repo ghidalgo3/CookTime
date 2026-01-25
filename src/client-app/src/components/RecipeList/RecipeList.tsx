@@ -56,7 +56,7 @@ export default function RecipeList({ title, query, type, hideIfEmpty }: RecipeLi
           user && type === "Featured" &&
           <Col className="margin-bottom-20 text-end" xs={2}>
             <Link to="/Recipes/Create" className="create-recipe-link">
-              <i className="bi bi-plus-circle themePrimary-color fs-3"></i>
+              Create Recipe
             </Link>
           </Col>
         }

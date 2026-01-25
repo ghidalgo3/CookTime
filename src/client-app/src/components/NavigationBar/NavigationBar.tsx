@@ -99,7 +99,7 @@ export function NavigationBar({ categories }: { categories: string[] }) {
                   as={Link}
                   to={`/${RECIPE_CREATE_PAGE_PATH}`}>
                   <Button>
-                    New Recipe
+                    Create Recipe
                   </Button>
                 </Nav.Link>
               </RequireAuth>
