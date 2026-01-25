@@ -49,12 +49,12 @@ export default function RecipeList({ title, query, type, hideIfEmpty }: RecipeLi
   return (
     <>
       <Row className="align-items-center mb-3">
-        <Col xs={12} sm={10}>
+        <Col>
           <h1>{title}</h1>
         </Col>
         {
           user && type === "Featured" &&
-          <Col xs={12} sm={2} className="text-end">
+          <Col xs="auto" className="ms-auto">
             <Link to="/Recipes/Create" className="create-recipe-link">
               Create Recipe
             </Link>
