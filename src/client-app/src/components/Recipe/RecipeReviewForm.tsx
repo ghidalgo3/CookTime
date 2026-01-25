@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Form, FormControl } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 import { Rating } from "@smastrom/react-rating";
 import { MultiPartRecipe } from "src/shared/CookTime";
 
@@ -7,18 +7,12 @@ type RecipeReviewFormProps = {
   recipe: MultiPartRecipe
 }
 
-type RecipeReviewFormState = {
-  rating: number,
-  text: string,
-  validated: boolean
-}
-
 export function RecipeReviewForm({recipe} : RecipeReviewFormProps) {
   const [rating, setRating] = useState(0);
   const [text, setText] = useState("");
   const [validated, setValidated] = useState(false);
 
-  function onSubmit(event : any) {
+  function onSubmit(event : React.FormEvent<HTMLFormElement>) {
     const form = event.currentTarget;
     event.preventDefault();
     event.stopPropagation();

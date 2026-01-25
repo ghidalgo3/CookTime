@@ -3,7 +3,7 @@ import { Button, Col, Form, Row } from 'react-bootstrap';
 import { useRecipeContext } from './RecipeContext';
 import { RecipeComponent } from 'src/shared/CookTime';
 import { IngredientRequirementList, IngredientRequirementEdit } from '../IngredientRequirements';
-import { RecipeStepList } from '../RecipeEdit/RecipeStepList';
+import { RecipeStepList } from './RecipeStepList';
 
 interface RecipeComponentEditorProps {
   component: RecipeComponent;

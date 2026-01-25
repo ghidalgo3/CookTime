@@ -2,8 +2,8 @@ import React from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { useRecipeContext } from './RecipeContext';
 import { AuthContext } from '../Authentication/AuthenticationContext';
-import { RecipeReviewForm } from '../RecipeEdit/RecipeReviewForm';
-import { RecipeReviews } from '../RecipeEdit/RecipeReviews';
+import { RecipeReviewForm } from './RecipeReviewForm';
+import { RecipeReviews } from './RecipeReviews';
 
 interface ReviewsSectionProps {
   recipeId: string;

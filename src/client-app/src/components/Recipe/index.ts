@@ -9,3 +9,8 @@ export { RecipeComponentEditor } from './RecipeComponentEditor';
 export { NutritionSection } from './NutritionSection';
 export { ReviewsSection } from './ReviewsSection';
 export { DeleteConfirmModal } from './DeleteConfirmModal';
+export { RecipeEditButtons } from './RecipeEditButtons';
+export { RecipeStepList } from './RecipeStepList';
+export { Step } from './RecipeStep';
+export { RecipeReviewForm } from './RecipeReviewForm';
+export { RecipeReviews } from './RecipeReviews';

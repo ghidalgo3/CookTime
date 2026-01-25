@@ -1,5 +1,4 @@
 import { Button, Col, Row, Spinner } from "react-bootstrap";
-import { RequireAuth, useAuthentication } from "../Authentication/AuthenticationContext";
 import { UserDetails } from "src/shared/AuthenticationProvider";
 import { MultiPartRecipe, generateRecipeImage } from "src/shared/CookTime";
 

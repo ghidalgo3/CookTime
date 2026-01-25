@@ -3,7 +3,7 @@ import { Col, Form, Stack } from 'react-bootstrap';
 import { Rating } from '@smastrom/react-rating';
 import { useRecipeContext } from './RecipeContext';
 import { AuthContext } from '../Authentication/AuthenticationContext';
-import { RecipeEditButtons } from '../RecipeEdit/RecipeEditButtons';
+import { RecipeEditButtons } from './RecipeEditButtons';
 
 export function RecipeHeader() {
   const {
