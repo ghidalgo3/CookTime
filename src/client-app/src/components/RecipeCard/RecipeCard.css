@@ -2,6 +2,18 @@
     background-color: var(--secondary-background);
 }
 
+.cr-image-parent {
+    position: relative;
+    overflow: hidden;
+    height:198px;
+}
+
+.card-recipe-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .card-ratings {
     max-width: 120px;
 }
