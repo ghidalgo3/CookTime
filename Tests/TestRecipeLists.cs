@@ -117,7 +117,7 @@ public class TestRecipeLists : TestBase
 
         var result = await Db.GetRecipeListWithRecipesAsync(listId);
         Assert.IsNotNull(result);
-        Assert.IsTrue(result.Recipes.Any(r => r.Id == recipeId.Value));
+        Assert.IsTrue(result.Recipes.Any(r => r.Recipe.Id == recipeId.Value));
     }
 
     [TestMethod]
@@ -142,7 +142,7 @@ public class TestRecipeLists : TestBase
 
         var result = await Db.GetRecipeListWithRecipesAsync(listId);
         Assert.IsNotNull(result);
-        Assert.IsFalse(result.Recipes.Any(r => r.Id == recipeId.Value));
+        Assert.IsFalse(result.Recipes.Any(r => r.Recipe.Id == recipeId.Value));
     }
 
     private static async Task<Guid?> GetFirstRecipeId()
