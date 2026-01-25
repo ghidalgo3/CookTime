@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Alert, Button, Col, Form, Modal, Row, Spinner, Stack } from 'react-bootstrap';
 import { v4 as uuidv4 } from 'uuid';
 import * as ReactDOM from 'react-dom';
-import { IngredientRequirementList } from './IngredientRequirementList';
+import { IngredientRequirementList, IngredientRequirementEdit } from '../IngredientRequirements';
 import { Rating } from "@smastrom/react-rating";
 import { MeasureUnit, MultiPartRecipe, Image, RecipeNutritionFacts, Recipe, IngredientRequirement, RecipeComponent, toRecipeUpdateDto, RecipeGenerationResult, IngredientMatch, deleteRecipeImage, reorderRecipeImages, uploadRecipeImage } from 'src/shared/CookTime';
 import { RecipeStructuredData } from '../RecipeStructuredData';
@@ -1038,14 +1038,21 @@ export class RecipeEdit extends React.Component<RecipeEditProps, RecipeEditState
           </Col>
           <Col className="col d-flex align-items-center">
             <div className="ingredient-list">
-              <IngredientRequirementList
-                ingredientRequirements={component.ingredients ?? []}
-                onDelete={(ir) => this.deleteIngredientRequirementForComponent(componentIndex, component, ir)}
-                onNewIngredientRequirement={() => this.appendNewIngredientRequirementRowForComponent(componentIndex, component)}
-                updateIngredientRequirement={(ir, u) => this.updateIngredientRequirementForComponent(componentIndex, component, ir, u)}
-                units={this.state.units}
-                edit={this.state.edit}
-                multiplier={this.state.newServings / this.state.recipe.servingsProduced} />
+              {this.state.edit ? (
+                <IngredientRequirementEdit
+                  ingredientRequirements={component.ingredients ?? []}
+                  units={this.state.units}
+                  onDelete={(ir) => this.deleteIngredientRequirementForComponent(componentIndex, component, ir)}
+                  onNewIngredientRequirement={() => this.appendNewIngredientRequirementRowForComponent(componentIndex, component)}
+                  updateIngredientRequirement={(ir, u) => this.updateIngredientRequirementForComponent(componentIndex, component, ir, u)}
+                />
+              ) : (
+                <IngredientRequirementList
+                  ingredientRequirements={component.ingredients ?? []}
+                  units={this.state.units}
+                  multiplier={this.state.newServings / this.state.recipe.servingsProduced}
+                />
+              )}
             </div>
           </Col>
         </Row>
