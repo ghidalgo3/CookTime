@@ -142,6 +142,15 @@ CREATE TABLE IF NOT EXISTS cooktime.recipe_requirements (
 CREATE INDEX IF NOT EXISTS idx_recipe_requirements_recipe_list_id ON cooktime.recipe_requirements(recipe_list_id);
 CREATE INDEX IF NOT EXISTS idx_recipe_requirements_recipe_id ON cooktime.recipe_requirements(recipe_id);
 
+-- Selected ingredients junction table (tracks which ingredients user has checked off in a list)
+CREATE TABLE IF NOT EXISTS cooktime.recipe_list_selected_ingredients (
+    recipe_list_id uuid NOT NULL REFERENCES cooktime.recipe_lists(id) ON DELETE CASCADE,
+    ingredient_id uuid NOT NULL REFERENCES cooktime.ingredients(id) ON DELETE CASCADE,
+    PRIMARY KEY (recipe_list_id, ingredient_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_recipe_list_selected_ingredients_list_id ON cooktime.recipe_list_selected_ingredients(recipe_list_id);
+
 -- Images table
 CREATE TABLE IF NOT EXISTS cooktime.images (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

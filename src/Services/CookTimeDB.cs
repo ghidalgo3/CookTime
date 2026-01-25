@@ -230,6 +230,18 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         await cmd.ExecuteNonQueryAsync();
     }
 
+    public async Task UpdateRecipeQuantityInListAsync(Guid listId, Guid recipeId, double quantity)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.update_recipe_quantity_in_list($1, $2, $3)", conn);
+
+        cmd.Parameters.AddWithValue(listId);
+        cmd.Parameters.AddWithValue(recipeId);
+        cmd.Parameters.AddWithValue(quantity);
+
+        await cmd.ExecuteNonQueryAsync();
+    }
+
     public async Task RemoveRecipeFromListAsync(Guid listId, Guid recipeId)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
@@ -239,6 +251,43 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         cmd.Parameters.AddWithValue(recipeId);
 
         await cmd.ExecuteNonQueryAsync();
+    }
+
+    public async Task<List<AggregatedIngredientDto>> GetListAggregatedIngredientsAsync(Guid listId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_list_aggregated_ingredients($1)", conn);
+
+        cmd.Parameters.AddWithValue(listId);
+
+        var result = await cmd.ExecuteScalarAsync();
+        if (result == null || result == DBNull.Value)
+            return new List<AggregatedIngredientDto>();
+
+        return JsonSerializer.Deserialize<List<AggregatedIngredientDto>>(result.ToString()!, JsonOptions) ?? new();
+    }
+
+    public async Task<bool> ToggleSelectedIngredientAsync(Guid listId, Guid ingredientId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.toggle_selected_ingredient($1, $2)", conn);
+
+        cmd.Parameters.AddWithValue(listId);
+        cmd.Parameters.AddWithValue(ingredientId);
+
+        var result = await cmd.ExecuteScalarAsync();
+        return (bool)result!;
+    }
+
+    public async Task<int> ClearSelectedIngredientsAsync(Guid listId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.clear_selected_ingredients($1)", conn);
+
+        cmd.Parameters.AddWithValue(listId);
+
+        var result = await cmd.ExecuteScalarAsync();
+        return (int)result!;
     }
 
     #endregion

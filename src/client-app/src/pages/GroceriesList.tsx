@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { ShoppingCart } from "src/components/Cart";
 import { useTitle } from "src/shared/useTitle";
 
-export const CART_PAGE_PATH = "Cart"
+export const CART_PAGE_PATH = "Groceries";
 
 export default function GroceriesList() {
   useTitle("Groceries List")

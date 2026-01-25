@@ -40,7 +40,7 @@ public static class ListRoutes
             return Results.Ok(listWithRecipes);
         });
 
-        group.MapPut("/lists/{listName}/{recipeId:guid}", async (HttpContext context, CookTimeDB cooktime, string listName, Guid recipeId) =>
+        group.MapPut("/lists/{listName}/{recipeId:guid}", async (HttpContext context, CookTimeDB cooktime, string listName, Guid recipeId, double? quantity) =>
         {
             var userId = (Guid)context.Items["UserId"]!;
             var lists = await cooktime.GetRecipeListsAsync(userId, filter: listName);
@@ -62,7 +62,22 @@ public static class ListRoutes
                 listId = lists[0].Id;
             }
 
-            await cooktime.AddRecipeToListAsync(listId, recipeId, 1);
+            await cooktime.AddRecipeToListAsync(listId, recipeId, quantity ?? 1.0);
+            return Results.Ok();
+        });
+
+        // Update recipe quantity in list
+        group.MapPatch("/lists/{listName}/{recipeId:guid}", async (HttpContext context, CookTimeDB cooktime, string listName, Guid recipeId, double quantity) =>
+        {
+            var userId = (Guid)context.Items["UserId"]!;
+            var lists = await cooktime.GetRecipeListsAsync(userId, filter: listName);
+
+            if (lists.Count == 0)
+            {
+                return Results.NotFound();
+            }
+
+            await cooktime.UpdateRecipeQuantityInListAsync(lists[0].Id, recipeId, quantity);
             return Results.Ok();
         });
 
@@ -78,6 +93,51 @@ public static class ListRoutes
 
             await cooktime.RemoveRecipeFromListAsync(lists[0].Id, recipeId);
             return Results.Ok();
+        });
+
+        // Get aggregated ingredients for a list
+        group.MapGet("/lists/{listName}/ingredients", async (HttpContext context, CookTimeDB cooktime, string listName) =>
+        {
+            var userId = (Guid)context.Items["UserId"]!;
+            var lists = await cooktime.GetRecipeListsAsync(userId, filter: listName);
+
+            if (lists.Count == 0)
+            {
+                return Results.NotFound();
+            }
+
+            var ingredients = await cooktime.GetListAggregatedIngredientsAsync(lists[0].Id);
+            return Results.Ok(ingredients);
+        });
+
+        // Toggle selected state of an ingredient in a list
+        group.MapPut("/lists/{listName}/ingredients/{ingredientId:guid}", async (HttpContext context, CookTimeDB cooktime, string listName, Guid ingredientId) =>
+        {
+            var userId = (Guid)context.Items["UserId"]!;
+            var lists = await cooktime.GetRecipeListsAsync(userId, filter: listName);
+
+            if (lists.Count == 0)
+            {
+                return Results.NotFound();
+            }
+
+            var isNowSelected = await cooktime.ToggleSelectedIngredientAsync(lists[0].Id, ingredientId);
+            return Results.Ok(new { selected = isNowSelected });
+        });
+
+        // Clear all selected ingredients in a list
+        group.MapDelete("/lists/{listName}/ingredients", async (HttpContext context, CookTimeDB cooktime, string listName) =>
+        {
+            var userId = (Guid)context.Items["UserId"]!;
+            var lists = await cooktime.GetRecipeListsAsync(userId, filter: listName);
+
+            if (lists.Count == 0)
+            {
+                return Results.NotFound();
+            }
+
+            var clearedCount = await cooktime.ClearSelectedIngredientsAsync(lists[0].Id);
+            return Results.Ok(new { clearedCount });
         });
 
         return group;

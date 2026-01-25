@@ -83,7 +83,7 @@ export function NavigationBar({ categories }: { categories: string[] }) {
                 // className={!user ? "my-nav-link-disabled" : ""}
                 disabled={!user}
                 as={Link}
-                to="/cart">
+                to="/Groceries">
                 Groceries List
               </Nav.Link>
               <Nav.Link href="/Blog/index.html">Blog</Nav.Link>

@@ -13,6 +13,7 @@ import {
   reorderRecipeImages,
   uploadRecipeImage,
   toRecipeUpdateDto,
+  addToGroceries,
 } from 'src/shared/CookTime';
 
 export type PendingImage = {
@@ -497,15 +498,10 @@ export function RecipeProvider({ recipeId, generatedRecipe, children }: RecipePr
     location.reload();
   }, []);
 
-  // Add to cart
+  // Add to groceries list
   const onAddToCart = useCallback(async () => {
-    const response = await fetch(`/api/Cart?recipeId=${recipeId}`, {
-      method: 'POST',
-    });
-
-    if (response.redirected) {
-      window.location.href = response.url;
-    }
+    await addToGroceries(recipeId, 1);
+    window.location.href = '/Groceries';
   }, [recipeId]);
 
   const value: RecipeContextValue = {

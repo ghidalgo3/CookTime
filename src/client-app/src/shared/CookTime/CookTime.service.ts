@@ -1,4 +1,4 @@
-import { IngredientInternalUpdate, PagedResult, RecipeGenerationResult, RecipeList, RecipeListWithRecipes, RecipeView, Review } from "./CookTime.types";
+import { AggregatedIngredient, IngredientInternalUpdate, PagedResult, RecipeGenerationResult, RecipeList, RecipeListWithRecipes, RecipeView, Review } from "./CookTime.types";
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
 
@@ -133,9 +133,18 @@ export async function getList(listName: string): Promise<RecipeListWithRecipes |
   return await response.json();
 }
 
-export async function addToList(listName: string, recipeId: string): Promise<void> {
-  await fetch(`/api/lists/${encodeURIComponent(listName)}/${recipeId}`, {
+export async function addToList(listName: string, recipeId: string, quantity?: number): Promise<void> {
+  const url = quantity !== undefined 
+    ? `/api/lists/${encodeURIComponent(listName)}/${recipeId}?quantity=${quantity}`
+    : `/api/lists/${encodeURIComponent(listName)}/${recipeId}`;
+  await fetch(url, {
     method: "PUT"
+  });
+}
+
+export async function updateRecipeQuantityInList(listName: string, recipeId: string, quantity: number): Promise<void> {
+  await fetch(`/api/lists/${encodeURIComponent(listName)}/${recipeId}?quantity=${quantity}`, {
+    method: "PATCH"
   });
 }
 
@@ -151,7 +160,7 @@ export async function getFavoriteRecipeViews() {
   if (!list) {
     return [] as RecipeView[];
   }
-  return (list.recipes ?? []) as RecipeView[];
+  return (list.recipes ?? []).map(item => item.recipe) as RecipeView[];
 }
 
 export async function addToFavorites(recipeId: string): Promise<void> {
@@ -167,12 +176,40 @@ export async function getGroceryList() {
   return getList("Groceries");
 }
 
-export async function addToGroceries(recipeId: string): Promise<void> {
-  return addToList("Groceries", recipeId);
+export async function getGroceryListIngredients(): Promise<AggregatedIngredient[]> {
+  const response = await fetch("/api/lists/Groceries/ingredients");
+  if (!response.ok) {
+    return [];
+  }
+  return await response.json();
+}
+
+export async function addToGroceries(recipeId: string, quantity?: number): Promise<void> {
+  return addToList("Groceries", recipeId, quantity);
 }
 
 export async function removeFromGroceries(recipeId: string): Promise<void> {
   return removeFromList("Groceries", recipeId);
+}
+
+export async function updateGroceryRecipeQuantity(recipeId: string, quantity: number): Promise<void> {
+  return updateRecipeQuantityInList("Groceries", recipeId, quantity);
+}
+
+export async function toggleGroceryIngredientSelected(ingredientId: string): Promise<boolean> {
+  const response = await fetch(`/api/lists/Groceries/ingredients/${ingredientId}`, {
+    method: "PUT"
+  });
+  const result = await response.json();
+  return result.selected;
+}
+
+export async function clearGrocerySelectedIngredients(): Promise<number> {
+  const response = await fetch("/api/lists/Groceries/ingredients", {
+    method: "DELETE"
+  });
+  const result = await response.json();
+  return result.clearedCount;
 }
 
 export function toPagedResult<T>(values: T[]): PagedResult<T> {

@@ -174,6 +174,11 @@ export type RecipeList = {
     recipeCount: number
 }
 
+export type RecipeListItem = {
+    recipe: RecipeView,
+    quantity: number
+}
+
 export type RecipeListWithRecipes = {
     id: string,
     name: string,
@@ -181,7 +186,15 @@ export type RecipeListWithRecipes = {
     creationDate: string,
     isPublic: boolean,
     ownerId: string,
-    recipes: RecipeView[]
+    recipes: RecipeListItem[],
+    selectedIngredients: string[]
+}
+
+export type AggregatedIngredient = {
+    ingredient: Ingredient,
+    quantity: number,
+    unit: string,
+    selected: boolean
 }
 
 export type PagedResult<T> = {

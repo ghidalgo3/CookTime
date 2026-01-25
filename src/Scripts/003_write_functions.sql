@@ -545,6 +545,64 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Update recipe quantity in list
+CREATE OR REPLACE FUNCTION cooktime.update_recipe_quantity_in_list(
+    p_list_id uuid,
+    p_recipe_id uuid,
+    p_quantity double precision
+)
+RETURNS void AS $$
+BEGIN
+    UPDATE cooktime.recipe_requirements
+    SET quantity = p_quantity
+    WHERE recipe_list_id = p_list_id AND recipe_id = p_recipe_id;
+    
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Recipe % not found in list %', p_recipe_id, p_list_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Toggle selected ingredient in list (add if not present, remove if present)
+CREATE OR REPLACE FUNCTION cooktime.toggle_selected_ingredient(
+    p_list_id uuid,
+    p_ingredient_id uuid
+)
+RETURNS boolean AS $$
+DECLARE
+    was_selected boolean;
+BEGIN
+    -- Check if ingredient is currently selected
+    DELETE FROM cooktime.recipe_list_selected_ingredients
+    WHERE recipe_list_id = p_list_id AND ingredient_id = p_ingredient_id
+    RETURNING true INTO was_selected;
+    
+    IF was_selected THEN
+        -- Was selected, now unselected
+        RETURN false;
+    ELSE
+        -- Was not selected, add it
+        INSERT INTO cooktime.recipe_list_selected_ingredients (recipe_list_id, ingredient_id)
+        VALUES (p_list_id, p_ingredient_id);
+        RETURN true;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Clear all selected ingredients in list
+CREATE OR REPLACE FUNCTION cooktime.clear_selected_ingredients(p_list_id uuid)
+RETURNS integer AS $$
+DECLARE
+    deleted_count integer;
+BEGIN
+    DELETE FROM cooktime.recipe_list_selected_ingredients
+    WHERE recipe_list_id = p_list_id;
+    
+    GET DIAGNOSTICS deleted_count = ROW_COUNT;
+    RETURN deleted_count;
+END;
+$$ LANGUAGE plpgsql;
+
 -- Create category
 CREATE OR REPLACE FUNCTION cooktime.create_category(category_name text)
 RETURNS uuid AS $$
