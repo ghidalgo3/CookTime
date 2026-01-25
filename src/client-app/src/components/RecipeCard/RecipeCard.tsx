@@ -69,6 +69,14 @@ export function RecipeCard({
             alt="Food">
           </img>
         </Link>
+        {images.length > 1 && (
+          <div className="image-count-dots">
+            {images.slice(0, 5).map((_, index) => (
+              <span key={index} className={`dot ${index === 0 ? 'active' : ''}`}></span>
+            ))}
+            {images.length > 5 && <span className="dot-more">+{images.length - 5}</span>}
+          </div>
+        )}
         {user && <FavoriteToggle />}
       </div>
     )

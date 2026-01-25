@@ -461,12 +461,58 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
         await using var cmd = new NpgsqlCommand(
-            "INSERT INTO cooktime.images (id, storage_url, recipe_id) VALUES ($1, $2, $3)",
+            "SELECT cooktime.create_image($1, $2, $3)",
             conn);
 
         cmd.Parameters.AddWithValue(imageId);
         cmd.Parameters.AddWithValue(storageUrl);
         cmd.Parameters.AddWithValue(recipeId);
+
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    public async Task<int> GetRecipeImageCountAsync(Guid recipeId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_recipe_image_count($1)", conn);
+
+        cmd.Parameters.AddWithValue(recipeId);
+
+        var result = await cmd.ExecuteScalarAsync();
+        return result is int count ? count : 0;
+    }
+
+    public async Task<ImageInfoDto?> GetImageInfoAsync(Guid imageId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_image_info($1)", conn);
+
+        cmd.Parameters.AddWithValue(imageId);
+
+        var result = await cmd.ExecuteScalarAsync();
+        if (result == null || result == DBNull.Value)
+            return null;
+
+        return JsonSerializer.Deserialize<ImageInfoDto>(result.ToString()!, JsonOptions);
+    }
+
+    public async Task DeleteImageAsync(Guid imageId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.delete_image($1)", conn);
+
+        cmd.Parameters.AddWithValue(imageId);
+
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    public async Task ReorderRecipeImagesAsync(Guid recipeId, Guid[] imageIds)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.reorder_recipe_images($1, $2)", conn);
+
+        cmd.Parameters.AddWithValue(recipeId);
+        cmd.Parameters.AddWithValue(imageIds);
 
         await cmd.ExecuteNonQueryAsync();
     }

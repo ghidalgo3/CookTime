@@ -79,3 +79,5 @@ public class IngredientRequirementCreateDto
 }
 
 public record RecipeCreateRequest(string Name);
+
+public record ImageReorderRequest(Guid[] ImageIds);

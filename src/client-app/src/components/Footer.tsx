@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <footer className="border-top footer text-muted">
       <Container>
-        &copy; 2024 - G&C
+        &copy; 2026 - G&C
       </Container>
     </footer>
   )

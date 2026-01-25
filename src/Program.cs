@@ -338,6 +338,13 @@ authenticatedApi.MapPut("/multipartrecipe/{recipeId:guid}/image", async (
         // Get the storage URL (replace azurite with localhost for local dev)
         var storageUrl = blobClient.Uri.ToString().Replace("azurite", "localhost");
 
+        // Check image limit (max 10 images per recipe)
+        var currentImageCount = await cooktime.GetRecipeImageCountAsync(recipeId);
+        if (currentImageCount >= 10)
+        {
+            return Results.BadRequest(new { error = "Maximum of 10 images per recipe" });
+        }
+
         // Create image record in database
         await cooktime.CreateImageAsync(imageId, storageUrl, recipeId);
 
@@ -350,6 +357,101 @@ authenticatedApi.MapPut("/multipartrecipe/{recipeId:guid}/image", async (
         return Results.Problem("Failed to upload image");
     }
 }).DisableAntiforgery();
+
+// Delete a single image from a recipe
+authenticatedApi.MapDelete("/multipartrecipe/{recipeId:guid}/images/{imageId:guid}", async (
+    HttpContext context,
+    CookTimeDB cooktime,
+    BlobContainerClient blobContainer,
+    ILogger<Program> logger,
+    Guid recipeId,
+    Guid imageId) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+
+    // Verify the user owns this recipe or is an administrator
+    var existingRecipe = await cooktime.GetRecipeByIdAsync(recipeId);
+    if (existingRecipe == null)
+    {
+        return Results.NotFound();
+    }
+    var isAdmin = context.User.IsInRole("Administrator");
+    if (existingRecipe.Owner?.Id != userId && !isAdmin)
+    {
+        return Results.Forbid();
+    }
+
+    // Get the image info to delete from blob storage
+    var imageInfo = await cooktime.GetImageInfoAsync(imageId);
+    if (imageInfo == null)
+    {
+        return Results.NotFound();
+    }
+
+    // Verify the image belongs to this recipe
+    if (imageInfo.RecipeId != recipeId)
+    {
+        return Results.BadRequest(new { error = "Image does not belong to this recipe" });
+    }
+
+    try
+    {
+        // Delete from blob storage
+        var uri = new Uri(imageInfo.Url);
+        var blobName = uri.Segments.LastOrDefault()?.TrimStart('/');
+        if (!string.IsNullOrEmpty(blobName))
+        {
+            var blobClient = blobContainer.GetBlobClient(blobName);
+            await blobClient.DeleteIfExistsAsync();
+            logger.LogInformation("Deleted image blob {BlobName} for recipe {RecipeId}", blobName, recipeId);
+        }
+
+        // Delete from database
+        await cooktime.DeleteImageAsync(imageId);
+        logger.LogInformation("Deleted image {ImageId} from recipe {RecipeId}", imageId, recipeId);
+        return Results.NoContent();
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Failed to delete image {ImageId} for recipe {RecipeId}", imageId, recipeId);
+        return Results.Problem("Failed to delete image");
+    }
+});
+
+// Reorder images for a recipe
+authenticatedApi.MapPut("/multipartrecipe/{recipeId:guid}/images/reorder", async (
+    HttpContext context,
+    CookTimeDB cooktime,
+    ILogger<Program> logger,
+    Guid recipeId,
+    ImageReorderRequest request) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+
+    // Verify the user owns this recipe or is an administrator
+    var existingRecipe = await cooktime.GetRecipeByIdAsync(recipeId);
+    if (existingRecipe == null)
+    {
+        return Results.NotFound();
+    }
+    var isAdmin = context.User.IsInRole("Administrator");
+    if (existingRecipe.Owner?.Id != userId && !isAdmin)
+    {
+        return Results.Forbid();
+    }
+
+    try
+    {
+        await cooktime.ReorderRecipeImagesAsync(recipeId, request.ImageIds);
+        logger.LogInformation("Reordered images for recipe {RecipeId}", recipeId);
+        return Results.NoContent();
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Failed to reorder images for recipe {RecipeId}", recipeId);
+        return Results.Problem("Failed to reorder images");
+    }
+});
 
 authenticatedApi.MapPut("/multipartrecipe/{recipeId:guid}/review", async (HttpContext context, CookTimeDB cooktime, Guid recipeId, ReviewCreateRequest request) =>
 {

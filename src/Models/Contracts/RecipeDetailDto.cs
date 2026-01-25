@@ -80,3 +80,14 @@ public class ImageDto
     [JsonPropertyName("url")]
     public string Url { get; set; } = null!;
 }
+public class ImageInfoDto
+{
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+
+    [JsonPropertyName("url")]
+    public string Url { get; set; } = null!;
+
+    [JsonPropertyName("recipeId")]
+    public Guid RecipeId { get; set; }
+}
