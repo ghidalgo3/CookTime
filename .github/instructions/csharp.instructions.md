@@ -9,3 +9,4 @@ applyTo: '**/*.cs'
 1. AVOID writing docstrings for small methods that are self-explanatory.
 1. AVOID adding unnecessary empty lines.
 1. When Nuget packages are modified, the docker containers must be rebuilt.
+1. When a file is nearing 350 lines of code, ask how to split it into smaller files.

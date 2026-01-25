@@ -96,14 +96,8 @@ export default function RecipeCreation() {
 
     if (result.ok && result.data) {
       setGenerationResult(result.data);
-      // Navigate to edit page with the generated recipe
-      // For now, create the recipe and navigate
-      const createResult = await createRecipeWithName({ name: result.data.recipe.name });
-      if (createResult.ok) {
-        const recipe = await createResult.json();
-        // TODO: Pre-populate the recipe with generated data
-        navigate(Path(recipe.id), { state: { generatedRecipe: result.data } });
-      }
+      // Navigate to edit page - the backend already created the recipe
+      navigate(Path(result.data.recipe.id), { state: { generatedRecipe: result.data } });
     } else {
       setError(result.error || "Failed to generate recipe from images");
     }
@@ -125,13 +119,8 @@ export default function RecipeCreation() {
 
     if (result.ok && result.data) {
       setGenerationResult(result.data);
-      // Navigate to edit page with the generated recipe
-      const createResult = await createRecipeWithName({ name: result.data.recipe.name });
-      if (createResult.ok) {
-        const recipe = await createResult.json();
-        // TODO: Pre-populate the recipe with generated data
-        navigate(Path(recipe.id), { state: { generatedRecipe: result.data } });
-      }
+      // Navigate to edit page - the backend already created the recipe
+      navigate(Path(result.data.recipe.id), { state: { generatedRecipe: result.data } });
     } else {
       setError(result.error || "Failed to generate recipe from text");
     }
@@ -253,10 +242,10 @@ export default function RecipeCreation() {
                 <Form onSubmit={handleSimpleCreate}>
                   <Form.Group className="margin-bottom-8">
                     <Form.Label>Start by giving your recipe a name:</Form.Label>
-                    <Form.Control 
-                      required 
-                      placeholder="Recipe name" 
-                      type="text" 
+                    <Form.Control
+                      required
+                      placeholder="Recipe name"
+                      type="text"
                       name="name"
                       value={recipeName}
                       onChange={(e) => setRecipeName(e.target.value)}
