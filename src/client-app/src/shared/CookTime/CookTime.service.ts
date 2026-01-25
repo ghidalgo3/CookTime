@@ -197,6 +197,55 @@ export async function getInternalIngredientUpdates() {
   return (await response.json()) as IngredientInternalUpdate[];
 }
 
+// Image management functions
+export async function deleteRecipeImage(recipeId: string, imageId: string): Promise<{ ok: boolean; error?: string }> {
+  const response = await fetch(`/api/multipartrecipe/${recipeId}/images/${imageId}`, {
+    method: "DELETE"
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ error: "Failed to delete image" }));
+    return { ok: false, error: errorData.error || "Failed to delete image" };
+  }
+
+  return { ok: true };
+}
+
+export async function reorderRecipeImages(recipeId: string, imageIds: string[]): Promise<{ ok: boolean; error?: string }> {
+  const response = await fetch(`/api/multipartrecipe/${recipeId}/images/reorder`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ imageIds })
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ error: "Failed to reorder images" }));
+    return { ok: false, error: errorData.error || "Failed to reorder images" };
+  }
+
+  return { ok: true };
+}
+
+export async function uploadRecipeImage(recipeId: string, file: File): Promise<{ ok: boolean; data?: { id: string; url: string }; error?: string }> {
+  const formData = new FormData();
+  formData.append("files", file);
+
+  const response = await fetch(`/api/multipartrecipe/${recipeId}/image`, {
+    method: "PUT",
+    body: formData
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ error: "Failed to upload image" }));
+    return { ok: false, error: errorData.error || "Failed to upload image" };
+  }
+
+  const data = await response.json();
+  return { ok: true, data };
+}
+
 export function toTitleCase(str: string) {
   return str.replace(
     /\w\S*/g,

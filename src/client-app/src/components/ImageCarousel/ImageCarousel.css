@@ -1,0 +1,45 @@
+.image-carousel {
+    width: 100%;
+}
+
+.carousel-image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* When used as recipe-image (in recipe details) */
+.image-carousel.recipe-image,
+.image-carousel.recipe-image .carousel-image {
+    height: 300px;
+    margin-bottom: 10px;
+}
+
+/* Style the carousel controls for better visibility */
+.image-carousel .carousel-control-prev,
+.image-carousel .carousel-control-next {
+    width: 10%;
+    opacity: 0.7;
+}
+
+.image-carousel .carousel-control-prev:hover,
+.image-carousel .carousel-control-next:hover {
+    opacity: 1;
+}
+
+/* Style the carousel indicators */
+.image-carousel .carousel-indicators {
+    margin-bottom: 0.5rem;
+}
+
+.image-carousel .carousel-indicators [data-bs-target] {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.image-carousel .carousel-indicators .active {
+    background-color: #fff;
+}
