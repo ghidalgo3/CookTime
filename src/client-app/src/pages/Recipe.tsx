@@ -1,6 +1,6 @@
 import React from "react"
 import { useSearchParams, useLocation } from "react-router";
-import { RecipeEdit } from "src/components/RecipeEdit/RecipeEdit";
+import { RecipePage } from "src/components/Recipe";
 import { Helmet } from 'react-helmet-async';
 import { RecipeGenerationResult } from "src/shared/CookTime";
 
@@ -27,7 +27,7 @@ export default function Recipe() {
         <Helmet>
           <link rel="canonical" href={`${origin}/${RECIPE_PAGE_PATH}?id=${recipeId}`} />
         </Helmet>
-        <RecipeEdit recipeId={recipeId} multipart generatedRecipe={generatedRecipe} />
+        <RecipePage recipeId={recipeId} generatedRecipe={generatedRecipe} />
       </>
       :
       <>No</>
