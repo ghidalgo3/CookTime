@@ -14,6 +14,30 @@ public static class ListRoutes
             return Results.Ok(lists);
         });
 
+        // Create an empty list if it doesn't exist
+        group.MapPost("/lists/{listName}", async (HttpContext context, CookTimeDB cooktime, string listName) =>
+        {
+            var userId = (Guid)context.Items["UserId"]!;
+            var lists = await cooktime.GetRecipeListsAsync(userId, filter: listName);
+
+            if (lists.Count > 0)
+            {
+                // List already exists
+                return Results.NoContent();
+            }
+
+            // Create the list
+            await cooktime.CreateRecipeListAsync(new RecipeListCreateDto
+            {
+                OwnerId = userId,
+                Name = listName,
+                Description = $"My {listName} list",
+                IsPublic = false
+            });
+
+            return Results.Created();
+        });
+
         group.MapGet("/lists/{listName}", async (HttpContext context, CookTimeDB cooktime, string listName) =>
         {
             var userId = (Guid)context.Items["UserId"]!;

@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
+import { Link, useLocation } from 'react-router';
 import { 
   AggregatedIngredient, 
   RecipeListItem,
+  createGroceryList,
   getGroceryList,
   getGroceryListIngredients,
   removeFromGroceries,
@@ -10,14 +12,20 @@ import {
   toggleGroceryIngredientSelected,
   clearGrocerySelectedIngredients
 } from 'src/shared/CookTime';
+import { useAuthentication } from 'src/components/Authentication/AuthenticationContext';
 import { IngredientDisplay } from './Ingredients/IngredientDisplay';
 
 export function ShoppingCart() {
+  const { user } = useAuthentication();
+  const location = useLocation();
   const [recipes, setRecipes] = useState<RecipeListItem[]>([]);
   const [ingredients, setIngredients] = useState<AggregatedIngredient[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
+    // Create the grocery list if it doesn't exist
+    await createGroceryList();
+    
     const [groceryList, ingredientsList] = await Promise.all([
       getGroceryList(),
       getGroceryListIngredients()
@@ -31,8 +39,10 @@ export function ShoppingCart() {
   }, []);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    if (user) {
+      fetchData();
+    }
+  }, [fetchData, user]);
 
   const handleQuantityChange = useCallback(async (recipeId: string, currentQuantity: number, delta: number) => {
     const newQuantity = currentQuantity + delta;
@@ -104,6 +114,17 @@ export function ShoppingCart() {
     if (a.selected === b.selected) return 0;
     return a.selected ? 1 : -1;
   });
+
+  if (!user) {
+    return (
+      <div>
+        <h1 className="margin-bottom-20">Groceries List</h1>
+        <p className="text-muted">
+          <Link to="/signin" state={{ redirectTo: location.pathname }}>Sign in</Link> to track your groceries.
+        </p>
+      </div>
+    );
+  }
 
   if (loading) {
     return <div>Loading...</div>;
@@ -214,7 +235,7 @@ export function ShoppingCart() {
                   quantity: ing.quantity,
                   unit: ing.unit,
                   id: ing.ingredient.id,
-                  text: '',
+                  text: ing.ingredient.name.split(';')[0].trim(),
                   position: 0
                 }} 
                 strikethrough={isSelected} 

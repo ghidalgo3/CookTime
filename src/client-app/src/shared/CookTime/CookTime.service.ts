@@ -172,6 +172,13 @@ export async function removeFromFavorites(recipeId: string): Promise<void> {
 }
 
 // Convenience functions for groceries
+export async function createGroceryList(): Promise<{ created: boolean }> {
+  const response = await fetch("/api/lists/Groceries", {
+    method: "POST"
+  });
+  return { created: response.status === 201 };
+}
+
 export async function getGroceryList() {
   return getList("Groceries");
 }
