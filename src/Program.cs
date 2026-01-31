@@ -28,6 +28,7 @@ builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
 builder.Services.AddSingleton<CookTimeDB>();
 builder.Services.AddSingleton<NutritionService>();
 builder.Services.AddSingleton<AIRecipeService>();
+builder.Services.AddMemoryCache();
 
 // Azure Blob Storage
 var blobConnectionString = builder.Configuration.GetConnectionString("AzureBlobStorage");
@@ -47,7 +48,6 @@ var app = builder.Build();
 
 // Must be first middleware for OAuth to work correctly behind proxy/Docker
 app.UseForwardedHeaders();
-
 
 app.MapGet("/api/category/list", () => Constants.DefaultCategories);
 app.MapGet("/api/recipe/tags", async (CookTimeDB cooktime, string? query) =>
@@ -494,6 +494,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.MapGoogleAuthEndpoints();
+// Sitemap for search engine indexing - must be before fallback
+app.MapSitemapRoutes();
+
 // SPA fallback - serve index.html for any unmatched routes
 app.MapFallbackToFile("index.html");
 
