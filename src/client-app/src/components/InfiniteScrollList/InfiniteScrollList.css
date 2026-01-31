@@ -1,0 +1,18 @@
+.infinite-scroll-sentinel {
+  min-height: 1px;
+  width: 100%;
+}
+
+.infinite-scroll-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.infinite-scroll-end {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}

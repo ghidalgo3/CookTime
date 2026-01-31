@@ -11,7 +11,6 @@ import { Helmet } from "react-helmet-async";
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get("search");
-  const page = searchParams.get("page") ?? "1";
   const { user } = useAuthentication();
 
   // Only access window.location.origin on the client
@@ -23,7 +22,7 @@ export default function Home() {
         <link rel="canonical" href={canonicalUrl} />
       </Helmet>
       {
-        !query && page === "1" &&
+        !query &&
         <>
           <RecipeList
             title="Featured Recipes"
