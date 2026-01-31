@@ -107,6 +107,29 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         return (long)result!;
     }
 
+    public async Task<List<SitemapRecipeDto>> GetRecipesForSitemapAsync()
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand(@"
+            SELECT id, last_modified_date
+            FROM cooktime.recipes
+            ORDER BY last_modified_date DESC", conn);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+        var recipes = new List<SitemapRecipeDto>();
+
+        while (await reader.ReadAsync())
+        {
+            recipes.Add(new SitemapRecipeDto
+            {
+                Id = reader.GetGuid(0),
+                LastModified = reader.GetDateTime(1)
+            });
+        }
+
+        return recipes;
+    }
+
     public async Task<List<RecipeSummaryDto>> GetNewRecipesAsync(int count = 3)
     {
         await using var conn = await dataSource.OpenConnectionAsync();

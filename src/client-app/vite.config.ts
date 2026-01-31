@@ -59,6 +59,11 @@ export default defineConfig({
                 changeOrigin: true,
                 secure: false,
             },
+            "/sitemap.xml": {
+                target,
+                changeOrigin: true,
+                secure: false,
+            },
         },
     },
     build: {
