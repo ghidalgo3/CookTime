@@ -4,7 +4,7 @@ import { RecipePage } from "src/components/Recipe";
 import { Helmet } from 'react-helmet-async';
 import { RecipeGenerationResult } from "src/shared/CookTime";
 
-export const RECIPE_PAGE_PATH = "Recipes/Details";
+export const RECIPE_PAGE_PATH = "recipes/details";
 
 export function Path(id: string) {
   return `/${RECIPE_PAGE_PATH}?id=${id}`;

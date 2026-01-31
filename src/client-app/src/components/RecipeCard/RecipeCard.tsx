@@ -61,7 +61,7 @@ export function RecipeCard({
       images[0].url;
     return (
       <div className="cr-image-parent">
-        <Link to={`/Recipes/Details?id=${id}`}>
+        <Link to={`/recipes/details?id=${id}`}>
           <img
             loading="lazy"
             className="card-img-top card-recipe-image"

@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { Link, useLocation } from 'react-router';
-import { 
-  AggregatedIngredient, 
+import {
+  AggregatedIngredient,
   RecipeListItem,
   createGroceryList,
   getGroceryList,
@@ -25,12 +25,12 @@ export function ShoppingCart() {
   const fetchData = useCallback(async () => {
     // Create the grocery list if it doesn't exist
     await createGroceryList();
-    
+
     const [groceryList, ingredientsList] = await Promise.all([
       getGroceryList(),
       getGroceryListIngredients()
     ]);
-    
+
     if (groceryList) {
       setRecipes(groceryList.recipes);
     }
@@ -47,16 +47,16 @@ export function ShoppingCart() {
   const handleQuantityChange = useCallback(async (recipeId: string, currentQuantity: number, delta: number) => {
     const newQuantity = currentQuantity + delta;
     if (newQuantity < 1) return; // Don't allow quantity below 1
-    
+
     await updateGroceryRecipeQuantity(recipeId, newQuantity);
-    
+
     // Update local state
-    setRecipes(prev => prev.map(item => 
-      item.recipe.id === recipeId 
+    setRecipes(prev => prev.map(item =>
+      item.recipe.id === recipeId
         ? { ...item, quantity: newQuantity }
         : item
     ));
-    
+
     // Refresh ingredients since quantities changed
     const updatedIngredients = await getGroceryListIngredients();
     setIngredients(updatedIngredients);
@@ -64,24 +64,24 @@ export function ShoppingCart() {
 
   const handleSetQuantity = useCallback(async (recipeId: string, newQuantity: number) => {
     if (newQuantity < 1) return;
-    
+
     await updateGroceryRecipeQuantity(recipeId, newQuantity);
-    
-    setRecipes(prev => prev.map(item => 
-      item.recipe.id === recipeId 
+
+    setRecipes(prev => prev.map(item =>
+      item.recipe.id === recipeId
         ? { ...item, quantity: newQuantity }
         : item
     ));
-    
+
     const updatedIngredients = await getGroceryListIngredients();
     setIngredients(updatedIngredients);
   }, []);
 
   const handleDeleteRecipe = useCallback(async (recipeId: string) => {
     await removeFromGroceries(recipeId);
-    
+
     setRecipes(prev => prev.filter(item => item.recipe.id !== recipeId));
-    
+
     const updatedIngredients = await getGroceryListIngredients();
     setIngredients(updatedIngredients);
   }, []);
@@ -95,9 +95,9 @@ export function ShoppingCart() {
 
   const handleToggleIngredient = useCallback(async (ingredientId: string) => {
     const isNowSelected = await toggleGroceryIngredientSelected(ingredientId);
-    
-    setIngredients(prev => prev.map(ing => 
-      ing.ingredient.id === ingredientId 
+
+    setIngredients(prev => prev.map(ing =>
+      ing.ingredient.id === ingredientId
         ? { ...ing, selected: isNowSelected }
         : ing
     ));
@@ -105,7 +105,7 @@ export function ShoppingCart() {
 
   const handleClearSelectedIngredients = useCallback(async () => {
     await clearGrocerySelectedIngredients();
-    
+
     setIngredients(prev => prev.map(ing => ({ ...ing, selected: false })));
   }, []);
 
@@ -142,7 +142,7 @@ export function ShoppingCart() {
           </Button>
         </Col>
       </Row>
-      
+
       <div className="cart-header">Recipes</div>
       <div>
         {recipes.map((item) => {
@@ -181,7 +181,7 @@ export function ShoppingCart() {
                 <div
                   className="form-control input-field-style margin-left-20 margin-right-10 do-not-overflow-text"
                 >
-                  <a href={`/Recipes/Details?id=${recipe.id}&servings=${servings}`}>
+                  <a href={`/recipes/details?id=${recipe.id}&servings=${servings}`}>
                     {recipe.name}
                   </a>
                 </div>
@@ -200,13 +200,13 @@ export function ShoppingCart() {
           <p className="text-muted">No recipes in your grocery list. Add recipes from the recipe details page.</p>
         )}
       </div>
-      
+
       <div className="cart-header margin-top-15">
         Ingredients
         {ingredients.some(i => i.selected) && (
-          <Button 
-            variant="outline-secondary" 
-            size="sm" 
+          <Button
+            variant="outline-secondary"
+            size="sm"
             className="float-end"
             onClick={handleClearSelectedIngredients}
           >
@@ -218,9 +218,9 @@ export function ShoppingCart() {
         {sortedIngredients.map((ing) => {
           const isSelected = ing.selected;
           return (
-            <div 
-              key={`${ing.ingredient.id}-${ing.unit}`} 
-              onClick={() => handleToggleIngredient(ing.ingredient.id)} 
+            <div
+              key={`${ing.ingredient.id}-${ing.unit}`}
+              onClick={() => handleToggleIngredient(ing.ingredient.id)}
               className="cart-ingredients-list"
               style={{ cursor: 'pointer' }}
             >
@@ -229,7 +229,7 @@ export function ShoppingCart() {
               ) : (
                 <i className="bi bi-circle padding-right-10"></i>
               )}
-              <IngredientDisplay 
+              <IngredientDisplay
                 ingredientRequirement={{
                   ingredient: ing.ingredient,
                   quantity: ing.quantity,
@@ -237,8 +237,8 @@ export function ShoppingCart() {
                   id: ing.ingredient.id,
                   text: ing.ingredient.name.split(';')[0].trim(),
                   position: 0
-                }} 
-                strikethrough={isSelected} 
+                }}
+                strikethrough={isSelected}
               />
             </div>
           );
