@@ -221,6 +221,7 @@ export type IngredientReplacementRequest = {
     replacedId: string,
     name: string,
     usage: number,
+    hasNutrition: boolean,
     keptId: string,
 }
 

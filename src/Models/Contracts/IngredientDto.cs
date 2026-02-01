@@ -64,3 +64,32 @@ public class IngredientInternalUpdateDto
     [JsonPropertyName("nutritionDescription")]
     public string? NutritionDescription { get; set; }
 }
+
+// DTO for ingredient normalizer/replacement
+public class IngredientReplacementRequestDto
+{
+    [JsonPropertyName("replacedId")]
+    public Guid ReplacedId { get; set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = null!;
+
+    [JsonPropertyName("usage")]
+    public long Usage { get; set; }
+
+    [JsonPropertyName("hasNutrition")]
+    public bool HasNutrition { get; set; }
+
+    [JsonPropertyName("keptId")]
+    public Guid KeptId { get; set; }
+}
+
+// DTO for merging ingredients
+public class MergeIngredientsDto
+{
+    [JsonPropertyName("fromIngredientId")]
+    public Guid FromIngredientId { get; set; }
+
+    [JsonPropertyName("toIngredientId")]
+    public Guid ToIngredientId { get; set; }
+}

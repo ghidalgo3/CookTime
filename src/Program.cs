@@ -144,23 +144,8 @@ var adminApi = app.MapGroup("/api")
             return Results.Forbid();
         }
         return await next(context);
-    });
-
-adminApi.MapGet("/ingredient/internalUpdate", async (CookTimeDB cooktime) =>
-{
-    var ingredients = await cooktime.GetIngredientsForAdminAsync();
-    return Results.Ok(ingredients);
-});
-
-adminApi.MapPost("/ingredient/internalupdate", async (CookTimeDB cooktime, IngredientInternalUpdateDto update) =>
-{
-    var result = await cooktime.UpdateIngredientInternalAsync(update);
-    if (result == null)
-    {
-        return Results.NotFound();
-    }
-    return Results.Ok(result);
-});
+    })
+    .MapAdminRoutes();
 
 var authenticatedApi = app.MapGroup("/api")
     .AddEndpointFilter(async (context, next) =>

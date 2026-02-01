@@ -423,6 +423,39 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         return JsonSerializer.Deserialize<IngredientInternalUpdateDto>(result.ToString()!, JsonOptions);
     }
 
+    public async Task<List<IngredientReplacementRequestDto>> GetNormalizedIngredientsAsync()
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_normalized_ingredients()", conn);
+
+        var result = await cmd.ExecuteScalarAsync();
+        if (result == null || result == DBNull.Value)
+            return [];
+
+        return JsonSerializer.Deserialize<List<IngredientReplacementRequestDto>>(result.ToString()!, JsonOptions) ?? [];
+    }
+
+    public async Task MergeIngredientsAsync(Guid fromIngredientId, Guid toIngredientId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.merge_ingredients($1, $2)", conn);
+
+        cmd.Parameters.AddWithValue(fromIngredientId);
+        cmd.Parameters.AddWithValue(toIngredientId);
+
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    public async Task DeleteIngredientAsync(Guid ingredientId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.delete_ingredient($1)", conn);
+
+        cmd.Parameters.AddWithValue(ingredientId);
+
+        await cmd.ExecuteNonQueryAsync();
+    }
+
     #endregion
 
     #region Categories
