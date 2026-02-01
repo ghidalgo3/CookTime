@@ -34,6 +34,7 @@ public static class SitemapRoutes
     private static async Task<string> GenerateSitemapAsync(CookTimeDB cooktime)
     {
         var recipes = await cooktime.GetRecipesForSitemapAsync();
+        var publicLists = await cooktime.GetPublicListsForSitemapAsync();
 
         var sb = new StringBuilder();
         sb.AppendLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -50,6 +51,15 @@ public static class SitemapRoutes
             sb.AppendLine("  <url>");
             sb.AppendLine($"    <loc>{BaseUrl}/recipes/details?id={recipe.Id}</loc>");
             sb.AppendLine($"    <lastmod>{recipe.LastModified:yyyy-MM-dd}</lastmod>");
+            sb.AppendLine("  </url>");
+        }
+
+        // Public list pages
+        foreach (var list in publicLists)
+        {
+            sb.AppendLine("  <url>");
+            sb.AppendLine($"    <loc>{BaseUrl}/lists/{list.Slug}</loc>");
+            sb.AppendLine($"    <lastmod>{list.CreationDate:yyyy-MM-dd}</lastmod>");
             sb.AppendLine("  </url>");
         }
 

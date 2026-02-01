@@ -130,6 +130,30 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         return recipes;
     }
 
+    public async Task<List<SitemapListDto>> GetPublicListsForSitemapAsync()
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand(@"
+            SELECT slug, creation_date
+            FROM cooktime.recipe_lists
+            WHERE is_public = true
+            ORDER BY creation_date DESC", conn);
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+        var lists = new List<SitemapListDto>();
+
+        while (await reader.ReadAsync())
+        {
+            lists.Add(new SitemapListDto
+            {
+                Slug = reader.GetString(0),
+                CreationDate = reader.GetDateTime(1)
+            });
+        }
+
+        return lists;
+    }
+
     public async Task<List<RecipeSummaryDto>> GetNewRecipesAsync(int count = 3)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
