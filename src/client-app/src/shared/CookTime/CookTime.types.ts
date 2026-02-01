@@ -162,7 +162,8 @@ export type RecipeView = {
     images: Image[],
     categories: string[],
     averageReviews: number,
-    reviewCount: number
+    reviewCount: number,
+    cooktimeMinutes?: number | null
 }
 
 export type RecipeList = {

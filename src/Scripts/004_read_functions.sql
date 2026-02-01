@@ -369,7 +369,8 @@ BEGIN
             SELECT COUNT(*)
             FROM cooktime.reviews rv
             WHERE rv.recipe_id = r.id
-        ), 0)
+        ), 0),
+        'cooktimeMinutes', r.cooking_minutes
     );
 END;
 $$ LANGUAGE plpgsql;
