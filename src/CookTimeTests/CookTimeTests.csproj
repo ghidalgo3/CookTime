@@ -7,7 +7,7 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\babe-algorithms.csproj" />
+    <ProjectReference Include="..\CookTime\CookTime.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images/**/*.png">

@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <RootNamespace>babe_algorithms</RootNamespace>
+    <RootNamespace>CookTime</RootNamespace>
     <UserSecretsId>a46b162c-e9f9-48e7-934a-5b91ebe338b0</UserSecretsId>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -48,9 +48,9 @@
   <ItemGroup>
     <!-- Embedded resources for AI recipe generation -->
     <EmbeddedResource Include="Resources\RecipeGenerationPrompt.txt"
-      LogicalName="BabeAlgorithms.Resources.RecipeGenerationPrompt.txt" />
+      LogicalName="CookTime.Resources.RecipeGenerationPrompt.txt" />
     <EmbeddedResource Include="Resources\RecipeGenerationSchema.json"
-      LogicalName="BabeAlgorithms.Resources.RecipeGenerationSchema.json" />
+      LogicalName="CookTime.Resources.RecipeGenerationSchema.json" />
   </ItemGroup>
 
   <!-- Frontend build target - run with: dotnet build -t:BuildFrontend -->
