@@ -12,5 +12,5 @@ npm run build
 echo "Copying frontend to wwwroot..."
 cp -r build/client/* "$ROOT_DIR/src/CookTime/wwwroot/"
 echo "Publishing backend to $OUTPUT_PATH..."
-cd "$ROOT_DIR/src"
+cd "$ROOT_DIR/src/CookTime"
 dotnet publish --configuration Release --verbosity normal --output "$OUTPUT_PATH"
