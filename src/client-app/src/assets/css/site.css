@@ -434,7 +434,7 @@ html {
   font-size: 14px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 838px) {
   html {
     font-size: 16px;
   }
@@ -659,14 +659,16 @@ html {
 }
 
 .favorite-button {
-  position: relative;
-  top: -180px;
+  position: absolute;
+  top: 5px;
+  left: 5px;
   padding: 5px 10px;
   border: none;
   background: none;
   cursor: pointer;
   display: inline-block;
   transition: transform 0.2s ease-in-out;
+  z-index: 10;
 }
 
 .favorite-button:hover,
@@ -717,14 +719,16 @@ html {
   }
 
   .favorite-button {
-    position: relative;
-    top: -140px;
+    position: absolute;
+    top: 8px;
+    left: 8px;
     padding: 5px 10px;
     border: none;
     background: none;
     cursor: pointer;
     display: inline-block;
     transition: transform 0.2s ease-in-out;
+    z-index: 10;
   }
 
   .favorite-button:hover,
@@ -1074,6 +1078,14 @@ body {
 
   .component-name-field {
     padding-left: 4px;
+  }
+}
+
+/* Reduce navbar button font size for tablets */
+@media (max-width: 837px) {
+  .navbar-light .navbar-nav .nav-link {
+    font-size: 14px;
+    padding: 7px;
   }
 }
 
