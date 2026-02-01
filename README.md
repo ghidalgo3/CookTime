@@ -3,9 +3,9 @@
 CookTime is a recipe management system!
 It is composed of:
 
-1. REST API
-1. Browser application
-1. PostgreSQL schemas and functions for storing and querying recipes
+1. REST API (C# ASP.NET app in `src/CookTime`)
+1. Browser application (React SPA in `src/CookTime/client-app`)
+1. PostgreSQL schemas and functions for storing and querying recipes (SQL statements in `src/CookTime/Scripts`)
 
 With CookTime you can do things like:
 
@@ -18,13 +18,13 @@ With CookTime you can do things like:
 ## Getting started
 
 Assuming [Docker Desktop][Docker Desktop] installed on Linux or macOS,
-use the `scripts` directory contents to get started from in /babe-algorithms:
+use the `scripts` directory (found at the root of the repo) contents to get started:
 
 ```shell
 scripts/server
 ```
 
-Then open <http://localhost:3000> to get started!
+Then open <http://localhost:3000> in a browser!
 
 I recommend using VSCode to develop CookTime, for that you will need to install:
 
