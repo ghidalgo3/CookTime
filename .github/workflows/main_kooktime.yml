@@ -24,12 +24,15 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: "10.0.x"
+      - name: Server
+        run: scripts/server
+
+      - name: Test
+        run: scripts/test
 
       - name: Build
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: scripts/build
-
-      # - name: Test
-      #   run: scripts/test
 
       - name: Publish
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'

@@ -2,9 +2,8 @@ using BabeAlgorithms.Models.Contracts;
 using babe_algorithms.Services;
 using Npgsql;
 using NpgsqlTypes;
-using Microsoft.AspNetCore.StaticAssets;
 
-namespace Tests;
+namespace CookTime.Test;
 
 /// <summary>
 /// Tests for the NutritionService using sample USDA data.
@@ -28,15 +27,15 @@ namespace Tests;
 [TestClass]
 public class TestNutrition : TestBase
 {
-    private static NutritionService _nutritionService = null!;
-    private static Guid _testIngredientId;
-    private static Guid? _nutritionFactsId;
+    private NutritionService _nutritionService = null!;
+    private Guid _testIngredientId;
+    private Guid? _nutritionFactsId;
 
     private static readonly string SampleDataDirectory = Path.Combine(
         AppDomain.CurrentDomain.BaseDirectory, "SampleData");
 
-    [ClassInitialize]
-    public static async Task ClassInitialize(TestContext context)
+    [TestInitialize]
+    public async Task TestInitialize()
     {
         await InitializeAsync(nameof(TestNutrition));
         _nutritionService = new NutritionService(DataSource);
@@ -58,8 +57,8 @@ public class TestNutrition : TestBase
         _testIngredientId = await CreateTestIngredientAsync("White bread", _nutritionFactsId, "slice");
     }
 
-    [ClassCleanup]
-    public static async Task ClassCleanup()
+    [TestCleanup]
+    public async Task TestCleanup()
     {
         await using var conn = await DataSource.OpenConnectionAsync();
 
@@ -76,15 +75,18 @@ public class TestNutrition : TestBase
         await deleteIngredientCmd.ExecuteNonQueryAsync();
 
         // Clear any other ingredient references to our test nutrition facts, then delete
-        await using var clearFkCmd = new NpgsqlCommand(
-            "UPDATE cooktime.ingredients SET nutrition_facts_id = NULL WHERE nutrition_facts_id = $1", conn);
-        clearFkCmd.Parameters.AddWithValue(_nutritionFactsId!.Value);
-        await clearFkCmd.ExecuteNonQueryAsync();
+        if (_nutritionFactsId.HasValue)
+        {
+            await using var clearFkCmd = new NpgsqlCommand(
+                "UPDATE cooktime.ingredients SET nutrition_facts_id = NULL WHERE nutrition_facts_id = $1", conn);
+            clearFkCmd.Parameters.AddWithValue(_nutritionFactsId.Value);
+            await clearFkCmd.ExecuteNonQueryAsync();
 
-        await using var deleteNfCmd = new NpgsqlCommand(
-            "DELETE FROM cooktime.nutrition_facts WHERE id = $1", conn);
-        deleteNfCmd.Parameters.AddWithValue(_nutritionFactsId!.Value);
-        await deleteNfCmd.ExecuteNonQueryAsync();
+            await using var deleteNfCmd = new NpgsqlCommand(
+                "DELETE FROM cooktime.nutrition_facts WHERE id = $1", conn);
+            deleteNfCmd.Parameters.AddWithValue(_nutritionFactsId.Value);
+            await deleteNfCmd.ExecuteNonQueryAsync();
+        }
 
         await CleanupAsync();
     }
@@ -153,7 +155,7 @@ public class TestNutrition : TestBase
         // Assert.AreEqual(26.7, nutrition.Recipe.Carbohydrates, 0.1, "Carbohydrates should be ~26.7g for 50g");
     }
 
-    private static RecipeCreateDto SimpleRecipe(int servings, List<IngredientRequirementCreateDto> ingredients) =>
+    private RecipeCreateDto SimpleRecipe(int servings, List<IngredientRequirementCreateDto> ingredients) =>
         new RecipeCreateDto
         {
             OwnerId = TestUserId,

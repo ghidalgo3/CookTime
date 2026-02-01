@@ -13,11 +13,11 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /src
 
 # Copy csproj and restore dependencies
-COPY ["babe-algorithms.csproj", "./"]
-RUN dotnet restore "babe-algorithms.csproj"
+COPY ["CookTime.csproj", "./"]
+RUN dotnet restore "CookTime.csproj"
 
 # Copy everything else
 COPY . .
 
 # Build the backend
-RUN dotnet build "babe-algorithms.csproj" -c Debug -o /app/build
+RUN dotnet build "CookTime.csproj" -c Debug -o /app/build

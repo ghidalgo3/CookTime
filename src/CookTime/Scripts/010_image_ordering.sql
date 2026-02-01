@@ -89,8 +89,3 @@ BEGIN
     VALUES (p_image_id, p_storage_url, p_recipe_id, v_max_position);
 END;
 $$ LANGUAGE plpgsql;
-
--- Register this migration
-INSERT INTO cooktime.schema_migrations (script_name) 
-VALUES ('010_image_ordering.sql')
-ON CONFLICT (script_name) DO NOTHING;

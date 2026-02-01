@@ -32,7 +32,7 @@ services:
   api:
     platform: linux/amd64
     build:
-      context: src/
+      context: src/CookTime
       dockerfile: Dockerfile
     container_name: cooktime-api
     working_dir: /src
@@ -50,7 +50,7 @@ services:
       azurite:
         condition: service_started
     volumes:
-      - ./src:/src
+      - ./src/CookTime:/src
       - /src/obj # Shadow obj/ so container writes don't affect host intellisense
       - /src/bin # Shadow bin/ so container writes don't affect host intellisense
       - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
@@ -60,7 +60,7 @@ services:
   webapp:
     platform: linux/amd64
     build:
-      context: src/client-app
+      context: src/CookTime/client-app
       dockerfile: Dockerfile
     container_name: cooktime-webapp
     environment:
@@ -71,7 +71,7 @@ services:
     depends_on:
       - api
     volumes:
-      - ./src/client-app/src:/app/src
+      - ./src/CookTime/client-app/src:/app/src
     command: ["npm", "run", "dev"]
 
 volumes:

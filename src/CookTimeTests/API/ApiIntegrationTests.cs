@@ -1,4 +1,4 @@
-namespace Tests;
+namespace CookTime.Test.API;
 
 /// <summary>
 /// Integration tests that hit the running API server via HTTP.
@@ -144,6 +144,6 @@ public class ApiIntegrationTests
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync();
-        Assert.IsTrue(content.Contains("\"paths\""), "OpenAPI spec should contain paths");
+        Assert.Contains("\"paths\"", content, "OpenAPI spec should contain paths");
     }
 }

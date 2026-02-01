@@ -1,18 +1,19 @@
 using BabeAlgorithms.Models.Contracts;
 using Npgsql;
-using Tests;
+
+namespace CookTime.Test;
 
 [TestClass]
 public class TestRecipeLists : TestBase
 {
-    [ClassInitialize]
-    public static async Task ClassInitialize(TestContext context)
+    [TestInitialize]
+    public async Task TestInitialize()
     {
         await InitializeAsync(nameof(TestRecipeLists));
     }
 
-    [ClassCleanup]
-    public static async Task ClassCleanup()
+    [TestCleanup]
+    public async Task TestCleanup()
     {
         await CleanupAsync();
     }
@@ -41,7 +42,7 @@ public class TestRecipeLists : TestBase
             var lists = await Db.GetRecipeListsAsync(emptyUserId);
 
             Assert.IsNotNull(lists);
-            Assert.AreEqual(0, lists.Count);
+            Assert.IsEmpty(lists);
         }
         finally
         {
@@ -62,7 +63,7 @@ public class TestRecipeLists : TestBase
         var lists = await Db.GetRecipeListsAsync(TestUserId);
 
         Assert.IsNotNull(lists);
-        Assert.IsTrue(lists.Count >= 1);
+        Assert.IsGreaterThanOrEqualTo(1, lists.Count);
         Assert.IsTrue(lists.Any(l => l.Name == "My Recipe List"));
     }
 
@@ -92,7 +93,7 @@ public class TestRecipeLists : TestBase
         Assert.AreEqual(listId, result.Id);
         Assert.AreEqual("Empty List", result.Name);
         Assert.IsNotNull(result.Recipes);
-        Assert.AreEqual(0, result.Recipes.Count);
+        Assert.IsEmpty(result.Recipes);
     }
 
     [TestMethod]
@@ -145,7 +146,7 @@ public class TestRecipeLists : TestBase
         Assert.IsFalse(result.Recipes.Any(r => r.Recipe.Id == recipeId.Value));
     }
 
-    private static async Task<Guid?> GetFirstRecipeId()
+    private async Task<Guid?> GetFirstRecipeId()
     {
         await using var conn = await DataSource.OpenConnectionAsync();
         await using var cmd = new NpgsqlCommand(

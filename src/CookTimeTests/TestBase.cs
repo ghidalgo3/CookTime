@@ -1,7 +1,7 @@
 using BabeAlgorithms.Services;
 using Npgsql;
 
-namespace Tests;
+namespace CookTime.Test;
 
 /// <summary>
 /// Base class for integration tests that require database access.
@@ -12,11 +12,11 @@ public abstract class TestBase
     private static readonly string ConnectionString = Environment.GetEnvironmentVariable("ConnectionStrings__Postgres")
         ?? "Host=localhost;Database=cooktime;Username=cooktime;Password=development;Include Error Detail=true";
 
-    protected static NpgsqlDataSource DataSource { get; private set; } = null!;
-    protected static CookTimeDB Db { get; private set; } = null!;
-    protected static Guid TestUserId { get; private set; }
+    protected NpgsqlDataSource DataSource { get; private set; } = null!;
+    protected CookTimeDB Db { get; private set; } = null!;
+    protected Guid TestUserId { get; private set; }
 
-    protected static async Task InitializeAsync(string testClassName)
+    protected async Task InitializeAsync(string testClassName)
     {
         DataSource = NpgsqlDataSource.Create(ConnectionString);
         Db = new CookTimeDB(DataSource);
@@ -33,7 +33,7 @@ public abstract class TestBase
         await cmd.ExecuteNonQueryAsync();
     }
 
-    protected static async Task CleanupAsync()
+    protected async Task CleanupAsync()
     {
         await using var conn = await DataSource.OpenConnectionAsync();
 
@@ -62,7 +62,7 @@ public abstract class TestBase
     /// Creates a temporary test user and returns its ID. 
     /// The caller is responsible for cleanup via DeleteTestUserAsync.
     /// </summary>
-    protected static async Task<Guid> CreateTestUserAsync(string nameSuffix = "")
+    protected async Task<Guid> CreateTestUserAsync(string nameSuffix = "")
     {
         var userId = Guid.NewGuid();
         await using var conn = await DataSource.OpenConnectionAsync();
@@ -80,7 +80,7 @@ public abstract class TestBase
     /// <summary>
     /// Deletes a test user created via CreateTestUserAsync.
     /// </summary>
-    protected static async Task DeleteTestUserAsync(Guid userId)
+    protected async Task DeleteTestUserAsync(Guid userId)
     {
         await using var conn = await DataSource.OpenConnectionAsync();
         await using var cmd = new NpgsqlCommand(
@@ -93,7 +93,7 @@ public abstract class TestBase
     /// Creates a test ingredient and returns its ID.
     /// Optionally sets count_regex on the linked nutrition_facts.
     /// </summary>
-    protected static async Task<Guid> CreateTestIngredientAsync(string name, Guid? nutritionFactsId = null, string? countRegex = null)
+    protected async Task<Guid> CreateTestIngredientAsync(string name, Guid? nutritionFactsId = null, string? countRegex = null)
     {
         var ingredientId = Guid.NewGuid();
         await using var conn = await DataSource.OpenConnectionAsync();
@@ -120,7 +120,7 @@ public abstract class TestBase
     /// <summary>
     /// Deletes a test ingredient.
     /// </summary>
-    protected static async Task DeleteTestIngredientAsync(Guid ingredientId)
+    protected async Task DeleteTestIngredientAsync(Guid ingredientId)
     {
         await using var conn = await DataSource.OpenConnectionAsync();
         await using var cmd = new NpgsqlCommand(

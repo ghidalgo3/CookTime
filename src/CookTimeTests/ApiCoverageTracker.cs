@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
-namespace Tests;
+namespace CookTime.Test;
 
 /// <summary>
 /// Tracks API calls made during tests and compares against OpenAPI spec to report coverage.

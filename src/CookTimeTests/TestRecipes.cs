@@ -1,21 +1,22 @@
 using BabeAlgorithms.Models.Contracts;
-using Tests;
+
+namespace CookTime.Test;
 
 [TestClass]
 public class TestRecipes : TestBase
 {
     private const string TEST_INGREDIENT_NAME = "Test Ingredient";
-    private static Guid _testIngredientId;
+    private Guid _testIngredientId;
 
-    [ClassInitialize]
-    public static async Task ClassInitialize(TestContext context)
+    [TestInitialize]
+    public async Task TestInitialize()
     {
         await InitializeAsync(nameof(TestRecipes));
         _testIngredientId = await CreateTestIngredientAsync(TEST_INGREDIENT_NAME);
     }
 
-    [ClassCleanup]
-    public static async Task ClassCleanup()
+    [TestCleanup]
+    public async Task TestCleanup()
     {
         await DeleteTestIngredientAsync(_testIngredientId);
         await CleanupAsync();
@@ -97,7 +98,7 @@ public class TestRecipes : TestBase
         var result = await Db.SearchRecipesAsync("xyznonexistentrecipename123");
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(0, result.Count);
+        Assert.IsEmpty(result);
     }
 
     [TestMethod]
@@ -122,7 +123,7 @@ public class TestRecipes : TestBase
         var result = await Db.SearchRecipesAsync("chocolate");
 
         Assert.IsNotNull(result);
-        Assert.IsTrue(result.Count >= 2, "Expected at least 2 chocolate recipes");
+        Assert.IsGreaterThanOrEqualTo(2, result.Count, "Expected at least 2 chocolate recipes");
     }
 
     [TestMethod]
@@ -140,7 +141,7 @@ public class TestRecipes : TestBase
         var result = await Db.GetRecipesAsync(pageSize: 10, pageNumber: 1);
 
         Assert.IsNotNull(result);
-        Assert.IsTrue(result.Count >= 1);
+        Assert.IsGreaterThanOrEqualTo(1, result.Count);
     }
 
     [TestMethod]
@@ -234,7 +235,7 @@ public class TestRecipes : TestBase
         var result = await Db.SearchRecipesAsync(TEST_INGREDIENT_NAME);
 
         Assert.IsNotNull(result);
-        Assert.IsTrue(result.Count >= 1);
+        Assert.IsGreaterThanOrEqualTo(1, result.Count);
         Assert.IsTrue(result.Any(r => r.Name == "Recipe With Test Ingredient"));
     }
 }
