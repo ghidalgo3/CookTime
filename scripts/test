@@ -2,7 +2,7 @@
 set -e
 
 API_URL="${API_BASE_URL:-http://localhost:5001}"
-MAX_WAIT=60
+MAX_WAIT=120
 
 echo "Waiting for API to be healthy at $API_URL/health..."
 elapsed=0
