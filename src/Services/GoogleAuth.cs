@@ -30,7 +30,15 @@ public static class GoogleAuth
             options.LoginPath = "/signin";
             options.LogoutPath = "/api/auth/signout";
             options.Cookie.SameSite = SameSiteMode.Lax;
-            options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+            options.Cookie.HttpOnly = true;
+
+            // Use secure cookies in production to ensure mobile browsers handle them correctly
+            var isDev = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
+            options.Cookie.SecurePolicy = isDev ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always;
+
+            // Explicit expiration ensures mobile browsers (especially Safari with ITP) don't treat this as a session cookie
+            options.ExpireTimeSpan = TimeSpan.FromDays(30);
+            options.SlidingExpiration = true;
         })
         .AddGoogle(options =>
         {
@@ -182,7 +190,14 @@ public static class GoogleAuth
             var identity = new System.Security.Claims.ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var principal = new System.Security.Claims.ClaimsPrincipal(identity);
 
-            await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+            // IsPersistent ensures the cookie survives browser restarts, especially important for mobile browsers
+            // where Safari ITP and app backgrounding can clear session cookies
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30)
+            };
+            await context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
 
             // Redirect to profile setup if they haven't set a display name yet
             if (string.IsNullOrEmpty(displayName))
