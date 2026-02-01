@@ -6,21 +6,29 @@ import "./NavigationBar.css"
 import { RequireAuth, useAuthentication } from "../Authentication/AuthenticationContext";
 import { UserDetails } from "src/shared/AuthenticationProvider";
 import { RECIPE_CREATE_PAGE_PATH } from "src/pages/RecipeCreation";
+import { RecipeList, getLists } from "src/shared/CookTime";
 
 export function action() {
 }
 
 export function NavigationBar({ categories }: { categories: string[] }) {
   const { user, signOut } = useAuthentication();
+  const [lists, setLists] = useState<RecipeList[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      getLists().then(setLists).catch(console.error);
+    } else {
+      setLists([]);
+    }
+  }, [user]);
+
   function UserDropdown(user?: UserDetails | null) {
     if (user) {
       return (
         <NavDropdown title={user.name} id="basic-nav-dropdown">
           <NavDropdown.Item as={Link} to="/recipes/mine">
             My recipes
-          </NavDropdown.Item>
-          <NavDropdown.Item as={Link} to="/recipes/favorites">
-            Favorites
           </NavDropdown.Item>
           <NavDropdown.Divider />
           <NavDropdown.Item onClick={signOut}>
@@ -77,14 +85,38 @@ export function NavigationBar({ categories }: { categories: string[] }) {
                 to="/about">
                 About
               </Nav.Link>
-              <Nav.Link
-                id={!user ? "my-nav-link-disabled" : ""}
-                // className={!user ? "my-nav-link-disabled" : ""}
-                disabled={!user}
-                as={Link}
-                to="/Groceries">
-                Groceries List
-              </Nav.Link>
+              {user ? (
+                <NavDropdown title="Lists" id="lists-nav-dropdown">
+                  <NavDropdown.Item as={Link} to="/Groceries">
+                    Groceries
+                  </NavDropdown.Item>
+                  <NavDropdown.Item as={Link} to="/recipes/favorites">
+                    Favorites
+                  </NavDropdown.Item>
+                  {lists.filter(l => l.name !== "Groceries" && l.name !== "Favorites").length > 0 && (
+                    <NavDropdown.Divider />
+                  )}
+                  {lists
+                    .filter(l => l.name !== "Groceries" && l.name !== "Favorites")
+                    .map(list => (
+                      <NavDropdown.Item key={list.id} as={Link} to={`/lists/${list.slug}`}>
+                        {list.name}
+                      </NavDropdown.Item>
+                    ))}
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item as={Link} to="/lists">
+                    Manage Lists
+                  </NavDropdown.Item>
+                </NavDropdown>
+              ) : (
+                <Nav.Link
+                  id="my-nav-link-disabled"
+                  disabled={true}
+                  as={Link}
+                  to="/Groceries">
+                  Lists
+                </Nav.Link>
+              )}
               <Nav.Link href="/Blog/index.html">Blog</Nav.Link>
               <RequireAuth roles={["Administrator"]}>
                 <AdminNavBarSection />

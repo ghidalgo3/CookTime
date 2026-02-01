@@ -10,6 +10,9 @@ public class RecipeListDto
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
 
+    [JsonPropertyName("slug")]
+    public string Slug { get; set; } = null!;
+
     [JsonPropertyName("description")]
     public string? Description { get; set; }
 
@@ -54,6 +57,9 @@ public class RecipeListWithRecipesDto
 
     [JsonPropertyName("name")]
     public string Name { get; set; } = null!;
+
+    [JsonPropertyName("slug")]
+    public string Slug { get; set; } = null!;
 
     [JsonPropertyName("description")]
     public string? Description { get; set; }
@@ -106,4 +112,16 @@ public class AggregatedIngredientDto
 
     [JsonPropertyName("selected")]
     public bool Selected { get; set; }
+}
+
+public class RecipeListUpdateDto
+{
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
+
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
+
+    [JsonPropertyName("isPublic")]
+    public bool? IsPublic { get; set; }
 }

@@ -5,7 +5,7 @@
 .cr-image-parent {
     position: relative;
     overflow: hidden;
-    height:198px;
+    height: 198px;
 }
 
 .card-recipe-image {
@@ -55,4 +55,31 @@
     font-size: 10px;
     color: #fff;
     margin-left: 2px;
+}
+
+/* Remove button for list view */
+.remove-button {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+    transition: transform 0.2s ease-in-out;
+    z-index: 10;
+    background-color: rgba(220, 53, 69, 0.9);
+    border-radius: 4px;
+}
+
+.remove-button:hover,
+.remove-button:active,
+.remove-button:focus,
+.remove-button:focus-visible {
+    transform: scale(1.1);
+    background-color: rgba(220, 53, 69, 1) !important;
+}
+
+.remove-button i {
+    color: white;
 }

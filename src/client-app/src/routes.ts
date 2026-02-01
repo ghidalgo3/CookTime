@@ -11,6 +11,8 @@ export default [
         route("Recipes/Mine", "pages/MyRecipes.tsx"),
         route("Recipes/Create", "pages/RecipeCreation.tsx"),
         route("Groceries", "pages/GroceriesList.tsx"),
+        route("lists", "pages/ListManagement.tsx"),
+        route("lists/:slug", "pages/ListView.tsx"),
         route("Admin/IngredientsView", "pages/IngredientsView.tsx"),
     ]),
 

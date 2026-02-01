@@ -13,7 +13,7 @@ import {
   reorderRecipeImages,
   uploadRecipeImage,
   toRecipeUpdateDto,
-  addToGroceries,
+  addToList,
 } from 'src/shared/CookTime';
 
 export type PendingImage = {
@@ -41,6 +41,7 @@ interface RecipeContextState {
   nutritionFacts: RecipeNutritionFacts | undefined;
   showDeleteConfirm: boolean;
   ingredientMatches: IngredientMatch[];
+  toastMessage: string | null;
 }
 
 interface RecipeContextActions {
@@ -49,6 +50,7 @@ interface RecipeContextActions {
   setShowDeleteConfirm: (show: boolean) => void;
   setErrorMessage: (message: string | null) => void;
   setNewServings: (servings: number) => void;
+  setToastMessage: (message: string | null) => void;
 
   // Recipe updates
   updateRecipe: (updates: Partial<MultiPartRecipe>) => void;
@@ -83,7 +85,7 @@ interface RecipeContextActions {
   onDelete: () => void;
   onConfirmDelete: () => Promise<void>;
   onCancel: () => void;
-  onAddToCart: () => Promise<void>;
+  onAddToList: (listName: string) => Promise<void>;
 }
 
 interface RecipeContextValue extends RecipeContextState, RecipeContextActions {}
@@ -133,6 +135,7 @@ export function RecipeProvider({ recipeId, generatedRecipe, children }: RecipePr
   const [nutritionFacts, setNutritionFacts] = useState<RecipeNutritionFacts | undefined>();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [ingredientMatches, setIngredientMatches] = useState<IngredientMatch[]>([]);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Apply generated recipe data
   const applyGeneratedRecipe = useCallback(
@@ -498,10 +501,15 @@ export function RecipeProvider({ recipeId, generatedRecipe, children }: RecipePr
     location.reload();
   }, []);
 
-  // Add to groceries list
-  const onAddToCart = useCallback(async () => {
-    await addToGroceries(recipeId, 1);
-    window.location.href = '/Groceries';
+  // Add to list
+  const onAddToList = useCallback(async (listName: string) => {
+    await addToList(listName, recipeId, 1);
+    if (listName === "Groceries") {
+      window.location.href = '/Groceries';
+    } else {
+      // For custom lists, show a toast notification
+      setToastMessage(`Added to ${listName}!`);
+    }
   }, [recipeId]);
 
   const value: RecipeContextValue = {
@@ -519,11 +527,13 @@ export function RecipeProvider({ recipeId, generatedRecipe, children }: RecipePr
     nutritionFacts,
     showDeleteConfirm,
     ingredientMatches,
+    toastMessage,
     // Actions
     setEdit,
     setShowDeleteConfirm,
     setErrorMessage,
     setNewServings,
+    setToastMessage,
     updateRecipe,
     updateComponent,
     appendIngredientToComponent,
@@ -542,7 +552,7 @@ export function RecipeProvider({ recipeId, generatedRecipe, children }: RecipePr
     onDelete,
     onConfirmDelete,
     onCancel,
-    onAddToCart,
+    onAddToList,
   };
 
   return <RecipeContext.Provider value={value}>{children}</RecipeContext.Provider>;

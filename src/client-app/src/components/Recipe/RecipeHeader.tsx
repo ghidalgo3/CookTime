@@ -15,7 +15,7 @@ export function RecipeHeader() {
     onSave,
     onCancel,
     onDelete,
-    onAddToCart,
+    onAddToList,
   } = useRecipeContext();
 
   return (
@@ -51,7 +51,7 @@ export function RecipeHeader() {
             onCancel={onCancel}
             onDelete={onDelete}
             onToggleEdit={() => setEdit(!edit)}
-            onAddtoCard={() => onAddToCart()}
+            onAddToList={(listName) => onAddToList(listName)}
           />
         )}
       </AuthContext.Consumer>

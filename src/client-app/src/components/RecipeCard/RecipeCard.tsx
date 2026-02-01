@@ -9,6 +9,10 @@ import imgs from "src/assets";
 import { useAuthentication } from "../Authentication/AuthenticationContext";
 import { useFavorites } from "../Favorites/FavoritesContext";
 
+interface RecipeCardProps extends RecipeView {
+  onRemove?: (recipeId: string) => Promise<void>;
+}
+
 export function RecipeCard({
   categories,
   id,
@@ -16,7 +20,8 @@ export function RecipeCard({
   averageReviews,
   reviewCount,
   images,
-  cooktimeMinutes }: RecipeView) {
+  cooktimeMinutes,
+  onRemove }: RecipeCardProps) {
 
   const { user } = useAuthentication();
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -56,6 +61,36 @@ export function RecipeCard({
     )
   }
 
+  function RemoveButton() {
+    const [submitting, setSubmitting] = useState<boolean>(false);
+
+    const handleRemove = async () => {
+      if (!onRemove) return;
+      setSubmitting(true);
+      await onRemove(id);
+      setSubmitting(false);
+    }
+
+    return (
+      <Button
+        disabled={submitting}
+        onClick={handleRemove}
+        className="remove-button"
+        variant="danger"
+      >
+        {submitting ?
+          <Spinner
+            as="span"
+            animation="border"
+            size="sm"
+            role="status"
+            aria-hidden="true"
+          />
+          : <i className="bi bi-trash fs-5"></i>}
+      </Button>
+    )
+  }
+
   function CardImage() {
     let image = (images.length === 0 || !images[0].url) ?
       imgs.placeholder :
@@ -79,6 +114,7 @@ export function RecipeCard({
           </div>
         )}
         {user && <FavoriteToggle />}
+        {onRemove && <RemoveButton />}
       </div>
     )
   }

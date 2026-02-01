@@ -93,6 +93,63 @@ app.MapGet(
         RowCount = (int)total_count
     };
 });
+
+// Public list viewing - returns list if user owns it OR if it's public
+// Supports lookup by: GUID id, slug, or list name (for authenticated users)
+app.MapGet("/api/lists/{listName}", async (HttpContext context, CookTimeDB cooktime, string listName) =>
+{
+    // Try to get the authenticated user ID (may be null if not authenticated)
+    Guid? userId = null;
+    var userIdClaim = context.User.FindFirst("db_user_id")?.Value;
+    if (userIdClaim != null && Guid.TryParse(userIdClaim, out var parsedUserId))
+    {
+        userId = parsedUserId;
+    }
+
+    // Try to parse as GUID first for listId lookup
+    if (Guid.TryParse(listName, out var listId))
+    {
+        var listById = await cooktime.GetRecipeListWithRecipesAsync(listId);
+        if (listById == null)
+        {
+            return Results.NotFound();
+        }
+        // Allow access if user owns it OR if it's public
+        if (listById.OwnerId == userId || listById.IsPublic)
+        {
+            return Results.Ok(listById);
+        }
+        return Results.NotFound();
+    }
+
+    // Try to lookup by slug (works for public lists or owned lists)
+    var listBySlug = await cooktime.GetRecipeListBySlugAsync(listName);
+    if (listBySlug != null)
+    {
+        // Allow access if user owns it OR if it's public
+        if (listBySlug.OwnerId == userId || listBySlug.IsPublic)
+        {
+            return Results.Ok(listBySlug);
+        }
+        return Results.NotFound();
+    }
+
+    // Otherwise filter by name (only works for authenticated users looking up their own lists)
+    if (userId == null)
+    {
+        return Results.NotFound();
+    }
+
+    var lists = await cooktime.GetRecipeListsAsync(userId.Value, filter: listName);
+    if (lists.Count == 0)
+    {
+        return Results.NotFound();
+    }
+
+    var listWithRecipes = await cooktime.GetRecipeListWithRecipesAsync(lists[0].Id);
+    return Results.Ok(listWithRecipes);
+});
+
 app.MapGet("/api/multipartrecipe/new", async (CookTimeDB cooktime) =>
 {
     return await cooktime.GetNewRecipesAsync();

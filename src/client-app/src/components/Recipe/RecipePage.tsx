@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Row } from 'react-bootstrap';
+import { Alert, Row, Toast, ToastContainer } from 'react-bootstrap';
 import { RecipeProvider, useRecipeContext } from './RecipeContext';
 import { RecipeHeader } from './RecipeHeader';
 import { RecipeFields } from './RecipeFields';
@@ -18,7 +18,7 @@ interface RecipePageProps {
 }
 
 function RecipePageContent({ recipeId }: { recipeId: string }) {
-  const { recipe, recipeImages, errorMessage, setErrorMessage } = useRecipeContext();
+  const { recipe, recipeImages, errorMessage, setErrorMessage, toastMessage, setToastMessage } = useRecipeContext();
 
   const fallbackImage = recipe.staticImage
     ? `/${recipe.staticImage}`
@@ -28,6 +28,23 @@ function RecipePageContent({ recipeId }: { recipeId: string }) {
     <div>
       <DeleteConfirmModal />
       <RecipeStructuredData recipe={recipe} images={recipeImages} />
+      
+      {/* Toast notification */}
+      <ToastContainer position="top-end" className="p-3" style={{ zIndex: 1050 }}>
+        <Toast 
+          show={!!toastMessage} 
+          onClose={() => setToastMessage(null)} 
+          delay={3000} 
+          autohide
+          bg="success"
+        >
+          <Toast.Header>
+            <strong className="me-auto">Success</strong>
+          </Toast.Header>
+          <Toast.Body className="text-white">{toastMessage}</Toast.Body>
+        </Toast>
+      </ToastContainer>
+
       <Row>
         <RecipeHeader />
       </Row>
