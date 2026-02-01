@@ -1,6 +1,24 @@
 #!/bin/bash
 set -e
 
+API_URL="${API_BASE_URL:-http://localhost:5001}"
+MAX_WAIT=60
+
+echo "Waiting for API to be healthy at $API_URL/health..."
+elapsed=0
+until curl -sf "$API_URL/health" > /dev/null 2>&1; do
+    if [ $elapsed -ge $MAX_WAIT ]; then
+        echo "Error: API did not become healthy within ${MAX_WAIT}s"
+        echo "Make sure to run 'scripts/server' first"
+        exit 1
+    fi
+    sleep 2
+    elapsed=$((elapsed + 2))
+    echo "  ...waiting ($elapsed/${MAX_WAIT}s)"
+done
+echo "API is healthy!"
+
+echo ""
 echo "Running tests..."
-cd Tests
-dotnet test --no-restore --verbosity normal
+cd "$(dirname "$0")/../src/CookTimeTests"
+dotnet test --verbosity normal

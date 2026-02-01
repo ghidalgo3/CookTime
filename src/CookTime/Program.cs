@@ -42,12 +42,51 @@ if (!string.IsNullOrEmpty(blobConnectionString))
 builder.Services.AddGoogleAuthentication(builder.Configuration);
 builder.Services.AddOpenApi();
 
+// Health checks for DB and Blob storage using built-in AddCheck
+builder.Services.AddHealthChecks()
+    .AddCheck("postgres", () =>
+    {
+        try
+        {
+            using var conn = new NpgsqlConnection(connectionString);
+            conn.Open();
+            using var cmd = conn.CreateCommand();
+            cmd.CommandText = "SELECT 1";
+            cmd.ExecuteScalar();
+            return Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy();
+        }
+        catch (Exception ex)
+        {
+            return Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Unhealthy(ex.Message);
+        }
+    })
+    .AddCheck("blob-storage", () =>
+    {
+        if (string.IsNullOrEmpty(blobConnectionString))
+        {
+            return Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Degraded("Blob storage not configured");
+        }
+        try
+        {
+            var client = new BlobServiceClient(blobConnectionString);
+            var container = client.GetBlobContainerClient("images");
+            container.Exists();
+            return Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy();
+        }
+        catch (Exception ex)
+        {
+            return Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Unhealthy(ex.Message);
+        }
+    });
+
 var app = builder.Build();
 
 
 
 // Must be first middleware for OAuth to work correctly behind proxy/Docker
 app.UseForwardedHeaders();
+
+app.MapHealthChecks("/health");
 
 app.MapGet("/api/category/list", () => Constants.DefaultCategories);
 app.MapGet("/api/recipe/tags", async (CookTimeDB cooktime, string? query) =>
