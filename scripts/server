@@ -1,4 +1,12 @@
 #!/bin/bash
 set -e
 
+# For CI: disable source mount by using the built image's /src
+# For local dev: use defaults (mounts host source with volume shadowing)
+if [ "$CI" = "true" ]; then
+    export API_SOURCE_MOUNT="api-source"
+    export API_OBJ_MOUNT="api-obj"
+    export API_BIN_MOUNT="api-bin"
+fi
+
 docker compose up --detach

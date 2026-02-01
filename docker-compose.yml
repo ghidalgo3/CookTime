@@ -49,9 +49,9 @@ services:
       azurite:
         condition: service_started
     volumes:
-      - ./src/CookTime:/src
-      - api-obj:/src/obj
-      - api-bin:/src/bin
+      - ${API_SOURCE_MOUNT:-./src/CookTime}:/src
+      - ${API_OBJ_MOUNT:-api-obj}:/src/obj
+      - ${API_BIN_MOUNT:-api-bin}:/src/bin
       - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
       - ~/.azure:/root/.azure
     command: ["dotnet", "watch", "run", "--non-interactive"]
@@ -78,3 +78,4 @@ volumes:
   azurite-data:
   api-obj:
   api-bin:
+  api-source:
