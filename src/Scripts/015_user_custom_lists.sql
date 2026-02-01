@@ -7,6 +7,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_recipe_requirements_list_recipe_unique
 ON cooktime.recipe_requirements(recipe_list_id, recipe_id);
 
 -- Update add_recipe_to_list to increment quantity if recipe already exists in list
+DROP FUNCTION IF EXISTS cooktime.add_recipe_to_list(uuid, uuid, double precision);
 CREATE OR REPLACE FUNCTION cooktime.add_recipe_to_list(
     p_list_id uuid,
     p_recipe_id uuid,
@@ -45,6 +46,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Delete a recipe list by ID (verifies ownership)
+DROP FUNCTION IF EXISTS cooktime.delete_recipe_list(uuid, uuid);
 CREATE OR REPLACE FUNCTION cooktime.delete_recipe_list(
     p_user_id uuid,
     p_list_id uuid
@@ -76,6 +78,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Update recipe list metadata (name, description, isPublic)
+DROP FUNCTION IF EXISTS cooktime.update_recipe_list(uuid, uuid, text, text, boolean);
 CREATE OR REPLACE FUNCTION cooktime.update_recipe_list(
     p_user_id uuid,
     p_list_id uuid,
