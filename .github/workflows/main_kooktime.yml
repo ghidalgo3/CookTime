@@ -31,6 +31,14 @@ jobs:
       - name: Test
         run: scripts/test
 
+      - name: Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: .NET Tests
+          path: src/CookTimeTests/TestResults/*.trx
+          reporter: dotnet-trx
+
   deploy:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
