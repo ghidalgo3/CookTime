@@ -15,6 +15,44 @@ With CookTime you can do things like:
 1. Compute a recipe's nutrition facts
 1. Track grocery lists of ingredients to make sets of recipes
 
+## Features
+
+### Recipe Index
+
+Search by whatever you want!
+
+![CookTime homepage](docs/media/cooktime_homepage_2026_02_01.png)
+
+### Grocery Lists
+
+Aggregate ingredients into one grocery list!
+
+![CookTime grocery list](docs/media/cooktime_groceries_2026_02_01.png)
+
+### Nutrition Facts
+
+Automatically computed nutrition facts using USDA nutrition data!
+
+![Recipe nutrition facts](docs/media/cooktime_nutrition_2026_02_01.png)
+
+### Recipe scaling
+
+Scale recipes to make more or less servings!
+
+![Recipe scaling and highlighted ingredients](docs/media/cooktime_recipe_instructions_2026_02_01.png)
+
+### Recipe lists
+
+Come up with your own recipe lists, and share them with the world!
+
+![Cooktime lists](docs/media/cooktime_lists_2026_02_01.png)
+
+### Social sign on
+
+No more username and passwords!
+
+![Sign in with Google](docs/media/cooktime_signin_2026_02_01.png)
+
 ## Getting started
 
 Assuming [Docker Desktop][Docker Desktop] installed on Linux or macOS,
