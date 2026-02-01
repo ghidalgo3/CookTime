@@ -16,3 +16,15 @@
     color: var(--themePrimary)
   }
 }
+
+/* Center GitHub link on mobile when navbar is collapsed */
+@media (max-width: 767.98px) {
+  .github-link {
+    text-align: center;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+}

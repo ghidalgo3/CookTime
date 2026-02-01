@@ -3,6 +3,7 @@ import { Button, Container, Form, Nav, Navbar, NavDropdown } from "react-bootstr
 import { Form as RouterForm, Link } from "react-router";
 import imgs from "../../assets";
 import "./NavigationBar.css"
+import { GitHubIcon } from "../SVG";
 import { RequireAuth, useAuthentication } from "../Authentication/AuthenticationContext";
 import { UserDetails } from "src/shared/AuthenticationProvider";
 import { RECIPE_CREATE_PAGE_PATH } from "src/pages/RecipeCreation";
@@ -135,6 +136,14 @@ export function NavigationBar({ categories }: { categories: string[] }) {
                 </Nav.Link>
               </RequireAuth>
             </Nav>
+            <Nav.Link
+              className="github-link"
+              href="https://github.com/ghidalgo3/CookTime"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="View on GitHub">
+              {GitHubIcon}
+            </Nav.Link>
           </Navbar.Collapse>
         </Container>
       </Navbar>
