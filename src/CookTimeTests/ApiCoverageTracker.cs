@@ -54,6 +54,7 @@ public static class ApiCoverageTracker
 
         var covered = new List<(string Method, string Path)>();
         var notCovered = new List<(string Method, string Path)>();
+        var undocumented = new List<(string Method, string Path)>();
 
         foreach (var endpoint in definedEndpoints)
         {
@@ -73,6 +74,19 @@ public static class ApiCoverageTracker
             }
         }
 
+        // Find called endpoints that don't match any defined endpoint
+        foreach (var called in calledSet)
+        {
+            var isDocumented = definedEndpoints.Any(defined =>
+                called.Method == defined.Method &&
+                PathMatches(called.Item2, defined.Path));
+
+            if (!isDocumented)
+            {
+                undocumented.Add(called);
+            }
+        }
+
         return new CoverageReport
         {
             TotalEndpoints = definedEndpoints.Count,
@@ -81,7 +95,8 @@ public static class ApiCoverageTracker
                 ? (double)covered.Count / definedEndpoints.Count * 100
                 : 100,
             Covered = covered,
-            NotCovered = notCovered
+            NotCovered = notCovered,
+            Undocumented = undocumented
         };
     }
 
@@ -156,6 +171,7 @@ public class CoverageReport
     public double CoveragePercent { get; init; }
     public List<(string Method, string Path)> Covered { get; init; } = new();
     public List<(string Method, string Path)> NotCovered { get; init; } = new();
+    public List<(string Method, string Path)> Undocumented { get; init; } = new();
 
     public void PrintToConsole()
     {
@@ -179,6 +195,16 @@ public class CoverageReport
         else
         {
             Console.WriteLine("  ✓ All endpoints covered!");
+        }
+
+        if (Undocumented.Count > 0)
+        {
+            Console.WriteLine("───────────────────────────────────────────────────────────");
+            Console.WriteLine("  UNDOCUMENTED (called but not in OpenAPI spec):");
+            foreach (var (method, path) in Undocumented.OrderBy(e => e.Path).ThenBy(e => e.Method))
+            {
+                Console.WriteLine($"    {method,-7} {path}");
+            }
         }
 
         Console.WriteLine("═══════════════════════════════════════════════════════════");

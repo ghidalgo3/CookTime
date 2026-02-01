@@ -66,7 +66,7 @@ public class ApiIntegrationTests
     [TestMethod]
     public async Task SearchIngredients_ReturnsResults()
     {
-        var response = await _client.GetAsync("/api/ingredient?query=tomato");
+        var response = await _client.GetAsync("/api/recipe/ingredients?name=tomato");
         response.EnsureSuccessStatusCode();
     }
 
