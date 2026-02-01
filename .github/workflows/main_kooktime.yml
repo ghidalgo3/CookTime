@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://go.microsoft.com/fwlink/?linkid=2134798
 # More GitHub Actions for Azure: https://go.microsoft.com/fwlink/?linkid=2135048
 
-name: Azure App Service - kooktime(Production), Build and deploy DotnetCore app
+name: CI/CD
 
 on:
   push:
@@ -12,11 +12,30 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      # checkout the repo
+      - name: "Checkout Github Action"
+        uses: actions/checkout@master
+
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Server
+        run: scripts/server
+
+      - name: Test
+        run: scripts/test
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
       - name: "Checkout Github Action"
         uses: actions/checkout@master
 
@@ -28,15 +47,10 @@ jobs:
       - name: Build
         run: scripts/build
 
-      # - name: Test
-      #   run: scripts/test
-
       - name: Publish
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: scripts/publish ${{env.DOTNET_ROOT}}/myapp
 
       - name: Run Azure webapp deploy action using publish profile credentials
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: azure/webapps-deploy@v2
         with:
           app-name: kooktime

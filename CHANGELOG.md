@@ -10,7 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - User custom lists feature: users can now create, manage, and delete their own named recipe lists
+- Tests!
 
 ### Changed
 
 - Made authentication cookie persist for longer, helps mobile Safari
+- Reorganized the source code so it's all under `src`

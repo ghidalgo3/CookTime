@@ -1,4 +1,3 @@
 {
-    "dotnet.defaultSolution": "babe-algorithms.sln",
-    "cmake.configureOnOpen": false
+    "dotnet.defaultSolution": "src/CookTime.sln",
 }

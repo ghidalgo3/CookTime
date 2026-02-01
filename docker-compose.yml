@@ -32,7 +32,7 @@ services:
   api:
     platform: linux/amd64
     build:
-      context: src/
+      context: src/CookTime
       dockerfile: Dockerfile
     container_name: cooktime-api
     working_dir: /src
@@ -41,7 +41,6 @@ services:
       ASPNETCORE_URLS: http://+:5001
       ConnectionStrings__Postgres: "Host=postgres;Database=cooktime;Username=cooktime;Password=development;Include Error Detail=true"
       ConnectionStrings__AzureBlobStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
-      Azure__VisionKey: "Pass"
     ports:
       - "5001:5000"
     depends_on:
@@ -50,9 +49,9 @@ services:
       azurite:
         condition: service_started
     volumes:
-      - ./src:/src
-      - /src/obj # Shadow obj/ so container writes don't affect host intellisense
-      - /src/bin # Shadow bin/ so container writes don't affect host intellisense
+      - ${API_SOURCE_MOUNT:-./src/CookTime}:/src
+      - ${API_OBJ_MOUNT:-api-obj}:/src/obj
+      - ${API_BIN_MOUNT:-api-bin}:/src/bin
       - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
       - ~/.azure:/root/.azure
     command: ["dotnet", "watch", "run", "--non-interactive"]
@@ -60,7 +59,7 @@ services:
   webapp:
     platform: linux/amd64
     build:
-      context: src/client-app
+      context: src/CookTime/client-app
       dockerfile: Dockerfile
     container_name: cooktime-webapp
     environment:
@@ -71,9 +70,12 @@ services:
     depends_on:
       - api
     volumes:
-      - ./src/client-app/src:/app/src
+      - ./src/CookTime/client-app/src:/app/src
     command: ["npm", "run", "dev"]
 
 volumes:
   postgres-data:
   azurite-data:
+  api-obj:
+  api-bin:
+  api-source:
