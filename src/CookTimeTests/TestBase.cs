@@ -118,11 +118,19 @@ public abstract class TestBase
     }
 
     /// <summary>
-    /// Deletes a test ingredient.
+    /// Deletes a test ingredient and any ingredient_requirements that reference it.
     /// </summary>
     protected async Task DeleteTestIngredientAsync(Guid ingredientId)
     {
         await using var conn = await DataSource.OpenConnectionAsync();
+
+        // First delete any ingredient_requirements that reference this ingredient
+        await using var deleteReqsCmd = new NpgsqlCommand(
+            "DELETE FROM cooktime.ingredient_requirements WHERE ingredient_id = $1", conn);
+        deleteReqsCmd.Parameters.AddWithValue(ingredientId);
+        await deleteReqsCmd.ExecuteNonQueryAsync();
+
+        // Now delete the ingredient itself
         await using var cmd = new NpgsqlCommand(
             "DELETE FROM cooktime.ingredients WHERE id = $1", conn);
         cmd.Parameters.AddWithValue(ingredientId);
