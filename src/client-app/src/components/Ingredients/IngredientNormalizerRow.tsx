@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react"
 import { EMPTY_GUID, IngredientReplacementRequest } from "src/shared/CookTime";
 
-export default function IngredientNormalizerRow(props: IngredientReplacementRequest) {
+interface IngredientNormalizerRowProps extends IngredientReplacementRequest {
+  onError: (error: string) => void;
+}
+
+export default function IngredientNormalizerRow(props: IngredientNormalizerRowProps) {
   const {
     replacedId,
     name,
     usage,
-    keptId
+    hasNutrition,
+    keptId,
+    onError
   } = props;
   const [replacement, setReplacement] = useState(props);
   return (
@@ -14,29 +20,43 @@ export default function IngredientNormalizerRow(props: IngredientReplacementRequ
       <th scope="row">{replacedId}</th>
       <th>{name}</th>
       <th>{usage}</th>
+      <th style={{ textAlign: 'center', fontSize: '18px' }}>
+        {hasNutrition ? '✓' : '✗'}
+      </th>
       <th>
         <input
           type="text"
           name="replacementId"
-          placeholder="Replace for (ID)"
-          onChange={e => setReplacement({ ...replacement, keptId: replacedId, replacedId: e.target.value })}
-          value={replacement.keptId === EMPTY_GUID ? "" : replacement.replacedId} />
+          placeholder="Replace with (ID)"
+          onChange={e => setReplacement({ ...replacement, keptId: e.target.value })}
+          value={replacement.keptId === EMPTY_GUID ? "" : replacement.keptId} />
       </th>
       <th>
         <input type="hidden" name="ingredientId" value="@ingredient.Id" />
         <button
           className="btn btn-outline-success width-100"
           onClick={async (e) => {
-            const response = await fetch("/api/ingredient/replace", {
-              method: "post",
-              body: JSON.stringify(replacement),
-              headers: {
-                "Content-Type": "application/json"
+            try {
+              const requestBody = {
+                fromIngredientId: replacedId,
+                toIngredientId: replacement.keptId
+              };
+              const response = await fetch("/api/ingredient/replace", {
+                method: "post",
+                body: JSON.stringify(requestBody),
+                headers: {
+                  "Content-Type": "application/json"
+                }
+              })
+              if (!response.ok) {
+                const errorText = await response.text();
+                onError(`Failed to replace ingredient: ${errorText}`);
+                return;
               }
-            })
-            if (response.ok) {
               // eslint-disable-next-line no-restricted-globals
               location.reload();
+            } catch (err) {
+              onError(`Network error: ${err instanceof Error ? err.message : 'Unknown error'}`);
             }
           }}
           type="submit">
@@ -48,12 +68,19 @@ export default function IngredientNormalizerRow(props: IngredientReplacementRequ
             className="btn btn-outline-success width-100"
             type="submit"
             onClick={async (e) => {
-              const response = await fetch(`/api/ingredient/${replacedId}`, {
-                method: "delete",
-              })
-              if (response.ok) {
+              try {
+                const response = await fetch(`/api/ingredient/${replacedId}`, {
+                  method: "delete",
+                })
+                if (!response.ok) {
+                  const errorText = await response.text();
+                  onError(`Failed to delete ingredient: ${errorText}`);
+                  return;
+                }
                 // eslint-disable-next-line no-restricted-globals
                 location.reload();
+              } catch (err) {
+                onError(`Network error: ${err instanceof Error ? err.message : 'Unknown error'}`);
               }
             }}
           >
