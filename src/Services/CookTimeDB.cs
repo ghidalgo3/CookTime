@@ -241,6 +241,20 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         return JsonSerializer.Deserialize<RecipeListWithRecipesDto>(result.ToString()!, JsonOptions);
     }
 
+    public async Task<RecipeListWithRecipesDto?> GetRecipeListBySlugAsync(string slug)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_recipe_list_by_slug($1)", conn);
+
+        cmd.Parameters.AddWithValue(slug);
+
+        var result = await cmd.ExecuteScalarAsync();
+        if (result == null || result == DBNull.Value)
+            return null;
+
+        return JsonSerializer.Deserialize<RecipeListWithRecipesDto>(result.ToString()!, JsonOptions);
+    }
+
     public async Task AddRecipeToListAsync(Guid listId, Guid recipeId, double quantity)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
@@ -311,6 +325,36 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
 
         var result = await cmd.ExecuteScalarAsync();
         return (int)result!;
+    }
+
+    public async Task<bool> DeleteRecipeListAsync(Guid userId, Guid listId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.delete_recipe_list($1, $2)", conn);
+
+        cmd.Parameters.AddWithValue(userId);
+        cmd.Parameters.AddWithValue(listId);
+
+        var result = await cmd.ExecuteScalarAsync();
+        return (bool)result!;
+    }
+
+    public async Task<RecipeListDto?> UpdateRecipeListAsync(Guid userId, Guid listId, string? name = null, string? description = null, bool? isPublic = null)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.update_recipe_list($1, $2, $3, $4, $5)", conn);
+
+        cmd.Parameters.AddWithValue(userId);
+        cmd.Parameters.AddWithValue(listId);
+        cmd.Parameters.AddWithValue(name ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue(description ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue(isPublic ?? (object)DBNull.Value);
+
+        var result = await cmd.ExecuteScalarAsync();
+        if (result == null || result == DBNull.Value)
+            return null;
+
+        return JsonSerializer.Deserialize<RecipeListDto>(result.ToString()!, JsonOptions);
     }
 
     #endregion

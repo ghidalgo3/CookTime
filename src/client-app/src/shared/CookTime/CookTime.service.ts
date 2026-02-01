@@ -219,6 +219,41 @@ export async function clearGrocerySelectedIngredients(): Promise<number> {
   return result.clearedCount;
 }
 
+// List management functions
+export async function createList(listName: string): Promise<{ created: boolean }> {
+  const response = await fetch(`/api/lists/${encodeURIComponent(listName)}`, {
+    method: "POST"
+  });
+  return { created: response.status === 201 };
+}
+
+export async function deleteList(listId: string): Promise<{ ok: boolean }> {
+  const response = await fetch(`/api/lists/${listId}`, {
+    method: "DELETE"
+  });
+  return { ok: response.ok };
+}
+
+export type RecipeListUpdateRequest = {
+  name?: string;
+  description?: string;
+  isPublic?: boolean;
+};
+
+export async function updateListMetadata(listId: string, update: RecipeListUpdateRequest): Promise<RecipeList | null> {
+  const response = await fetch(`/api/lists/${listId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(update)
+  });
+  if (!response.ok) {
+    return null;
+  }
+  return await response.json();
+}
+
 export function toPagedResult<T>(values: T[]): PagedResult<T> {
   return {
     results: values,

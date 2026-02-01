@@ -38,30 +38,38 @@ public static class ListRoutes
             return Results.Created();
         });
 
-        group.MapGet("/lists/{listName}", async (HttpContext context, CookTimeDB cooktime, string listName) =>
+        // Delete a list entirely
+        group.MapDelete("/lists/{listId:guid}", async (HttpContext context, CookTimeDB cooktime, Guid listId) =>
         {
             var userId = (Guid)context.Items["UserId"]!;
-
-            // Try to parse as GUID first for listId lookup
-            if (Guid.TryParse(listName, out var listId))
+            try
             {
-                var listById = await cooktime.GetRecipeListWithRecipesAsync(listId);
-                if (listById != null && listById.OwnerId == userId)
+                await cooktime.DeleteRecipeListAsync(userId, listId);
+                return Results.Ok();
+            }
+            catch (Npgsql.PostgresException ex) when (ex.Message.Contains("not found") || ex.Message.Contains("does not own"))
+            {
+                return Results.NotFound();
+            }
+        });
+
+        // Update list metadata (name, description, isPublic)
+        group.MapPatch("/lists/{listId:guid}", async (HttpContext context, CookTimeDB cooktime, Guid listId, RecipeListUpdateDto update) =>
+        {
+            var userId = (Guid)context.Items["UserId"]!;
+            try
+            {
+                var updated = await cooktime.UpdateRecipeListAsync(userId, listId, update.Name, update.Description, update.IsPublic);
+                if (updated == null)
                 {
-                    return Results.Ok(listById);
+                    return Results.NotFound();
                 }
-                return Results.NotFound();
+                return Results.Ok(updated);
             }
-
-            // Otherwise filter by name
-            var lists = await cooktime.GetRecipeListsAsync(userId, filter: listName);
-            if (lists.Count == 0)
+            catch (Npgsql.PostgresException ex) when (ex.Message.Contains("not found") || ex.Message.Contains("does not own"))
             {
                 return Results.NotFound();
             }
-
-            var listWithRecipes = await cooktime.GetRecipeListWithRecipesAsync(lists[0].Id);
-            return Results.Ok(listWithRecipes);
         });
 
         group.MapPut("/lists/{listName}/{recipeId:guid}", async (HttpContext context, CookTimeDB cooktime, string listName, Guid recipeId, double? quantity) =>

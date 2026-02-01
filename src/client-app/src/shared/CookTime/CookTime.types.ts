@@ -168,6 +168,7 @@ export type RecipeView = {
 export type RecipeList = {
     id: string,
     name: string,
+    slug: string,
     description: string | null,
     creationDate: string,
     isPublic: boolean,
@@ -182,6 +183,7 @@ export type RecipeListItem = {
 export type RecipeListWithRecipes = {
     id: string,
     name: string,
+    slug: string,
     description: string | null,
     creationDate: string,
     isPublic: boolean,
