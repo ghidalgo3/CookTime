@@ -50,8 +50,8 @@ services:
         condition: service_started
     volumes:
       - ./src/CookTime:/src
-      - /src/obj # Shadow obj/ so container writes don't affect host intellisense
-      - /src/bin # Shadow bin/ so container writes don't affect host intellisense
+      - api-obj:/src/obj
+      - api-bin:/src/bin
       - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
       - ~/.azure:/root/.azure
     command: ["dotnet", "watch", "run", "--non-interactive"]
@@ -76,3 +76,5 @@ services:
 volumes:
   postgres-data:
   azurite-data:
+  api-obj:
+  api-bin:
