@@ -434,7 +434,7 @@ html {
   font-size: 14px;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 838px) {
   html {
     font-size: 16px;
   }
@@ -1074,6 +1074,14 @@ body {
 
   .component-name-field {
     padding-left: 4px;
+  }
+}
+
+/* Reduce navbar button font size for tablets */
+@media (max-width: 837px) {
+  .navbar-light .navbar-nav .nav-link {
+    font-size: 14px;
+    padding: 7px;
   }
 }
 

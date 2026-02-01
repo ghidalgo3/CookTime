@@ -44,7 +44,7 @@ export function NavigationBar({ categories }: { categories: string[] }) {
 
   return (
     <header>
-      <Navbar expand="sm">
+      <Navbar expand="md">
         <Container fluid style={{ lineHeight: "30px", justifyContent: "space-between", display: "flex" }}>
           <Link to="/">
             <Navbar.Brand id="my-navbar-brand">
