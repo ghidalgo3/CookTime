@@ -5,13 +5,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
 echo "Building frontend..."
-cd "$ROOT_DIR/src/client-app"
+cd "$ROOT_DIR/src/CookTime/client-app"
 npm ci
 npm run build
 
 echo "Copying frontend to wwwroot..."
-cp -r build/client/* "$ROOT_DIR/src/wwwroot/"
+cp -r build/client/* "$ROOT_DIR/src/CookTime/wwwroot/"
 
 echo "Building backend..."
-cd "$ROOT_DIR"
+cd "$ROOT_DIR/src"
 dotnet build
