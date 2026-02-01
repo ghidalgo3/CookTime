@@ -18,6 +18,14 @@
     max-width: 120px;
 }
 
+.cook-time-display {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--primary-text);
+    white-space: nowrap;
+}
+
 /* Image count dots indicator */
 .image-count-dots {
     position: absolute;

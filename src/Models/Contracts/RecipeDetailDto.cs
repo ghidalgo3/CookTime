@@ -70,6 +70,9 @@ public class RecipeSummaryDto
 
     [JsonPropertyName("reviewCount")]
     public int ReviewCount { get; set; }
+
+    [JsonPropertyName("cooktimeMinutes")]
+    public int? CooktimeMinutes { get; set; }
 }
 
 public class ImageDto

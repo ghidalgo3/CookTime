@@ -15,7 +15,8 @@ export function RecipeCard({
   name,
   averageReviews,
   reviewCount,
-  images }: RecipeView) {
+  images,
+  cooktimeMinutes }: RecipeView) {
 
   const { user } = useAuthentication();
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -85,17 +86,25 @@ export function RecipeCard({
   function ReviewDisplay() {
     return (
       <div className="height-32 margin-top-8">
-        {reviewCount > 0 ?
-          <Stack direction="horizontal">
-            <Rating
-              value={averageReviews}
-              className={"card-ratings"}
-              readOnly
-            /> {"   "} ({reviewCount})
-          </Stack>
-          :
-          <div className="card-ratings"></div>
-        }
+        <Stack direction="horizontal" gap={2}>
+          {reviewCount > 0 && (
+            <>
+              <Rating
+                value={averageReviews}
+                className={"card-ratings"}
+                readOnly
+              /> ({reviewCount})
+            </>
+          )}
+          {cooktimeMinutes && cooktimeMinutes > 0 && (
+            <span className="cook-time-display">
+              <i className="bi bi-clock me-1"></i>
+              {cooktimeMinutes < 60
+                ? `${cooktimeMinutes}m`
+                : `${Math.floor(cooktimeMinutes / 60)}h ${cooktimeMinutes % 60}m`}
+            </span>
+          )}
+        </Stack>
       </div>
     )
   }
