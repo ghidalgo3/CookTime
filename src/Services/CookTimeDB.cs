@@ -403,6 +403,18 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         return JsonSerializer.Deserialize<List<IngredientInternalUpdateDto>>(result.ToString()!, JsonOptions) ?? [];
     }
 
+    public async Task<List<IngredientUnifiedDto>> GetIngredientsUnifiedAsync()
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_ingredients_unified()", conn);
+
+        var result = await cmd.ExecuteScalarAsync();
+        if (result == null || result == DBNull.Value)
+            return [];
+
+        return JsonSerializer.Deserialize<List<IngredientUnifiedDto>>(result.ToString()!, JsonOptions) ?? [];
+    }
+
     public async Task<IngredientInternalUpdateDto?> UpdateIngredientInternalAsync(IngredientInternalUpdateDto update)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
@@ -454,6 +466,56 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         cmd.Parameters.AddWithValue(ingredientId);
 
         await cmd.ExecuteNonQueryAsync();
+    }
+
+    public async Task<List<NutritionFactsSearchDto>> SearchNutritionFactsAsync(string searchTerm, string? dataset = null)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+
+        var sql = @"
+            SELECT 
+                id,
+                names[1] as name,
+                (source_ids->>'ndbNumber')::int as ndb_number,
+                source_ids->>'gtinUpc' as gtin_upc,
+                dataset
+            FROM cooktime.nutrition_facts 
+            WHERE EXISTS (
+                SELECT 1 FROM unnest(names) as name_item 
+                WHERE name_item ILIKE $1
+            )";
+
+        if (!string.IsNullOrEmpty(dataset))
+        {
+            sql += " AND dataset = $2";
+        }
+
+        sql += " ORDER BY LENGTH(names[1]), names[1] LIMIT 20";
+
+        await using var cmd = new NpgsqlCommand(sql, conn);
+        cmd.Parameters.AddWithValue($"%{searchTerm}%");
+
+        if (!string.IsNullOrEmpty(dataset))
+        {
+            cmd.Parameters.AddWithValue(dataset);
+        }
+
+        await using var reader = await cmd.ExecuteReaderAsync();
+        var results = new List<NutritionFactsSearchDto>();
+
+        while (await reader.ReadAsync())
+        {
+            results.Add(new NutritionFactsSearchDto
+            {
+                Id = reader.GetGuid(0),
+                Name = reader.GetString(1),
+                NdbNumber = reader.IsDBNull(2) ? null : reader.GetInt32(2),
+                GtinUpc = reader.IsDBNull(3) ? null : reader.GetString(3),
+                Dataset = reader.GetString(4)
+            });
+        }
+
+        return results;
     }
 
     #endregion

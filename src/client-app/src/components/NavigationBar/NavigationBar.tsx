@@ -36,8 +36,7 @@ export function NavigationBar({ categories }: { categories: string[] }) {
   function AdminNavBarSection() {
     return (
       <NavDropdown title="Admin" id="basic-nav-dropdown">
-        <NavDropdown.Item as={Link} to="/Admin/IngredientsView">All ingredients</NavDropdown.Item>
-        <NavDropdown.Item as={Link} to="/Admin/IngredientNormalizer">Ingredient normalizer</NavDropdown.Item>
+        <NavDropdown.Item as={Link} to="/Admin/IngredientsView">Ingredients</NavDropdown.Item>
       </NavDropdown>
     );
   }

@@ -217,6 +217,19 @@ export type IngredientInternalUpdate = {
     nutritionDescription: string
 }
 
+// Unified ingredient type combining InternalUpdate and ReplacementRequest
+export type IngredientUnified = {
+    ingredientId: string,
+    ingredientNames: string,
+    ndbNumber: number,
+    gtinUpc: string,
+    countRegex: string,
+    expectedUnitMass: string,
+    nutritionDescription: string,
+    usage: number,
+    hasNutrition: boolean
+}
+
 export type IngredientReplacementRequest = {
     replacedId: string,
     name: string,

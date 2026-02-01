@@ -14,6 +14,12 @@ public static class AdminRoutes
             return Results.Ok(ingredients);
         });
 
+        group.MapGet("/ingredient/unified", async (CookTimeDB cooktime) =>
+        {
+            var ingredients = await cooktime.GetIngredientsUnifiedAsync();
+            return Results.Ok(ingredients);
+        });
+
         group.MapPost("/ingredient/internalupdate", async (CookTimeDB cooktime, IngredientInternalUpdateDto update) =>
         {
             var result = await cooktime.UpdateIngredientInternalAsync(update);
@@ -60,6 +66,16 @@ public static class AdminRoutes
             {
                 return Results.BadRequest(ex.MessageText);
             }
+        });
+
+        group.MapGet("/nutrition/search", async (CookTimeDB cooktime, string? query, string? dataset) =>
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return Results.Ok(Array.Empty<NutritionFactsSearchDto>());
+            }
+            var results = await cooktime.SearchNutritionFactsAsync(query, dataset);
+            return Results.Ok(results);
         });
 
         return group;

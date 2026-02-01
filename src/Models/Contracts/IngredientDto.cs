@@ -65,6 +65,37 @@ public class IngredientInternalUpdateDto
     public string? NutritionDescription { get; set; }
 }
 
+// Unified DTO for the combined ingredient admin view
+public class IngredientUnifiedDto
+{
+    [JsonPropertyName("ingredientId")]
+    public Guid IngredientId { get; set; }
+
+    [JsonPropertyName("ingredientNames")]
+    public string IngredientNames { get; set; } = null!;
+
+    [JsonPropertyName("ndbNumber")]
+    public int NdbNumber { get; set; }
+
+    [JsonPropertyName("gtinUpc")]
+    public string? GtinUpc { get; set; }
+
+    [JsonPropertyName("countRegex")]
+    public string? CountRegex { get; set; }
+
+    [JsonPropertyName("expectedUnitMass")]
+    public string ExpectedUnitMass { get; set; } = "0.1";
+
+    [JsonPropertyName("nutritionDescription")]
+    public string? NutritionDescription { get; set; }
+
+    [JsonPropertyName("usage")]
+    public long Usage { get; set; }
+
+    [JsonPropertyName("hasNutrition")]
+    public bool HasNutrition { get; set; }
+}
+
 // DTO for ingredient normalizer/replacement
 public class IngredientReplacementRequestDto
 {
@@ -92,4 +123,23 @@ public class MergeIngredientsDto
 
     [JsonPropertyName("toIngredientId")]
     public Guid ToIngredientId { get; set; }
+}
+
+// DTO for nutrition facts search results
+public class NutritionFactsSearchDto
+{
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+
+    [JsonPropertyName("name")]
+    public string Name { get; set; } = null!;
+
+    [JsonPropertyName("ndbNumber")]
+    public int? NdbNumber { get; set; }
+
+    [JsonPropertyName("gtinUpc")]
+    public string? GtinUpc { get; set; }
+
+    [JsonPropertyName("dataset")]
+    public string Dataset { get; set; } = null!;
 }

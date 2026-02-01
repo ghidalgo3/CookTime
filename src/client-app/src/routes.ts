@@ -12,7 +12,6 @@ export default [
         route("Recipes/Create", "pages/RecipeCreation.tsx"),
         route("Groceries", "pages/GroceriesList.tsx"),
         route("Admin/IngredientsView", "pages/IngredientsView.tsx"),
-        route("Admin/IngredientNormalizer", "pages/IngredientNormalizer.tsx"),
     ]),
 
     // Plain layout for auth pages

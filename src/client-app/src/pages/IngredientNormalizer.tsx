@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import { Accordion, Form } from "react-bootstrap";
 import IngredientNormalizerRow from "src/components/Ingredients/IngredientNormalizerRow";
 import { IngredientReplacementRequest } from "src/shared/CookTime";
 import { useTitle } from "src/shared/useTitle";
@@ -71,12 +72,9 @@ export default function IngredientNormalizer() {
   useTitle("Ingredient Normalizer")
   return (
     <>
-      <h1>Ingredients</h1>
-      <h2>
-        How to use
-      </h2>
-      <p>
-        When you find an ingredient that should be replace with another one, copy the ID of the ingredient "to remove" and paste it in the text field of the ingredient "to keep".
+      <h1>Ingredient Normalizer</h1>
+      <p className="text-muted mb-3">
+        When you find an ingredient that should be replaced with another one, copy the ID of the ingredient "to remove" and paste it in the text field of the ingredient "to keep".
       </p>
       {error && (
         <div className="alert alert-danger alert-dismissible" role="alert">
@@ -89,39 +87,38 @@ export default function IngredientNormalizer() {
           ></button>
         </div>
       )}
-      <table className="table table-sm">
-        <thead>
-          <tr>
-            <th scope="col">ID</th>
-            <th
-              scope="col"
-              style={{ cursor: 'pointer' }}
-              onClick={() => handleSort('name')}
-            >
-              Ingredient names {getSortIcon('name')}
-            </th>
-            <th
-              scope="col"
-              style={{ cursor: 'pointer' }}
-              onClick={() => handleSort('usage')}
-            >
-              Recipes using {getSortIcon('usage')}
-            </th>
-            <th
-              scope="col"
-              style={{ cursor: 'pointer' }}
-              onClick={() => handleSort('hasNutrition')}
-            >
-              Has Nutrition {getSortIcon('hasNutrition')}
-            </th>
-            <th scope="col">Replace with</th>
-            <th scope="col">Save/Delete</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sortedReplacements?.map((r, i) => <IngredientNormalizerRow key={i} {...r} onError={handleError} />)}
-        </tbody>
-      </table>
+      <div className="d-flex gap-3 mb-3 align-items-center">
+        <span className="fw-bold">Sort by:</span>
+        <Form.Select
+          style={{ width: 'auto' }}
+          value={`${sortField}-${sortDirection}`}
+          onChange={(e) => {
+            const [field, direction] = e.target.value.split('-') as [SortField, SortDirection];
+            setSortField(field);
+            setSortDirection(direction);
+          }}
+        >
+          <option value="name-asc">Name (A-Z)</option>
+          <option value="name-desc">Name (Z-A)</option>
+          <option value="usage-asc">Usage (Low to High)</option>
+          <option value="usage-desc">Usage (High to Low)</option>
+          <option value="hasNutrition-asc">Nutrition (Missing first)</option>
+          <option value="hasNutrition-desc">Nutrition (Has first)</option>
+        </Form.Select>
+        <span className="text-muted">
+          {sortedReplacements.length} ingredients
+        </span>
+      </div>
+      <Accordion>
+        {sortedReplacements?.map((r, i) =>
+          <IngredientNormalizerRow
+            key={r.replacedId}
+            eventKey={i.toString()}
+            {...r}
+            onError={handleError}
+          />
+        )}
+      </Accordion>
     </>
   );
 }
