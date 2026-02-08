@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace BabeAlgorithms.Models.Contracts;
+namespace CookTime.Models.Contracts;
 
 /// <summary>
 /// Result of AI-powered recipe generation, including the draft recipe and ingredient match metadata.

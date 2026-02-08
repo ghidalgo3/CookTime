@@ -1,4 +1,4 @@
-using BabeAlgorithms.Models.Contracts;
+using CookTime.Models.Contracts;
 
 namespace CookTime.Test;
 

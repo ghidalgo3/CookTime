@@ -1,9 +1,9 @@
 using Azure.Storage.Blobs;
-using babe_algorithms.Models;
+using CookTime.Models;
 using Npgsql;
 using NpgsqlTypes;
 
-namespace babe_algorithms.Services;
+namespace CookTime.Services;
 
 public static class Loader
 {

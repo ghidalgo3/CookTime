@@ -1,8 +1,7 @@
-using babe_algorithms.Services;
-using BabeAlgorithms.Models.Contracts;
-using BabeAlgorithms.Services;
+using CookTime.Models.Contracts;
+using CookTime.Services;
 
-namespace BabeAlgorithms.Routes;
+namespace CookTime.Routes;
 
 public static class RecipeGenerationRoutes
 {

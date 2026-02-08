@@ -1,6 +1,6 @@
 using Newtonsoft.Json.Linq;
 
-namespace babe_algorithms.Models;
+namespace CookTime.Models;
 
 /// <summary>
 /// DTO for presenting nutrition information

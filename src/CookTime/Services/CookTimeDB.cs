@@ -1,8 +1,8 @@
-using BabeAlgorithms.Models.Contracts;
+using CookTime.Models.Contracts;
 using Npgsql;
 using NpgsqlTypes;
 
-namespace BabeAlgorithms.Services;
+namespace CookTime.Services;
 
 public class CookTimeDB(NpgsqlDataSource dataSource)
 {

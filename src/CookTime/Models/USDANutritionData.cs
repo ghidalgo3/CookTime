@@ -1,4 +1,4 @@
-namespace babe_algorithms.Models;
+namespace CookTime.Models;
 
 public abstract class USDANutritionData
 {

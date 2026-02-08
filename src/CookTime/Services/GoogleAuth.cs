@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.HttpOverrides;
 using Npgsql;
 
-namespace babe_algorithms.Services;
+namespace CookTime.Services;
 
 public record UpdateProfileRequest(string DisplayName);
 

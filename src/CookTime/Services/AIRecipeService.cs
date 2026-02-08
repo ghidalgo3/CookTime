@@ -1,6 +1,6 @@
 using System.Reflection;
 using System.Text.Json;
-using BabeAlgorithms.Models.Contracts;
+using CookTime.Models.Contracts;
 using ChatClient = OpenAI.Chat.ChatClient;
 using ChatMessage = OpenAI.Chat.ChatMessage;
 using SystemChatMessage = OpenAI.Chat.SystemChatMessage;
@@ -9,7 +9,7 @@ using ChatMessageContentPart = OpenAI.Chat.ChatMessageContentPart;
 using ChatResponseFormat = OpenAI.Chat.ChatResponseFormat;
 using ChatCompletionOptions = OpenAI.Chat.ChatCompletionOptions;
 
-namespace BabeAlgorithms.Services;
+namespace CookTime.Services;
 
 public class AIRecipeService
 {
@@ -37,8 +37,8 @@ public class AIRecipeService
         _logger = logger;
 
         // Load embedded resources
-        _systemPrompt = LoadEmbeddedResource("BabeAlgorithms.Resources.RecipeGenerationPrompt.txt");
-        var schemaJson = LoadEmbeddedResource("BabeAlgorithms.Resources.RecipeGenerationSchema.json");
+        _systemPrompt = LoadEmbeddedResource("CookTime.Resources.RecipeGenerationPrompt.txt");
+        var schemaJson = LoadEmbeddedResource("CookTime.Resources.RecipeGenerationSchema.json");
         _jsonSchema = BinaryData.FromString(schemaJson);
     }
 
