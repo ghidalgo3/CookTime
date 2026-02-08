@@ -52,8 +52,8 @@ services:
       - ${API_SOURCE_MOUNT:-./src/CookTime}:/src
       - ${API_OBJ_MOUNT:-api-obj}:/src/obj
       - ${API_BIN_MOUNT:-api-bin}:/src/bin
-      - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
-      - ~/.azure:/root/.azure
+      - ${HOME}/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
+      - ${HOME}/.azure:/root/.azure
     command: ["dotnet", "watch", "run", "--non-interactive"]
 
   webapp:

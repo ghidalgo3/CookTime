@@ -1,8 +1,8 @@
-using babe_algorithms.Models;
-using BabeAlgorithms.Models.Contracts;
+using CookTime.Models;
+using CookTime.Models.Contracts;
 using Npgsql;
 
-namespace babe_algorithms.Services;
+namespace CookTime.Services;
 
 public class NutritionService(NpgsqlDataSource dataSource)
 {

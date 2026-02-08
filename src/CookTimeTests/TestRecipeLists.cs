@@ -1,4 +1,4 @@
-using BabeAlgorithms.Models.Contracts;
+using CookTime.Models.Contracts;
 using Npgsql;
 
 namespace CookTime.Test;

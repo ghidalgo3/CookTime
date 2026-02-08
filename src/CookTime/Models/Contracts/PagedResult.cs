@@ -1,4 +1,4 @@
-namespace babe_algorithms.ViewComponents;
+namespace CookTime.ViewComponents;
 
 using System;
 using System.Collections.Generic;

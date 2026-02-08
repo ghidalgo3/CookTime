@@ -1,6 +1,6 @@
 // #nullable enable
 
-// namespace babe_algorithms.Models;
+// namespace CookTime.Models;
 
 // public record IngredientInternalUpdate
 // {

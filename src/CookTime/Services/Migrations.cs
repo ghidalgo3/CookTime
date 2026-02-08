@@ -1,6 +1,6 @@
 using Npgsql;
 
-namespace babe_algorithms.Services;
+namespace CookTime.Services;
 
 public static class Migrations
 {

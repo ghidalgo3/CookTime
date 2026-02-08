@@ -1,8 +1,8 @@
 using System.Text;
-using BabeAlgorithms.Services;
+using CookTime.Services;
 using Microsoft.Extensions.Caching.Memory;
 
-namespace BabeAlgorithms.Routes;
+namespace CookTime.Routes;
 
 public static class SitemapRoutes
 {

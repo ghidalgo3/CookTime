@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace BabeAlgorithms.Models.Contracts;
+namespace CookTime.Models.Contracts;
 
 public class RecipeListDto
 {

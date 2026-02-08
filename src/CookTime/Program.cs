@@ -2,12 +2,11 @@
 using System.Security.Claims;
 using Azure.Identity;
 using Azure.Storage.Blobs;
-using babe_algorithms.Models;
-using babe_algorithms.Services;
-using babe_algorithms.ViewComponents;
-using BabeAlgorithms.Models.Contracts;
-using BabeAlgorithms.Routes;
-using BabeAlgorithms.Services;
+using CookTime.Models;
+using CookTime.Models.Contracts;
+using CookTime.Routes;
+using CookTime.Services;
+using CookTime.ViewComponents;
 using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,7 +1,7 @@
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
-namespace babe_algorithms.Models;
+namespace CookTime.Models;
 
 public class StandardReferenceNutritionData : USDANutritionData
 {

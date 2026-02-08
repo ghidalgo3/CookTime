@@ -1,8 +1,8 @@
 
 using System.Text.RegularExpressions;
-using BabeAlgorithms.Models.Contracts;
+using CookTime.Models.Contracts;
 
-namespace babe_algorithms.Models;
+namespace CookTime.Models;
 
 // public partial class TodaysTenDetails
 // {
