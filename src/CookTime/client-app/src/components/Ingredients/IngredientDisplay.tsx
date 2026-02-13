@@ -1,36 +1,35 @@
 import React from "react";
 import { IngredientRequirement, MeasureUnit } from "src/shared/CookTime";
+import { UnitPreference, convertQuantity, formatNumber, formatUnitName } from "src/shared/units";
 
 type IngredientDisplayProps = {
     ingredientRequirement: IngredientRequirement
     strikethrough?: boolean,
     showAlternatUnit?: boolean
     units?: MeasureUnit[]
+    unitPreference?: UnitPreference
 }
 export class IngredientDisplay extends React.Component<IngredientDisplayProps, {}> {
 
     render() {
         let ingredient = this.props.ingredientRequirement.ingredient
-        var unitName = ""
-        switch (this.props.ingredientRequirement.unit) {
-            case "count":
-                unitName = ""
-                break;
+        const unitPreference = this.props.unitPreference ?? "recipe";
+        const conversion = convertQuantity({
+            quantity: this.props.ingredientRequirement.quantity,
+            unitName: this.props.ingredientRequirement.unit,
+            units: this.props.units,
+            preference: unitPreference,
+        });
 
-            case "fluid_ounce":
-                unitName = "fluid ounce"
-                break;
-
-            default:
-                unitName = this.props.ingredientRequirement.unit.toLowerCase()
-                break;
-        }
-        var quantity = <>{this.props.ingredientRequirement.quantity.toString()}</>
-        let fraction = this.Fraction(this.props.ingredientRequirement.quantity);
+        const unitName = conversion.unitName === "count" ? "" : formatUnitName(conversion.unitName);
+        let fraction = this.Fraction(conversion.quantity);
+        let quantity = unitPreference === "metric"
+            ? <>{formatNumber(conversion.quantity)}</>
+            : <>{fraction}</>;
 
         // Show IR text, but if that's not available then show the ingredient canonical name.
         var ingredientName = (this.props.ingredientRequirement.text ?? ingredient.name.split(";").map(s => s.trim())[0]).toLowerCase()
-        var text = <>{fraction} {unitName} {this.props.showAlternatUnit ? this.getAlternateUnit() : null} {ingredientName}
+        var text = <>{quantity} {unitName} {this.props.showAlternatUnit && unitPreference === "recipe" ? this.getAlternateUnit() : null} {ingredientName}
         </>
         if (this.props.strikethrough) {
             text = <s>{text}</s>

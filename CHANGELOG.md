@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 2026-02-13
 
+### Added
+
+- Metric to imperial conversion for recipe ingredient units
+
 ### Changed
 
 - Tuned prompt to remove ingredient preparation from recipe ingredients

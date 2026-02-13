@@ -1,5 +1,6 @@
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
-import { IngredientRequirement, MultiPartRecipe, Recipe, RecipeComponent } from "src/shared/CookTime";
+import { IngredientRequirement, MeasureUnit, MultiPartRecipe, Recipe, RecipeComponent } from "src/shared/CookTime";
+import { UnitPreference, convertQuantity, formatNumber, formatUnitName } from "src/shared/units";
 
 type Segment = {
     ingredient: IngredientRequirement | null,
@@ -12,6 +13,8 @@ interface StepProps {
     multipart: boolean;
     component?: RecipeComponent;
     newServings: number;
+    unitPreference: UnitPreference;
+    units: MeasureUnit[];
 }
 
 function trifurcate(s: string, position: number, length: number) {
@@ -22,7 +25,7 @@ function trifurcate(s: string, position: number, length: number) {
     };
 }
 
-export function Step({ recipe, stepText, multipart, component, newServings }: StepProps) {
+export function Step({ recipe, stepText, multipart, component, newServings, unitPreference, units }: StepProps) {
     let segments: Segment[] = [{ ingredient: null, text: stepText }];
 
     const ingredientRequirements: IngredientRequirement[] = multipart
@@ -81,7 +84,14 @@ export function Step({ recipe, stepText, multipart, component, newServings }: St
                 }
 
                 const newQuantity = segment.ingredient.quantity * newServings / recipe.servingsProduced;
-                const tooltipTitle = `${newQuantity} ${segment.ingredient.unit}`;
+                const conversion = convertQuantity({
+                    quantity: newQuantity,
+                    unitName: segment.ingredient.unit,
+                    units,
+                    preference: unitPreference,
+                });
+                const unitLabel = conversion.unitName === "count" ? "" : formatUnitName(conversion.unitName);
+                const tooltipTitle = `${formatNumber(conversion.quantity)}${unitLabel ? ` ${unitLabel}` : ""}`;
 
                 return (
                     <OverlayTrigger

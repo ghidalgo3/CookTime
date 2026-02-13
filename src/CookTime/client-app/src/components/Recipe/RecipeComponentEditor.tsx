@@ -15,6 +15,7 @@ export function RecipeComponentEditor({ component, componentIndex }: RecipeCompo
     recipe,
     edit,
     units,
+    unitPreference,
     newServings,
     updateComponent,
     appendIngredientToComponent,
@@ -86,6 +87,7 @@ export function RecipeComponentEditor({ component, componentIndex }: RecipeCompo
               <IngredientRequirementList
                 ingredientRequirements={component.ingredients ?? []}
                 units={units}
+                unitPreference={unitPreference}
                 multiplier={newServings / recipe.servingsProduced}
               />
             )}
@@ -102,6 +104,8 @@ export function RecipeComponentEditor({ component, componentIndex }: RecipeCompo
               recipe={recipe}
               component={component}
               newServings={newServings}
+              unitPreference={unitPreference}
+              units={units}
               edit={edit}
               onDeleteStep={(idx) => deleteStepFromComponent(componentIndex, idx)}
               onChange={(newSteps) => updateStepsInComponent(componentIndex, newSteps)}
