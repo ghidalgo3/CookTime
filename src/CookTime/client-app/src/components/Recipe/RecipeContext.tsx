@@ -15,6 +15,7 @@ import {
   toRecipeUpdateDto,
   addToList,
 } from 'src/shared/CookTime';
+import { UnitPreference } from 'src/shared/units';
 
 export type PendingImage = {
   id: string;
@@ -35,6 +36,7 @@ interface RecipeContextState {
   imageOperationInProgress: boolean;
   edit: boolean;
   units: MeasureUnit[];
+  unitPreference: UnitPreference;
   newServings: number;
   errorMessage: string | null;
   operationInProgress: boolean;
@@ -51,6 +53,7 @@ interface RecipeContextActions {
   setErrorMessage: (message: string | null) => void;
   setNewServings: (servings: number) => void;
   setToastMessage: (message: string | null) => void;
+  setUnitPreference: (preference: UnitPreference) => void;
 
   // Recipe updates
   updateRecipe: (updates: Partial<MultiPartRecipe>) => void;
@@ -129,6 +132,7 @@ export function RecipeProvider({ recipeId, generatedRecipe, children }: RecipePr
   const [imageOperationInProgress, setImageOperationInProgress] = useState(false);
   const [edit, setEdit] = useState(false);
   const [units, setUnits] = useState<MeasureUnit[]>([]);
+  const [unitPreference, setUnitPreference] = useState<UnitPreference>('recipe');
   const [newServings, setNewServings] = useState(1);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [operationInProgress, setOperationInProgress] = useState(false);
@@ -175,6 +179,11 @@ export function RecipeProvider({ recipeId, generatedRecipe, children }: RecipePr
 
   // Load initial data
   useEffect(() => {
+    const savedPreference = window.localStorage.getItem('cooktime.unitPreference');
+    if (savedPreference === 'recipe' || savedPreference === 'imperial' || savedPreference === 'metric') {
+      setUnitPreference(savedPreference);
+    }
+
     // Fetch units
     fetch('/api/recipe/units')
       .then((res) => res.json())
@@ -222,6 +231,10 @@ export function RecipeProvider({ recipeId, generatedRecipe, children }: RecipePr
       .then((res) => res.json())
       .then((result) => setNutritionFacts(result as RecipeNutritionFacts));
   }, [recipeId, generatedRecipe, applyGeneratedRecipe]);
+
+  useEffect(() => {
+    window.localStorage.setItem('cooktime.unitPreference', unitPreference);
+  }, [unitPreference]);
 
   // Recipe updates
   const updateRecipe = useCallback((updates: Partial<MultiPartRecipe>) => {
@@ -521,6 +534,7 @@ export function RecipeProvider({ recipeId, generatedRecipe, children }: RecipePr
     imageOperationInProgress,
     edit,
     units,
+    unitPreference,
     newServings,
     errorMessage,
     operationInProgress,
@@ -534,6 +548,7 @@ export function RecipeProvider({ recipeId, generatedRecipe, children }: RecipePr
     setErrorMessage,
     setNewServings,
     setToastMessage,
+    setUnitPreference,
     updateRecipe,
     updateComponent,
     appendIngredientToComponent,

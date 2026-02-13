@@ -4,11 +4,14 @@ import { Step } from "./RecipeStep";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { MultiPartRecipe, Recipe, RecipeComponent } from "src/shared/CookTime";
+import { MeasureUnit, MultiPartRecipe, Recipe, RecipeComponent } from "src/shared/CookTime";
+import { UnitPreference } from "src/shared/units";
 
 type RecipeStepListProps = {
     recipe: Recipe | MultiPartRecipe,
     newServings: number,
+    unitPreference: UnitPreference,
+    units: MeasureUnit[],
     multipart: boolean,
     component?: RecipeComponent,
     onDeleteStep: (i: number, component?: RecipeComponent) => void,
@@ -64,7 +67,7 @@ function SortableStep({ id, index, stepText, onTextChange, onDelete }: SortableS
 }
 
 export function RecipeStepList(props: RecipeStepListProps) {
-    const { recipe, multipart, component, newServings, edit, onChange, onDeleteStep, onNewStep } = props;
+    const { recipe, multipart, component, newServings, unitPreference, units, edit, onChange, onDeleteStep, onNewStep } = props;
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -138,6 +141,8 @@ export function RecipeStepList(props: RecipeStepListProps) {
                                 multipart={multipart}
                                 recipe={recipe}
                                 stepText={step}
+                                unitPreference={unitPreference}
+                                units={units}
                                 newServings={newServings} />
                         </Col>
                     </Row>
@@ -156,6 +161,8 @@ export function RecipeStepList(props: RecipeStepListProps) {
                                 recipe={recipe}
                                 stepText={step}
                                 component={component}
+                                unitPreference={unitPreference}
+                                units={units}
                                 newServings={newServings} />
                         </Col>
                     </Row>

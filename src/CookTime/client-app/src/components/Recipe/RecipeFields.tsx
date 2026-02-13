@@ -1,8 +1,9 @@
 import React from 'react';
-import { Button, Col, Form, Row } from 'react-bootstrap';
+import { Button, Col, DropdownButton, Dropdown, Form, Row } from 'react-bootstrap';
 import { useRecipeContext } from './RecipeContext';
 import { ImageEditor } from './ImageEditor';
 import { Tags } from '../Tags/Tags';
+import { UnitPreference } from 'src/shared/units';
 
 export function RecipeFields() {
   const {
@@ -14,8 +15,10 @@ export function RecipeFields() {
     pendingImages,
     imageOrder,
     imageOperationInProgress,
+    unitPreference,
     setNewServings,
     updateRecipe,
+    setUnitPreference,
     handleAddImages,
     handleRemoveExistingImage,
     handleRemovePendingImage,
@@ -223,10 +226,48 @@ export function RecipeFields() {
     );
   };
 
+  const renderUnitPreference = () => (
+    <Row className="padding-right-0 d-flex align-items-center recipe-edit-row">
+      <Col className="col-3 recipe-field-title">Units</Col>
+      <Col className="col d-flex align-items-center">
+        <DropdownButton
+          variant="secondary"
+          title={
+            unitPreference === 'imperial'
+              ? 'Imperial'
+              : unitPreference === 'metric'
+                ? 'Metric'
+                : 'Recipe'
+          }
+        >
+          <Dropdown.Item
+            active={unitPreference === 'recipe'}
+            onClick={() => setUnitPreference('recipe' as UnitPreference)}
+          >
+            Recipe
+          </Dropdown.Item>
+          <Dropdown.Item
+            active={unitPreference === 'imperial'}
+            onClick={() => setUnitPreference('imperial' as UnitPreference)}
+          >
+            Imperial
+          </Dropdown.Item>
+          <Dropdown.Item
+            active={unitPreference === 'metric'}
+            onClick={() => setUnitPreference('metric' as UnitPreference)}
+          >
+            Metric
+          </Dropdown.Item>
+        </DropdownButton>
+      </Col>
+    </Row>
+  );
+
   return (
     <div>
       {renderCaloriesPerServing()}
       {renderServings()}
+      {renderUnitPreference()}
       {renderCategories()}
       {renderCookTime()}
       {renderSource()}
