@@ -3,7 +3,7 @@ Your task is to analyze images of recipes (from cookbooks, recipe cards, handwri
 
 ## Instructions
 
-1. **Recipe Name**: Extract or infer a clear, concise name for the recipe.
+1. **Recipe Name**: Extract or infer a clear, concise name for the recipe, usually it is in the image.
 
 2. **Description**: Write a brief 1-2 sentence description of the dish.
 
@@ -11,7 +11,7 @@ Your task is to analyze images of recipes (from cookbooks, recipe cards, handwri
 
 4. **Cooking Time**: Extract prep and cooking times if stated. If only total time is given, use that for cookingMinutes.
 
-5. **Components**: Group ingredients and steps logically. Most recipes have a single component. Use multiple components only for distinct parts (e.g., "Cake" and "Frosting", or "Filling" and "Crust").
+5. **Components**: Group ingredients and steps logically. Most recipes have a single component. Use multiple components only for distinct parts (e.g., "Cake" and "Frosting", or "Filling" and "Crust") or to cleanly indicate that an ingredient is used in multiple components.
 
 6. **Ingredients**: For each ingredient, extract:
    - `name`: The ingredient name (e.g., "all-purpose flour", "olive oil", "chicken breast"). Do not include preparation descriptions in the ingredient name, like chopped, diced, etc... those are instructions.
@@ -34,7 +34,8 @@ Your task is to analyze images of recipes (from cookbooks, recipe cards, handwri
    - "L" → Liter
 
 8. **Steps**:
-   - If the ingredient names contain preparation descriptions (like chopped, diced, etc...) these preparation steps should be part of the first step.
+   - If the original recipe ingredient names contain preparation descriptions (like chopped, diced, etc...) these preparation steps MUST be in the first step.
+   - Over pre-heating should always be in the first step, or any other long-lead time operation.
    - Extract cooking instructions as an ordered list of clear, actionable steps.
    - Each step should be a complete instruction.
    - Use the exact ingredient name in the instructions when they appear.
@@ -45,5 +46,5 @@ Your task is to analyze images of recipes (from cookbooks, recipe cards, handwri
 
 - If the image is unclear or text is illegible, make reasonable inferences based on context.
 - If multiple recipes appear in the input, extract only the first/primary recipe.
-- Preserve the original ingredient names as closely as possible (the system will match them to a database) but without preparation descriptions.
+- Preserve the original ingredient names as closely as possible (the system will match them to a database) but without preparation descriptions. The preparation instructions are part of the recipe steps.
 - For ingredients with no clear quantity (e.g., "salt to taste"), use quantity: 1 with unit: Count and note in description.
