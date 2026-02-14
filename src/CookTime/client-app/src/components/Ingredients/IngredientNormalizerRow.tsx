@@ -38,7 +38,7 @@ export default function IngredientNormalizerRow(props: IngredientNormalizerRowPr
         onError(`Failed to replace ingredient: ${errorText}`);
         return;
       }
-       
+
       location.reload();
     } catch (err) {
       onError(`Network error: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -55,7 +55,7 @@ export default function IngredientNormalizerRow(props: IngredientNormalizerRowPr
         onError(`Failed to delete ingredient: ${errorText}`);
         return;
       }
-       
+
       location.reload();
     } catch (err) {
       onError(`Network error: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -79,63 +79,65 @@ export default function IngredientNormalizerRow(props: IngredientNormalizerRowPr
           </div>
         </div>
       </Accordion.Header>
-      <Accordion.Body>
-        <Form>
-          <Form.Group className="mb-3">
-            <Form.Label>Ingredient ID</Form.Label>
-            <Form.Control type="text" value={replacedId} disabled />
-            <Form.Text className="text-muted">
-              Copy this ID to merge this ingredient into another
-            </Form.Text>
-          </Form.Group>
+      <Accordion.Collapse eventKey={eventKey} mountOnEnter>
+        <div className="accordion-body">
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Ingredient ID</Form.Label>
+              <Form.Control type="text" value={replacedId} disabled />
+              <Form.Text className="text-muted">
+                Copy this ID to merge this ingredient into another
+              </Form.Text>
+            </Form.Group>
 
-          <Row className="mb-3">
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Recipes Using</Form.Label>
-                <Form.Control type="text" value={usage} disabled />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
-              <Form.Group>
-                <Form.Label>Has Nutrition Data</Form.Label>
-                <Form.Control type="text" value={hasNutrition ? 'Yes' : 'No'} disabled />
-              </Form.Group>
-            </Col>
-          </Row>
+            <Row className="mb-3">
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Recipes Using</Form.Label>
+                  <Form.Control type="text" value={usage} disabled />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Has Nutrition Data</Form.Label>
+                  <Form.Control type="text" value={hasNutrition ? 'Yes' : 'No'} disabled />
+                </Form.Group>
+              </Col>
+            </Row>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Replace With (search by ingredient name)</Form.Label>
-            <IngredientAutosuggest
-              placeholder="Type ingredient name to search"
-              value=""
-              onSelect={(ingredientId, ingredientName) => setReplacement({ ...replacement, keptId: ingredientId })}
-              excludeId={replacedId}
-            />
-            <Form.Text className="text-muted">
-              This will merge all recipe references to the target ingredient
-            </Form.Text>
-          </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Replace With (search by ingredient name)</Form.Label>
+              <IngredientAutosuggest
+                placeholder="Type ingredient name to search"
+                value=""
+                onSelect={(ingredientId, ingredientName) => setReplacement({ ...replacement, keptId: ingredientId })}
+                excludeId={replacedId}
+              />
+              <Form.Text className="text-muted">
+                This will merge all recipe references to the target ingredient
+              </Form.Text>
+            </Form.Group>
 
-          <div className="d-flex gap-2">
-            <Button
-              variant="outline-success"
-              onClick={handleReplace}
-              disabled={!replacement.keptId || replacement.keptId === EMPTY_GUID}
-            >
-              Replace & Merge
-            </Button>
-            {usage === 0 && (
+            <div className="d-flex gap-2">
               <Button
-                variant="outline-danger"
-                onClick={handleDelete}
+                variant="outline-success"
+                onClick={handleReplace}
+                disabled={!replacement.keptId || replacement.keptId === EMPTY_GUID}
               >
-                Delete
+                Replace & Merge
               </Button>
-            )}
-          </div>
-        </Form>
-      </Accordion.Body>
+              {usage === 0 && (
+                <Button
+                  variant="outline-danger"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </Button>
+              )}
+            </div>
+          </Form>
+        </div>
+      </Accordion.Collapse>
     </Accordion.Item>
   );
 }
