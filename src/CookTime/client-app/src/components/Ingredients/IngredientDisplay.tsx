@@ -12,7 +12,7 @@ type IngredientDisplayProps = {
 export class IngredientDisplay extends React.Component<IngredientDisplayProps, {}> {
 
     render() {
-        let ingredient = this.props.ingredientRequirement.ingredient
+        const ingredient = this.props.ingredientRequirement.ingredient
         const unitPreference = this.props.unitPreference ?? "recipe";
         const conversion = convertQuantity({
             quantity: this.props.ingredientRequirement.quantity,
@@ -22,14 +22,14 @@ export class IngredientDisplay extends React.Component<IngredientDisplayProps, {
         });
 
         const unitName = conversion.unitName === "count" ? "" : formatUnitName(conversion.unitName);
-        let fraction = this.Fraction(conversion.quantity);
-        let quantity = unitPreference === "metric"
+        const fraction = this.Fraction(conversion.quantity);
+        const quantity = unitPreference === "metric"
             ? <>{formatNumber(conversion.quantity)}</>
             : <>{fraction}</>;
 
         // Show IR text, but if that's not available then show the ingredient canonical name.
-        var ingredientName = (this.props.ingredientRequirement.text ?? ingredient.name.split(";").map(s => s.trim())[0]).toLowerCase()
-        var text = <>{quantity} {unitName} {this.props.showAlternatUnit && unitPreference === "recipe" ? this.getAlternateUnit() : null} {ingredientName}
+        const ingredientName = (this.props.ingredientRequirement.text ?? ingredient.name.split(";").map(s => s.trim())[0]).toLowerCase()
+        let text = <>{quantity} {unitName} {this.props.showAlternatUnit && unitPreference === "recipe" ? this.getAlternateUnit() : null} {ingredientName}
         </>
         if (this.props.strikethrough) {
             text = <s>{text}</s>
@@ -41,10 +41,10 @@ export class IngredientDisplay extends React.Component<IngredientDisplayProps, {
     }
 
     private Fraction(numb: number) {
-        let decimal = numb % 1;
-        let decimalStr = decimal.toFixed(4);
-        var integral = Math.floor(numb)
-        var quantity = <>{numb.toString()}</>
+        const decimal = numb % 1;
+        const decimalStr = decimal.toFixed(4);
+        const integral = Math.floor(numb)
+        let quantity = <>{numb.toString()}</>
         if (decimalStr === "0.0625") {
             quantity = <>{integral != 0 ? `${integral} ` : ""}<sup>1</sup>&frasl;<sub>16</sub></>;
         } else if (decimalStr === "0.1250") {
@@ -97,7 +97,7 @@ export class IngredientDisplay extends React.Component<IngredientDisplayProps, {
     }
 
     getAlternateUnit(): any {
-        let currentUnitType = this.props.units?.find(unit => unit.name === this.props.ingredientRequirement.unit)
+        const currentUnitType = this.props.units?.find(unit => unit.name === this.props.ingredientRequirement.unit)
         if (currentUnitType == null) {
             return "";
         }
@@ -105,23 +105,23 @@ export class IngredientDisplay extends React.Component<IngredientDisplayProps, {
             return ""
         }
         if (currentUnitType?.siType == "volume") {
-            let currentQuantityLiter = this.props.ingredientRequirement.quantity * currentUnitType.siValue;
-            let grams = currentQuantityLiter * (this.props.ingredientRequirement.ingredient.densityKgPerL ?? 1.0) * 1000;
+            const currentQuantityLiter = this.props.ingredientRequirement.quantity * currentUnitType.siValue;
+            const grams = currentQuantityLiter * (this.props.ingredientRequirement.ingredient.densityKgPerL ?? 1.0) * 1000;
             return `(${Math.round(grams)} grams)`
         } else if (currentUnitType.siType == "weight") {
-            let currentQuantityKg = this.props.ingredientRequirement.quantity * currentUnitType.siValue;
-            let milliliters = currentQuantityKg / (this.props.ingredientRequirement.ingredient.densityKgPerL ?? 1.0) * 1000
+            const currentQuantityKg = this.props.ingredientRequirement.quantity * currentUnitType.siValue;
+            const milliliters = currentQuantityKg / (this.props.ingredientRequirement.ingredient.densityKgPerL ?? 1.0) * 1000
             // 45 ml is approximately the cutoff of 3 tablespoons.
             if (milliliters <= 15) {
-                let millisPerTeaspoon = 4.9289317406874
+                const millisPerTeaspoon = 4.9289317406874
                 return <>({this.Fraction(milliliters / millisPerTeaspoon)} Tsp)</>
             }
             else if (milliliters < 45) {
-                let millisPerTablespoon = 14.7868
+                const millisPerTablespoon = 14.7868
                 return <>({this.Fraction(milliliters / millisPerTablespoon)} Tbsp)</>
                 // 3785 ml is about one gallon, don't measure 
             } else if (milliliters < 3785) {
-                let millisPerCup = 236.588
+                const millisPerCup = 236.588
                 return <>({this.Fraction(milliliters / millisPerCup)} cups)</>
             } else {
                 return `(${Math.round(milliliters)} mL)`

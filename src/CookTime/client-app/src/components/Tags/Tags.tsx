@@ -58,12 +58,12 @@ export class Tags extends React.Component<TagsProps, TagsState> {
 
   onSuggestionSelected = (event: any, { suggestion, suggestionValue }: any) => {
     console.log('Tag selected:', suggestionValue, 'ID:', suggestion.id)
-    let newTag = {
+    const newTag = {
       name: suggestionValue,
       id: suggestion.id,
       isNew: false,
     }
-    let newTags = [...this.state.tags, newTag]
+    const newTags = [...this.state.tags, newTag]
     console.log('All tags after selection:', newTags);
     this.setState({
       tags: newTags,
@@ -78,13 +78,13 @@ export class Tags extends React.Component<TagsProps, TagsState> {
     // primitive primitive rate limiting, should do this server side too
     this.fetchRequestCount = (this.fetchRequestCount + 1) % 2;
     if (this.fetchRequestCount === 0) {
-      let url = this.props.queryBuilder(value);
+      const url = this.props.queryBuilder(value);
       fetch(url)
         .then(response => response.json())
         .then(result => {
           console.log(result);
-          let r = result as Autosuggestable[]
-          let mySuggestions = r.filter((s, i) => { return !this.state.tags.map(t => t.name).includes(s.name) });
+          const r = result as Autosuggestable[]
+          const mySuggestions = r.filter((s, i) => { return !this.state.tags.map(t => t.name).includes(s.name) });
           this.setState({
             suggestions: mySuggestions
           })
@@ -100,7 +100,7 @@ export class Tags extends React.Component<TagsProps, TagsState> {
   };
 
   onDelete = (index: number) => {
-    let newTags = this.state.tags.filter((_, i) => { return i !== index });
+    const newTags = this.state.tags.filter((_, i) => { return i !== index });
     this.setState({
       tags: newTags
     })

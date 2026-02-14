@@ -28,7 +28,7 @@ export default function IngredientInternalUpdateRow(props: IngredientInternalUpd
 
   const handleSave = async () => {
     setIsSubmitting(true);
-    var response = await fetch("/api/ingredient/internalupdate", {
+    const response = await fetch("/api/ingredient/internalupdate", {
       method: "post",
       body: JSON.stringify(update),
       headers: {

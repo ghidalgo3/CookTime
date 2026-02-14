@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 2026-02-14
 
+### Fixed
+
+- Fix crash when switching ingredient units caused by reading the event target inside a deferred React state updater
+
 ### Changed
 
+- Add `ESLint` to CI/CD for frontend code
 - More prompt tuning
 
 ## 2026-02-13

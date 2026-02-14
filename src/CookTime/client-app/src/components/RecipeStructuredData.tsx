@@ -8,7 +8,7 @@ type RecipeStructuredDataProps = {
 }
 
 export function RecipeStructuredData({ recipe, images }: RecipeStructuredDataProps) {
-  let metadata: any = {
+  const metadata: any = {
     "@context": "https://schema.org/",
     "@type": "Recipe",
     "name": recipe.name,

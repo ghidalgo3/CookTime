@@ -29,7 +29,7 @@ export function RecipeReviewForm({recipe} : RecipeReviewFormProps) {
       }
     }).then(response => {
       if (response.ok) {
-        // eslint-disable-next-line no-restricted-globals
+         
         location.reload();
       }
     });

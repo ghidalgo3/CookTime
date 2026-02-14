@@ -58,15 +58,15 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
   );
 
   // called every time a key is pressed or when the user presses enter
-  onChange = (event: any, { newValue, method } : {newValue: any, method: any}) => {
+  onChange = (event: any, { newValue, method }: { newValue: any, method: any }) => {
     switch (method) {
       case 'enter':
         // console.log(`Enter ${newValue}`)
         // TODO here
         break;
-      default:
+      default: {
         // console.log(`Default ${newValue}`)
-        var possibleSuggestions = this.state.suggestions.filter(suggestion =>
+        const possibleSuggestions = this.state.suggestions.filter(suggestion =>
           suggestion.name.toUpperCase().includes(newValue));
         if (possibleSuggestions.length === 1) {
           this.setState({
@@ -83,10 +83,11 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
           });
         }
         break;
+      }
     }
   };
 
-  onSuggestionSelected = (event: any, { suggestion, suggestionValue }: {suggestion: any, suggestionValue: any}) => {
+  onSuggestionSelected = (event: any, { suggestion, suggestionValue }: { suggestion: any, suggestionValue: any }) => {
     this.props.onSelect(suggestionValue, suggestion as Ingredient, false);
     this.setState({
       selection: suggestion as Ingredient,
@@ -96,11 +97,11 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
 
   // Autosuggest will call this function every time you need to update suggestions.
   // You already implemented this logic above, so just use it.
-  onSuggestionsFetchRequested = ({ value } : {value : any}) => {
+  onSuggestionsFetchRequested = ({ value }: { value: any }) => {
     fetch(this.props.query(value as string))
       .then(response => response.json())
       .then(suggestions => {
-        var ingredients = suggestions as Ingredient[];
+        let ingredients = suggestions as Ingredient[];
         // Do not suggest ingredients used in some other ingredient requirement
         // for this recipe component
         if (this.props.currentRequirements.length > 0) {
@@ -147,7 +148,7 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
       return;
     }
 
-    var possibleSuggestions = this.state.suggestions.filter(suggestion =>
+    const possibleSuggestions = this.state.suggestions.filter(suggestion =>
       suggestion.name.toUpperCase() === this.state.value.trim().toUpperCase());
     console.log(possibleSuggestions);
     if (possibleSuggestions.length === 1) {
@@ -155,17 +156,17 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
       this.setState({
         selection: possibleSuggestions[0],
       });
-      let s = possibleSuggestions[0];
+      const s = possibleSuggestions[0];
       this.props.onSelect(s.name, s, false);
     } else if (possibleSuggestions.length === 0) {
       this.onNewIngredient();
     } else {
-
+      // multiple matches — wait for more input
     }
   }
 
   onNewIngredient = () => {
-    var newIngredient = { name: this.state.value, id: uuidv4(), isNew: true, densityKgPerL: 1.0 };
+    const newIngredient = { name: this.state.value, id: uuidv4(), isNew: true, densityKgPerL: 1.0 };
     this.setState({
       selection: newIngredient,
       newIngredient: true
@@ -176,7 +177,7 @@ export class IngredientInput extends React.Component<IngredientInputProps, Ingre
   render() {
     const { value, suggestions } = this.state;
 
-    let badgeComponent = this.state.newIngredient ?
+    const badgeComponent = this.state.newIngredient ?
       <Badge className="new-curr-badge" bg="">New</Badge> :
       null;
 

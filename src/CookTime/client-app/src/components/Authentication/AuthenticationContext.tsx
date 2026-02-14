@@ -54,7 +54,7 @@ export function AuthenticationContext({ children }: { children: React.ReactNode 
  * of the user and their authorized roles.
  */
 export function RequireAuth({ children, roles }: { roles: Role[], children: JSX.Element, redirect?: boolean | undefined }) {
-  let auth = useAuthentication();
+  const auth = useAuthentication();
   // let location = useLocation();
 
   if (

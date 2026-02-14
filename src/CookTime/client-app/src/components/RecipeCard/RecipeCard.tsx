@@ -29,7 +29,7 @@ export function RecipeCard({
 
   function FavoriteToggle() {
     const [submitting, setSubmitting] = useState<boolean>(false);
-    var heartClass = "";
+    let heartClass = "";
     if (favorite) {
       heartClass = "bi bi-heart-fill fs-4"
     } else {
@@ -92,7 +92,7 @@ export function RecipeCard({
   }
 
   function CardImage() {
-    let image = (images.length === 0 || !images[0].url) ?
+    const image = (images.length === 0 || !images[0].url) ?
       imgs.placeholder :
       images[0].url;
     return (
