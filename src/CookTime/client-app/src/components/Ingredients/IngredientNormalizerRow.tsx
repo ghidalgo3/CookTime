@@ -38,7 +38,7 @@ export default function IngredientNormalizerRow(props: IngredientNormalizerRowPr
         onError(`Failed to replace ingredient: ${errorText}`);
         return;
       }
-      // eslint-disable-next-line no-restricted-globals
+       
       location.reload();
     } catch (err) {
       onError(`Network error: ${err instanceof Error ? err.message : 'Unknown error'}`);
@@ -55,7 +55,7 @@ export default function IngredientNormalizerRow(props: IngredientNormalizerRowPr
         onError(`Failed to delete ingredient: ${errorText}`);
         return;
       }
-      // eslint-disable-next-line no-restricted-globals
+       
       location.reload();
     } catch (err) {
       onError(`Network error: ${err instanceof Error ? err.message : 'Unknown error'}`);

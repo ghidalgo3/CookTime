@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Add `ESLint` to CI/CD for frontend code
 - More prompt tuning
 
 ## 2026-02-13

@@ -12,6 +12,26 @@ on:
       - main
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout Github Action"
+        uses: actions/checkout@master
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: src/CookTime/client-app/package-lock.json
+
+      - name: Install dependencies
+        run: cd src/CookTime/client-app && npm ci
+
+      - name: Lint
+        run: scripts/test --lint
+
   test:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'

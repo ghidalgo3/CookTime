@@ -1,6 +1,18 @@
 #!/bin/bash
 set -e
 
+SCRIPT_DIR="$(dirname "$0")"
+REPO_ROOT="$SCRIPT_DIR/.."
+
+# --lint: run frontend linting only, then exit
+if [ "$1" = "--lint" ]; then
+    echo "Running frontend lint..."
+    cd "$REPO_ROOT/src/CookTime/client-app"
+    npx eslint src/
+    echo "Lint passed!"
+    exit 0
+fi
+
 API_URL="${API_BASE_URL:-http://localhost:5001}"
 MAX_WAIT=30
 
@@ -23,6 +35,6 @@ echo "API is healthy!"
 
 echo ""
 echo "Running tests..."
-cd "$(dirname "$0")/../src/CookTimeTests"
+cd "$REPO_ROOT/src/CookTimeTests"
 dotnet build -v minimal
 dotnet test --verbosity normal --no-build --logger "trx;LogFileName=test-results.trx" -- RunConfiguration.DisableParallelization=true

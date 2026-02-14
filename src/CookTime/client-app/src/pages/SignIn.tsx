@@ -8,10 +8,10 @@ export const SIGN_IN_PAGE_PATH = "signin"
 
 export default function SignIn() {
   const [actionData, setActionData] = useState<any>();
+  const [showAlert, setShowAlert] = useState(false);
   useEffect(() => {
     setShowAlert(!!actionData)
   }, [actionData]);
-  const [showAlert, setShowAlert] = useState(false);
   const dismissAlert = () => setShowAlert(false);
   const errorAlert =
     <Alert dismissible variant="danger" onClose={dismissAlert}>

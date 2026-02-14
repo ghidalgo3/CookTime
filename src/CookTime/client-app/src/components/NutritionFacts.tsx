@@ -11,7 +11,7 @@ export class NutritionFacts extends React.Component<NutritionFactsProps, {}>
     }
 
     render() {
-        let {
+        const {
             calories,
             carbohydrates,
             proteins,

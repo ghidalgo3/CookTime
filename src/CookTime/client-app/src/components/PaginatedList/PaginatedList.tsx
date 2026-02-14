@@ -23,10 +23,10 @@ export default function PaginatedList<T>(props: PaginatedListProps<T>) {
     setSearchParams(paramsForPage(i));
   }
 
-  let elementInner = (item: T | null, idx: number) => {
+  const elementInner = (item: T | null, idx: number) => {
     return element(item as T);
   }
-  var itemsWithAd: (T | null)[] = items.results;
+  const itemsWithAd: (T | null)[] = items.results;
   return (
     <>
       <Row>

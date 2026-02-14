@@ -26,7 +26,7 @@ function trifurcate(s: string, position: number, length: number) {
 }
 
 export function Step({ recipe, stepText, multipart, component, newServings, unitPreference, units }: StepProps) {
-    let segments: Segment[] = [{ ingredient: null, text: stepText }];
+    const segments: Segment[] = [{ ingredient: null, text: stepText }];
 
     const ingredientRequirements: IngredientRequirement[] = multipart
         ? component!.ingredients!

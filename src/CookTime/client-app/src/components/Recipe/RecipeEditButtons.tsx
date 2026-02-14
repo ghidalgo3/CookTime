@@ -15,8 +15,8 @@ export type RecipeEditButtonsProps = {
     onAddToList: (listName: string) => void
 }
 export function RecipeEditButtons({ user, recipe, edit, operationInProgress, onSave, onCancel, onDelete, onToggleEdit, onAddToList }: RecipeEditButtonsProps) {
-    let userSignedIn = user !== null;
-    let canEdit = userSignedIn && user!.id === recipe.owner?.id || user?.roles.includes("Administrator");
+    const userSignedIn = user !== null;
+    const canEdit = userSignedIn && user!.id === recipe.owner?.id || user?.roles.includes("Administrator");
     const [lists, setLists] = useState<RecipeList[]>([]);
 
     useEffect(() => {
