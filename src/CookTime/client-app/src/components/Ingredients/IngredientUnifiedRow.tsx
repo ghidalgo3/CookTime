@@ -132,156 +132,158 @@ export default function IngredientUnifiedRow(props: IngredientUnifiedRowProps) {
                     </div>
                 </div>
             </Accordion.Header>
-            <Accordion.Body>
-                <Form>
-                    <Row className="mb-3">
-                        <Col md={8}>
-                            <Form.Group>
-                                <Form.Label>Ingredient ID</Form.Label>
-                                <Form.Control type="text" value={ingredientId} disabled />
-                            </Form.Group>
-                        </Col>
-                        <Col md={4}>
-                            <Form.Group>
-                                <Form.Label>Recipe Usage</Form.Label>
-                                <Form.Control type="text" value={`${usage} recipe${usage !== 1 ? 's' : ''}`} disabled />
-                            </Form.Group>
-                        </Col>
-                    </Row>
+            <Accordion.Collapse eventKey={eventKey} mountOnEnter>
+                <div className="accordion-body">
+                    <Form>
+                        <Row className="mb-3">
+                            <Col md={8}>
+                                <Form.Group>
+                                    <Form.Label>Ingredient ID</Form.Label>
+                                    <Form.Control type="text" value={ingredientId} disabled />
+                                </Form.Group>
+                            </Col>
+                            <Col md={4}>
+                                <Form.Group>
+                                    <Form.Label>Recipe Usage</Form.Label>
+                                    <Form.Control type="text" value={`${usage} recipe${usage !== 1 ? 's' : ''}`} disabled />
+                                </Form.Group>
+                            </Col>
+                        </Row>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Ingredient Names (semi-colon separated)</Form.Label>
-                        <Form.Control
-                            type="text"
-                            placeholder="Cooktime ingredient name (semi-colon separated)"
-                            onChange={e => setUpdate({ ...update, ingredientNames: e.target.value })}
-                            value={update.ingredientNames}
-                        />
-                    </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Ingredient Names (semi-colon separated)</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Cooktime ingredient name (semi-colon separated)"
+                                onChange={e => setUpdate({ ...update, ingredientNames: e.target.value })}
+                                value={update.ingredientNames}
+                            />
+                        </Form.Group>
 
-                    <Form.Group className="mb-3">
-                        <Form.Label>Nutrition Description</Form.Label>
-                        <Form.Control type="text" value={nutritionDescription || 'No nutrition data linked'} disabled />
-                    </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Nutrition Description</Form.Label>
+                            <Form.Control type="text" value={nutritionDescription || 'No nutrition data linked'} disabled />
+                        </Form.Group>
 
-                    <Row className="mb-3">
-                        <Col md={6}>
-                            <Form.Group>
-                                <Form.Label>NDB Number (SR Legacy)</Form.Label>
-                                <NutritionAutosuggest
-                                    placeholder="Type ingredient name or NDB Number"
-                                    value={update.ndbNumber}
-                                    onSelect={(ndbNumber, _gtinUpc) => {
-                                        if (ndbNumber !== null) {
-                                            setUpdate({ ...update, ndbNumber });
-                                        }
-                                    }}
-                                    fieldType="ndb"
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={6}>
-                            <Form.Group>
-                                <Form.Label>GTIN/UPC Number (Branded)</Form.Label>
-                                <NutritionAutosuggest
-                                    placeholder="Type ingredient name or GTIN/UPC"
-                                    value={update.gtinUpc}
-                                    onSelect={(_ndbNumber, gtinUpc) => {
-                                        if (gtinUpc !== null) {
-                                            setUpdate({ ...update, gtinUpc });
-                                        }
-                                    }}
-                                    fieldType="gtin"
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Row>
-
-                    <Row className="mb-3">
-                        <Col md={6}>
-                            <Form.Group>
-                                <Form.Label>Count RegEx</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Count RegEx"
-                                    onChange={e => setUpdate({ ...update, countRegex: e.target.value })}
-                                    value={update.countRegex}
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={6}>
-                            <Form.Group>
-                                <Form.Label>Unit Mass (kg)</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    placeholder="Expected unit mass"
-                                    onChange={e => {
-                                        let unitMass = Number.parseFloat(e.target.value);
-                                        if (e.target.value === "0.") {
-                                            setUpdate({ ...update, expectedUnitMass: "0." });
-                                        } else {
-                                            if (isNaN(unitMass)) {
-                                                unitMass = 0.1;
+                        <Row className="mb-3">
+                            <Col md={6}>
+                                <Form.Group>
+                                    <Form.Label>NDB Number (SR Legacy)</Form.Label>
+                                    <NutritionAutosuggest
+                                        placeholder="Type ingredient name or NDB Number"
+                                        value={update.ndbNumber}
+                                        onSelect={(ndbNumber, _gtinUpc) => {
+                                            if (ndbNumber !== null) {
+                                                setUpdate({ ...update, ndbNumber });
                                             }
-                                            setUpdate({ ...update, expectedUnitMass: unitMass.toString() });
-                                        }
-                                    }}
-                                    value={update.expectedUnitMass}
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Row>
+                                        }}
+                                        fieldType="ndb"
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                                <Form.Group>
+                                    <Form.Label>GTIN/UPC Number (Branded)</Form.Label>
+                                    <NutritionAutosuggest
+                                        placeholder="Type ingredient name or GTIN/UPC"
+                                        value={update.gtinUpc}
+                                        onSelect={(_ndbNumber, gtinUpc) => {
+                                            if (gtinUpc !== null) {
+                                                setUpdate({ ...update, gtinUpc });
+                                            }
+                                        }}
+                                        fieldType="gtin"
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
 
-                    <div className="d-flex gap-2 mb-4">
-                        {isSubmitting ? (
-                            <Spinner animation="border" size="sm" />
-                        ) : (
+                        <Row className="mb-3">
+                            <Col md={6}>
+                                <Form.Group>
+                                    <Form.Label>Count RegEx</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Count RegEx"
+                                        onChange={e => setUpdate({ ...update, countRegex: e.target.value })}
+                                        value={update.countRegex}
+                                    />
+                                </Form.Group>
+                            </Col>
+                            <Col md={6}>
+                                <Form.Group>
+                                    <Form.Label>Unit Mass (kg)</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Expected unit mass"
+                                        onChange={e => {
+                                            let unitMass = Number.parseFloat(e.target.value);
+                                            if (e.target.value === "0.") {
+                                                setUpdate({ ...update, expectedUnitMass: "0." });
+                                            } else {
+                                                if (isNaN(unitMass)) {
+                                                    unitMass = 0.1;
+                                                }
+                                                setUpdate({ ...update, expectedUnitMass: unitMass.toString() });
+                                            }
+                                        }}
+                                        value={update.expectedUnitMass}
+                                    />
+                                </Form.Group>
+                            </Col>
+                        </Row>
+
+                        <div className="d-flex gap-2 mb-4">
+                            {isSubmitting ? (
+                                <Spinner animation="border" size="sm" />
+                            ) : (
+                                <Button
+                                    variant={saveStatus === 'failed' ? "danger" : saveStatus === 'success' ? "success" : "outline-success"}
+                                    onClick={handleSave}
+                                >
+                                    {saveStatus === 'failed' ? "Failed - Retry" : saveStatus === 'success' ? "Saved ✓" : "Save Changes"}
+                                </Button>
+                            )}
+                        </div>
+
+                        <hr />
+
+                        <h6 className="text-muted mb-3">Merge or Delete</h6>
+
+                        <Form.Group className="mb-3">
+                            <Form.Label>Merge Into Another Ingredient</Form.Label>
+                            <IngredientAutosuggest
+                                placeholder="Search for ingredient to merge into..."
+                                value=""
+                                onSelect={(ingredientId, _ingredientName) => setMergeTargetId(ingredientId)}
+                                excludeId={ingredientId}
+                            />
+                            <Form.Text className="text-muted">
+                                This will move all recipe references to the target ingredient and delete this one
+                            </Form.Text>
+                        </Form.Group>
+
+                        <div className="d-flex gap-2">
                             <Button
-                                variant={saveStatus === 'failed' ? "danger" : saveStatus === 'success' ? "success" : "outline-success"}
-                                onClick={handleSave}
+                                variant="outline-warning"
+                                onClick={handleMerge}
+                                disabled={isSubmitting || !mergeTargetId || mergeTargetId === EMPTY_GUID}
                             >
-                                {saveStatus === 'failed' ? "Failed - Retry" : saveStatus === 'success' ? "Saved ✓" : "Save Changes"}
+                                Merge & Delete
                             </Button>
-                        )}
-                    </div>
-
-                    <hr />
-
-                    <h6 className="text-muted mb-3">Merge or Delete</h6>
-
-                    <Form.Group className="mb-3">
-                        <Form.Label>Merge Into Another Ingredient</Form.Label>
-                        <IngredientAutosuggest
-                            placeholder="Search for ingredient to merge into..."
-                            value=""
-                            onSelect={(ingredientId, _ingredientName) => setMergeTargetId(ingredientId)}
-                            excludeId={ingredientId}
-                        />
-                        <Form.Text className="text-muted">
-                            This will move all recipe references to the target ingredient and delete this one
-                        </Form.Text>
-                    </Form.Group>
-
-                    <div className="d-flex gap-2">
-                        <Button
-                            variant="outline-warning"
-                            onClick={handleMerge}
-                            disabled={isSubmitting || !mergeTargetId || mergeTargetId === EMPTY_GUID}
-                        >
-                            Merge & Delete
-                        </Button>
-                        {usage === 0 && (
-                            <Button
-                                variant="outline-danger"
-                                onClick={handleDelete}
-                                disabled={isSubmitting}
-                            >
-                                Delete Ingredient
-                            </Button>
-                        )}
-                    </div>
-                </Form>
-            </Accordion.Body>
+                            {usage === 0 && (
+                                <Button
+                                    variant="outline-danger"
+                                    onClick={handleDelete}
+                                    disabled={isSubmitting}
+                                >
+                                    Delete Ingredient
+                                </Button>
+                            )}
+                        </div>
+                    </Form>
+                </div>
+            </Accordion.Collapse>
         </Accordion.Item>
     );
 }
