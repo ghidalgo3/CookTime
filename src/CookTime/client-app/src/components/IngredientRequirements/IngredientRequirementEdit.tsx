@@ -113,7 +113,7 @@ function IngredientEditRow({
 }: IngredientEditRowProps) {
   const id =
     ir.ingredient.id === "" ||
-    ir.ingredient.id === "00000000-0000-0000-0000-000000000000"
+      ir.ingredient.id === "00000000-0000-0000-0000-000000000000"
       ? idx.toString()
       : ir.ingredient.id;
 
@@ -131,8 +131,9 @@ function IngredientEditRow({
   };
 
   const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newUnit = e.currentTarget.value;
     updateIngredientRequirement(ir, (ir) => {
-      ir.unit = e.currentTarget.value;
+      ir.unit = newUnit;
       return ir;
     });
   };
