@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Alert, Row, Toast, ToastContainer } from 'react-bootstrap';
 import { RecipeProvider, useRecipeContext } from './RecipeContext';
 import { RecipeHeader } from './RecipeHeader';
@@ -82,6 +82,13 @@ function RecipePageContent({ recipeId }: { recipeId: string }) {
 }
 
 export function RecipePage({ recipeId, generatedRecipe }: RecipePageProps) {
+  // Navigating between recipes (e.g. tapping a recommended recipe) keeps the same
+  // /recipes/details pathname and only changes the ?id= query, so the router does
+  // not scroll. Reset the scroll position whenever the recipe changes.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [recipeId]);
+
   return (
     <RecipeProvider recipeId={recipeId} generatedRecipe={generatedRecipe}>
       <RecipePageContent recipeId={recipeId} />
