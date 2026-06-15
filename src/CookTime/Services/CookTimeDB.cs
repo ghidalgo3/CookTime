@@ -193,6 +193,137 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         return await ReadRecipeSummaryListAsync(cmd);
     }
 
+    public async Task<CookHistoryEventDto> CreateCookHistoryEventAsync(Guid userId, Guid recipeId, DateOnly? cookedAt = null)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.create_recipe_cook_event($1, $2, $3::date)", conn);
+
+        cmd.Parameters.AddWithValue(userId);
+        cmd.Parameters.AddWithValue(recipeId);
+        cmd.Parameters.Add(new NpgsqlParameter
+        {
+            NpgsqlDbType = NpgsqlDbType.Date,
+            Value = cookedAt.HasValue ? (object)cookedAt.Value : DBNull.Value
+        });
+
+        var result = await cmd.ExecuteScalarAsync();
+        return JsonSerializer.Deserialize<CookHistoryEventDto>(result!.ToString()!, JsonOptions)!;
+    }
+
+    public async Task<List<CookHistoryEventDto>> GetCookHistoryAsync(Guid userId, Guid recipeId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_recipe_cook_history($1, $2)", conn);
+
+        cmd.Parameters.AddWithValue(userId);
+        cmd.Parameters.AddWithValue(recipeId);
+
+        var result = await cmd.ExecuteScalarAsync();
+        if (result == null || result == DBNull.Value)
+        {
+            return [];
+        }
+
+        return JsonSerializer.Deserialize<List<CookHistoryEventDto>>(result.ToString()!, JsonOptions) ?? [];
+    }
+
+    public async Task<List<CookHistoryEventWithRecipeDto>> GetCookHistoryAsync(Guid userId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand(@"
+            SELECT jsonb_build_object(
+                'id', e.id,
+                'userId', e.user_id,
+                'recipeId', e.recipe_id,
+                'cookedAt', e.cooked_at,
+                'createdDate', e.created_date,
+                'recipe', cooktime.recipe_to_summary(r)
+            )::text
+            FROM cooktime.recipe_cook_events e
+            JOIN cooktime.recipes r ON r.id = e.recipe_id
+            WHERE e.user_id = $1
+            ORDER BY e.cooked_at DESC, e.created_date DESC", conn);
+
+        cmd.Parameters.AddWithValue(userId);
+
+        var results = new List<CookHistoryEventWithRecipeDto>();
+        await using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            var json = reader.GetString(0);
+            var dto = JsonSerializer.Deserialize<CookHistoryEventWithRecipeDto>(json, JsonOptions);
+            if (dto != null)
+            {
+                results.Add(dto);
+            }
+        }
+
+        return results;
+    }
+
+    public async Task<CookHistoryEventDto?> UpdateCookHistoryEventAsync(Guid userId, Guid eventId, DateOnly cookedAt)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.update_recipe_cook_event($1, $2, $3)", conn);
+
+        cmd.Parameters.AddWithValue(userId);
+        cmd.Parameters.AddWithValue(eventId);
+        cmd.Parameters.Add(new NpgsqlParameter
+        {
+            NpgsqlDbType = NpgsqlDbType.Date,
+            Value = cookedAt
+        });
+
+        var result = await cmd.ExecuteScalarAsync();
+        if (result == null || result == DBNull.Value)
+        {
+            return null;
+        }
+
+        return JsonSerializer.Deserialize<CookHistoryEventDto>(result.ToString()!, JsonOptions);
+    }
+
+    public async Task<bool> DeleteCookHistoryEventAsync(Guid userId, Guid eventId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.delete_recipe_cook_event($1, $2)", conn);
+
+        cmd.Parameters.AddWithValue(userId);
+        cmd.Parameters.AddWithValue(eventId);
+
+        var result = await cmd.ExecuteScalarAsync();
+        return (bool)result!;
+    }
+
+    public async Task<List<RecipeRecommendationDto>> GetRecipeRecommendationsAsync(Guid recipeId, Guid? userId = null, int limit = 6)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.recommend_recipes($1, $2, $3)", conn);
+
+        cmd.Parameters.AddWithValue(recipeId);
+        cmd.Parameters.Add(new NpgsqlParameter
+        {
+            NpgsqlDbType = NpgsqlDbType.Uuid,
+            Value = userId.HasValue ? (object)userId.Value : DBNull.Value
+        });
+        cmd.Parameters.AddWithValue(limit);
+
+        var results = new List<RecipeRecommendationDto>();
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            var json = reader.GetString(0);
+            var dto = JsonSerializer.Deserialize<RecipeRecommendationDto>(json, JsonOptions);
+            if (dto != null)
+            {
+                results.Add(dto);
+            }
+        }
+
+        return results;
+    }
+
 
     private static async Task<List<RecipeSummaryDto>> ReadRecipeSummaryListAsync(NpgsqlCommand cmd)
     {
