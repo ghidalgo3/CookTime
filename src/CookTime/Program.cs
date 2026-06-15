@@ -25,6 +25,7 @@ if (!builder.Environment.IsDevelopment())
 var connectionString = builder.Configuration.GetConnectionString("Postgres")!;
 builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
 builder.Services.AddSingleton<CookTimeDB>();
+builder.Services.AddSingleton<RecommendationService>();
 builder.Services.AddSingleton<NutritionService>();
 builder.Services.AddSingleton<AIRecipeService>();
 builder.Services.AddMemoryCache();
@@ -196,14 +197,8 @@ app.MapGet("/api/multipartrecipe/featured", async (CookTimeDB cooktime) =>
 {
     return await cooktime.GetFeaturedRecipesAsync();
 });
-app.MapGet("/api/multipartrecipe/{id:guid}/recommendations", async (HttpContext context, CookTimeDB cooktime, Guid id, int limit = 6) =>
+app.MapGet("/api/multipartrecipe/{id:guid}/recommendations", async (HttpContext context, RecommendationService recommendations, Guid id, int limit = 6) =>
 {
-    var recipe = await cooktime.GetRecipeByIdAsync(id);
-    if (recipe == null)
-    {
-        return Results.NotFound();
-    }
-
     Guid? userId = null;
     var userIdClaim = context.User.FindFirst("db_user_id")?.Value;
     if (userIdClaim != null && Guid.TryParse(userIdClaim, out var parsedUserId))
@@ -211,8 +206,8 @@ app.MapGet("/api/multipartrecipe/{id:guid}/recommendations", async (HttpContext 
         userId = parsedUserId;
     }
 
-    var recommendations = await cooktime.GetRecipeRecommendationsAsync(id, userId, Math.Clamp(limit, 1, 24));
-    return Results.Ok(recommendations);
+    var result = await recommendations.GetRecommendationsAsync(id, userId, Math.Clamp(limit, 1, 24));
+    return result == null ? Results.NotFound() : Results.Ok(result);
 });
 app.MapGet("/api/multipartrecipe/{id:guid}", async (CookTimeDB cooktime, NutritionService nutrition, Guid id) =>
 {

@@ -33,9 +33,6 @@ public class RecommendationScoreBreakdownDto
     [JsonPropertyName("ingredientSimilarity")]
     public double IngredientSimilarity { get; set; }
 
-    [JsonPropertyName("ownedByUser")]
-    public double OwnedByUser { get; set; }
-
     [JsonPropertyName("favoritedByUser")]
     public double FavoritedByUser { get; set; }
 
@@ -59,4 +56,16 @@ public class RecipeRecommendationDto
 
     [JsonPropertyName("reasons")]
     public List<string> Reasons { get; set; } = new();
+}
+
+// A candidate recipe and its set of ingredient IDs, as returned by the
+// cooktime.get_candidate_ingredient_sets primitive. The recommendation
+// algorithm consumes these to compute ingredient similarity.
+public class CandidateIngredientSet
+{
+    [JsonPropertyName("recipeId")]
+    public Guid RecipeId { get; set; }
+
+    [JsonPropertyName("ingredientIds")]
+    public List<Guid> IngredientIds { get; set; } = new();
 }

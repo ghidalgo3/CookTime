@@ -1,4 +1,5 @@
 using CookTime.Models.Contracts;
+using CookTime.Services;
 using Npgsql;
 
 namespace CookTime.Test;
@@ -82,30 +83,38 @@ public class TestCookHistoryAndRecommendations : TestBase
     }
 
     [TestMethod]
-    public async Task Recommendations_ExcludeSourceAndPreferIngredientOverlap()
+    public async Task Recommendations_ExcludeSourceAndRequireMinimumOverlap()
     {
-        var sharedIngredientId = await CreateIngredient("Shared Recommendation Ingredient");
+        var sharedA = await CreateIngredient("Shared Recommendation Ingredient A");
+        var sharedB = await CreateIngredient("Shared Recommendation Ingredient B");
         var unrelatedIngredientId = await CreateIngredient("Unrelated Recommendation Ingredient");
-        var sourceRecipeId = await CreateRecipe("Source Recipe", TestUserId, sharedIngredientId);
-        var similarRecipeId = await CreateRecipe("Similar Recipe", TestUserId, sharedIngredientId);
+        var sourceRecipeId = await CreateRecipe("Source Recipe", TestUserId, sharedA, sharedB);
+        // Two shared ingredients clears the minimum-overlap gate.
+        var similarRecipeId = await CreateRecipe("Similar Recipe", TestUserId, sharedA, sharedB);
+        // Only one shared ingredient: below the gate, must not be recommended.
+        var oneOverlapRecipeId = await CreateRecipe("One Overlap Recipe", TestUserId, sharedA, unrelatedIngredientId);
+        // No shared ingredients: never recommended.
         var unrelatedRecipeId = await CreateRecipe("Unrelated Recipe", TestUserId, unrelatedIngredientId);
 
-        var recommendations = await Db.GetRecipeRecommendationsAsync(sourceRecipeId, userId: null, limit: 10);
+        var recommendations = await new RecommendationService(Db).GetRecommendationsAsync(sourceRecipeId, userId: null, limit: 10);
+        Assert.IsNotNull(recommendations);
 
         Assert.IsFalse(recommendations.Any(r => r.Recipe.Id == sourceRecipeId));
         Assert.IsTrue(recommendations.Any(r => r.Recipe.Id == similarRecipeId));
+        Assert.IsFalse(recommendations.Any(r => r.Recipe.Id == oneOverlapRecipeId));
         Assert.IsFalse(recommendations.Any(r => r.Recipe.Id == unrelatedRecipeId));
         Assert.AreEqual(similarRecipeId, recommendations[0].Recipe.Id);
         Assert.IsGreaterThan(0, recommendations[0].ScoreBreakdown.IngredientSimilarity);
     }
 
     [TestMethod]
-    public async Task Recommendations_IncludeFavoriteOwnedAndNoveltyBoosts()
+    public async Task Recommendations_IncludeFavoriteAndNoveltyBoosts()
     {
-        var sharedIngredientId = await CreateIngredient("Personalized Recommendation Ingredient");
-        var sourceRecipeId = await CreateRecipe("Personalized Source", TestUserId, sharedIngredientId);
-        var neverCookedRecipeId = await CreateRecipe("Never Cooked Favorite", TestUserId, sharedIngredientId);
-        var recentlyCookedRecipeId = await CreateRecipe("Recently Cooked Favorite", TestUserId, sharedIngredientId);
+        var sharedA = await CreateIngredient("Personalized Recommendation Ingredient A");
+        var sharedB = await CreateIngredient("Personalized Recommendation Ingredient B");
+        var sourceRecipeId = await CreateRecipe("Personalized Source", TestUserId, sharedA, sharedB);
+        var neverCookedRecipeId = await CreateRecipe("Never Cooked Favorite", TestUserId, sharedA, sharedB);
+        var recentlyCookedRecipeId = await CreateRecipe("Recently Cooked Favorite", TestUserId, sharedA, sharedB);
         var favoritesListId = await Db.CreateRecipeListAsync(new RecipeListCreateDto
         {
             OwnerId = TestUserId,
@@ -116,14 +125,15 @@ public class TestCookHistoryAndRecommendations : TestBase
         await Db.AddRecipeToListAsync(favoritesListId, recentlyCookedRecipeId, 1);
         await Db.CreateCookHistoryEventAsync(TestUserId, recentlyCookedRecipeId, DateOnly.FromDateTime(DateTime.Today));
 
-        var recommendations = await Db.GetRecipeRecommendationsAsync(sourceRecipeId, TestUserId, limit: 10);
+        var recommendations = await new RecommendationService(Db).GetRecommendationsAsync(sourceRecipeId, TestUserId, limit: 10);
+        Assert.IsNotNull(recommendations);
         var neverCooked = recommendations.Single(r => r.Recipe.Id == neverCookedRecipeId);
         var recentlyCooked = recommendations.Single(r => r.Recipe.Id == recentlyCookedRecipeId);
 
-        Assert.AreEqual(0.15, neverCooked.ScoreBreakdown.OwnedByUser, 0.001);
-        Assert.AreEqual(0.15, neverCooked.ScoreBreakdown.FavoritedByUser, 0.001);
-        Assert.AreEqual(0.10, neverCooked.ScoreBreakdown.Novelty, 0.001);
+        Assert.AreEqual(0.18, neverCooked.ScoreBreakdown.FavoritedByUser, 0.001);
+        Assert.AreEqual(0.12, neverCooked.ScoreBreakdown.Novelty, 0.001);
         Assert.AreEqual(0, recentlyCooked.ScoreBreakdown.Novelty, 0.001);
+        // The only difference is novelty, so the never-cooked recipe ranks higher.
         Assert.IsGreaterThan(recentlyCooked.Score, neverCooked.Score);
     }
 

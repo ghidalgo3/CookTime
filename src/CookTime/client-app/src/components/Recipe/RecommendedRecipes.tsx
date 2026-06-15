@@ -12,7 +12,6 @@ function formatScore(score: number) {
 function ScoreBreakdown({ scoreBreakdown }: { scoreBreakdown: RecommendationScoreBreakdown }) {
   const rows: Array<[string, number]> = [
     ['Ingredient similarity', scoreBreakdown.ingredientSimilarity],
-    ['Your recipe', scoreBreakdown.ownedByUser],
     ['Favorite', scoreBreakdown.favoritedByUser],
     ['Novelty', scoreBreakdown.novelty],
     ['Diet match', scoreBreakdown.dietMatch],
