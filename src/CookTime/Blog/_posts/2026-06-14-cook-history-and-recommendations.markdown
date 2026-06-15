@@ -32,23 +32,22 @@ We use [Jaccard similarity](https://en.wikipedia.org/wiki/Jaccard_index) over th
 score = |shared ingredients| / |union of all ingredients|
 ```
 
-A recipe with no overlapping ingredients scores zero and is never shown.
+A recipe has to share **at least two** ingredients with the recipe you are looking at before it can be recommended at all. A single shared ingredient (everything uses salt) is not a real signal, so we gate it out.
 
-For signed-in users we add three more signals on top of the similarity score:
+For signed-in users we add two more signals on top of the similarity score:
 
 | Signal | Weight | Meaning |
 |---|---|---|
-| Ingredient similarity | 60% | Jaccard similarity |
-| Owned by you | 15% | You created the recipe |
-| In your Favorites list | 15% | You have favorited it |
-| Novelty | 10% | Not cooked in the last 7 days |
+| Ingredient similarity | 70% | Jaccard similarity |
+| In your Favorites list | 18% | You have favorited it |
+| Novelty | 12% | Not cooked in the last 7 days |
 
-All of this runs as a single PostgreSQL function using CTEs, so there is no round-tripping between the API and the database to build the ranked list.
+The database stays out of the policy business. It exposes a few primitives — candidate recipes that share an ingredient with the source (and their ingredient sets), your favorites, and your cook dates — and the application does the scoring, gating, and ranking. Indexes and set lookups are what databases are great at; the recommendation *algorithm* is something we would rather keep in code where it is easy to read, unit-test, and change without a migration.
 
 ## Score breakdowns for admins
 
 If you have an Administrator account, each recommendation card shows the total score and an expandable breakdown of exactly how much each signal contributed.
-This made it a lot easier to tune weights during development — we could see at a glance whether a card ranked highly because of ingredient overlap or because we happened to own the recipe.
+This made it a lot easier to tune weights during development — we could see at a glance whether a card ranked highly because of ingredient overlap or because it was a favorite we had not cooked in a while.
 
 ## What we ruled out
 

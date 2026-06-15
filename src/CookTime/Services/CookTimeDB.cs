@@ -295,33 +295,104 @@ public class CookTimeDB(NpgsqlDataSource dataSource)
         return (bool)result!;
     }
 
-    public async Task<List<RecipeRecommendationDto>> GetRecipeRecommendationsAsync(Guid recipeId, Guid? userId = null, int limit = 6)
+    // Recommendation primitives. The recommendation algorithm itself lives in
+    // RecommendationService; these methods only fetch the data it needs.
+
+    public async Task<List<CandidateIngredientSet>> GetCandidateIngredientSetsAsync(Guid sourceRecipeId)
     {
         await using var conn = await dataSource.OpenConnectionAsync();
-        await using var cmd = new NpgsqlCommand("SELECT cooktime.recommend_recipes($1, $2, $3)", conn);
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_candidate_ingredient_sets($1)", conn);
 
-        cmd.Parameters.AddWithValue(recipeId);
-        cmd.Parameters.Add(new NpgsqlParameter
-        {
-            NpgsqlDbType = NpgsqlDbType.Uuid,
-            Value = userId.HasValue ? (object)userId.Value : DBNull.Value
-        });
-        cmd.Parameters.AddWithValue(limit);
+        cmd.Parameters.AddWithValue(sourceRecipeId);
 
-        var results = new List<RecipeRecommendationDto>();
+        var results = new List<CandidateIngredientSet>();
         await using var reader = await cmd.ExecuteReaderAsync();
-
         while (await reader.ReadAsync())
         {
             var json = reader.GetString(0);
-            var dto = JsonSerializer.Deserialize<RecipeRecommendationDto>(json, JsonOptions);
-            if (dto != null)
+            var candidate = JsonSerializer.Deserialize<CandidateIngredientSet>(json, JsonOptions);
+            if (candidate != null)
             {
-                results.Add(dto);
+                results.Add(candidate);
             }
         }
 
         return results;
+    }
+
+    public async Task<HashSet<Guid>> GetFavoriteRecipeIdsAsync(Guid userId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_user_favorite_recipe_ids($1)", conn);
+
+        cmd.Parameters.AddWithValue(userId);
+
+        var result = await cmd.ExecuteScalarAsync();
+        if (result == null || result == DBNull.Value)
+        {
+            return [];
+        }
+
+        var ids = JsonSerializer.Deserialize<List<Guid>>(result.ToString()!, JsonOptions);
+        return ids == null ? [] : [.. ids];
+    }
+
+    public async Task<Dictionary<Guid, DateOnly>> GetLastCookedDatesAsync(Guid userId)
+    {
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_user_last_cooked($1)", conn);
+
+        cmd.Parameters.AddWithValue(userId);
+
+        var results = new Dictionary<Guid, DateOnly>();
+        await using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            var json = reader.GetString(0);
+            var entry = JsonSerializer.Deserialize<LastCookedEntry>(json, JsonOptions);
+            if (entry != null)
+            {
+                results[entry.RecipeId] = entry.LastCookedAt;
+            }
+        }
+
+        return results;
+    }
+
+    public async Task<Dictionary<Guid, RecipeSummaryDto>> GetRecipeSummariesAsync(IReadOnlyCollection<Guid> recipeIds)
+    {
+        if (recipeIds.Count == 0)
+        {
+            return [];
+        }
+
+        await using var conn = await dataSource.OpenConnectionAsync();
+        await using var cmd = new NpgsqlCommand("SELECT cooktime.get_recipe_summaries($1)", conn);
+
+        cmd.Parameters.AddWithValue(recipeIds.ToArray());
+
+        var results = new Dictionary<Guid, RecipeSummaryDto>();
+        await using var reader = await cmd.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            var json = reader.GetString(0);
+            var summary = JsonSerializer.Deserialize<RecipeSummaryDto>(json, JsonOptions);
+            if (summary != null)
+            {
+                results[summary.Id] = summary;
+            }
+        }
+
+        return results;
+    }
+
+    private sealed class LastCookedEntry
+    {
+        [JsonPropertyName("recipeId")]
+        public Guid RecipeId { get; set; }
+
+        [JsonPropertyName("lastCookedAt")]
+        public DateOnly LastCookedAt { get; set; }
     }
 
 

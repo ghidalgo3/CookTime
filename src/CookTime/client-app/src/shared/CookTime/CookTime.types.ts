@@ -224,7 +224,6 @@ export type CookHistoryEventWithRecipe = CookHistoryEvent & {
 
 export type RecommendationScoreBreakdown = {
     ingredientSimilarity: number,
-    ownedByUser: number,
     favoritedByUser: number,
     novelty: number,
     dietMatch: number
