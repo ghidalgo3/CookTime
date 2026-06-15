@@ -42,7 +42,7 @@ services:
       ConnectionStrings__Postgres: "Host=postgres;Database=cooktime;Username=cooktime;Password=development;Include Error Detail=true"
       ConnectionStrings__AzureBlobStorage: "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;"
     ports:
-      - "5001:5000"
+      - "5001:5001"
     depends_on:
       postgres:
         condition: service_healthy
@@ -63,7 +63,8 @@ services:
       dockerfile: Dockerfile
     container_name: cooktime-webapp
     environment:
-      ASPNETCORE_URLS: http://api:5000
+      # Read by vite.config.ts to set the API proxy target (not an ASP.NET setting).
+      ASPNETCORE_URLS: http://api:5001
       PORT: 80
     ports:
       - "3000:80"

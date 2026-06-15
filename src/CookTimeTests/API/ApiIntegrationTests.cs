@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace CookTime.Test.API;
 
 /// <summary>
@@ -107,6 +109,31 @@ public class ApiIntegrationTests
     }
 
     [TestMethod]
+    public async Task GetCookHistory_Unauthenticated_ReturnsUnauthorized()
+    {
+        var fakeId = Guid.NewGuid();
+        var response = await _client.GetAsync($"/api/multipartrecipe/{fakeId}/cook-history");
+        Assert.AreEqual(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task GetRecommendations_Unauthenticated_ReturnsRecommendations()
+    {
+        var recipeId = await GetFirstRecipeId();
+        if (recipeId == null)
+        {
+            Assert.Inconclusive("No recipes available to test recommendations");
+            return;
+        }
+
+        var response = await _client.GetAsync($"/api/multipartrecipe/{recipeId}/recommendations");
+        response.EnsureSuccessStatusCode();
+
+        var content = await response.Content.ReadAsStringAsync();
+        Assert.StartsWith("[", content.TrimStart());
+    }
+
+    [TestMethod]
     public async Task GetProfile_Unauthenticated_ReturnsUnauthorized()
     {
         var response = await _client.GetAsync("/api/account/profile");
@@ -145,5 +172,20 @@ public class ApiIntegrationTests
 
         var content = await response.Content.ReadAsStringAsync();
         Assert.Contains("\"paths\"", content, "OpenAPI spec should contain paths");
+    }
+
+    private static async Task<Guid?> GetFirstRecipeId()
+    {
+        var response = await _client.GetAsync("/api/multipartrecipe?pageSize=1");
+        response.EnsureSuccessStatusCode();
+
+        using var document = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+        var results = document.RootElement.GetProperty("results");
+        if (results.GetArrayLength() == 0)
+        {
+            return null;
+        }
+
+        return results[0].GetProperty("id").GetGuid();
     }
 }

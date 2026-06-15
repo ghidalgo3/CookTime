@@ -11,6 +11,8 @@ import { RecipeStructuredData } from '../RecipeStructuredData';
 import { ImageCarousel } from '../ImageCarousel';
 import { RecipeGenerationResult } from 'src/shared/CookTime';
 import imgs from 'src/assets';
+import { CookHistorySection } from './CookHistorySection';
+import { RecommendedRecipes } from './RecommendedRecipes';
 
 interface RecipePageProps {
   recipeId: string;
@@ -71,8 +73,10 @@ function RecipePageContent({ recipeId }: { recipeId: string }) {
         <RecipeComponents />
       </div>
 
+      <CookHistorySection recipeId={recipeId} />
       <NutritionSection />
       <ReviewsSection recipeId={recipeId} />
+      <RecommendedRecipes recipeId={recipeId} />
     </div>
   );
 }

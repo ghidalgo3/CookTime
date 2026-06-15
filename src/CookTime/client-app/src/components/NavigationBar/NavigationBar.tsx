@@ -31,6 +31,9 @@ export function NavigationBar({ categories }: { categories: string[] }) {
           <NavDropdown.Item as={Link} to="/recipes/mine">
             My recipes
           </NavDropdown.Item>
+          <NavDropdown.Item as={Link} to="/History">
+            History
+          </NavDropdown.Item>
           <NavDropdown.Divider />
           <NavDropdown.Item onClick={signOut}>
             Sign out
@@ -159,4 +162,3 @@ export function NavigationBar({ categories }: { categories: string[] }) {
       </Container>
     </header>);
 }
-

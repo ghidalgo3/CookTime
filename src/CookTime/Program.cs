@@ -196,6 +196,24 @@ app.MapGet("/api/multipartrecipe/featured", async (CookTimeDB cooktime) =>
 {
     return await cooktime.GetFeaturedRecipesAsync();
 });
+app.MapGet("/api/multipartrecipe/{id:guid}/recommendations", async (HttpContext context, CookTimeDB cooktime, Guid id, int limit = 6) =>
+{
+    var recipe = await cooktime.GetRecipeByIdAsync(id);
+    if (recipe == null)
+    {
+        return Results.NotFound();
+    }
+
+    Guid? userId = null;
+    var userIdClaim = context.User.FindFirst("db_user_id")?.Value;
+    if (userIdClaim != null && Guid.TryParse(userIdClaim, out var parsedUserId))
+    {
+        userId = parsedUserId;
+    }
+
+    var recommendations = await cooktime.GetRecipeRecommendationsAsync(id, userId, Math.Clamp(limit, 1, 24));
+    return Results.Ok(recommendations);
+});
 app.MapGet("/api/multipartrecipe/{id:guid}", async (CookTimeDB cooktime, NutritionService nutrition, Guid id) =>
 {
     var recipe = await cooktime.GetRecipeByIdAsync(id);
@@ -269,6 +287,77 @@ authenticatedApi.MapGet("/multipartrecipe/mine", async (HttpContext context, Coo
         PageSize = pageSize,
         RowCount = recipes.Count
     });
+});
+
+authenticatedApi.MapGet("/multipartrecipe/{recipeId:guid}/cook-history", async (HttpContext context, CookTimeDB cooktime, Guid recipeId) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+    var history = await cooktime.GetCookHistoryAsync(userId, recipeId);
+    return Results.Ok(history);
+});
+
+authenticatedApi.MapGet("/cook-history", async (HttpContext context, CookTimeDB cooktime) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+    var history = await cooktime.GetCookHistoryAsync(userId);
+    return Results.Ok(history);
+});
+
+authenticatedApi.MapPost("/multipartrecipe/{recipeId:guid}/cook-history", async (HttpContext context, CookTimeDB cooktime, Guid recipeId) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+    CookHistoryUpsertRequest? request = null;
+    if (context.Request.ContentLength is > 0)
+    {
+        request = await context.Request.ReadFromJsonAsync<CookHistoryUpsertRequest>();
+    }
+
+    try
+    {
+        var cookEvent = await cooktime.CreateCookHistoryEventAsync(userId, recipeId, request?.CookedAt);
+        return Results.Created($"/api/cook-history/{cookEvent.Id}", cookEvent);
+    }
+    catch (Npgsql.PostgresException ex) when (ex.Message.Contains("not found"))
+    {
+        return Results.NotFound();
+    }
+});
+
+authenticatedApi.MapPatch("/cook-history/{eventId:guid}", async (HttpContext context, CookTimeDB cooktime, Guid eventId, CookHistoryUpsertRequest request) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+    if (request.CookedAt == null)
+    {
+        return Results.BadRequest(new { error = "cookedAt is required" });
+    }
+
+    try
+    {
+        var cookEvent = await cooktime.UpdateCookHistoryEventAsync(userId, eventId, request.CookedAt.Value);
+        if (cookEvent == null)
+        {
+            return Results.NotFound();
+        }
+        return Results.Ok(cookEvent);
+    }
+    catch (Npgsql.PostgresException ex) when (ex.Message.Contains("not found"))
+    {
+        return Results.NotFound();
+    }
+});
+
+authenticatedApi.MapDelete("/cook-history/{eventId:guid}", async (HttpContext context, CookTimeDB cooktime, Guid eventId) =>
+{
+    var userId = (Guid)context.Items["UserId"]!;
+    try
+    {
+        await cooktime.DeleteCookHistoryEventAsync(userId, eventId);
+        return Results.NoContent();
+    }
+    catch (Npgsql.PostgresException ex) when (ex.Message.Contains("not found"))
+    {
+        return Results.NotFound();
+    }
 });
 
 authenticatedApi.MapPost("/multipartrecipe/create", async (HttpContext context, CookTimeDB cooktime, RecipeCreateRequest request) =>

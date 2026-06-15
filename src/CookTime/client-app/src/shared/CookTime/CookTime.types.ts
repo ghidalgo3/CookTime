@@ -210,6 +210,33 @@ export type PagedResult<T> = {
     lastRowOnPage: number
 }
 
+export type CookHistoryEvent = {
+    id: string,
+    userId: string,
+    recipeId: string,
+    cookedAt: string,
+    createdDate: string
+}
+
+export type CookHistoryEventWithRecipe = CookHistoryEvent & {
+    recipe: RecipeView
+}
+
+export type RecommendationScoreBreakdown = {
+    ingredientSimilarity: number,
+    ownedByUser: number,
+    favoritedByUser: number,
+    novelty: number,
+    dietMatch: number
+}
+
+export type RecipeRecommendation = {
+    recipe: RecipeView,
+    score: number,
+    scoreBreakdown: RecommendationScoreBreakdown,
+    reasons: string[]
+}
+
 export type IngredientInternalUpdate = {
     ingredientId: string,
     ndbNumber: number,

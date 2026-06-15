@@ -1,4 +1,4 @@
-import { AggregatedIngredient, IngredientInternalUpdate, PagedResult, RecipeGenerationResult, RecipeList, RecipeListWithRecipes, RecipeView, Review } from "./CookTime.types";
+import { AggregatedIngredient, CookHistoryEvent, CookHistoryEventWithRecipe, IngredientInternalUpdate, PagedResult, RecipeGenerationResult, RecipeList, RecipeListWithRecipes, RecipeRecommendation, RecipeView, Review } from "./CookTime.types";
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
 
@@ -110,6 +110,14 @@ export async function getNewRecipeViews() {
   return (await response.json()) as RecipeView[];
 }
 
+export async function getRecipeRecommendations(recipeId: string, limit = 6): Promise<RecipeRecommendation[]> {
+  const response = await fetch(`/api/multipartrecipe/${recipeId}/recommendations?limit=${encodeURIComponent(limit)}`);
+  if (!response.ok) {
+    return [];
+  }
+  return (await response.json()) as RecipeRecommendation[];
+}
+
 export async function getMyRecipes(args?: { page?: number }): Promise<PagedResult<RecipeView>> {
   let query = "";
   if (args?.page) {
@@ -169,6 +177,59 @@ export async function addToFavorites(recipeId: string): Promise<void> {
 
 export async function removeFromFavorites(recipeId: string): Promise<void> {
   return removeFromList("Favorites", recipeId);
+}
+
+export async function getCookHistory(recipeId: string): Promise<CookHistoryEvent[]> {
+  const response = await fetch(`/api/multipartrecipe/${recipeId}/cook-history`);
+  if (!response.ok) {
+    throw new Error(`Failed to load cook history: ${response.status}`);
+  }
+  return (await response.json()) as CookHistoryEvent[];
+}
+
+export async function getUserCookHistory(): Promise<CookHistoryEventWithRecipe[]> {
+  const response = await fetch("/api/cook-history");
+  if (!response.ok) {
+    throw new Error(`Failed to load cook history: ${response.status}`);
+  }
+  return (await response.json()) as CookHistoryEventWithRecipe[];
+}
+
+export async function logCookHistory(recipeId: string, cookedAt?: string): Promise<CookHistoryEvent | null> {
+  const response = await fetch(`/api/multipartrecipe/${recipeId}/cook-history`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ cookedAt: cookedAt ?? null })
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+  return (await response.json()) as CookHistoryEvent;
+}
+
+export async function updateCookHistory(eventId: string, cookedAt: string): Promise<CookHistoryEvent | null> {
+  const response = await fetch(`/api/cook-history/${eventId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ cookedAt })
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+  return (await response.json()) as CookHistoryEvent;
+}
+
+export async function deleteCookHistory(eventId: string): Promise<boolean> {
+  const response = await fetch(`/api/cook-history/${eventId}`, {
+    method: "DELETE"
+  });
+  return response.ok;
 }
 
 // Convenience functions for groceries

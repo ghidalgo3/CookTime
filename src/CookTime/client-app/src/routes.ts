@@ -10,6 +10,7 @@ export default [
         route("About", "pages/About.tsx"),
         route("Recipes/Mine", "pages/MyRecipes.tsx"),
         route("Recipes/Create", "pages/RecipeCreation.tsx"),
+        route("History", "pages/History.tsx"),
         route("Groceries", "pages/GroceriesList.tsx"),
         route("lists", "pages/ListManagement.tsx"),
         route("lists/:slug", "pages/ListView.tsx"),

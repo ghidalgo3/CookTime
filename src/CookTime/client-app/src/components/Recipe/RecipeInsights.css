@@ -1,0 +1,55 @@
+.recipe-insight-section {
+  border-top: 1px solid var(--neutralQuaternaryAlt);
+  margin-top: 24px;
+  padding-top: 18px;
+}
+
+.cook-history-summary {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+
+.cook-history-page-list {
+  display: grid;
+  gap: 10px;
+  max-width: 760px;
+}
+
+.cook-history-page-row {
+  align-items: center;
+  border-bottom: 1px solid var(--neutralQuaternaryAlt);
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+
+.recommendation-details {
+  font-size: 0.9rem;
+  margin-top: -12px;
+  margin-bottom: 20px;
+}
+
+.recommendation-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.recommendation-reason {
+  background-color: var(--themeLighterAlt);
+  border: 1px solid var(--themeLight);
+  border-radius: 4px;
+  color: var(--neutralPrimary);
+  padding: 2px 6px;
+}
+
+.score-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+}
