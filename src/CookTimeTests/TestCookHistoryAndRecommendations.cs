@@ -96,7 +96,7 @@ public class TestCookHistoryAndRecommendations : TestBase
         Assert.IsTrue(recommendations.Any(r => r.Recipe.Id == similarRecipeId));
         Assert.IsFalse(recommendations.Any(r => r.Recipe.Id == unrelatedRecipeId));
         Assert.AreEqual(similarRecipeId, recommendations[0].Recipe.Id);
-        Assert.IsGreaterThan(recommendations[0].ScoreBreakdown.IngredientSimilarity, 0);
+        Assert.IsGreaterThan(0, recommendations[0].ScoreBreakdown.IngredientSimilarity);
     }
 
     [TestMethod]
@@ -124,7 +124,7 @@ public class TestCookHistoryAndRecommendations : TestBase
         Assert.AreEqual(0.15, neverCooked.ScoreBreakdown.FavoritedByUser, 0.001);
         Assert.AreEqual(0.10, neverCooked.ScoreBreakdown.Novelty, 0.001);
         Assert.AreEqual(0, recentlyCooked.ScoreBreakdown.Novelty, 0.001);
-        Assert.IsGreaterThan(neverCooked.Score, recentlyCooked.Score);
+        Assert.IsGreaterThan(recentlyCooked.Score, neverCooked.Score);
     }
 
     private async Task<Guid> CreateIngredient(string name)
